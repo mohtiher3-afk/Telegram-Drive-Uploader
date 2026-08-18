@@ -1,0 +1,12 @@
+package com.telegramdrive.uploader.domain.model
+
+enum class UploadError {
+    SOURCE_FILE_UNAVAILABLE,
+    TELEGRAM_NOT_AUTHENTICATED,
+    DESTINATION_UNAVAILABLE,
+    NETWORK_UNAVAILABLE,
+    PERMISSION_DENIED,
+    UPLOAD_FAILED,
+    CANCELLED,
+    UNKNOWN
+}
