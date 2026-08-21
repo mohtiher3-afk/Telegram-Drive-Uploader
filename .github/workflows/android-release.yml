@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   release:
-    name: Build and publish ARM64 APK
+    name: Build and publish signed ARM64 APK
     runs-on: ubuntu-24.04
     timeout-minutes: 45
 
@@ -45,50 +45,65 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Prepare build configuration
+      - name: Prepare Telegram configuration
         env:
           TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
           TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
         run: |
-          {
-            printf 'TELEGRAM_API_ID=%s\n' "${TELEGRAM_API_ID:-0}"
-            printf 'TELEGRAM_API_HASH=%s\n' "${TELEGRAM_API_HASH:-placeholder_hash}"
-          } > .env
-          keytool -genkeypair \
-            -keystore debug.keystore \
-            -storepass android \
-            -keypass android \
-            -alias androiddebugkey \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
+          printf 'TELEGRAM_API_ID=%s\n' "${TELEGRAM_API_ID:-0}" > .env
+          printf 'TELEGRAM_API_HASH=%s\n' "${TELEGRAM_API_HASH:-placeholder_hash}" >> .env
+
+      - name: Prepare Release signing
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          test -n "$RELEASE_KEYSTORE_BASE64"
+          test -n "$RELEASE_STORE_PASSWORD"
+          test -n "$RELEASE_KEY_ALIAS"
+          test -n "$RELEASE_KEY_PASSWORD"
+          printf '%s' "$RELEASE_KEYSTORE_BASE64" | base64 --decode > "$GITHUB_WORKSPACE/release.keystore"
+          chmod 600 "$GITHUB_WORKSPACE/release.keystore"
+          keytool -list \
+            -keystore "$GITHUB_WORKSPACE/release.keystore" \
+            -storepass "$RELEASE_STORE_PASSWORD" \
+            -alias "$RELEASE_KEY_ALIAS" > /dev/null
 
       - name: Verify official TDLib artifacts
         run: ./scripts/check-tdlib-artifacts.sh
 
-      - name: Run unit tests
+      - name: Run JVM unit tests
         run: gradle --no-daemon --max-workers=2 :app:testDebugUnitTest
 
       - name: Run release lint
         run: gradle --no-daemon --max-workers=2 :app:lintVitalRelease
 
-      - name: Build Release APK
+      - name: Build signed ARM64 Release APK
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           gradle --no-daemon --max-workers=1 \
             -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8" \
             :app:assembleRelease
 
-      - name: Verify and checksum APK
+      - name: Verify APK and create checksum
         run: |
           APK="app/build/outputs/apk/release/app-arm64-v8a-release.apk"
           test -f "$APK"
           unzip -l "$APK" | grep -q 'lib/arm64-v8a/libtdjni.so'
           if unzip -l "$APK" | grep -Eq 'lib/(armeabi-v7a|x86|x86_64)/'; then
-            echo "Unexpected non-ARM64 native library found"
+            echo 'Unexpected non-ARM64 native library found'
             exit 1
           fi
           sha256sum "$APK" | tee apk-sha256.txt
+
+      - name: Verify APK signature
+        run: apksigner verify --verbose app/build/outputs/apk/release/app-arm64-v8a-release.apk
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
@@ -100,6 +115,6 @@ jobs:
             app/build/outputs/apk/release/app-arm64-v8a-release.apk
             apk-sha256.txt
 
-      - name: Remove local build secrets
+      - name: Remove sensitive build files
         if: always()
-        run: rm -f .env debug.keystore local.properties
+        run: rm -f .env release.keystore local.properties
