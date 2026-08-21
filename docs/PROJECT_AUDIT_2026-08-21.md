@@ -18,7 +18,7 @@ The Android project now contains the official TDLib v1.8.66 ARM64 integration, a
 | Unit tests | Passed | `SmartFileAssistantTest`: 3 tests, 0 failures, 0 errors |
 | Kotlin compiler configuration | Updated | Deprecated `kotlinOptions.jvmTarget` replaced by Kotlin compilerOptions DSL with JVM 11 |
 | Release lint | Passed | `:app:lintVitalRelease` completed successfully |
-| R8 release shrink | Passed | `:app:minifyReleaseWithR8` completed successfully |
+| R8 release shrink | Passed | `:app:minifyReleaseWithR8` completed successfully; TDLib classes retained as JNI seeds |
 | Release packaging | Passed | `:app:assembleRelease` completed successfully |
 | ABI packaging | Passed | APK contains only `lib/arm64-v8a/libtdjni.so` by design |
 
@@ -34,14 +34,15 @@ The Android project now contains the official TDLib v1.8.66 ARM64 integration, a
 | TDLib | Preserved the official v1.8.66 Java bindings and ARM64 `libtdjni.so`; no mocks or fallback native implementation were introduced. |
 | Local assistant tests | Added three JVM tests covering Arabic inference, English screen-recording inference, dimensions, duration metadata, and safe fallback naming. The test fixture uses the actual `UploadStatus.QUEUED` enum. |
 | Kotlin warnings | Migrated the module from the deprecated `kotlinOptions { jvmTarget = "11" }` form to `compilerOptions { jvmTarget.set(JvmTarget.JVM_11) }`. |
+| Release JNI crash hardening | Added strict R8 keep rules for `org.drinkless.tdlib.**`, including native members and class names, so official TDLib JNI registration is not broken by release obfuscation. |
 
 ## Final Release artifact
 
 | Item | Value |
 |---|---:|
 | APK | `app/build/outputs/apk/release/app-arm64-v8a-release.apk` |
-| Size | 20,059,186 bytes |
-| SHA-256 | `0ac3feda7b627a5f00c9935e99b8f7dcaccb84fbb5ebbed54af7fabef520859f` |
+| Size | 20,403,146 bytes |
+| SHA-256 | `b34f83a8238c888034b2821b9cb66073aac871892b0e55702128c74faf89c4c4` |
 | Native library in APK | `lib/arm64-v8a/libtdjni.so` |
 | Native library size | 58,944,152 bytes |
 | Native library state | Stripped AArch64 ELF shared object |
