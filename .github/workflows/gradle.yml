@@ -1,4 +1,4 @@
-name: Android CI
+name: Android Multi-ABI CI
 
 on:
   push:
@@ -16,8 +16,12 @@ concurrency:
 
 jobs:
   build:
-    name: Test and build Android ARM64
+    name: Test and build Android ${{ matrix.abi }}
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        abi: [arm64-v8a, armeabi-v7a, x86_64]
     timeout-minutes: 45
 
     steps:
@@ -67,13 +71,13 @@ jobs:
       - name: Run release lint
         run: gradle --no-daemon --max-workers=2 :app:lintVitalRelease
 
-      - name: Build ARM64 debug APK
-        run: gradle --no-daemon --max-workers=1 :app:assembleDebug
+      - name: Build debug APK for selected ABI
+        run: gradle --no-daemon --max-workers=1 -PtargetAbi=${{ matrix.abi }} :app:assembleDebug
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: telegram-drive-uploader-arm64-debug
+          name: telegram-drive-uploader-${{ matrix.abi }}-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14

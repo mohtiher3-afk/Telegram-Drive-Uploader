@@ -77,7 +77,13 @@ android {
     abi {
       isEnable = true
       reset()
-      include("arm64-v8a")
+      val supportedAbis = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+      val requestedAbi = providers.gradleProperty("targetAbi").orNull
+      val selectedAbis = requestedAbi?.let { listOf(it) } ?: supportedAbis
+      require(selectedAbis.all { it in supportedAbis }) {
+        "targetAbi must be one of: ${supportedAbis.joinToString()}; got $requestedAbi"
+      }
+      include(*selectedAbis.toTypedArray())
       isUniversalApk = false
     }
   }

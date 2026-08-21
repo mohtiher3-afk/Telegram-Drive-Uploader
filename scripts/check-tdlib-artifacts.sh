@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 echo "=== TDLib v1.8.66 Android Artifact Integrity & Completeness Check ==="
 
@@ -46,6 +46,25 @@ check_file() {
     fi
 }
 
+check_elf_arch() {
+    local abi="$1"
+    local expected="$2"
+    local file_path="$JNI_DIR/$abi/libtdjni.so"
+    if ! command -v readelf >/dev/null 2>&1; then
+        echo "[ERROR] readelf is required for exact ELF architecture validation"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
+        return
+    fi
+    local machine
+    machine=$(readelf -h "$file_path" | awk -F: '/Machine:/ {gsub(/^ +/, "", $2); print $2; exit}')
+    if [[ "$machine" != "$expected" ]]; then
+        echo "[WRONG ARCHITECTURE] $abi expected '$expected', found '$machine'"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
+    else
+        echo "[ARCHITECTURE] $abi is $machine"
+    fi
+}
+
 echo "1. Checking Artifact Manifest..."
 if [ -f "$MANIFEST_FILE" ]; then
     echo "✅ [FOUND] Manifest: $MANIFEST_FILE"
@@ -56,21 +75,15 @@ fi
 
 echo ""
 echo "2. Checking Native JNI Libraries (.so)..."
-check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v1.8.66 arm64-v8a Native Library"
-if command -v readelf >/dev/null 2>&1 && [ -f "$JNI_DIR/arm64-v8a/libtdjni.so" ]; then
-    machine=$(readelf -h "$JNI_DIR/arm64-v8a/libtdjni.so" | awk -F: '/Machine:/ {gsub(/^ +/, "", $2); print $2}')
-    if [[ "$machine" != *"AArch64"* ]]; then
-        echo "⚠️ [WRONG ARCHITECTURE] Expected AArch64, found: $machine"
-        MISSING_COUNT=$((MISSING_COUNT + 1))
-    else
-        echo "✅ [ARCHITECTURE] arm64-v8a is AArch64"
-    fi
-fi
+check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v1.8.66 arm64-v8a Native Library" && check_elf_arch "arm64-v8a" "AArch64"
+check_file "$JNI_DIR/armeabi-v7a/libtdjni.so" 5000000 "TDLib v1.8.66 armeabi-v7a Native Library" && check_elf_arch "armeabi-v7a" "ARM"
+check_file "$JNI_DIR/x86_64/libtdjni.so" 5000000 "TDLib v1.8.66 x86_64 Native Library" && check_elf_arch "x86_64" "Advanced Micro Devices X86-64"
 
 echo ""
 echo "3. Checking TDLib Java/JNI Source Bindings..."
 check_file "$JAVA_BINDING_DIR/Client.java" 1000 "TDLib Java Client Binding"
 check_file "$JAVA_BINDING_DIR/TdApi.java" 1500000 "TDLib v1.8.66 TdApi Bindings"
+check_file "$JAVA_BINDING_DIR/Log.java" 1000 "TDLib Java Log Binding"
 
 echo ""
 if [ "$MISSING_COUNT" -gt 0 ]; then
@@ -80,6 +93,6 @@ if [ "$MISSING_COUNT" -gt 0 ]; then
     exit 1
 else
     echo "STATUS: TDLIB_ARTIFACTS_PRESENT=true"
-    echo "🎉 All required official TDLib v1.8.66 ARM64 artifacts verified successfully!"
+    echo "All required official TDLib v1.8.66 native and Java artifacts verified successfully."
     exit 0
 fi
