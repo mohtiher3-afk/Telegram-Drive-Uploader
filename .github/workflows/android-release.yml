@@ -64,7 +64,7 @@ jobs:
           test -n "$RELEASE_STORE_PASSWORD"
           test -n "$RELEASE_KEY_ALIAS"
           test -n "$RELEASE_KEY_PASSWORD"
-          printf '%s' "$RELEASE_KEYSTORE_BASE64" | base64 --decode > "$GITHUB_WORKSPACE/release.keystore"
+          printf '%s' "$RELEASE_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode > "$GITHUB_WORKSPACE/release.keystore"
           chmod 600 "$GITHUB_WORKSPACE/release.keystore"
           keytool -list \
             -keystore "$GITHUB_WORKSPACE/release.keystore" \
