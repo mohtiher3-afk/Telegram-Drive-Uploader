@@ -103,7 +103,7 @@ jobs:
           sha256sum "$APK" | tee apk-sha256.txt
 
       - name: Verify APK signature
-        run: apksigner verify --verbose app/build/outputs/apk/release/app-arm64-v8a-release.apk
+        run: "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose app/build/outputs/apk/release/app-arm64-v8a-release.apk
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
