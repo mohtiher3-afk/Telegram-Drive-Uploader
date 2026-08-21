@@ -1,0 +1,98 @@
+name: Android TDLib Device Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app/src/androidTest/**'
+      - 'app/src/main/java/org/drinkless/tdlib/**'
+      - 'app/src/main/jniLibs/x86_64/**'
+      - 'scripts/run-tdlib-device-smoke-test.sh'
+      - '.github/workflows/android-device-smoke.yml'
+      - 'app/build.gradle.kts'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-device-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ABI: x86_64
+  API_LEVEL: '35'
+
+jobs:
+  tdlib-device-smoke:
+    name: TDLib JNI smoke test on Android emulator
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Prepare test configuration
+        run: |
+          printf 'TELEGRAM_API_ID=0\n' > .env
+          printf 'TELEGRAM_API_HASH=placeholder_hash\n' >> .env
+
+      - name: Verify official TDLib artifacts
+        run: ./scripts/check-tdlib-artifacts.sh
+
+      - name: Build x86_64 debug and instrumentation APKs
+        run: |
+          gradle --no-daemon --max-workers=2 \
+            -PtargetAbi=${ABI} \
+            :app:assembleDebug \
+            :app:assembleDebugAndroidTest
+
+      - name: Run TDLib smoke test on cloud emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ env.API_LEVEL }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+          disable-animations: true
+          script: |
+            set -euo pipefail
+            TEST_APK="$(find app/build/outputs/apk/androidTest/debug -type f -name '*.apk' | head -n 1)"
+            test -n "$TEST_APK"
+            ./scripts/run-tdlib-device-smoke-test.sh \
+              --apk "app/build/outputs/apk/debug/app-${ABI}-debug.apk" \
+              --test-apk "$TEST_APK" \
+              --serial "${ANDROID_SERIAL:-emulator-5554}" \
+              --log-dir "artifacts/tdlib-smoke/${ABI}"
+
+      - name: Upload TDLib runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tdlib-device-smoke-${{ env.ABI }}
+          path: artifacts/tdlib-smoke/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove local test configuration
+        if: always()
+        run: rm -f .env local.properties
