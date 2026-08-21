@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,7 +51,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Telegram Drive") },
+                title = { Text(stringResource(com.telegramdrive.uploader.R.string.telegram_drive)) },
                 actions = {
                     IconButton(
                         onClick = onSettingsClick,
@@ -58,7 +59,7 @@ fun HomeScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings"
+                            contentDescription = stringResource(com.telegramdrive.uploader.R.string.settings)
                         )
                     }
                 }
@@ -103,12 +104,12 @@ fun HomeScreen(
                                 )
                                 Column {
                                     Text(
-                                        text = "Telegram Connected",
+                                        text = stringResource(com.telegramdrive.uploader.R.string.telegram_connected),
                                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                         color = MaterialTheme.colorScheme.onSecondaryContainer
                                     )
                                     val user = uiState.telegramUser
-                                    val name = if (user != null) "${user.firstName} ${user.lastName ?: ""}".trim() else "User"
+                                    val name = if (user != null) "${user.firstName} ${user.lastName ?: ""}".trim() else stringResource(com.telegramdrive.uploader.R.string.user)
                                     Text(
                                         text = name,
                                         style = MaterialTheme.typography.bodyMedium,
@@ -125,13 +126,13 @@ fun HomeScreen(
                             }
                         } else {
                             Text(
-                                text = "Telegram not connected",
+                                text = stringResource(com.telegramdrive.uploader.R.string.telegram_not_connected),
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "Connect your Telegram account to upload videos to Telegram.",
+                                text = stringResource(com.telegramdrive.uploader.R.string.connect_account),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -140,7 +141,7 @@ fun HomeScreen(
                                 onClick = onConnectClick,
                                 modifier = Modifier.testTag("home_connect_telegram_button")
                             ) {
-                                Text("Connect")
+                                Text(stringResource(com.telegramdrive.uploader.R.string.connect))
                             }
                         }
                     }
@@ -164,19 +165,19 @@ fun HomeScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.CloudUpload,
-                            contentDescription = "Upload Cloud Icon",
+                            contentDescription = stringResource(com.telegramdrive.uploader.R.string.upload_cloud_icon),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(40.dp)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "Upload Videos",
+                            text = stringResource(com.telegramdrive.uploader.R.string.upload_videos),
                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Select one or more videos and add them to your local queue for background preparation.",
+                            text = stringResource(com.telegramdrive.uploader.R.string.select_videos_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                         )
@@ -196,7 +197,7 @@ fun HomeScreen(
                             },
                             modifier = Modifier.testTag("select_videos_button")
                         ) {
-                            Text("Select Videos")
+                            Text(stringResource(com.telegramdrive.uploader.R.string.select_videos))
                         }
                     }
                 }
@@ -205,7 +206,7 @@ fun HomeScreen(
             // 2. Statistics Grid
             item {
                 Text(
-                    text = "Local Statistics",
+                    text = stringResource(com.telegramdrive.uploader.R.string.local_statistics),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -218,12 +219,12 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         StatCard(
-                            title = "Total Videos",
+                            title = stringResource(com.telegramdrive.uploader.R.string.total_videos),
                             value = uiState.totalVideosCount.toString(),
                             modifier = Modifier.weight(1f).testTag("stat_total_videos")
                         )
                         StatCard(
-                            title = "Total Size",
+                            title = stringResource(com.telegramdrive.uploader.R.string.total_size),
                             value = formatFileSize(uiState.totalSize),
                             modifier = Modifier.weight(1f).testTag("stat_total_size")
                         )
@@ -233,12 +234,12 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         StatCard(
-                            title = "Pending",
+                            title = stringResource(com.telegramdrive.uploader.R.string.pending),
                             value = uiState.pendingCount.toString(),
                             modifier = Modifier.weight(1f).testTag("stat_pending")
                         )
                         StatCard(
-                            title = "Completed",
+                            title = stringResource(com.telegramdrive.uploader.R.string.completed),
                             value = uiState.completedCount.toString(),
                             modifier = Modifier.weight(1f).testTag("stat_completed")
                         )
@@ -249,7 +250,7 @@ fun HomeScreen(
             // 3. Active Uploads List
             item {
                 Text(
-                    text = "Active Uploads",
+                    text = stringResource(com.telegramdrive.uploader.R.string.active_uploads),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -270,7 +271,7 @@ fun HomeScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "No active uploads.\nYour selected videos will appear here.",
+                                text = stringResource(com.telegramdrive.uploader.R.string.no_active_uploads),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.testTag("no_active_uploads_text")

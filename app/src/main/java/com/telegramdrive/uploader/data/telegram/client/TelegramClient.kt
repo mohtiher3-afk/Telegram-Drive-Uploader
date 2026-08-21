@@ -11,6 +11,7 @@ interface TelegramClient {
     val connectionState: StateFlow<TelegramConnectionState>
     val currentUser: StateFlow<TelegramUser?>
     val error: StateFlow<TelegramError?>
+    val qrLoginLink: StateFlow<String?>
     
     val isConfigured: Boolean
 
@@ -18,6 +19,7 @@ interface TelegramClient {
     suspend fun sendPhoneNumber(phoneNumber: String)
     suspend fun sendCode(code: String)
     suspend fun sendPassword(password: String)
+    suspend fun requestQrCodeLogin()
     suspend fun logout()
     fun clearError()
     

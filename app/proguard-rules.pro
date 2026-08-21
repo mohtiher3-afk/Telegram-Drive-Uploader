@@ -19,10 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-# TDLib Java / JNI Rules
--keep class org.drinkless.tdlib.** { *; }
--keepclassmembers class org.drinkless.tdlib.** {
-    native <methods>;
-    *;
-}

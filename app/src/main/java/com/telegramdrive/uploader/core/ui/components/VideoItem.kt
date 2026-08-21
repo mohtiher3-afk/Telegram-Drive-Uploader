@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -34,7 +35,8 @@ fun VideoItem(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -45,23 +47,23 @@ fun VideoItem(
             // Thumbnail / Icon
             Box(
                 modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .size(68.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.tertiaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 if (video.thumbnailPath != null && File(video.thumbnailPath).exists()) {
                     AsyncImage(
                         model = File(video.thumbnailPath),
-                        contentDescription = "Video Thumbnail",
+                        contentDescription = stringResource(com.telegramdrive.uploader.R.string.video_thumbnail),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Default.VideoFile,
-                        contentDescription = "Video Icon",
-                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = stringResource(com.telegramdrive.uploader.R.string.video_icon),
+                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -85,38 +87,13 @@ fun VideoItem(
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = formatFileSize(video.fileSize),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    
-                    Text(
-                        text = "•",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    
-                    Text(
-                        text = formatDuration(video.duration),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
+                    MetadataPill(text = formatFileSize(video.fileSize))
+                    MetadataPill(text = formatDuration(video.duration))
                     if (video.width > 0 && video.height > 0) {
-                        Text(
-                            text = "•",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Text(
-                            text = "${video.width} × ${video.height}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        MetadataPill(text = "${video.width} × ${video.height}")
                     }
                 }
             }
@@ -128,12 +105,27 @@ fun VideoItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove video",
+                        contentDescription = stringResource(com.telegramdrive.uploader.R.string.remove_video),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MetadataPill(text: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        shape = MaterialTheme.shapes.extraSmall
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+            style = MaterialTheme.typography.labelMedium
+        )
     }
 }
 

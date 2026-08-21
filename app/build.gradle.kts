@@ -1,5 +1,6 @@
 import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
 import java.util.Base64
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   
@@ -72,10 +73,26 @@ android {
     }
   }
 
+  splits {
+    abi {
+      isEnable = true
+      reset()
+      include("arm64-v8a")
+      isUniversalApk = false
+    }
+  }
+
+  packaging {
+    jniLibs {
+      useLegacyPackaging = true
+    }
+  }
+
   buildTypes {
     release {
       isCrunchPngs = false
-      isMinifyEnabled = false
+      isMinifyEnabled = true
+      isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
     }
@@ -85,7 +102,11 @@ android {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
-  kotlinOptions { jvmTarget = "11" }
+  kotlin {
+    compilerOptions {
+      jvmTarget.set(JvmTarget.JVM_11)
+    }
+  }
   buildFeatures {
     compose = true
     buildConfig = true
@@ -117,7 +138,6 @@ dependencies {
   implementation(libs.androidx.hilt.navigation.compose)
   implementation(libs.androidx.work.runtime.ktx)
   implementation(platform(libs.androidx.compose.bom))
-  implementation(platform(libs.firebase.bom))
   // implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
   // implementation(libs.androidx.camera.camera2)
@@ -142,7 +162,6 @@ dependencies {
   implementation(libs.androidx.room.runtime)
   implementation(libs.coil.compose)
   implementation(libs.converter.moshi)
-  implementation(libs.firebase.ai)
   // Uncomment to use Firestore:
   // implementation(libs.firebase.firestore)
 
@@ -152,7 +171,6 @@ dependencies {
   // implementation(libs.androidx.credentials)
   // implementation(libs.androidx.credentials.play.services)
   // implementation(libs.googleid)
-  implementation(libs.firebase.appcheck.recaptcha)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.logging.interceptor)

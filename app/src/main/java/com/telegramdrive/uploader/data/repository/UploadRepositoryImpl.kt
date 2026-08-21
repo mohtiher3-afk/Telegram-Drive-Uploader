@@ -80,11 +80,11 @@ class UploadRepositoryImpl @Inject constructor(
             retryCount = retryCount,
             thumbnailPath = thumbnailPath,
             duration = duration,
-            width = width,
-            height = height
+                        width = width,
+            height = height,
+            scheduledAt = scheduledAt
         )
     }
-
     private fun UploadTask.toEntity(): UploadEntity {
         return UploadEntity(
             id = id,
@@ -108,7 +108,8 @@ class UploadRepositoryImpl @Inject constructor(
             thumbnailPath = thumbnailPath,
             duration = duration,
             width = width,
-            height = height
+            height = height,
+            scheduledAt = scheduledAt
         )
     }
 }

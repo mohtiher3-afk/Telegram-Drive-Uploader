@@ -1,19 +1,22 @@
-*.iml
-.gradle
-.kotlin
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
+# Local credentials and machine-specific configuration
 .env
-debug.keystore
-release.keystore
+local.properties
+*.jks
+*.keystore
+
+# Gradle and Android build outputs
+.gradle/
+.kotlin/
+build/
+**/build/
+*.apk
+*.aab
+
+# IDE metadata
+.idea/
+*.iml
+.DS_Store
+
+# Generated native/build intermediates
+.externalNativeBuild/
+.cxx/

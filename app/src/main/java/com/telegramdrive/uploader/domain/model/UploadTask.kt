@@ -23,5 +23,6 @@ data class UploadTask(
     val thumbnailPath: String?,
     val duration: Long,
     val width: Int,
-    val height: Int
+    val height: Int,
+    val scheduledAt: Long? = null
 )

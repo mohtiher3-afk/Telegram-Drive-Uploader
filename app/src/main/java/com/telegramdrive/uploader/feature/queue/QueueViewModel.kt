@@ -2,20 +2,33 @@ package com.telegramdrive.uploader.feature.queue
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.model.UploadStatus
+import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.UploadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+enum class QueueFilter {
+    ALL,
+    ACTIVE,
+    PAUSED,
+    FAILED
+}
+
 data class QueueUiState(
-    val queueItems: List<UploadTask> = emptyList()
+    val queueItems: List<UploadTask> = emptyList(),
+    val selectedFilter: QueueFilter = QueueFilter.ALL,
+    val failedCount: Int = 0,
+    val pausedCount: Int = 0,
+    val activeCount: Int = 0
 )
 
 @HiltViewModel
@@ -24,16 +37,47 @@ class QueueViewModel @Inject constructor(
     private val uploadManager: UploadManager
 ) : ViewModel() {
 
-    val uiState: StateFlow<QueueUiState> = uploadRepository.getAllUploads()
-        .map { uploads ->
-            val pendingItems = uploads.filter { it.status != UploadStatus.COMPLETED && it.status != UploadStatus.CANCELLED }
-            QueueUiState(queueItems = pendingItems)
+    private val selectedFilter = MutableStateFlow(QueueFilter.ALL)
+
+    val uiState: StateFlow<QueueUiState> = combine(
+        uploadRepository.getAllUploads(),
+        selectedFilter
+    ) { uploads, filter ->
+        val pending = uploads.filter {
+            it.status != UploadStatus.COMPLETED && it.status != UploadStatus.CANCELLED
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = QueueUiState()
+        val filtered = when (filter) {
+            QueueFilter.ALL -> pending
+            QueueFilter.ACTIVE -> pending.filter {
+                it.status == UploadStatus.QUEUED ||
+                    it.status == UploadStatus.PREPARING ||
+                    it.status == UploadStatus.UPLOADING ||
+                    it.status == UploadStatus.RETRYING
+            }
+            QueueFilter.PAUSED -> pending.filter { it.status == UploadStatus.PAUSED }
+            QueueFilter.FAILED -> pending.filter { it.status == UploadStatus.FAILED }
+        }
+        QueueUiState(
+            queueItems = filtered,
+            selectedFilter = filter,
+            failedCount = pending.count { it.status == UploadStatus.FAILED },
+            pausedCount = pending.count { it.status == UploadStatus.PAUSED },
+            activeCount = pending.count {
+                it.status == UploadStatus.QUEUED ||
+                    it.status == UploadStatus.PREPARING ||
+                    it.status == UploadStatus.UPLOADING ||
+                    it.status == UploadStatus.RETRYING
+            }
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = QueueUiState()
+    )
+
+    fun selectFilter(filter: QueueFilter) {
+        selectedFilter.value = filter
+    }
 
     fun pauseUpload(id: String) {
         viewModelScope.launch {
@@ -57,6 +101,30 @@ class QueueViewModel @Inject constructor(
                 uploadRepository.updateStatus(id, UploadStatus.RETRYING)
                 uploadManager.retryUpload(it)
             }
+        }
+    }
+
+    fun retryAllFailed() {
+        viewModelScope.launch {
+            uploadRepository.getAllUploads().first()
+                .filter { it.status == UploadStatus.FAILED }
+                .forEach { task ->
+                    uploadRepository.updateStatus(task.id, UploadStatus.RETRYING)
+                    uploadManager.retryUpload(task)
+                }
+        }
+    }
+
+    fun pauseAllActive() {
+        viewModelScope.launch {
+            uploadRepository.getAllUploads().first()
+                .filter {
+                    it.status == UploadStatus.QUEUED ||
+                        it.status == UploadStatus.PREPARING ||
+                        it.status == UploadStatus.UPLOADING ||
+                        it.status == UploadStatus.RETRYING
+                }
+                .forEach { task -> pauseUpload(task.id) }
         }
     }
 

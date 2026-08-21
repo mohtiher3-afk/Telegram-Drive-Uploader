@@ -1,0 +1,11 @@
+# Official TDLib v1.8.66 ARM64 artifact checksums
+# Source commit: 022d60202e446ad1287b9fb68e687c8a0760788b
+
+e3b7b195000787efce458cdf9b1bfa6271c9b18ea23041b03e805b9ae2515654  app/src/main/jniLibs/arm64-v8a/libtdjni.so
+ea37f5c3f2cb894ad14381a22e1c6ca22affbaa25346669ff117e0b489e6eabe  app/src/main/java/org/drinkless/tdlib/Client.java
+e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36  app/src/main/java/org/drinkless/tdlib/Log.java
+8f40a88e7bd379c5362afe8af0fe079c36b7d638f0adf19d024cfbce2ee74e7d  app/src/main/java/org/drinkless/tdlib/TdApi.java
+
+# APK verification
+07ae90143853b78da072b58c8bbfaba866ad119e6b4235e94dfcb57c288d165e  app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
+aea78956e436e632821be1737ee0dec4a126eecaa6dd8f8384bc04008850810a  app/build/outputs/apk/release/app-arm64-v8a-release.apk

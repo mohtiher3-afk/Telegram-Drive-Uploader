@@ -19,7 +19,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +46,8 @@ fun TelegramAuthScreen(
     val error by viewModel.error.collectAsStateWithLifecycle()
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    val qrLoginLink by viewModel.qrLoginLink.collectAsStateWithLifecycle()
+    val clipboardManager = LocalClipboardManager.current
 
     val phoneNumber by viewModel.phoneNumberInput.collectAsStateWithLifecycle()
     val code by viewModel.codeInput.collectAsStateWithLifecycle()
@@ -60,7 +65,7 @@ fun TelegramAuthScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Connect Telegram") },
+                title = { Text(stringResource(com.telegramdrive.uploader.R.string.connect_telegram)) },
                 navigationIcon = {
                     IconButton(
                         onClick = onBackClick,
@@ -68,7 +73,7 @@ fun TelegramAuthScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(com.telegramdrive.uploader.R.string.back)
                         )
                     }
                 }
@@ -102,7 +107,7 @@ fun TelegramAuthScreen(
                         TelegramConnectionState.DISCONNECTED -> {
                             TelegramLogo()
                             Text(
-                                text = "Connect Telegram",
+                                text = stringResource(com.telegramdrive.uploader.R.string.connect_telegram),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
@@ -147,7 +152,7 @@ fun TelegramAuthScreen(
                                 } else {
                                     Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null)
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Connect Telegram")
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.connect_telegram))
                                 }
                             }
                         }
@@ -178,8 +183,8 @@ fun TelegramAuthScreen(
                             OutlinedTextField(
                                 value = phoneNumber,
                                 onValueChange = { viewModel.phoneNumberInput.value = it },
-                                label = { Text("Phone Number") },
-                                placeholder = { Text("+1XXXXXXXXXX") },
+                                label = { Text(stringResource(com.telegramdrive.uploader.R.string.phone_number)) },
+                                placeholder = { Text("+1234567890") },
                                 leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -209,8 +214,18 @@ fun TelegramAuthScreen(
                                         color = MaterialTheme.colorScheme.onPrimary
                                     )
                                 } else {
-                                    Text("Continue")
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.continue_action))
                                 }
+                            }
+
+                            OutlinedButton(
+                                onClick = { viewModel.requestQrCodeLogin() },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("qr_login_button"),
+                                enabled = !isProcessing
+                            ) {
+                                Text(stringResource(com.telegramdrive.uploader.R.string.use_qr))
                             }
                         }
 
@@ -231,7 +246,7 @@ fun TelegramAuthScreen(
                             OutlinedTextField(
                                 value = code,
                                 onValueChange = { viewModel.codeInput.value = it },
-                                label = { Text("Code") },
+                                label = { Text(stringResource(com.telegramdrive.uploader.R.string.code)) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .testTag("code_input"),
@@ -260,7 +275,45 @@ fun TelegramAuthScreen(
                                         color = MaterialTheme.colorScheme.onPrimary
                                     )
                                 } else {
-                                    Text("Continue")
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.continue_action))
+                                }
+                            }
+                        }
+
+                        TelegramConnectionState.WAITING_FOR_QR -> {
+                            Text(
+                                text = "Scan QR code in Telegram",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = "Open Telegram on a device where you are already signed in, go to Settings > Devices > Link Desktop Device, and scan this link.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
+                            qrLoginLink?.let { link ->
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = link,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        modifier = Modifier.padding(12.dp),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                                Button(
+                                    onClick = { clipboardManager.setText(AnnotatedString(link)) },
+                                    modifier = Modifier.fillMaxWidth().testTag("copy_qr_link_button")
+                                ) {
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.copy_qr))
                                 }
                             }
                         }
@@ -279,17 +332,31 @@ fun TelegramAuthScreen(
                                 textAlign = TextAlign.Center
                             )
 
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Enter your Telegram two-step verification password.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    modifier = Modifier.padding(12.dp)
+                                )
+                            }
+
                             OutlinedTextField(
                                 value = password,
                                 onValueChange = { viewModel.passwordInput.value = it },
-                                label = { Text("Password") },
+                                label = { Text(stringResource(com.telegramdrive.uploader.R.string.password)) },
                                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                                 trailingIcon = {
                                     IconButton(onClick = { showPassword = !showPassword }) {
                                         Icon(
                                             imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                            contentDescription = if (showPassword) "Hide password" else "Show password"
+                                            contentDescription = if (showPassword) stringResource(com.telegramdrive.uploader.R.string.hide_password) else stringResource(com.telegramdrive.uploader.R.string.show_password)
                                         )
                                     }
                                 },
@@ -321,7 +388,7 @@ fun TelegramAuthScreen(
                                         color = MaterialTheme.colorScheme.onPrimary
                                     )
                                 } else {
-                                    Text("Continue")
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.continue_action))
                                 }
                             }
                         }
@@ -330,7 +397,7 @@ fun TelegramAuthScreen(
                             // Handled locally or transitioning
                             if (state == TelegramConnectionState.CLOSING) {
                                 CircularProgressIndicator(modifier = Modifier.size(48.dp))
-                                Text("Logging out safely...")
+                                Text(stringResource(com.telegramdrive.uploader.R.string.logging_out))
                             } else {
                                 Text(
                                     text = "Authentication Error",
@@ -346,6 +413,18 @@ fun TelegramAuthScreen(
                                     modifier = Modifier.testTag("error_text")
                                 )
 
+                                if (error is TelegramError.AppUpdateRequired) {
+                                    OutlinedButton(
+                                        onClick = { viewModel.requestQrCodeLogin() },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .testTag("qr_login_recovery_button"),
+                                        enabled = !isProcessing
+                                    ) {
+                                        Text(stringResource(com.telegramdrive.uploader.R.string.continue_qr))
+                                    }
+                                }
+
                                 Button(
                                     onClick = { viewModel.connect() },
                                     modifier = Modifier
@@ -353,13 +432,13 @@ fun TelegramAuthScreen(
                                         .height(50.dp)
                                         .testTag("retry_connect_button")
                                 ) {
-                                    Text("Retry Connection")
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.retry_connection))
                                 }
                             }
                         }
 
                         TelegramConnectionState.AUTHORIZED -> {
-                            Text("Authorized Successfully!")
+                            Text(stringResource(com.telegramdrive.uploader.R.string.authorized_success))
                         }
                     }
                 }
@@ -370,7 +449,7 @@ fun TelegramAuthScreen(
                 Snackbar(
                     action = {
                         TextButton(onClick = { viewModel.clearError() }) {
-                            Text("Dismiss", color = MaterialTheme.colorScheme.inversePrimary)
+                            Text(stringResource(com.telegramdrive.uploader.R.string.dismiss), color = MaterialTheme.colorScheme.inversePrimary)
                         }
                     },
                     modifier = Modifier
