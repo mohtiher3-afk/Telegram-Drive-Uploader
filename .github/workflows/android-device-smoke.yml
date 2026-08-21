@@ -26,7 +26,7 @@ env:
 jobs:
   tdlib-device-smoke:
     name: TDLib JNI smoke test on Android emulator
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 35
 
     steps:
@@ -75,6 +75,12 @@ jobs:
             :app:assembleDebug \
             :app:assembleDebugAndroidTest
 
+      - name: Enable KVM acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Run TDLib smoke test on cloud emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -82,7 +88,7 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_2
-          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+          emulator-options: -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -camera-back none
           disable-animations: true
           script: |
             set -euo pipefail
