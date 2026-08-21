@@ -54,6 +54,16 @@ jobs:
         run: |
           printf 'TELEGRAM_API_ID=0\n' > .env
           printf 'TELEGRAM_API_HASH=placeholder_hash\n' >> .env
+          keytool -genkeypair \
+            -keystore debug.keystore \
+            -storepass android \
+            -keypass android \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US" \
+            -noprompt
 
       - name: Verify official TDLib artifacts
         run: ./scripts/check-tdlib-artifacts.sh
