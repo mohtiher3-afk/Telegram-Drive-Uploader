@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Official TDLib Java/JNI bindings use class and method names during JNI registration.
+# Keep the complete generated API unchanged in minified builds.
+-keep class org.drinkless.tdlib.** { *; }
+-keepnames class org.drinkless.tdlib.**
+-keepclassmembers class org.drinkless.tdlib.** {
+    native <methods>;
+}
+-keepattributes *Annotation*, InnerClasses, EnclosingMethod
