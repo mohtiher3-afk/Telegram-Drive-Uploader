@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telegramdrive.uploader.core.datastore.SettingsDataStore
+import com.telegramdrive.uploader.core.network.DualWifiController
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
@@ -28,13 +29,16 @@ data class SettingsUiState(
     val theme: String = "System",
     val cacheSize: String = "0 B",
     val telegramConnectionState: TelegramConnectionState = TelegramConnectionState.DISCONNECTED,
-    val telegramUser: TelegramUser? = null
+    val telegramUser: TelegramUser? = null,
+    val wifiNetworkCount: Int = 0,
+    val concurrentWifiSupported: Boolean = false
 )
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsDataStore: SettingsDataStore,
     private val telegramRepository: TelegramRepository,
+    private val dualWifiController: DualWifiController,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -48,13 +52,16 @@ class SettingsViewModel @Inject constructor(
         settingsDataStore.themePreference,
         _cacheSizeFlow,
         telegramRepository.connectionState,
-        telegramRepository.currentUser
-    ) { theme, cacheSize, connState, tgUser ->
+        telegramRepository.currentUser,
+        dualWifiController.availableWifiNetworks
+    ) { theme, cacheSize, connState, tgUser, wifiNetworks ->
         SettingsUiState(
             theme = theme,
             cacheSize = cacheSize,
             telegramConnectionState = connState,
-            telegramUser = tgUser
+            telegramUser = tgUser,
+            wifiNetworkCount = wifiNetworks.size,
+            concurrentWifiSupported = dualWifiController.supportsConcurrentWifi()
         )
     }
     .stateIn(

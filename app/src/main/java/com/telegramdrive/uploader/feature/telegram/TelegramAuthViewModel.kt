@@ -22,6 +22,7 @@ class TelegramAuthViewModel @Inject constructor(
     val connectionState: StateFlow<TelegramConnectionState> = telegramRepository.connectionState
     val currentUser: StateFlow<TelegramUser?> = telegramRepository.currentUser
     val error: StateFlow<TelegramError?> = telegramRepository.error
+    val qrLoginLink: StateFlow<String?> = telegramRepository.qrLoginLink
 
     val isConfigured: Boolean = telegramRepository.isConfigured
 
@@ -64,6 +65,14 @@ class TelegramAuthViewModel @Inject constructor(
         viewModelScope.launch {
             _isProcessing.value = true
             telegramRepository.sendPassword(password)
+            _isProcessing.value = false
+        }
+    }
+
+    fun requestQrCodeLogin() {
+        viewModelScope.launch {
+            _isProcessing.value = true
+            telegramRepository.requestQrCodeLogin()
             _isProcessing.value = false
         }
     }

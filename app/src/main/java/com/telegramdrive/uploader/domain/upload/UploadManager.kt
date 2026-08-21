@@ -5,6 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface UploadManager {
     fun enqueueUpload(task: UploadTask)
+    fun enqueueUpload(task: UploadTask, delayMs: Long) {
+        enqueueUpload(task)
+    }
     fun pauseUpload(id: String)
     fun resumeUpload(task: UploadTask)
     fun cancelUpload(id: String)

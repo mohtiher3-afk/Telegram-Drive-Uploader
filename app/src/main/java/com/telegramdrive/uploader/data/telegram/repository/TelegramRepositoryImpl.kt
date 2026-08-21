@@ -19,6 +19,7 @@ class TelegramRepositoryImpl @Inject constructor(
     override val connectionState: StateFlow<TelegramConnectionState> = telegramClient.connectionState
     override val currentUser: StateFlow<TelegramUser?> = telegramClient.currentUser
     override val error: StateFlow<TelegramError?> = telegramClient.error
+    override val qrLoginLink: StateFlow<String?> = telegramClient.qrLoginLink
     
     override val isConfigured: Boolean
         get() = telegramClient.isConfigured
@@ -27,6 +28,7 @@ class TelegramRepositoryImpl @Inject constructor(
     override suspend fun sendPhoneNumber(phoneNumber: String) = telegramClient.sendPhoneNumber(phoneNumber)
     override suspend fun sendCode(code: String) = telegramClient.sendCode(code)
     override suspend fun sendPassword(password: String) = telegramClient.sendPassword(password)
+    override suspend fun requestQrCodeLogin() = telegramClient.requestQrCodeLogin()
     override suspend fun logout() = telegramClient.logout()
     override fun clearError() = telegramClient.clearError()
     

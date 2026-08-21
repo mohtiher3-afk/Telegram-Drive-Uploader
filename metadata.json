@@ -1,7 +1,0 @@
-{
-  "name": "Telegram Drive Uploader",
-  "description": "High-speed multi-part resumable video cloud uploader for Telegram storage with queue management and real-time telemetry",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
-

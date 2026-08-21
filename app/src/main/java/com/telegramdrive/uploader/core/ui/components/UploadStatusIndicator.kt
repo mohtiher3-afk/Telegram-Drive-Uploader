@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
@@ -71,21 +72,21 @@ fun UploadStatusIndicator(
                         UploadStatus.RETRYING -> {
                             onPauseClick?.let {
                                 TextButton(onClick = it) {
-                                    Text("Pause")
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.pause))
                                 }
                             }
                         }
                         UploadStatus.PAUSED -> {
                             onResumeClick?.let {
                                 TextButton(onClick = it) {
-                                    Text("Resume")
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.resume))
                                 }
                             }
                         }
                         UploadStatus.FAILED -> {
                             onRetryClick?.let {
                                 TextButton(onClick = it) {
-                                    Text("Retry")
+                                    Text(stringResource(com.telegramdrive.uploader.R.string.retry))
                                 }
                             }
                         }
@@ -98,7 +99,7 @@ fun UploadStatusIndicator(
                                 onClick = it,
                                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                             ) {
-                                Text("Cancel")
+                                Text(stringResource(com.telegramdrive.uploader.R.string.cancel))
                             }
                         }
                     }

@@ -11,6 +11,7 @@ interface TelegramRepository {
     val connectionState: StateFlow<TelegramConnectionState>
     val currentUser: StateFlow<TelegramUser?>
     val error: StateFlow<TelegramError?>
+    val qrLoginLink: StateFlow<String?>
     
     // Check if configuration uses placeholders or is fully configured
     val isConfigured: Boolean
@@ -19,6 +20,7 @@ interface TelegramRepository {
     suspend fun sendPhoneNumber(phoneNumber: String)
     suspend fun sendCode(code: String)
     suspend fun sendPassword(password: String)
+    suspend fun requestQrCodeLogin()
     suspend fun logout()
     fun clearError()
     

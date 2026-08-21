@@ -1,38 +1,61 @@
-# TDLib Artifact Manifest & Gap Analysis
+# TDLib Android Artifact Manifest
 
 ## 1. Upstream Source Information
-- **Repository**: https://github.com/tdlib/td
-- **Tag**: `v1.8.0`
-- **Pinned Commit**: `b3ab664a18f8611f4dfcd3054717504271eeaa7a`
-- **Target Java Package**: `org.drinkless.tdlib`
-- **Native JNI Library**: `libtdjni.so`
-- **Build Toolchain**: Android NDK `26.3.11579264`, Android API `21`, CMake `3.22.1`, OpenSSL `1.1.1w`
 
-## 2. Java Binding Status
-The Java bindings in `app/src/main/java/org/drinkless/tdlib/` are present, complete, and matched to TDLib v1.8.0.
+| Field | Value |
+|---|---|
+| Repository | https://github.com/tdlib/td |
+| Version | `v1.8.66` |
+| Pinned source commit | `022d60202e446ad1287b9fb68e687c8a0760788b` |
+| Target interface | Official Java / Android JNI (`org.drinkless.tdlib`) |
+| Android ABI | `arm64-v8a` / AArch64 |
+| Android platform | API 24 |
+| Android NDK | `26.3.11579264` |
+| CMake | `3.22.1` |
+| OpenSSL | `3.0.16` |
+| Zlib | `1.3.1` |
 
-| Java Source File | Relative Path | Size | Status | SHA-256 |
-|---|---|---:|---|---|
-| Client binding | `app/src/main/java/org/drinkless/tdlib/Client.java` | 8,725 bytes | ✅ PRESENT | `7bcd825fb59b0438478446f4624513078943d73147b5375f215dc10948a87f2e` |
-| Log binding | `app/src/main/java/org/drinkless/tdlib/Log.java` | 3,401 bytes | ✅ PRESENT | `e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36` |
-| TdApi binding | `app/src/main/java/org/drinkless/tdlib/TdApi.java` | 744,333 bytes | ✅ PRESENT | `bafe9c04ae3ce46f65ec160da4d07d955aeae28ac7122c78175ee351561b42fd` |
+The source was generated and built from the official TDLib repository. No mock, stub, or fabricated native implementation is included. The Java bindings and `libtdjni.so` were generated from the same source revision.
 
-### JNI Native Method Signatures in `Client.java`
-- `createNativeClient() -> int`
-- `nativeClientSend(int nativeClientId, long eventId, TdApi.Function function) -> void`
-- `nativeClientReceive(int[] clientIds, long[] eventIds, TdApi.Object[] events, double timeout) -> int`
-- `nativeClientExecute(TdApi.Function function) -> TdApi.Object`
+## 2. Target Architecture
 
-## 3. Native JNI Runtime Status (`libtdjni.so`)
-The native C++ TDLib library (`libtdjni.so`) compiled for target Android ABIs is currently **MISSING** from the workspace.
+The Android project is intentionally packaged for **ARM64 only**. This prevents mixing the new v1.8.66 native library with stale v1.8.0 libraries for other ABIs and reduces the APK footprint relative to a universal package.
 
-| Target ABI | Expected Relative Path | Library Name | Status | Expected SHA-256 (Reference) |
-|---|---|---|---|---|
-| `arm64-v8a` | `app/src/main/jniLibs/arm64-v8a/libtdjni.so` | `libtdjni.so` | ❌ MISSING | `4de55947ab2d204d5c1bfebf857457f81d8115acd8cef5c82ec23eda2a29aea8` |
-| `armeabi-v7a` | `app/src/main/jniLibs/armeabi-v7a/libtdjni.so` | `libtdjni.so` | ❌ MISSING | `372bfd30b1bdb2ad47632336235d7f8fa23516de066716847be92f768eb65e36` |
-| `x86_64` | `app/src/main/jniLibs/x86_64/libtdjni.so` | `libtdjni.so` | ❌ MISSING | `3ea8b9459afb18af3df174d305640afed7d4bbc695d2d440d36b3db10e79dde0` |
+## 3. Artifact Verification Table
 
-## 4. Current Gap Analysis Summary
-- **JAVA_BINDINGS_PRESENT**: `true`
-- **NATIVE_TDLIB_PRESENT**: `false`
-- **RUNTIME_STATUS**: `UNAVAILABLE` (Production UI gracefully displays runtime unavailable status without fallback fakes).
+| Artifact | Relative path | Size | Status |
+|---|---|---:|---|
+| ARM64 JNI | `app/src/main/jniLibs/arm64-v8a/libtdjni.so` | 58,944,152 bytes | PASS; stripped ELF AArch64 |
+| Client binding | `app/src/main/java/org/drinkless/tdlib/Client.java` | 11,015 bytes | PASS |
+| Log binding | `app/src/main/java/org/drinkless/tdlib/Log.java` | 3,401 bytes | PASS |
+| TdApi binding | `app/src/main/java/org/drinkless/tdlib/TdApi.java` | 1,757,224 bytes | PASS |
+
+The mandatory checker reports `TDLIB_ARTIFACTS_PRESENT=true`, verifies the ELF header, and rejects a non-AArch64 ARM64 artifact. Missing native libraries remain a hard failure at build/runtime integration boundaries.
+
+## 4. SHA-256 Checksums
+
+```text
+e3b7b195000787efce458cdf9b1bfa6271c9b18ea23041b03e805b9ae2515654  app/src/main/jniLibs/arm64-v8a/libtdjni.so
+ea37f5c3f2cb894ad14381a22e1c6ca22affbaa25346669ff117e0b489e6eabe  app/src/main/java/org/drinkless/tdlib/Client.java
+e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36  app/src/main/java/org/drinkless/tdlib/Log.java
+8f40a88e7bd379c5362afe8af0fe079c36b7d638f0adf19d024cfbce2ee74e7d  app/src/main/java/org/drinkless/tdlib/TdApi.java
+```
+
+## 5. Android Build Verification
+
+| Check | Result |
+|---|---|
+| Artifact checker | PASS; `TDLIB_ARTIFACTS_PRESENT=true` |
+| Kotlin compilation | PASS |
+| Java compilation | PASS |
+| Unit tests | PASS |
+| ARM64 debug APK | PASS |
+| Debug APK path | `app/build/outputs/apk/debug/app-arm64-v8a-debug.apk` |
+| Debug APK size | 44,441,943 bytes |
+| Debug APK SHA-256 | `07ae90143853b78da072b58c8bbfaba866ad119e6b4235e94dfcb57c288d165e` |
+| Release APK path | `app/build/outputs/apk/release/app-arm64-v8a-release.apk` |
+| Release APK size | 21,550,668 bytes |
+| Release APK SHA-256 | `aea78956e436e632821be1737ee0dec4a126eecaa6dd8f8384bc04008850810a` |
+| APK native entry | `lib/arm64-v8a/libtdjni.so` |
+
+The native library was stripped with the Android NDK `llvm-strip --strip-debug --strip-unneeded` operation. Its ELF type, AArch64 machine, Android dependencies, and `JNI_OnLoad` entry point were revalidated after stripping. This removes debug/unneeded symbols without changing the official TDLib implementation. Physical-device authentication still requires testing on an ARM64 Android device with valid Telegram API credentials and network access.

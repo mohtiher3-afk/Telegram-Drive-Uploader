@@ -1,90 +1,85 @@
 #!/usr/bin/env bash
 set -e
 
-echo "=== TDLib Android Artifact Integrity & Completeness Check ==="
+echo "=== TDLib v1.8.66 Android Artifact Integrity & Completeness Check ==="
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 JNI_DIR="$PROJECT_ROOT/app/src/main/jniLibs"
 JAVA_BINDING_DIR="$PROJECT_ROOT/app/src/main/java/org/drinkless/tdlib"
 MANIFEST_FILE="$PROJECT_ROOT/docs/TDLIB_ARTIFACT_MANIFEST.md"
 
-JAVA_BINDINGS_PRESENT=false
-NATIVE_TDLIB_PRESENT=false
+MISSING_COUNT=0
+
+check_file() {
+    local file_path="$1"
+    local min_size_bytes="$2"
+    local desc="$3"
+
+    if [ ! -f "$file_path" ]; then
+        echo "❌ [MISSING] $desc: $file_path"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
+    else
+        local actual_size
+        actual_size=$(wc -c < "$file_path")
+        if [ "$actual_size" -lt "$min_size_bytes" ]; then
+            echo "⚠️ [INVALID SIZE] $desc is too small ($actual_size bytes < $min_size_bytes bytes): $file_path"
+            MISSING_COUNT=$((MISSING_COUNT + 1))
+        else
+            # Check if native library has valid ELF magic bytes (7f 45 4c 46)
+            if [[ "$file_path" == *.so ]]; then
+                if command -v readelf >/dev/null 2>&1; then
+                    if ! readelf -h "$file_path" >/dev/null 2>&1; then
+                        echo "⚠️ [CORRUPT ELF] $desc failed readelf verification: $file_path"
+                        MISSING_COUNT=$((MISSING_COUNT + 1))
+                        return
+                    fi
+                elif command -v file >/dev/null 2>&1; then
+                    if ! file "$file_path" | grep -iq "ELF"; then
+                        echo "⚠️ [INVALID ELF] $desc is not an ELF binary: $file_path"
+                        MISSING_COUNT=$((MISSING_COUNT + 1))
+                        return
+                    fi
+                fi
+            fi
+            echo "✅ [FOUND & VALID] $desc ($actual_size bytes)"
+        fi
+    fi
+}
 
 echo "1. Checking Artifact Manifest..."
 if [ -f "$MANIFEST_FILE" ]; then
     echo "✅ [FOUND] Manifest: $MANIFEST_FILE"
 else
     echo "❌ [MISSING] Manifest: $MANIFEST_FILE"
+    MISSING_COUNT=$((MISSING_COUNT + 1))
 fi
 
 echo ""
-echo "2. Checking TDLib Java/JNI Source Bindings..."
-JAVA_OK=true
-for java_file in Client.java TdApi.java Log.java; do
-    target="$JAVA_BINDING_DIR/$java_file"
-    if [ -s "$target" ]; then
-        echo "✅ [FOUND] Java Binding: $target ($(wc -c < "$target") bytes)"
+echo "2. Checking Native JNI Libraries (.so)..."
+check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v1.8.66 arm64-v8a Native Library"
+if command -v readelf >/dev/null 2>&1 && [ -f "$JNI_DIR/arm64-v8a/libtdjni.so" ]; then
+    machine=$(readelf -h "$JNI_DIR/arm64-v8a/libtdjni.so" | awk -F: '/Machine:/ {gsub(/^ +/, "", $2); print $2}')
+    if [[ "$machine" != *"AArch64"* ]]; then
+        echo "⚠️ [WRONG ARCHITECTURE] Expected AArch64, found: $machine"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
     else
-        echo "❌ [MISSING/EMPTY] Java Binding: $target"
-        JAVA_OK=false
+        echo "✅ [ARCHITECTURE] arm64-v8a is AArch64"
     fi
-done
-
-if [ "$JAVA_OK" = true ]; then
-    JAVA_BINDINGS_PRESENT=true
 fi
 
 echo ""
-echo "3. Checking Native JNI Libraries (.so)..."
-NATIVE_OK=true
-for abi in arm64-v8a armeabi-v7a x86_64; do
-    so_file="$JNI_DIR/$abi/libtdjni.so"
-    if [ ! -f "$so_file" ]; then
-        echo "❌ [MISSING] Native Library ($abi): $so_file"
-        NATIVE_OK=false
-    elif [ ! -s "$so_file" ]; then
-        echo "⚠️ [EMPTY] Native Library ($abi): $so_file (0 bytes)"
-        NATIVE_OK=false
-    else
-        # Structural ELF verification
-        if command -v readelf >/dev/null 2>&1; then
-            if readelf -h "$so_file" >/dev/null 2>&1; then
-                echo "✅ [FOUND & VALID ELF] Native Library ($abi): $so_file ($(wc -c < "$so_file") bytes)"
-            else
-                echo "⚠️ [CORRUPT ELF] Native Library ($abi) failed readelf verification: $so_file"
-                NATIVE_OK=false
-            fi
-        elif command -v file >/dev/null 2>&1; then
-            if file "$so_file" | grep -iq "ELF"; then
-                echo "✅ [FOUND & VALID ELF] Native Library ($abi): $so_file ($(wc -c < "$so_file") bytes)"
-            else
-                echo "⚠️ [INVALID ELF] Native Library ($abi) is not an ELF binary: $so_file"
-                NATIVE_OK=false
-            fi
-        else
-            echo "✅ [FOUND] Native Library ($abi): $so_file ($(wc -c < "$so_file") bytes)"
-        fi
-    fi
-done
-
-if [ "$NATIVE_OK" = true ]; then
-    NATIVE_TDLIB_PRESENT=true
-fi
+echo "3. Checking TDLib Java/JNI Source Bindings..."
+check_file "$JAVA_BINDING_DIR/Client.java" 1000 "TDLib Java Client Binding"
+check_file "$JAVA_BINDING_DIR/TdApi.java" 1500000 "TDLib v1.8.66 TdApi Bindings"
 
 echo ""
-echo "=== SUMMARY ==="
-echo "JAVA_BINDINGS_PRESENT=$JAVA_BINDINGS_PRESENT"
-echo "NATIVE_TDLIB_PRESENT=$NATIVE_TDLIB_PRESENT"
-
-if [ "$JAVA_BINDINGS_PRESENT" = true ] && [ "$NATIVE_TDLIB_PRESENT" = true ]; then
-    echo "STATUS: TDLIB_ARTIFACTS_PRESENT=true"
-    echo "🎉 All required TDLib Android artifacts verified successfully!"
-    exit 0
-else
+if [ "$MISSING_COUNT" -gt 0 ]; then
     echo "STATUS: TDLIB_ARTIFACTS_PRESENT=false"
-    if [ "$JAVA_BINDINGS_PRESENT" = true ] && [ "$NATIVE_TDLIB_PRESENT" = false ]; then
-        echo "⚠️ Gap Analysis: Java bindings present, but native TDLib binaries (libtdjni.so) are MISSING."
-    fi
+    echo "❌ TDLib Artifact Check FAILED: $MISSING_COUNT required artifact(s) missing or incomplete."
+    echo "Please compile TDLib externally as described in docs/TDLIB_ANDROID_BUILD.md and place the resulting artifacts in the project."
     exit 1
+else
+    echo "STATUS: TDLIB_ARTIFACTS_PRESENT=true"
+    echo "🎉 All required official TDLib v1.8.66 ARM64 artifacts verified successfully!"
+    exit 0
 fi

@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -33,15 +34,13 @@ fun TelegramDestinationScreen(
 ) {
     val connectionState by viewModel.connectionState.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val selectedFilter by viewModel.selectedFilter.collectAsStateWithLifecycle()
     val destinations by viewModel.destinations.collectAsStateWithLifecycle()
     val selectedDestination by viewModel.selectedDestination.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Select Destination") },
+                title = { Text(stringResource(com.telegramdrive.uploader.R.string.select_destination)) },
                 navigationIcon = {
                     IconButton(
                         onClick = onBackClick,
@@ -49,21 +48,8 @@ fun TelegramDestinationScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(com.telegramdrive.uploader.R.string.back)
                         )
-                    }
-                },
-                actions = {
-                    if (connectionState == TelegramConnectionState.AUTHORIZED) {
-                        IconButton(
-                            onClick = { viewModel.refresh() },
-                            modifier = Modifier.testTag("destination_refresh_button")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Refresh destinations"
-                            )
-                        }
                     }
                 }
             )
@@ -76,7 +62,7 @@ fun TelegramDestinationScreen(
                 .padding(innerPadding)
                 .imePadding()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (connectionState != TelegramConnectionState.AUTHORIZED) {
                 // Not authenticated fallback
@@ -112,12 +98,12 @@ fun TelegramDestinationScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { viewModel.onSearchQueryChanged(it) },
-                    placeholder = { Text("Search chats, channels, groups...") },
+                    placeholder = { Text(stringResource(com.telegramdrive.uploader.R.string.search_destinations)) },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     trailingIcon = {
                         if (searchQuery.isNotEmpty()) {
                             IconButton(onClick = { viewModel.onSearchQueryChanged("") }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear search")
+                                Icon(Icons.Default.Clear, contentDescription = stringResource(com.telegramdrive.uploader.R.string.clear_search))
                             }
                         }
                     },
@@ -126,39 +112,6 @@ fun TelegramDestinationScreen(
                         .testTag("destination_search_input"),
                     singleLine = true
                 )
-
-                // Category Filter Chips
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    FilterChip(
-                        selected = selectedFilter == DestinationFilter.ALL,
-                        onClick = { viewModel.setFilter(DestinationFilter.ALL) },
-                        label = { Text("All") },
-                        modifier = Modifier.testTag("filter_all")
-                    )
-                    FilterChip(
-                        selected = selectedFilter == DestinationFilter.SAVED_MESSAGES,
-                        onClick = { viewModel.setFilter(DestinationFilter.SAVED_MESSAGES) },
-                        label = { Text("Saved") },
-                        modifier = Modifier.testTag("filter_saved")
-                    )
-                    FilterChip(
-                        selected = selectedFilter == DestinationFilter.CHANNELS,
-                        onClick = { viewModel.setFilter(DestinationFilter.CHANNELS) },
-                        label = { Text("Channels") },
-                        modifier = Modifier.testTag("filter_channels")
-                    )
-                    FilterChip(
-                        selected = selectedFilter == DestinationFilter.GROUPS,
-                        onClick = { viewModel.setFilter(DestinationFilter.GROUPS) },
-                        label = { Text("Groups") },
-                        modifier = Modifier.testTag("filter_groups")
-                    )
-                }
 
                 // Selected Destination Banner
                 selectedDestination?.let { dest ->
@@ -177,7 +130,7 @@ fun TelegramDestinationScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(modifier = Modifier.weight(1f)) {
+                            Column {
                                 Text(
                                     text = "Target Destination",
                                     style = MaterialTheme.typography.labelSmall,
@@ -202,7 +155,7 @@ fun TelegramDestinationScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "Remove selection",
+                                    contentDescription = stringResource(com.telegramdrive.uploader.R.string.remove_selection),
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
@@ -210,24 +163,12 @@ fun TelegramDestinationScreen(
                     }
                 }
 
-                // Destination List Header & Loader
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Eligible Targets (${destinations.size})",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp
-                        )
-                    }
-                }
+                // Destination List
+                Text(
+                    text = "Eligible Targets",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
 
                 if (destinations.isEmpty()) {
                     Box(
@@ -237,7 +178,7 @@ fun TelegramDestinationScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = if (isLoading) "Loading destinations..." else "No matching destinations found.",
+                            text = "No destinations found.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -254,11 +195,7 @@ fun TelegramDestinationScreen(
                             DestinationRow(
                                 destination = dest,
                                 isSelected = selectedDestination?.id == dest.id,
-                                onClick = {
-                                    if (dest.canSendMessages) {
-                                        viewModel.selectDestination(dest)
-                                    }
-                                }
+                                onClick = { viewModel.selectDestination(dest) }
                             )
                         }
                     }
@@ -275,7 +212,7 @@ fun TelegramDestinationScreen(
                         .testTag("confirm_destination_button"),
                     enabled = selectedDestination != null
                 ) {
-                    Text("Confirm Destination Selection")
+                    Text(stringResource(com.telegramdrive.uploader.R.string.confirm_destination))
                 }
             }
         }
@@ -296,27 +233,17 @@ fun DestinationRow(
         TelegramDestinationType.OTHER -> Icons.Default.Folder
     }
 
-    val typeLabel = when (destination.type) {
-        TelegramDestinationType.USER -> if (destination.title == "Saved Messages") "Cloud Storage" else "Private Chat"
-        TelegramDestinationType.CHANNEL -> "Channel"
-        TelegramDestinationType.GROUP -> "Group"
-        TelegramDestinationType.SUPERGROUP -> "Supergroup"
-        TelegramDestinationType.OTHER -> "Chat"
-    }
-
     Card(
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
                 MaterialTheme.colorScheme.secondaryContainer
-            } else if (!destination.canSendMessages) {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
             } else {
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             }
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = destination.canSendMessages, onClick = onClick)
+            .clickable(onClick = onClick)
             .testTag("destination_item_${destination.id}")
     ) {
         Row(
@@ -337,34 +264,20 @@ fun DestinationRow(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = if (destination.canSendMessages) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = destination.title,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                destination.username?.let {
                     Text(
-                        text = destination.title,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = if (destination.canSendMessages) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "• $typeLabel",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                if (!destination.canSendMessages) {
-                    Text(
-                        text = "Read only (Cannot send files)",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                } else if (destination.username != null) {
-                    Text(
-                        text = "@${destination.username}",
+                        text = "@$it",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -373,7 +286,7 @@ fun DestinationRow(
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Selected",
+                    contentDescription = stringResource(com.telegramdrive.uploader.R.string.selected),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )

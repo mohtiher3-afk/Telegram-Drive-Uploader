@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.telegramdrive.uploader.core.ai.SmartFileAssistant
+import com.telegramdrive.uploader.core.ai.SmartFileSuggestion
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
@@ -46,6 +48,10 @@ class UploadViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<UploadUiState>(UploadUiState.Idle)
     val uiState: StateFlow<UploadUiState> = _uiState.asStateFlow()
+    private val _scheduledAt = MutableStateFlow<Long?>(null)
+    val scheduledAt: StateFlow<Long?> = _scheduledAt.asStateFlow()
+    private val _smartSuggestions = MutableStateFlow<Map<String, SmartFileSuggestion>>(emptyMap())
+    val smartSuggestions: StateFlow<Map<String, SmartFileSuggestion>> = _smartSuggestions.asStateFlow()
 
     val selectedDestination: StateFlow<TelegramDestination?> = _uiState.map {
         if (it is UploadUiState.Success) it.selectedDestination else null
@@ -56,6 +62,10 @@ class UploadViewModel @Inject constructor(
 
     fun onDestinationSelected(destination: TelegramDestination) {
         selectDestination(destination)
+    }
+
+    fun setScheduledAt(timestamp: Long?) {
+        _scheduledAt.value = timestamp
     }
 
     fun setPrepareUris(uris: List<Uri>) {
@@ -79,6 +89,7 @@ class UploadViewModel @Inject constructor(
                         )
                     }
                 }
+                _smartSuggestions.value = _preparedList.associate { it.id to SmartFileAssistant.suggest(it) }
                 _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination)
             } catch (e: Exception) {
                 _uiState.value = UploadUiState.Error(e.message ?: "Failed to extract metadata")
@@ -93,6 +104,23 @@ class UploadViewModel @Inject constructor(
         }
     }
 
+    fun applySmartSuggestion(taskId: String) {
+        val suggestion = _smartSuggestions.value[taskId] ?: return
+        val index = _preparedList.indexOfFirst { it.id == taskId }
+        if (index < 0) return
+        _preparedList[index] = _preparedList[index].copy(fileName = suggestion.suggestedName)
+        _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination)
+    }
+
+    fun applyAllSmartSuggestions() {
+        _preparedList.indices.forEach { index ->
+            _smartSuggestions.value[_preparedList[index].id]?.let { suggestion ->
+                _preparedList[index] = _preparedList[index].copy(fileName = suggestion.suggestedName)
+            }
+        }
+        _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination)
+    }
+
     fun selectDestination(destination: TelegramDestination) {
         _selectedDestination = destination
         val current = _uiState.value
@@ -103,6 +131,7 @@ class UploadViewModel @Inject constructor(
 
     fun removePreparedVideo(video: UploadTask) {
         _preparedList.removeAll { it.id == video.id }
+        _smartSuggestions.value = _smartSuggestions.value - video.id
         _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination)
     }
 
@@ -116,8 +145,12 @@ class UploadViewModel @Inject constructor(
                         it.copy(destinationId = destination.id)
                     }
                     tasksToInsert.forEach { 
-                        uploadRepository.insertUpload(it)
-                        uploadManager.enqueueUpload(it)
+                        val scheduledTask = it.copy(scheduledAt = _scheduledAt.value)
+                        uploadRepository.insertUpload(scheduledTask)
+                        val delayMs = _scheduledAt.value?.let { timestamp ->
+                            (timestamp - System.currentTimeMillis()).coerceAtLeast(0L)
+                        } ?: 0L
+                        uploadManager.enqueueUpload(scheduledTask, delayMs)
                         DiagnosticsManager.log(
                             category = DiagnosticCategory.UPLOAD_CREATED,
                             severity = DiagnosticSeverity.INFO,
@@ -127,7 +160,9 @@ class UploadViewModel @Inject constructor(
                     }
                     
                     _preparedList.clear()
+                    _smartSuggestions.value = emptyMap()
                     _selectedDestination = null
+                    _scheduledAt.value = null
                     _uiState.value = UploadUiState.Idle
                     onComplete()
                 } catch (e: Exception) {

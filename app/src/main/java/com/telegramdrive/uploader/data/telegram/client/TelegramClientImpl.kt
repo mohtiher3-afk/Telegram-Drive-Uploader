@@ -1,6 +1,7 @@
 package com.telegramdrive.uploader.data.telegram.client
 
 import android.content.Context
+import android.os.Build
 import com.telegramdrive.uploader.BuildConfig
 import com.telegramdrive.uploader.core.datastore.SettingsDataStore
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
@@ -20,271 +21,137 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.drinkless.tdlib.Client
 import org.drinkless.tdlib.TdApi
+import java.io.File
+import java.util.Locale
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TelegramClientImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val settingsDataStore: SettingsDataStore
+    private val settingsDataStore: SettingsDataStore,
+    @ApplicationContext private val context: Context
 ) : TelegramClient {
-
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-
+    private val clientScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val clientLock = Any()
     private val _connectionState = MutableStateFlow(TelegramConnectionState.DISCONNECTED)
-    override val connectionState: StateFlow<TelegramConnectionState> = _connectionState.asStateFlow()
-
     private val _currentUser = MutableStateFlow<TelegramUser?>(null)
-    override val currentUser: StateFlow<TelegramUser?> = _currentUser.asStateFlow()
-
     private val _error = MutableStateFlow<TelegramError?>(null)
+    private val _qrLoginLink = MutableStateFlow<String?>(null)
+    private val chatLock = Any()
+    private val chats = LinkedHashMap<Long, TdApi.Chat>()
+    private val _chatDestinations = MutableStateFlow<List<TelegramDestination>>(emptyList())
+    private val chatsRequested = AtomicBoolean(false)
+    private var tdClient: Client? = null
+
+    override val connectionState: StateFlow<TelegramConnectionState> = _connectionState.asStateFlow()
+    override val currentUser: StateFlow<TelegramUser?> = _currentUser.asStateFlow()
     override val error: StateFlow<TelegramError?> = _error.asStateFlow()
+    override val qrLoginLink: StateFlow<String?> = _qrLoginLink.asStateFlow()
 
     override val isConfigured: Boolean
-        get() = try {
-            BuildConfig.TELEGRAM_API_ID.toIntOrNull() != null && BuildConfig.TELEGRAM_API_HASH.isNotBlank()
-        } catch (_: Exception) {
-            false
-        }
-
-    private var tdLibClient: TdLibClient? = null
-
-    init {
-        scope.launch {
-            val savedUserStr = settingsDataStore.telegramUser.first()
-            if (savedUserStr != null) {
-                val parts = savedUserStr.split("|")
-                if (parts.size >= 5) {
-                    val id = parts[0].toLongOrNull() ?: 0L
-                    _currentUser.value = TelegramUser(
-                        id = id,
-                        firstName = parts[1],
-                        lastName = parts[2].ifEmpty { null },
-                        username = parts[3].ifEmpty { null },
-                        phoneNumber = parts[4],
-                        profilePhoto = null
-                    )
-                }
-            }
-        }
-    }
+        get() = BuildConfig.TELEGRAM_API_ID.toIntOrNull()?.let { it > 0 } == true &&
+            BuildConfig.TELEGRAM_API_HASH.isNotBlank() &&
+            BuildConfig.TELEGRAM_API_HASH != "placeholder_hash"
 
     override suspend fun connect() {
-        if (_connectionState.value == TelegramConnectionState.CONNECTING ||
-            _connectionState.value == TelegramConnectionState.AUTHORIZED
-        ) {
+        if (!isConfigured) {
+            fail(TelegramError.InvalidCredentials, "Telegram API credentials are not configured.")
             return
         }
+        if (_connectionState.value == TelegramConnectionState.CONNECTING ||
+            _connectionState.value == TelegramConnectionState.AUTHORIZED
+        ) return
 
         _connectionState.value = TelegramConnectionState.CONNECTING
         _error.value = null
-
-        withContext(Dispatchers.Default) {
-            val loadState = TdLibNativeLoader.load()
-            if (loadState != TdLibNativeLoader.State.LOADED) {
-                _connectionState.value = TelegramConnectionState.DISCONNECTED
-                _error.value = TelegramError.TdLibRuntimeUnavailable
-                DiagnosticsManager.log(
-                    category = DiagnosticCategory.TELEGRAM_INIT,
-                    severity = DiagnosticSeverity.WARN,
-                    message = "Telegram integration unavailable: TDLib native binaries (libtdjni.so) not loaded (${loadState.name}).",
-                    errorCode = ErrorCode.TELEGRAM_UNAVAILABLE
-                )
-                return@withContext
-            }
-
-            try {
-                if (tdLibClient == null) {
-                    val apiIdInt = BuildConfig.TELEGRAM_API_ID.toIntOrNull() ?: 0
-                    val client = TdLibClient(
-                        context = context,
-                        apiId = apiIdInt,
-                        apiHash = BuildConfig.TELEGRAM_API_HASH,
-                        applicationVersion = BuildConfig.VERSION_NAME
-                    )
-                    tdLibClient = client
-
-                    scope.launch {
-                        client.authorizationState.collect { state ->
-                            handleAuthState(state)
-                        }
-                    }
-
-                    client.start()
-                }
-            } catch (e: Throwable) {
-                _connectionState.value = TelegramConnectionState.DISCONNECTED
-                _error.value = TelegramError.Unknown(e.message ?: "Failed to initialize TDLib")
-                DiagnosticsManager.log(
-                    category = DiagnosticCategory.TELEGRAM_INIT,
-                    severity = DiagnosticSeverity.ERROR,
-                    message = "Fatal error initializing TDLib client: ${e.message}",
-                    errorCode = ErrorCode.TELEGRAM_UNAVAILABLE,
-                    exception = e
-                )
-            }
-        }
-    }
-
-    private suspend fun handleAuthState(state: TdLibClient.AuthState) {
-        when (state) {
-            is TdLibClient.AuthState.Starting -> {
-                _connectionState.value = TelegramConnectionState.CONNECTING
-            }
-            is TdLibClient.AuthState.ParametersRequired -> {
-                _connectionState.value = TelegramConnectionState.CONNECTING
-            }
-            is TdLibClient.AuthState.PhoneNumberRequired -> {
-                _connectionState.value = TelegramConnectionState.WAITING_FOR_PHONE
-            }
-            is TdLibClient.AuthState.CodeRequired -> {
-                _connectionState.value = TelegramConnectionState.WAITING_FOR_CODE
-            }
-            is TdLibClient.AuthState.PasswordRequired -> {
-                _connectionState.value = TelegramConnectionState.WAITING_FOR_PASSWORD
-            }
-            is TdLibClient.AuthState.Ready -> {
-                _connectionState.value = TelegramConnectionState.AUTHORIZED
-                fetchCurrentUser()
-            }
-            is TdLibClient.AuthState.LoggingOut -> {
-                _connectionState.value = TelegramConnectionState.CLOSING
-            }
-            is TdLibClient.AuthState.Closing -> {
-                _connectionState.value = TelegramConnectionState.CLOSING
-            }
-            is TdLibClient.AuthState.Closed -> {
-                _connectionState.value = TelegramConnectionState.DISCONNECTED
-            }
-            is TdLibClient.AuthState.Failed -> {
-                _connectionState.value = TelegramConnectionState.DISCONNECTED
-                _error.value = TelegramError.TdLibRuntimeUnavailable
-            }
-        }
-    }
-
-    private suspend fun fetchCurrentUser() {
-        val client = tdLibClient ?: return
+        _qrLoginLink.value = null
         try {
-            val user = client.getMe()
-            if (user != null) {
-                val telegramUser = TelegramUser(
-                    id = user.id,
-                    firstName = user.firstName ?: "",
-                    lastName = user.lastName,
-                    username = user.username,
-                    phoneNumber = user.phoneNumber ?: "",
-                    profilePhoto = null
-                )
-                _currentUser.value = telegramUser
-                settingsDataStore.saveTelegramUser(
-                    id = telegramUser.id,
-                    firstName = telegramUser.firstName,
-                    lastName = telegramUser.lastName,
-                    username = telegramUser.username,
-                    phone = telegramUser.phoneNumber
-                )
-                settingsDataStore.setTelegramConnectionState(TelegramConnectionState.AUTHORIZED.name)
+            ensureNativeRuntime()
+            synchronized(clientLock) {
+                if (tdClient == null) {
+                    tdClient = Client.create(
+                        { update -> handleTdLibObject(update) },
+                        { throwable -> reportCallbackFailure(throwable) },
+                        { throwable -> reportCallbackFailure(throwable) }
+                    )
+                }
             }
-        } catch (e: Exception) {
             DiagnosticsManager.log(
-                category = DiagnosticCategory.TELEGRAM_AUTH_STATE,
-                severity = DiagnosticSeverity.WARN,
-                message = "Failed to fetch user profile: ${e.message}"
+                category = DiagnosticCategory.TELEGRAM_INIT,
+                severity = DiagnosticSeverity.INFO,
+                message = "Official TDLib v1.8.66 client created; waiting for authorization state."
+            )
+        } catch (failure: Throwable) {
+            synchronized(clientLock) { tdClient = null }
+            fail(
+                TelegramError.TdLibRuntimeUnavailable,
+                "TDLib native runtime could not be initialized: ${failure.javaClass.simpleName}"
             )
         }
     }
 
     override suspend fun sendPhoneNumber(phoneNumber: String) {
-        val client = tdLibClient
-        if (client == null || !TdLibNativeLoader.isLoaded) {
-            _error.value = TelegramError.TdLibRuntimeUnavailable
+        val normalized = phoneNumber.trim()
+        if (normalized.isBlank() || !normalized.startsWith("+")) {
+            fail(TelegramError.InvalidPhoneNumber, "Invalid phone number format.")
             return
         }
-
-        try {
-            client.submitPhoneNumber(phoneNumber)
-        } catch (e: TdLibClient.TdLibException) {
-            val err = mapTdLibError(e.code, e.message)
-            _error.value = err
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.TELEGRAM_AUTH_ERROR,
-                severity = DiagnosticSeverity.ERROR,
-                message = "Phone authentication failed [code ${e.code}]: ${e.message}",
-                errorCode = ErrorCode.TELEGRAM_AUTH_FAILED
-            )
-        } catch (e: Exception) {
-            _error.value = TelegramError.Unknown(e.message ?: "Authentication failed")
-        }
+        send(TdApi.SetAuthenticationPhoneNumber(
+            normalized,
+            TdApi.PhoneNumberAuthenticationSettings(false, false, false, false, false, null, null)
+        ))
     }
 
     override suspend fun sendCode(code: String) {
-        val client = tdLibClient
-        if (client == null || !TdLibNativeLoader.isLoaded) {
-            _error.value = TelegramError.TdLibRuntimeUnavailable
+        val normalized = code.trim()
+        if (normalized.isBlank()) {
+            fail(TelegramError.InvalidCode, "Verification code is empty.")
             return
         }
-
-        try {
-            client.submitCode(code)
-        } catch (e: TdLibClient.TdLibException) {
-            val err = mapTdLibError(e.code, e.message)
-            _error.value = err
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.TELEGRAM_AUTH_ERROR,
-                severity = DiagnosticSeverity.ERROR,
-                message = "Code verification failed [code ${e.code}]: ${e.message}",
-                errorCode = ErrorCode.TELEGRAM_AUTH_FAILED
-            )
-        } catch (e: Exception) {
-            _error.value = TelegramError.Unknown(e.message ?: "Code verification failed")
-        }
+        send(TdApi.CheckAuthenticationCode(normalized))
     }
 
     override suspend fun sendPassword(password: String) {
-        val client = tdLibClient
-        if (client == null || !TdLibNativeLoader.isLoaded) {
-            _error.value = TelegramError.TdLibRuntimeUnavailable
+        if (password.isBlank()) {
+            fail(TelegramError.InvalidPassword, "Two-step verification password is empty.")
             return
         }
+        send(TdApi.CheckAuthenticationPassword(password))
+    }
 
-        try {
-            client.submitPassword(password.toCharArray())
-        } catch (e: TdLibClient.TdLibException) {
-            val err = mapTdLibError(e.code, e.message)
-            _error.value = err
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.TELEGRAM_AUTH_ERROR,
-                severity = DiagnosticSeverity.ERROR,
-                message = "2FA verification failed [code ${e.code}]: ${e.message}",
-                errorCode = ErrorCode.TELEGRAM_AUTH_FAILED
-            )
-        } catch (e: Exception) {
-            _error.value = TelegramError.Unknown(e.message ?: "Password verification failed")
+    override suspend fun requestQrCodeLogin() {
+        if (tdClient == null) {
+            fail(TelegramError.TdLibRuntimeUnavailable, "TDLib client is not initialized.")
+            return
         }
+        _error.value = null
+        send(TdApi.RequestQrCodeAuthentication(longArrayOf()))
     }
 
     override suspend fun logout() {
         _connectionState.value = TelegramConnectionState.CLOSING
-        withContext(Dispatchers.Default) {
-            tdLibClient?.logOut()
-            tdLibClient?.close()
-            tdLibClient = null
+        try {
+            tdClient?.send(TdApi.LogOut(), { result -> handleTdLibObject(result) }, null)
+        } catch (failure: Throwable) {
+            reportCallbackFailure(failure)
+        } finally {
+            synchronized(clientLock) { tdClient = null }
             _currentUser.value = null
-            _connectionState.value = TelegramConnectionState.DISCONNECTED
             _error.value = null
+            _qrLoginLink.value = null
+            synchronized(chatLock) { chats.clear() }
+            _chatDestinations.value = emptyList()
+            chatsRequested.set(false)
+            _connectionState.value = TelegramConnectionState.DISCONNECTED
             settingsDataStore.clearTelegramUser()
             settingsDataStore.setTelegramConnectionState(TelegramConnectionState.DISCONNECTED.name)
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.TELEGRAM_AUTH_STATE,
-                severity = DiagnosticSeverity.INFO,
-                message = "Telegram session reset."
-            )
         }
     }
 
@@ -292,94 +159,235 @@ class TelegramClientImpl @Inject constructor(
         _error.value = null
     }
 
-    override fun getDestinations(query: String): Flow<List<TelegramDestination>> = flow {
-        val client = tdLibClient
-        if (client == null || _connectionState.value != TelegramConnectionState.AUTHORIZED) {
-            emit(emptyList())
-            return@flow
+    override fun getDestinations(query: String): Flow<List<TelegramDestination>> =
+        _chatDestinations.map { destinations ->
+            val normalized = query.trim().lowercase(Locale.US)
+            if (normalized.isBlank()) destinations
+            else destinations.filter { destination ->
+                destination.title.lowercase(Locale.US).contains(normalized) ||
+                    destination.username?.lowercase(Locale.US)?.contains(normalized) == true
+            }
+        }.distinctUntilChanged()
+
+    private suspend fun send(function: TdApi.Function<*>) {
+        val client = tdClient
+        if (client == null) {
+            fail(TelegramError.TdLibRuntimeUnavailable, "TDLib client is not initialized.")
+            return
         }
-
         try {
-            val chatIds = if (query.isBlank()) {
-                client.getChats(limit = 100)
-            } else {
-                client.searchChats(query = query, limit = 50)
+            withContext(Dispatchers.Default) {
+                client.send(function, { result -> handleTdLibObject(result) }, null)
             }
-
-            var myUserId: Long = 0L
-            val meObj = client.getMe()
-            if (meObj != null) {
-                myUserId = meObj.id
-            }
-
-            val destinationList = mutableListOf<TelegramDestination>()
-            for (chatId in chatIds) {
-                val chat = client.getChat(chatId) ?: continue
-                val id = chat.id
-                var title = chat.title ?: "Chat $id"
-                val chatType = chat.type
-                val permissions = chat.permissions
-
-                var destType = TelegramDestinationType.OTHER
-                var canSend = true
-
-                when (chatType) {
-                    is TdApi.ChatTypePrivate -> {
-                        destType = TelegramDestinationType.USER
-                        if (id == myUserId) {
-                            title = "Saved Messages"
-                        }
-                    }
-                    is TdApi.ChatTypeBasicGroup -> {
-                        destType = TelegramDestinationType.GROUP
-                    }
-                    is TdApi.ChatTypeSupergroup -> {
-                        destType = if (chatType.isChannel) TelegramDestinationType.CHANNEL else TelegramDestinationType.SUPERGROUP
-                    }
-                }
-
-                if (permissions != null) {
-                    canSend = permissions.canSendOtherMessages || permissions.canSendMessages
-                }
-
-                destinationList.add(
-                    TelegramDestination(
-                        id = id,
-                        title = title,
-                        username = null,
-                        type = destType,
-                        photo = null,
-                        canSendMessages = canSend
-                    )
-                )
-            }
-
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.DESTINATION_RESOLUTION,
-                severity = DiagnosticSeverity.INFO,
-                message = "Resolved ${destinationList.size} destinations from TDLib (Query: '$query')."
-            )
-            emit(destinationList)
-        } catch (e: Exception) {
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.DESTINATION_RESOLUTION,
-                severity = DiagnosticSeverity.ERROR,
-                message = "Failed to resolve destinations: ${e.message}",
-                errorCode = ErrorCode.DESTINATION_UNAVAILABLE
-            )
-            emit(emptyList())
+        } catch (failure: Throwable) {
+            reportCallbackFailure(failure)
         }
     }
 
-    private fun mapTdLibError(code: Int, message: String): TelegramError {
-        val lower = message.lowercase()
-        return when {
-            lower.contains("phone_number_invalid") || lower.contains("phone number") -> TelegramError.InvalidPhoneNumber
-            lower.contains("phone_code_invalid") || lower.contains("code") -> TelegramError.InvalidCode
-            lower.contains("password_hash_invalid") || lower.contains("password") -> TelegramError.InvalidPassword
-            lower.contains("flood_wait") || lower.contains("too many") -> TelegramError.RateLimited
-            code == 401 || lower.contains("session") -> TelegramError.SessionExpired
-            else -> TelegramError.Unknown(message)
+    private fun handleTdLibObject(objectValue: TdApi.Object) {
+        when (objectValue) {
+            is TdApi.UpdateAuthorizationState -> handleAuthorizationState(objectValue.authorizationState)
+            is TdApi.UpdateNewChat -> upsertChat(objectValue.chat)
+            is TdApi.UpdateChatTitle -> updateChatTitle(objectValue)
+            is TdApi.UpdateChatPermissions -> updateChatPermissions(objectValue)
+            is TdApi.Chats -> objectValue.chatIds.forEach(::requestChat)
+            is TdApi.Chat -> upsertChat(objectValue)
+            is TdApi.User -> handleAuthenticatedUser(objectValue)
+            is TdApi.Error -> mapError(objectValue)
         }
+    }
+
+    private fun handleAuthorizationState(state: TdApi.AuthorizationState) {
+        when (state) {
+            is TdApi.AuthorizationStateWaitTdlibParameters -> sendTdlibParameters()
+            is TdApi.AuthorizationStateWaitPhoneNumber -> {
+                _qrLoginLink.value = null
+                setState(TelegramConnectionState.WAITING_FOR_PHONE)
+            }
+            is TdApi.AuthorizationStateWaitCode -> setState(TelegramConnectionState.WAITING_FOR_CODE)
+            is TdApi.AuthorizationStateWaitPassword -> setState(TelegramConnectionState.WAITING_FOR_PASSWORD)
+            is TdApi.AuthorizationStateWaitOtherDeviceConfirmation -> {
+                _qrLoginLink.value = state.link
+                setState(TelegramConnectionState.WAITING_FOR_QR)
+            }
+            is TdApi.AuthorizationStateReady -> {
+                setState(TelegramConnectionState.AUTHORIZED)
+                tdClient?.send(TdApi.GetMe(), { result -> handleTdLibObject(result) }, null)
+                requestChats()
+            }
+            is TdApi.AuthorizationStateClosing -> setState(TelegramConnectionState.CLOSING)
+            is TdApi.AuthorizationStateClosed -> setState(TelegramConnectionState.DISCONNECTED)
+            else -> fail(
+                TelegramError.Unknown("Unsupported Telegram authorization state: ${state.javaClass.simpleName}"),
+                "Unsupported TDLib authorization state."
+            )
+        }
+    }
+
+    private fun sendTdlibParameters() {
+        val apiId = BuildConfig.TELEGRAM_API_ID.toIntOrNull()
+        val apiHash = BuildConfig.TELEGRAM_API_HASH
+        if (apiId == null || apiId <= 0 || apiHash.isBlank()) {
+            fail(TelegramError.InvalidCredentials, "Telegram API credentials are invalid.")
+            return
+        }
+        val databaseDirectory = File(context.filesDir, "tdlib-database").apply { mkdirs() }
+        val filesDirectory = File(context.filesDir, "tdlib-files").apply { mkdirs() }
+        val parameters = TdApi.SetTdlibParameters(
+            false,
+            databaseDirectory.absolutePath,
+            filesDirectory.absolutePath,
+            ByteArray(0),
+            true,
+            true,
+            true,
+            false,
+            apiId,
+            apiHash,
+            Locale.getDefault().toLanguageTag(),
+            Build.MODEL ?: "Android",
+            Build.VERSION.RELEASE ?: "Android",
+            BuildConfig.VERSION_NAME
+        )
+        tdClient?.send(parameters, { result -> handleTdLibObject(result) }, null)
+    }
+
+    private fun requestChats() {
+        val client = tdClient ?: return
+        if (_connectionState.value != TelegramConnectionState.AUTHORIZED) return
+        if (!chatsRequested.compareAndSet(false, true)) return
+        client.send(
+            TdApi.GetChats(TdApi.ChatListMain(), 100),
+            { result -> handleTdLibObject(result) },
+            null
+        )
+    }
+
+    private fun requestChat(chatId: Long) {
+        tdClient?.send(TdApi.GetChat(chatId), { result -> handleTdLibObject(result) }, null)
+    }
+
+    private fun upsertChat(chat: TdApi.Chat) {
+        synchronized(chatLock) { chats[chat.id] = chat }
+        rebuildDestinations()
+    }
+
+    private fun updateChatTitle(update: TdApi.UpdateChatTitle) {
+        synchronized(chatLock) { chats[update.chatId]?.title = update.title }
+        rebuildDestinations()
+    }
+
+    private fun updateChatPermissions(update: TdApi.UpdateChatPermissions) {
+        synchronized(chatLock) { chats[update.chatId]?.permissions = update.permissions }
+        rebuildDestinations()
+    }
+
+    private fun rebuildDestinations() {
+        val destinations = synchronized(chatLock) {
+            chats.values.mapNotNull { chat ->
+                val type = when (val chatType = chat.type) {
+                    is TdApi.ChatTypePrivate -> TelegramDestinationType.USER
+                    is TdApi.ChatTypeBasicGroup -> TelegramDestinationType.GROUP
+                    is TdApi.ChatTypeSupergroup -> if (chatType.isChannel) {
+                        TelegramDestinationType.CHANNEL
+                    } else {
+                        TelegramDestinationType.SUPERGROUP
+                    }
+                    else -> null
+                } ?: return@mapNotNull null
+                val canSend = chat.type is TdApi.ChatTypePrivate ||
+                    chat.permissions?.canSendBasicMessages == true
+                if (!canSend) return@mapNotNull null
+                TelegramDestination(
+                    id = chat.id,
+                    title = chat.title.ifBlank { "Telegram chat" },
+                    username = null,
+                    type = type,
+                    photo = null,
+                    canSendMessages = true
+                )
+            }.sortedBy { it.title.lowercase(Locale.US) }
+        }
+        _chatDestinations.value = destinations
+    }
+
+    private fun handleAuthenticatedUser(user: TdApi.User) {
+        val model = TelegramUser(
+            id = user.id,
+            firstName = user.firstName,
+            lastName = user.lastName,
+            username = user.usernames?.editableUsername
+                ?: user.usernames?.activeUsernames?.firstOrNull(),
+            phoneNumber = user.phoneNumber,
+            profilePhoto = null
+        )
+        _currentUser.value = model
+        clientScope.launch {
+            settingsDataStore.saveTelegramUser(
+                user.id,
+                user.firstName,
+                user.lastName,
+                user.usernames?.editableUsername
+                    ?: user.usernames?.activeUsernames?.firstOrNull(),
+                user.phoneNumber
+            )
+            settingsDataStore.setTelegramConnectionState(TelegramConnectionState.AUTHORIZED.name)
+        }
+    }
+
+    private fun mapError(error: TdApi.Error) {
+        val message = error.message.uppercase(Locale.US)
+        val mapped = when {
+            message.contains("UPDATE_APP_TO_LOGIN") || error.code == 406 -> TelegramError.AppUpdateRequired
+            message.contains("PHONE_NUMBER") -> TelegramError.InvalidPhoneNumber
+            message.contains("PHONE_CODE") || message.contains("CODE") -> TelegramError.InvalidCode
+            message.contains("PASSWORD") -> TelegramError.InvalidPassword
+            error.code == 420 -> TelegramError.RateLimited
+            error.code == 401 -> TelegramError.SessionExpired
+            error.code in 500..599 -> TelegramError.NetworkUnavailable
+            else -> TelegramError.Unknown(error.message)
+        }
+        fail(mapped, "TDLib error ${error.code}: ${error.message}")
+    }
+
+    private fun ensureNativeRuntime() {
+        if (nativeLoaded.compareAndSet(false, true)) {
+            try {
+                System.loadLibrary("tdjni")
+            } catch (failure: Throwable) {
+                nativeLoaded.set(false)
+                throw failure
+            }
+        }
+    }
+
+    private fun setState(state: TelegramConnectionState) {
+        _connectionState.value = state
+        clientScope.launch { settingsDataStore.setTelegramConnectionState(state.name) }
+    }
+
+    private fun fail(error: TelegramError, diagnosticMessage: String) {
+        _error.value = error
+        _connectionState.value = TelegramConnectionState.ERROR
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.TELEGRAM_AUTH_ERROR,
+            severity = DiagnosticSeverity.ERROR,
+            message = diagnosticMessage,
+            errorCode = ErrorCode.TELEGRAM_UNAVAILABLE
+        )
+    }
+
+    private fun reportCallbackFailure(failure: Throwable) {
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.TELEGRAM_INIT,
+            severity = DiagnosticSeverity.ERROR,
+            message = "TDLib callback failed: ${failure.javaClass.simpleName}",
+            errorCode = ErrorCode.TELEGRAM_UNAVAILABLE,
+            exception = failure
+        )
+    }
+
+    companion object {
+        private val nativeLoaded = AtomicBoolean(false)
     }
 }

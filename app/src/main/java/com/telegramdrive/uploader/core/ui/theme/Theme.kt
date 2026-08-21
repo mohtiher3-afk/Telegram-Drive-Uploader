@@ -3,6 +3,7 @@ package com.telegramdrive.uploader.core.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -10,69 +11,79 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFD3E4FF),
-    onPrimary = Color(0xFF001D36),
-    primaryContainer = Color(0xFF00448E),
-    onPrimaryContainer = Color(0xFFD3E4FF),
-    secondary = Color(0xFF97F0FF),
-    onSecondary = Color(0xFF00363D),
-    secondaryContainer = DarkSurfaceVariant,
-    onSecondaryContainer = Color(0xFFC4C6D0),
-    tertiary = Color(0xFF69FFA0),
-    onTertiary = Color(0xFF003919),
-    tertiaryContainer = Color(0xFF005327),
-    onTertiaryContainer = Color(0xFF69FFA0),
-    background = DarkBg,
-    onBackground = DarkTextPrimary,
-    surface = DarkSurface,
-    onSurface = DarkTextPrimary,
-    surfaceVariant = DarkSurfaceVariant,
-    onSurfaceVariant = DarkTextSecondary,
-    surfaceContainer = DarkSurfaceContainer,
-    surfaceContainerHigh = DarkCardBg,
+    primary = Color(0xFFFFB4AB),
+    onPrimary = Color(0xFF561E1B),
+    primaryContainer = Color(0xFF73332E),
+    onPrimaryContainer = Color(0xFFFFDAD6),
+    secondary = Color(0xFFE7BDB7),
+    onSecondary = Color(0xFF442926),
+    secondaryContainer = Color(0xFF5D403C),
+    onSecondaryContainer = Color(0xFFFFDAD6),
+    tertiary = Color(0xFFD5C58D),
+    onTertiary = Color(0xFF393005),
+    tertiaryContainer = Color(0xFF514619),
+    onTertiaryContainer = Color(0xFFF2E3A7),
+    background = Color(0xFF201110),
+    onBackground = Color(0xFFF1DFDD),
+    surface = Color(0xFF201110),
+    onSurface = Color(0xFFF1DFDD),
+    surfaceVariant = Color(0xFF514341),
+    onSurfaceVariant = Color(0xFFD8C2BF),
+    surfaceContainer = Color(0xFF2D1B1A),
+    surfaceContainerHigh = Color(0xFF392523),
     error = UploadErrorRed,
     onError = Color.White,
     errorContainer = Color(0xFF8C0012),
     onErrorContainer = Color(0xFFFFDAD8),
-    outline = DarkCardBorder,
-    outlineVariant = Color(0xFF333842)
+    outline = Color(0xFFA98F8C),
+    outlineVariant = Color(0xFF514341)
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = BentoPrimaryBlue,
+    primary = Color(0xFF9C423A),
     onPrimary = Color.White,
-    primaryContainer = BentoHeroContainer,
-    onPrimaryContainer = BentoHeroText,
-    secondary = Color(0xFF44474E),
+    primaryContainer = Color(0xFFFFDAD6),
+    onPrimaryContainer = Color(0xFF3B0907),
+    secondary = Color(0xFF765652),
     onSecondary = Color.White,
-    secondaryContainer = BentoTileBg,
-    onSecondaryContainer = BentoTextPrimary,
-    tertiary = BentoPrimaryBlue,
+    secondaryContainer = Color(0xFFFFDAD6),
+    onSecondaryContainer = Color(0xFF2C1513),
+    tertiary = Color(0xFF705E1A),
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFC8FCD0),
-    onTertiaryContainer = Color(0xFF00210C),
-    background = BentoBg,
-    onBackground = BentoTextPrimary,
-    surface = BentoCardBg,
-    onSurface = BentoTextPrimary,
-    surfaceVariant = BentoTileBg,
-    onSurfaceVariant = BentoTextSecondary,
-    surfaceContainer = BentoTileBg,
-    surfaceContainerHigh = BentoCardBg,
+    tertiaryContainer = Color(0xFFF7E6A6),
+    onTertiaryContainer = Color(0xFF241A00),
+    background = Color(0xFFFFF8F7),
+    onBackground = Color(0xFF241A19),
+    surface = Color(0xFFFFF8F7),
+    onSurface = Color(0xFF241A19),
+    surfaceVariant = Color(0xFFF5DDDA),
+    onSurfaceVariant = Color(0xFF5C4140),
+    surfaceContainer = Color(0xFFFCE9E6),
+    surfaceContainerHigh = Color(0xFFF7E0DD),
     error = UploadErrorRed,
     onError = Color.White,
     errorContainer = Color(0xFFFFDAD6),
     onErrorContainer = Color(0xFF410002),
-    outline = BentoCardBorder,
-    outlineVariant = Color(0xFFC4C6D0)
+    outline = Color(0xFF8F716E),
+    outlineVariant = Color(0xFFD8C2BF)
+)
+
+/** Varied shapes create hierarchy without turning every surface into a card. */
+private val ExpressiveShapes = Shapes(
+    extraSmall = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+    small = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+    medium = androidx.compose.foundation.shape.RoundedCornerShape(22.dp),
+    large = androidx.compose.foundation.shape.RoundedCornerShape(30.dp),
+    extraLarge = androidx.compose.foundation.shape.RoundedCornerShape(38.dp)
 )
 
 @Composable
 fun TelegramDriveTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -87,7 +98,7 @@ fun TelegramDriveTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = ExpressiveShapes,
         content = content
     )
 }
-

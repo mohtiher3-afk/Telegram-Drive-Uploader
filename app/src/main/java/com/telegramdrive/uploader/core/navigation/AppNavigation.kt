@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -29,6 +30,8 @@ import androidx.navigation.compose.rememberNavController
 import com.telegramdrive.uploader.feature.home.HomeScreen
 import com.telegramdrive.uploader.feature.queue.QueueScreen
 import com.telegramdrive.uploader.feature.history.HistoryScreen
+import com.telegramdrive.uploader.feature.onboarding.OnboardingScreen
+import com.telegramdrive.uploader.feature.onboarding.OnboardingViewModel
 import com.telegramdrive.uploader.feature.settings.SettingsScreen
 import com.telegramdrive.uploader.feature.upload.UploadScreen
 import com.telegramdrive.uploader.feature.upload.UploadViewModel
@@ -53,6 +56,17 @@ val bottomNavItems = listOf(
 fun AppNavigation(
     navController: NavHostController = rememberNavController()
 ) {
+    val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    val onboardingCompleted by onboardingViewModel.completed.collectAsStateWithLifecycle()
+
+    if (!onboardingCompleted) {
+        OnboardingScreen(
+            onFinished = { },
+            viewModel = onboardingViewModel
+        )
+        return
+    }
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val showBottomBar = bottomNavItems.any { it.route == currentRoute }

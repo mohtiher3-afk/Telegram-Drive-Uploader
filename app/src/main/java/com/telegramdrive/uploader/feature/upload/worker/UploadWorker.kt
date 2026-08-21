@@ -1,22 +1,14 @@
 package com.telegramdrive.uploader.feature.upload.worker
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
-import android.content.pm.ServiceInfo
-import android.os.Build
-import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
-import com.telegramdrive.uploader.R
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
-import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.ErrorCode
 import com.telegramdrive.uploader.domain.model.UploadStatus
-import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
@@ -26,17 +18,14 @@ import kotlinx.coroutines.flow.collectLatest
 
 @HiltWorker
 class UploadWorker @AssistedInject constructor(
-    @Assisted private val context: Context,
+    @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val repository: UploadRepository,
     private val uploadEngine: TelegramUploadEngine
 ) : CoroutineWorker(context, params) {
 
-    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    private val channelId = "upload_service_channel"
-
-    init {
-        createNotificationChannel()
+    companion object {
+        private const val MAX_RETRY_ATTEMPTS = 5
     }
 
     override suspend fun doWork(): Result {
@@ -70,19 +59,6 @@ class UploadWorker @AssistedInject constructor(
             return Result.success()
         }
 
-        // Promote worker to foreground service
-        try {
-            val initialForegroundInfo = createForegroundInfo(uploadTask, progressPercent = 0, speedFormatted = "Preparing...")
-            setForeground(initialForegroundInfo)
-        } catch (e: Exception) {
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.WORKER_STARTED,
-                severity = DiagnosticSeverity.WARN,
-                message = "Could not set worker to foreground: ${e.message}",
-                uploadId = uploadId
-            )
-        }
-
         repository.updateStatus(uploadId, UploadStatus.PREPARING)
         DiagnosticsManager.log(
             category = DiagnosticCategory.UPLOAD_STARTED,
@@ -93,7 +69,6 @@ class UploadWorker @AssistedInject constructor(
 
         var result: Result = Result.success()
         val startTime = System.currentTimeMillis()
-        var lastNotificationTime = 0L
 
         try {
             uploadEngine.uploadFile(uploadTask).collectLatest { engineResult ->
@@ -109,22 +84,12 @@ class UploadWorker @AssistedInject constructor(
                             averageSpeed = p.averageSpeedBytesPerSecond,
                             eta = p.etaSeconds
                         )
-
-                        val now = System.currentTimeMillis()
-                        if (now - lastNotificationTime > 800) {
-                            lastNotificationTime = now
-                            val speedFormatted = formatSpeed(p.speedBytesPerSecond)
-                            val etaFormatted = formatEta(p.etaSeconds)
-                            val infoText = "$speedFormatted • ETA: $etaFormatted"
-                            val notifInfo = createForegroundInfo(uploadTask, p.percentage.toInt(), infoText)
-                            setForeground(notifInfo)
-                        }
+                        // Do not log every progress event at high frequency in production to preserve resource usage.
                     }
                     is UploadEngineResult.Success -> {
                         repository.updateStatus(uploadId, UploadStatus.COMPLETED)
                         result = Result.success()
                         val duration = System.currentTimeMillis() - startTime
-                        showCompletionNotification(uploadTask, isSuccess = true)
                         DiagnosticsManager.log(
                             category = DiagnosticCategory.UPLOAD_COMPLETED,
                             severity = DiagnosticSeverity.INFO,
@@ -134,13 +99,16 @@ class UploadWorker @AssistedInject constructor(
                         )
                     }
                     is UploadEngineResult.Error -> {
-                        repository.updateStatus(uploadId, UploadStatus.FAILED)
-                        showCompletionNotification(uploadTask, isSuccess = false, errorMessage = engineResult.message)
-                        result = if (engineResult.isRetryable) {
+                        val canRetry = engineResult.isRetryable && runAttemptCount < MAX_RETRY_ATTEMPTS
+                        repository.updateStatus(
+                            uploadId,
+                            if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
+                        )
+                        result = if (canRetry) {
                             DiagnosticsManager.log(
                                 category = DiagnosticCategory.UPLOAD_RETRY,
                                 severity = DiagnosticSeverity.WARN,
-                                message = "Upload task failed with a transient error. Scheduled for retry.",
+                                message = "Upload task failed transiently (${runAttemptCount + 1}/$MAX_RETRY_ATTEMPTS). WorkManager will retry it.",
                                 uploadId = uploadId,
                                 errorCode = ErrorCode.UPLOAD_FAILED
                             )
@@ -149,7 +117,7 @@ class UploadWorker @AssistedInject constructor(
                             DiagnosticsManager.log(
                                 category = DiagnosticCategory.UPLOAD_FAILED,
                                 severity = DiagnosticSeverity.ERROR,
-                                message = "Upload task failed with a non-recoverable error: ${engineResult.message}.",
+                                message = "Upload task failed permanently after ${runAttemptCount + 1} attempts: ${engineResult.message}.",
                                 uploadId = uploadId,
                                 errorCode = ErrorCode.UPLOAD_FAILED
                             )
@@ -159,9 +127,13 @@ class UploadWorker @AssistedInject constructor(
                 }
             }
         } catch (e: Exception) {
-            repository.updateStatus(uploadId, UploadStatus.FAILED)
-            showCompletionNotification(uploadTask, isSuccess = false, errorMessage = e.message)
-            result = Result.failure()
+            val canRetry = runAttemptCount < MAX_RETRY_ATTEMPTS
+            repository.updateStatus(
+                uploadId,
+                if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
+            )
+            result = if (canRetry) Result.retry() else Result.failure()
+            val mappedCategory = DiagnosticsManager.mapException(e)
             val mappedCode = DiagnosticsManager.mapExceptionToCode(e)
             DiagnosticsManager.log(
                 category = DiagnosticCategory.UPLOAD_FAILED,
@@ -181,69 +153,5 @@ class UploadWorker @AssistedInject constructor(
         )
 
         return result
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Telegram Uploader Service",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Shows live upload progress and speeds for Telegram transfers"
-                setShowBadge(false)
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    private fun createForegroundInfo(task: UploadTask, progressPercent: Int, speedFormatted: String): ForegroundInfo {
-        val notificationId = task.id.hashCode()
-        val notification = NotificationCompat.Builder(context, channelId)
-            .setContentTitle("Uploading ${task.fileName}")
-            .setContentText(speedFormatted)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setProgress(100, progressPercent.coerceIn(0, 100), progressPercent <= 0)
-            .setOngoing(true)
-            .setOnlyAlertOnce(true)
-            .build()
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ForegroundInfo(notificationId, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
-        } else {
-            ForegroundInfo(notificationId, notification)
-        }
-    }
-
-    private fun showCompletionNotification(task: UploadTask, isSuccess: Boolean, errorMessage: String? = null) {
-        val notificationId = task.id.hashCode()
-        val title = if (isSuccess) "Upload Complete" else "Upload Failed"
-        val text = if (isSuccess) "${task.fileName} uploaded successfully to Telegram" else "${task.fileName}: ${errorMessage ?: "Transfer failed"}"
-        
-        val notification = NotificationCompat.Builder(context, channelId)
-            .setContentTitle(title)
-            .setContentText(text)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setAutoCancel(true)
-            .build()
-
-        try {
-            notificationManager.notify(notificationId, notification)
-        } catch (_: Exception) {}
-    }
-
-    private fun formatSpeed(bytesPerSec: Long): String {
-        return when {
-            bytesPerSec >= 1024 * 1024 -> String.format("%.1f MB/s", bytesPerSec / (1024.0 * 1024.0))
-            bytesPerSec >= 1024 -> String.format("%.1f KB/s", bytesPerSec / 1024.0)
-            else -> "$bytesPerSec B/s"
-        }
-    }
-
-    private fun formatEta(seconds: Long): String {
-        if (seconds <= 0) return "--"
-        val mins = seconds / 60
-        val secs = seconds % 60
-        return if (mins > 0) "${mins}m ${secs}s" else "${secs}s"
     }
 }
