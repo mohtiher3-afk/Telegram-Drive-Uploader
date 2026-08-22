@@ -13,9 +13,9 @@
 - [x] Trigger and verify the signed GitHub Release v1.0.7.
 - [x] Provide physical-device test instructions for Telegram authorization, channel selection, staging, and upload progress.
 
-- [ ] Trace and remove every simulated upload progress, success, and completion path.
-- [ ] Require genuine TDLib UpdateFile and message/file confirmation before marking uploads complete.
-- [ ] Add regression tests proving failed or unconfirmed sends never report success.
-- [ ] Build and verify the permanent real-upload fix across ARM64, ARMv7, and x86_64.
+- [x] Trace and remove every simulated upload progress, success, and completion path.
+- [x] Require genuine TDLib UpdateFile and message/file confirmation before marking uploads complete.
+- [x] Add regression tests proving failed or unconfirmed sends never report success.
+- [x] Build and verify the permanent real-upload fix across ARM64, ARMv7, and x86_64.
 
-- [ ] Publish a new signed release containing the permanent confirmed-delivery fix; do not reuse the old v1.0.7 tag.
+- [x] Publish a new signed release containing the permanent confirmed-delivery fix; do not reuse the old v1.0.7 tag.
