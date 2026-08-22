@@ -133,3 +133,9 @@
 - [x] Create truthful application screenshots for the key Android flows and upload them to the repository.
 - [x] Add a README screenshot gallery with captions and GitHub-relative image links.
 - [x] Verify image files, README rendering links, and repository cleanliness before delivery.
+
+## Telegram connection refusal report
+
+- [x] Reproduce or classify the Telegram connection refusal from sanitized logs and the official TDLib authorization state machine.
+- [x] Apply a targeted authentication, configuration, or runtime fix without simulating login success.
+- [ ] Add regression coverage and validate the repaired build and device-login prerequisites.

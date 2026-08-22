@@ -180,6 +180,9 @@ fun AppNavigation(
                 composable("telegram_destination") {
                     TelegramDestinationScreen(
                         onBackClick = { navController.popBackStack() },
+                        onConnectClick = {
+                            navController.navigate("telegram_auth")
+                        },
                         onDestinationSelected = { dest ->
                             uploadViewModel.onDestinationSelected(dest)
                             navController.popBackStack()
