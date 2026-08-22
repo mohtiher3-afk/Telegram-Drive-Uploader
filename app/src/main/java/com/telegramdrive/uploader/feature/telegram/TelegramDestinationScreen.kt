@@ -81,13 +81,13 @@ fun TelegramDestinationScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Telegram Disconnected",
+                        text = stringResource(com.telegramdrive.uploader.R.string.telegram_disconnected_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "You must connect your Telegram account first to explore channels, groups, and destinations.",
+                        text = stringResource(com.telegramdrive.uploader.R.string.telegram_disconnected_message),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -113,6 +113,30 @@ fun TelegramDestinationScreen(
                     singleLine = true
                 )
 
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = stringResource(com.telegramdrive.uploader.R.string.direct_upload_info),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
                 // Selected Destination Banner
                 selectedDestination?.let { dest ->
                     Card(
@@ -132,7 +156,7 @@ fun TelegramDestinationScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = "Target Destination",
+                                    text = stringResource(com.telegramdrive.uploader.R.string.target_destination),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -165,7 +189,7 @@ fun TelegramDestinationScreen(
 
                 // Destination List
                 Text(
-                    text = "Eligible Targets",
+                    text = stringResource(com.telegramdrive.uploader.R.string.eligible_targets),
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -178,7 +202,13 @@ fun TelegramDestinationScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No destinations found.",
+                            text = stringResource(
+                                if (searchQuery.isBlank()) {
+                                    com.telegramdrive.uploader.R.string.no_destinations_found
+                                } else {
+                                    com.telegramdrive.uploader.R.string.no_destinations_found_for_query
+                                }
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
