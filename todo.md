@@ -74,3 +74,9 @@
 - [ ] Support multiple video MIME types and common extensions without fake conversion or forced re-encoding.
 - [ ] Add regression tests for format recognition and real confirmed delivery.
 - [ ] Run multi-ABI CI and document codec/container limitations for physical-device testing.
+
+## Repository upload request
+
+- [ ] Review the current multi-format video changes and repository version state.
+- [ ] Push the new version to the selected GitHub repository.
+- [ ] Verify the triggered multi-ABI CI run and report the available APK artifacts.
