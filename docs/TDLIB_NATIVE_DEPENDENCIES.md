@@ -24,7 +24,13 @@ Run:
 ./scripts/check-tdlib-artifacts.sh
 ```
 
-The checker validates the ELF headers, architecture, Java bindings, and every `libssl.so` or `libcrypto.so` dependency requested by each TDLib binary. The Android emulator smoke test then proves the packaged libraries can load together and that a real `org.drinkless.tdlib.Client` can be created.
+The checker validates the ELF headers, architecture, Java bindings, and every `libssl.so` or `libcrypto.so` dependency requested by each TDLib binary. The default command is an all-ABI gate. Matrix CI jobs set `TDLIB_CHECK_ABI` to their selected ABI so that each job validates the files it generated; for example:
+
+```bash
+TDLIB_CHECK_ABI=x86_64 ./scripts/check-tdlib-artifacts.sh
+```
+
+The Android emulator smoke test then proves the packaged libraries can load together and that a real `org.drinkless.tdlib.Client` can be created.
 
 `libz.so`, `liblog.so`, `libdl.so`, `libm.so`, and `libc.so` remain Android platform dependencies. They are not copied into the application because the Android platform supplies them.
 
