@@ -61,3 +61,9 @@
 - [ ] Investigate why the upload path still does not execute or deliver the selected video to the chosen channel.
 - [ ] Implement evidence-based fixes and add regression tests for channel search, channel destination IDs, and real upload completion.
 - [ ] Re-run multi-ABI CI and document the exact device diagnostics needed if the physical device still fails.
+
+## Apply fixes and browser inspection
+
+- [ ] Apply the requested channel-search, channel-permission, and real-video-upload changes in the Android repository.
+- [ ] Inspect the browser-visible gateway and setup pages without performing a real external upload or sensitive submission.
+- [ ] Run available automated validation and report any environment or physical-device limitations honestly.

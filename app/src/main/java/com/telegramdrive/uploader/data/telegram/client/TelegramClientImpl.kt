@@ -180,7 +180,7 @@ class TelegramClientImpl @Inject constructor(
     override fun getDestinations(query: String): Flow<List<TelegramDestination>> {
         requestDestinationSearch(query)
         return _chatDestinations.map { destinations ->
-            val normalized = query.trim().lowercase(Locale.US)
+            val normalized = query.trim().lowercase(Locale.US).removePrefix("@")
             if (normalized.isBlank()) destinations
             else destinations.filter { destination ->
                 destination.title.lowercase(Locale.US).contains(normalized) ||
@@ -196,12 +196,21 @@ class TelegramClientImpl @Inject constructor(
         val searchText = normalized.removePrefix("@").trim()
         if (searchText.isBlank()) return
         // SearchPublicChat resolves an exact public username; SearchChatsOnServer handles names and partial matches.
-        client.send(TdApi.SearchPublicChat(searchText), { result -> handleTdLibObject(result) }, null)
+        client.send(TdApi.SearchPublicChat(searchText), { result -> handleDestinationSearchResult(result) }, null)
         client.send(
             TdApi.SearchChatsOnServer(searchText, TdApi.SearchChatTypeFilterChannel(), 50),
-            { result -> handleTdLibObject(result) },
+            { result -> handleDestinationSearchResult(result) },
             null
         )
+    }
+
+    private fun handleDestinationSearchResult(result: TdApi.Object) {
+        when (result) {
+            is TdApi.Chat -> upsertChat(result)
+            is TdApi.Chats -> result.chatIds.forEach(::requestChat)
+            // A not-found username or empty server result is normal search behavior, not an auth failure.
+            is TdApi.Error -> Unit
+        }
     }
 
     override fun uploadLocalDocument(task: com.telegramdrive.uploader.domain.model.UploadTask, localPath: String): Flow<TelegramUploadEvent> = callbackFlow {
