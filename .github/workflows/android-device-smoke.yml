@@ -91,7 +91,7 @@ jobs:
           script: |
             # android-emulator-runner executes this block with POSIX sh; pipefail is not portable there.
             set -eu
-            BUILD_ROOT="${GITHUB_WORKSPACE:-$PWD}/app/build"
+            BUILD_ROOT="${{ github.workspace }}/app/build"
             TEST_APK="$(find "$BUILD_ROOT" -type f -name '*androidTest*.apk' | head -n 1)"
             APP_APK="$(find "$BUILD_ROOT" -type f \( -name "app-${ABI}-debug.apk" -o -name 'app-debug.apk' \) | head -n 1)"
             printf 'Discovered APKs:\n'
