@@ -17,8 +17,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.awaitClose
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -29,6 +32,7 @@ import org.drinkless.tdlib.Client
 import org.drinkless.tdlib.TdApi
 import java.io.File
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -48,6 +52,7 @@ class TelegramClientImpl @Inject constructor(
     private val chats = LinkedHashMap<Long, TdApi.Chat>()
     private val _chatDestinations = MutableStateFlow<List<TelegramDestination>>(emptyList())
     private val chatsRequested = AtomicBoolean(false)
+    private val pendingUploads = ConcurrentHashMap<Int, SendChannel<TelegramUploadEvent>>()
     private var tdClient: Client? = null
 
     override val connectionState: StateFlow<TelegramConnectionState> = _connectionState.asStateFlow()
@@ -169,6 +174,66 @@ class TelegramClientImpl @Inject constructor(
             }
         }.distinctUntilChanged()
 
+    override fun uploadLocalDocument(task: com.telegramdrive.uploader.domain.model.UploadTask, localPath: String): Flow<TelegramUploadEvent> = callbackFlow {
+        val client = tdClient
+        if (client == null || _connectionState.value != TelegramConnectionState.AUTHORIZED) {
+            trySend(TelegramUploadEvent.Failed("Telegram account is not authorized", true))
+            close()
+            return@callbackFlow
+        }
+
+        val fileType = if (task.mimeType.startsWith("video/")) {
+            TdApi.FileTypeVideo()
+        } else {
+            TdApi.FileTypeDocument()
+        }
+        val input = TdApi.InputFileLocal(localPath)
+        client.send(
+            TdApi.PreliminaryUploadFile(input, fileType, 32),
+            { result ->
+                if (result !is TdApi.File) {
+                    trySend(TelegramUploadEvent.Failed("TDLib did not return an upload file", false))
+                    close()
+                } else {
+                    val fileId = result.id
+                    pendingUploads[fileId] = this@callbackFlow
+                    trySend(TelegramUploadEvent.Progress(result.remote.uploadedSize, result.size.coerceAtLeast(task.fileSize)))
+                    val content = TdApi.InputMessageDocument(
+                        TdApi.InputDocument(TdApi.InputFileId(fileId), null, false),
+                        TdApi.FormattedText(task.fileName, emptyArray())
+                    )
+                    client.send(
+                        TdApi.SendMessage(task.destinationId, null, null, null, null, content),
+                        { sent ->
+                            if (sent is TdApi.Message) {
+                                trySend(TelegramUploadEvent.Progress(task.fileSize, task.fileSize))
+                                trySend(TelegramUploadEvent.Completed)
+                                pendingUploads.remove(fileId)
+                                close()
+                            } else if (sent is TdApi.Error) {
+                                trySend(TelegramUploadEvent.Failed(sent.message, isRetryableTelegramError(sent.code)))
+                                pendingUploads.remove(fileId)
+                                close()
+                            }
+                        },
+                        { failure ->
+                            trySend(TelegramUploadEvent.Failed(failure.message ?: "TDLib send failed", true))
+                            pendingUploads.remove(fileId)
+                            close()
+                        }
+                    )
+                }
+            },
+            { failure ->
+                trySend(TelegramUploadEvent.Failed(failure.message ?: "TDLib upload failed", true))
+                close()
+            }
+        )
+        awaitClose { pendingUploads.entries.removeIf { it.value == this@callbackFlow } }
+    }
+
+    private fun isRetryableTelegramError(code: Int): Boolean = code == 420 || code == 429 || code >= 500
+
     private suspend fun send(function: TdApi.Function<*>) {
         val client = tdClient
         if (client == null) {
@@ -188,6 +253,7 @@ class TelegramClientImpl @Inject constructor(
         when (objectValue) {
             is TdApi.UpdateAuthorizationState -> handleAuthorizationState(objectValue.authorizationState)
             is TdApi.UpdateNewChat -> upsertChat(objectValue.chat)
+            is TdApi.UpdateFile -> handleFileUpdate(objectValue)
             is TdApi.UpdateChatTitle -> updateChatTitle(objectValue)
             is TdApi.UpdateChatPermissions -> updateChatPermissions(objectValue)
             is TdApi.Chats -> objectValue.chatIds.forEach(::requestChat)
@@ -195,6 +261,12 @@ class TelegramClientImpl @Inject constructor(
             is TdApi.User -> handleAuthenticatedUser(objectValue)
             is TdApi.Error -> mapError(objectValue)
         }
+    }
+
+    private fun handleFileUpdate(update: TdApi.UpdateFile) {
+        val channel = pendingUploads[update.file.id] ?: return
+        val total = update.file.size.coerceAtLeast(update.file.expectedSize)
+        channel.trySend(TelegramUploadEvent.Progress(update.file.remote.uploadedSize, total))
     }
 
     private fun handleAuthorizationState(state: TdApi.AuthorizationState) {

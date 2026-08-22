@@ -4,6 +4,7 @@ import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramError
 import com.telegramdrive.uploader.domain.model.TelegramUser
+import com.telegramdrive.uploader.domain.model.UploadTask
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -12,7 +13,7 @@ interface TelegramClient {
     val currentUser: StateFlow<TelegramUser?>
     val error: StateFlow<TelegramError?>
     val qrLoginLink: StateFlow<String?>
-    
+
     val isConfigured: Boolean
 
     suspend fun connect()
@@ -22,6 +23,13 @@ interface TelegramClient {
     suspend fun requestQrCodeLogin()
     suspend fun logout()
     fun clearError()
-    
+
     fun getDestinations(query: String = ""): Flow<List<TelegramDestination>>
+    fun uploadLocalDocument(task: UploadTask, localPath: String): Flow<TelegramUploadEvent>
+}
+
+sealed class TelegramUploadEvent {
+    data class Progress(val uploadedBytes: Long, val totalBytes: Long) : TelegramUploadEvent()
+    data object Completed : TelegramUploadEvent()
+    data class Failed(val message: String, val retryable: Boolean) : TelegramUploadEvent()
 }
