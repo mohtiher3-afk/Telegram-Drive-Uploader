@@ -19,3 +19,9 @@
 - [x] Build and verify the permanent real-upload fix across ARM64, ARMv7, and x86_64.
 
 - [x] Publish a new signed release containing the permanent confirmed-delivery fix; do not reuse the old v1.0.7 tag.
+
+- [ ] Add real elapsed upload-time tracking from TDLib transfer start through confirmed message delivery.
+- [ ] Ensure upload UI and history never show completion or timing from local staging alone.
+- [ ] Remove dual-Wi-Fi UI, monitoring logic, permissions, tests, and documentation from the Android app.
+- [ ] Add regression tests for real elapsed timing and absence of dual-Wi-Fi behavior.
+- [ ] Build and verify the updated app across ARM64, ARMv7, and x86_64.

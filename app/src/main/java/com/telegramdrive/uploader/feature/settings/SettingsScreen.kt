@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.UploadFile
-import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -164,43 +163,7 @@ fun SettingsScreen(
                 }
             }
 
-            // 3. Dual Wi-Fi status
-            SettingsSection(
-                icon = Icons.Default.Wifi,
-                title = "Dual Wi-Fi"
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    Text(
-                        text = when {
-                            uiState.wifiNetworkCount >= 2 && uiState.concurrentWifiSupported ->
-                                "Two Wi-Fi networks are visible and this device reports concurrent Wi-Fi support."
-                            uiState.wifiNetworkCount >= 2 ->
-                                "Two Wi-Fi networks are visible, but this device does not report concurrent Wi-Fi support."
-                            uiState.wifiNetworkCount == 1 ->
-                                "One Wi-Fi network is currently available to this app."
-                            else ->
-                                "No Wi-Fi network is currently available to this app."
-                        },
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = "Android does not generally merge two independent Wi-Fi links into one faster upload. The app can monitor multiple networks and select one supported network for its traffic.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "Detected networks: ${uiState.wifiNetworkCount}",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.testTag("wifi_network_count")
-                    )
-                }
-            }
-
-            // 4. Upload Config (Disabled Placeholders)
+            // 3. Upload Config (Disabled Placeholders)
             SettingsSection(
                 icon = Icons.Default.UploadFile,
                 title = "Upload Settings"

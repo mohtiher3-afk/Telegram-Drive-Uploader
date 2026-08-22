@@ -32,6 +32,9 @@ interface UploadDao {
     @Query("UPDATE uploads SET uploadedBytes = :uploadedBytes, totalBytes = :totalBytes, progress = :progress, speed = :speed, averageSpeed = :averageSpeed, eta = :eta, status = 'UPLOADING' WHERE id = :id")
     suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long)
 
+    @Query("UPDATE uploads SET uploadDurationMs = :durationMs WHERE id = :id")
+    suspend fun updateUploadDuration(id: String, durationMs: Long)
+
     @Query("DELETE FROM uploads WHERE id = :id")
     suspend fun deleteUploadById(id: String)
 

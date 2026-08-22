@@ -12,6 +12,7 @@ interface UploadRepository {
     suspend fun insertUpload(upload: UploadTask)
     suspend fun updateStatus(id: String, status: UploadStatus)
     suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long)
+    suspend fun updateUploadDuration(id: String, durationMs: Long)
     suspend fun deleteUploadById(id: String)
     suspend fun deleteCompletedUploads()
     suspend fun clearAllUploads()
