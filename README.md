@@ -60,7 +60,7 @@ STATUS: TDLIB_ARTIFACTS_PRESENT=true
 
 The checker validates the required manifest, each configured ELF native library and machine type, and the generated Java bindings. It does not replace testing on a physical Android device.
 
-For a complete source-build procedure, see [`docs/TDLIB_ANDROID_BUILD.md`](docs/TDLIB_ANDROID_BUILD.md), [`docs/TDLIB_ARTIFACT_MANIFEST.md`](docs/TDLIB_ARTIFACT_MANIFEST.md), and [`docs/tdlib_v1.8.0_android_workflow.md`](docs/tdlib_v1.8.0_android_workflow.md) when present.
+For native dependency preparation and runtime loading, see [`docs/TDLIB_NATIVE_DEPENDENCIES.md`](docs/TDLIB_NATIVE_DEPENDENCIES.md), [`docs/TDLIB_ARTIFACT_MANIFEST.md`](docs/TDLIB_ARTIFACT_MANIFEST.md), and [`docs/TDLIB_DEVICE_SMOKE_TEST.md`](docs/TDLIB_DEVICE_SMOKE_TEST.md).
 
 ## Build the application
 

@@ -65,6 +65,19 @@ check_elf_arch() {
     fi
 }
 
+check_runtime_dependencies() {
+    local abi="$1"
+    local file_path="$JNI_DIR/$abi/libtdjni.so"
+    local dependency
+    while IFS= read -r dependency; do
+        case "$dependency" in
+            libssl.so|libcrypto.so)
+                check_file "$JNI_DIR/$abi/$dependency" 100000 "TDLib $abi runtime dependency $dependency"
+                ;;
+        esac
+    done < <(readelf -d "$file_path" | sed -n 's/.*Shared library: \[\([^]]*\)\].*/\1/p')
+}
+
 echo "1. Checking Artifact Manifest..."
 if [ -f "$MANIFEST_FILE" ]; then
     echo "✅ [FOUND] Manifest: $MANIFEST_FILE"
@@ -79,6 +92,14 @@ check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v1.8.66 arm64-v8a Nat
 check_file "$JNI_DIR/armeabi-v7a/libtdjni.so" 5000000 "TDLib v1.8.66 armeabi-v7a Native Library" && check_elf_arch "armeabi-v7a" "ARM"
 check_file "$JNI_DIR/x86_64/libtdjni.so" 5000000 "TDLib v1.8.66 x86_64 Native Library" && check_elf_arch "x86_64" "Advanced Micro Devices X86-64"
 
+if command -v readelf >/dev/null 2>&1; then
+    echo ""
+    echo "2b. Checking Native Runtime Dependencies..."
+    check_runtime_dependencies "arm64-v8a"
+    check_runtime_dependencies "armeabi-v7a"
+    check_runtime_dependencies "x86_64"
+fi
+
 echo ""
 echo "3. Checking TDLib Java/JNI Source Bindings..."
 check_file "$JAVA_BINDING_DIR/Client.java" 1000 "TDLib Java Client Binding"
@@ -89,7 +110,7 @@ echo ""
 if [ "$MISSING_COUNT" -gt 0 ]; then
     echo "STATUS: TDLIB_ARTIFACTS_PRESENT=false"
     echo "❌ TDLib Artifact Check FAILED: $MISSING_COUNT required artifact(s) missing or incomplete."
-    echo "Please compile TDLib externally as described in docs/TDLIB_ANDROID_BUILD.md and place the resulting artifacts in the project."
+    echo "Please run scripts/build-openssl-android.sh with Android NDK 26.3.11579264, or place the official dependency artifacts in the matching ABI directories, then rerun this check."
     exit 1
 else
     echo "STATUS: TDLIB_ARTIFACTS_PRESENT=true"

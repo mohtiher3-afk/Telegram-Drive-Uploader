@@ -120,3 +120,10 @@
 - [ ] Dispatch the Android TDLib Device Smoke Test for the latest repository state.
 - [ ] Monitor the cloud emulator job until it completes or reports a runner/environment failure.
 - [ ] Inspect explicit `JNI_LOAD_STATUS` and `CLIENT_CREATE_STATUS` markers and report the result.
+
+## Confirmed JNI dependency blocker
+
+- [ ] Inspect `libtdjni.so` ELF NEEDED entries for every ABI and compare them with APK contents.
+- [ ] Add or rebuild official-source-compatible OpenSSL/zlib native dependencies required by TDLib without using simulated binaries.
+- [ ] Update artifact checks, Gradle packaging, and smoke-test validation for the complete native dependency set.
+- [ ] Re-run cloud emulator JNI smoke test and verify `JNI_LOAD_STATUS=PASS` and `CLIENT_CREATE_STATUS=PASS`.
