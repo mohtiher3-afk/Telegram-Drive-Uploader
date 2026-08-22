@@ -52,6 +52,27 @@ class UploadManagerImpl @Inject constructor(
             message = "WorkManager accepted upload work request.",
             uploadId = task.id
         )
+        // Read one asynchronous snapshot without observeForever, which could retain this manager.
+        val stateFuture = workManager.getWorkInfosForUniqueWork(task.id)
+        stateFuture.addListener({
+            runCatching { stateFuture.get().firstOrNull() }
+                .onSuccess { info ->
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.WORKER_ENQUEUED,
+                        severity = DiagnosticSeverity.INFO,
+                        message = "WorkManager state after enqueue: ${info?.state ?: "UNKNOWN"}; runAttemptCount=${info?.runAttemptCount ?: -1}.",
+                        uploadId = task.id
+                    )
+                }
+                .onFailure { error ->
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.WORKER_STOPPED,
+                        severity = DiagnosticSeverity.ERROR,
+                        message = "Unable to read WorkManager state after enqueue: ${error.message ?: "unknown error"}.",
+                        uploadId = task.id
+                    )
+                }
+        }, java.util.concurrent.Executor { it.run() })
     }
 
     override fun pauseUpload(id: String) {
