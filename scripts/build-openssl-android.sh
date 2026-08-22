@@ -88,7 +88,7 @@ EOF
 
   pushd "$build_dir" >/dev/null
   PATH="$wrapper_dir:$TOOLCHAIN/bin:$PATH" \
-    CC="$compiler_name" \
+    CC="$wrapper" \
     AR="$TOOLCHAIN/bin/llvm-ar" \
     RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
     "$SOURCE_ROOT/Configure" "$configure_target" shared no-tests no-engine no-legacy \
@@ -99,7 +99,7 @@ EOF
       -Wl,-z,max-page-size=16384
   PATH="$wrapper_dir:$TOOLCHAIN/bin:$PATH" \
     make -j"${OPENSSL_JOBS:-2}" build_libs \
-      CC="$compiler_name" AR="$TOOLCHAIN/bin/llvm-ar" RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
+      CC="$wrapper" AR="$TOOLCHAIN/bin/llvm-ar" RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
       CFLAGS="$cflags"
   popd >/dev/null
 
