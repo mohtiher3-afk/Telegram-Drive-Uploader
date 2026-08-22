@@ -74,7 +74,7 @@ build_abi() {
   mkdir -p "$build_dir" "$install_dir"
 
   pushd "$build_dir" >/dev/null
-  PATH="$TOOLCHAIN/bin:$PATH" CC="$cc" "$SOURCE_ROOT/Configure" "$configure_target" shared no-tests no-apps no-docs no-engine no-legacy \
+  PATH="$TOOLCHAIN/bin:$PATH" CC="$cc" "$SOURCE_ROOT/Configure" "$configure_target" shared no-tests no-engine no-legacy \
     --prefix="$install_dir" --openssldir="$install_dir/ssl" \
     -D__ANDROID_API__="$ANDROID_API" \
     -fPIC \
