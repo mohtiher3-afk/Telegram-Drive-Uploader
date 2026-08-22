@@ -142,11 +142,16 @@
 
 ## Supergroup-not-found error report
 
-- [ ] Prevent destination lookup errors from being surfaced as Telegram authentication failures.
-- [ ] Handle `GetSupergroup`/destination resolution errors separately and preserve actionable search feedback.
+- [x] Prevent destination lookup errors from being surfaced as Telegram authentication failures.
+- [x] Handle `GetSupergroup`/destination resolution errors separately and preserve actionable search feedback.
 - [ ] Add regression coverage and validate the corrected Android build.
 
 ## Repaired connection build publication
 
-- [ ] Bump the Android version for the destination-error repair without reusing v1.0.12.
-- [ ] Trigger and verify the signed multi-ABI release for the repaired build.
+- [x] Bump the Android version for the destination-error repair without reusing v1.0.12.
+- [x] Trigger and verify the signed multi-ABI release for the repaired build.
+
+## Repository name and version metadata
+
+- [x] Add the application name and current version clearly to the README and repository-facing metadata.
+- [x] Verify the metadata matches the Android Gradle version and published release before pushing.
