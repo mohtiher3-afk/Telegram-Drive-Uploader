@@ -139,3 +139,9 @@
 - [x] Reproduce or classify the Telegram connection refusal from sanitized logs and the official TDLib authorization state machine.
 - [x] Apply a targeted authentication, configuration, or runtime fix without simulating login success.
 - [ ] Add regression coverage and validate the repaired build and device-login prerequisites.
+
+## Supergroup-not-found error report
+
+- [ ] Prevent destination lookup errors from being surfaced as Telegram authentication failures.
+- [ ] Handle `GetSupergroup`/destination resolution errors separately and preserve actionable search feedback.
+- [ ] Add regression coverage and validate the corrected Android build.

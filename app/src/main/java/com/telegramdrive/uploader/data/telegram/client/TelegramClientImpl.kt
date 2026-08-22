@@ -413,11 +413,32 @@ class TelegramClientImpl @Inject constructor(
     }
 
     private fun requestChat(chatId: Long) {
-        tdClient?.send(TdApi.GetChat(chatId), { result -> handleTdLibObject(result) }, null)
+        tdClient?.send(TdApi.GetChat(chatId), { result ->
+            when (result) {
+                is TdApi.Chat -> upsertChat(result)
+                is TdApi.Error -> recordDestinationLookupFailure("chat", chatId, result)
+            }
+        }, null)
     }
 
     private fun requestSupergroup(supergroupId: Long) {
-        tdClient?.send(TdApi.GetSupergroup(supergroupId), { result -> handleTdLibObject(result) }, null)
+        tdClient?.send(TdApi.GetSupergroup(supergroupId), { result ->
+            when (result) {
+                is TdApi.Supergroup -> upsertSupergroup(result)
+                is TdApi.Error -> recordDestinationLookupFailure("supergroup", supergroupId, result)
+            }
+        }, null)
+    }
+
+    private fun recordDestinationLookupFailure(kind: String, id: Long, error: TdApi.Error) {
+        // Destination metadata can disappear while Telegram refreshes chat state. These
+        // lookup failures must not be routed through mapError(), which is reserved for
+        // authentication and connection requests and would show a false auth failure.
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.TELEGRAM_INIT,
+            severity = DiagnosticSeverity.INFO,
+            message = "Destination $kind lookup unavailable for id=$id: ${error.code}"
+        )
     }
 
     private fun upsertChat(chat: TdApi.Chat) {
