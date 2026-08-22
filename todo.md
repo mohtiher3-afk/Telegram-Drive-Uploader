@@ -27,3 +27,9 @@
 - [x] Build and verify the updated app across ARM64, ARMv7, and x86_64.
 
 - [x] Publish a new signed release containing real upload timing and the removed dual-Wi-Fi feature.
+
+- [ ] Calculate current upload speed from real TDLib UpdateFile progress samples.
+- [ ] Calculate estimated remaining time only when speed and remaining bytes are sufficient.
+- [ ] Display speed and ETA beside the real upload progress bar with Arabic/localized labels.
+- [ ] Add regression tests for speed, ETA, stalled transfers, and confirmed completion.
+- [ ] Build and verify the Android app across ARM64, ARMv7, and x86_64.
