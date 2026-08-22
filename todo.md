@@ -46,3 +46,11 @@
 - [ ] Build and verify the repaired queue path across ARM64, ARMv7, and x86_64.
 - [ ] Publish a new signed Android release containing the WorkManager enqueue fix and corrected diagnostics version.
 - [ ] Publish a fresh signed Android release containing the WorkManager enqueue repair and diagnostic version fix.
+
+## Telegram channel delivery and video upload blocker
+
+- [ ] Trace the complete video path from picker and metadata through WorkManager, TDLib upload, and channel message delivery.
+- [ ] Verify channel destination resolution and permissions using the official TDLib path.
+- [ ] Repair genuine video sending with terminal confirmation from TDLib and preserve progress, speed, ETA, retry, and failure states.
+- [ ] Add regression tests for video message construction, channel destination handling, and confirmed completion semantics.
+- [ ] Run multi-ABI CI and document the physical-device test that verifies the message appears in the Telegram channel.
