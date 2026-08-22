@@ -25,3 +25,5 @@
 - [ ] Remove dual-Wi-Fi UI, monitoring logic, permissions, tests, and documentation from the Android app.
 - [ ] Add regression tests for real elapsed timing and absence of dual-Wi-Fi behavior.
 - [ ] Build and verify the updated app across ARM64, ARMv7, and x86_64.
+
+- [ ] Publish a new signed release containing real upload timing and the removed dual-Wi-Fi feature.
