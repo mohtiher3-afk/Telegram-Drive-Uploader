@@ -28,6 +28,7 @@ import com.telegramdrive.uploader.domain.model.TelegramDestinationType
 @Composable
 fun TelegramDestinationScreen(
     onBackClick: () -> Unit,
+    onConnectClick: () -> Unit,
     onDestinationSelected: (TelegramDestination) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TelegramDestinationViewModel = hiltViewModel()
@@ -92,6 +93,15 @@ fun TelegramDestinationScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = onConnectClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("destination_connect_telegram_button")
+                    ) {
+                        Text(stringResource(com.telegramdrive.uploader.R.string.connect_telegram))
+                    }
                 }
             } else {
                 // Search Bar
