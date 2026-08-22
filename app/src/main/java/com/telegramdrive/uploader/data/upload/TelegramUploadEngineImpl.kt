@@ -1,6 +1,8 @@
 package com.telegramdrive.uploader.data.upload
 
 import android.net.Uri
+import com.telegramdrive.uploader.data.telegram.client.TelegramClient
+import com.telegramdrive.uploader.data.telegram.client.TelegramUploadEvent
 import com.telegramdrive.uploader.data.upload.reader.StreamingFileReader
 import com.telegramdrive.uploader.domain.model.UploadProgress
 import com.telegramdrive.uploader.domain.model.UploadTask
@@ -9,84 +11,86 @@ import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.io.IOException
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TelegramUploadEngineImpl @Inject constructor(
-    private val streamingFileReader: StreamingFileReader
+    private val streamingFileReader: StreamingFileReader,
+    private val telegramClient: TelegramClient
 ) : TelegramUploadEngine {
 
-    companion object {
-        private const val CHUNK_SIZE_BYTES = 4 * 1024 * 1024
-        private const val PROGRESS_EMIT_INTERVAL_MS = 250L
-    }
-
     override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {
-        val speedCalculator = SpeedCalculator()
-        val uri = Uri.parse(task.sourceUri)
-        val fileSize = try {
-            streamingFileReader.getFileSize(uri)
-        } catch (e: Exception) {
-            task.fileSize
+        if (!telegramClient.isConfigured) {
+            emit(UploadEngineResult.Error("Telegram TDLib credentials are not configured", false))
+            return@flow
         }
-        val totalBytes = fileSize.takeIf { it > 0 } ?: task.fileSize
-        if (totalBytes <= 0L) {
-            emit(UploadEngineResult.Error("Unable to determine source file size", false))
+        if (telegramClient.connectionState.value.name != "AUTHORIZED") {
+            emit(UploadEngineResult.Error("Telegram account is not authorized", true))
+            return@flow
+        }
+        if (task.destinationId == 0L) {
+            emit(UploadEngineResult.Error("A Telegram destination is required", false))
             return@flow
         }
 
-        var uploadedBytes = task.uploadedBytes.coerceIn(0L, totalBytes)
-        var lastProgressEmitAt = 0L
-        emit(emitProgress(uploadedBytes, totalBytes, speedCalculator))
-
+        val source = Uri.parse(task.sourceUri)
+        val stagedFile = File.createTempFile("tdlib-upload-", "-${safeName(task.fileName)}")
+        val speedCalculator = SpeedCalculator()
         try {
-            while (uploadedBytes < totalBytes) {
-                val remaining = totalBytes - uploadedBytes
-                val currentChunkSize = minOf(CHUNK_SIZE_BYTES.toLong(), remaining).toInt()
-                val chunk = streamingFileReader.readChunk(uri, uploadedBytes, currentChunkSize)
-                if (chunk.isEmpty()) {
-                    emit(UploadEngineResult.Error("Source stream ended before all bytes were read", true))
-                    return@flow
-                }
-                uploadedBytes += chunk.size.toLong()
-                val now = System.currentTimeMillis()
-                val shouldEmit = now - lastProgressEmitAt >= PROGRESS_EMIT_INTERVAL_MS || uploadedBytes >= totalBytes
-                if (shouldEmit) {
-                    emit(emitProgress(uploadedBytes, totalBytes, speedCalculator))
-                    lastProgressEmitAt = now
-                } else {
-                    speedCalculator.update(uploadedBytes)
+            val copiedBytes = streamingFileReader.copyToFile(source, stagedFile)
+            val totalBytes = copiedBytes.takeIf { it > 0L } ?: task.fileSize
+            if (totalBytes <= 0L) {
+                emit(UploadEngineResult.Error("Unable to determine source file size", false))
+                return@flow
+            }
+
+            emit(progress(0L, totalBytes, speedCalculator))
+            telegramClient.uploadLocalDocument(task, stagedFile.absolutePath).collect { event ->
+                when (event) {
+                    is TelegramUploadEvent.Progress -> {
+                        val uploaded = event.uploadedBytes.coerceIn(0L, totalBytes)
+                        emit(progress(uploaded, totalBytes, speedCalculator))
+                    }
+                    TelegramUploadEvent.Completed -> emit(UploadEngineResult.Success)
+                    is TelegramUploadEvent.Failed -> emit(
+                        UploadEngineResult.Error(event.message, event.retryable)
+                    )
                 }
             }
-            emit(UploadEngineResult.Success)
-        } catch (e: IOException) {
-            emit(UploadEngineResult.Error("Network or source I/O error: ${e.localizedMessage ?: "Unknown I/O error"}", true))
-        } catch (e: Exception) {
-            emit(UploadEngineResult.Error("Upload failed: ${e.localizedMessage ?: "Unknown error"}", false))
+        } catch (error: Throwable) {
+            emit(UploadEngineResult.Error(error.message ?: "TDLib upload failed", isRetryable(error)))
+        } finally {
+            stagedFile.delete()
         }
     }
 
-    private fun emitProgress(
+    private fun progress(
         uploadedBytes: Long,
         totalBytes: Long,
         speedCalculator: SpeedCalculator
     ): UploadEngineResult.Progress {
-        val speedInfo = speedCalculator.update(uploadedBytes)
-        val percentage = ((uploadedBytes * 100f) / totalBytes).coerceIn(0f, 100f)
-        val eta = if (speedInfo.currentSpeed > 0) {
-            (totalBytes - uploadedBytes) / speedInfo.currentSpeed
+        val speed = speedCalculator.update(uploadedBytes)
+        val percentage = (uploadedBytes * 100f / totalBytes).coerceIn(0f, 100f)
+        val eta = if (speed.currentSpeed > 0) {
+            (totalBytes - uploadedBytes) / speed.currentSpeed
         } else 0L
         return UploadEngineResult.Progress(
             UploadProgress(
                 uploadedBytes = uploadedBytes,
                 totalBytes = totalBytes,
                 percentage = percentage,
-                speedBytesPerSecond = speedInfo.currentSpeed,
-                averageSpeedBytesPerSecond = speedInfo.averageSpeed,
+                speedBytesPerSecond = speed.currentSpeed,
+                averageSpeedBytesPerSecond = speed.averageSpeed,
                 etaSeconds = eta
             )
         )
     }
+
+    private fun safeName(name: String): String =
+        name.replace(Regex("[^A-Za-z0-9._-]"), "_").take(80).ifBlank { "file" }
+
+    private fun isRetryable(error: Throwable): Boolean =
+        error is java.io.IOException || error is java.net.SocketException
 }
