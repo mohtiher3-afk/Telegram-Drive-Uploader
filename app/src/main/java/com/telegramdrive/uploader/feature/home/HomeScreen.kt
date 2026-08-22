@@ -185,14 +185,10 @@ fun HomeScreen(
                         FilledTonalButton(
                             onClick = {
                                 pickerLauncher.launch(
-                                    arrayOf(
-                                        "video/mp4",
-                                        "video/x-matroska",
-                                        "video/quicktime",
-                                        "video/webm",
-                                        "video/x-msvideo",
-                                        "video/*"
-                                    )
+                                    // Use a broad picker filter because providers often report MKV, TS, AVI,
+                                    // and camera formats as application/octet-stream. The extractor validates
+                                    // the selected extension/MIME and rejects non-video files safely.
+                                    arrayOf("*/*")
                                 )
                             },
                             modifier = Modifier.testTag("select_videos_button")

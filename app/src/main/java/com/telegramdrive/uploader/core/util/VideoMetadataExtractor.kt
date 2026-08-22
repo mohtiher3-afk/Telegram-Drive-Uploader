@@ -51,8 +51,11 @@ object VideoMetadataExtractor {
             e.printStackTrace()
         }
 
-        // 3. Get MIME type
-        val mimeType = resolver.getType(uriString) ?: "video/mp4"
+        // 3. Resolve MIME type from the provider first, then fall back to the real filename extension.
+        val mimeType = VideoFormatSupport.normalizeMimeType(resolver.getType(uriString), fileName)
+        require(VideoFormatSupport.isSupportedVideo(mimeType, fileName)) {
+            "Unsupported video format. Select a video container such as MP4, MKV, MOV, WEBM, AVI, 3GP, TS, MPEG, FLV, WMV, or OGV."
+        }
 
         // 4. Extract Media Metadata (Duration, Width, Height)
         var duration = 0L

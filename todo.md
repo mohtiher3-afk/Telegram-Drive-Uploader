@@ -67,3 +67,10 @@
 - [ ] Apply the requested channel-search, channel-permission, and real-video-upload changes in the Android repository.
 - [ ] Inspect the browser-visible gateway and setup pages without performing a real external upload or sensitive submission.
 - [ ] Run available automated validation and report any environment or physical-device limitations honestly.
+
+## Multi-format video upload requirement
+
+- [ ] Inspect picker MIME filters, extension fallback, metadata extraction, and TDLib video/document classification.
+- [ ] Support multiple video MIME types and common extensions without fake conversion or forced re-encoding.
+- [ ] Add regression tests for format recognition and real confirmed delivery.
+- [ ] Run multi-ABI CI and document codec/container limitations for physical-device testing.
