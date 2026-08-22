@@ -9,6 +9,7 @@ on:
       - 'app/src/main/java/org/drinkless/tdlib/**'
       - 'app/src/main/jniLibs/x86_64/**'
       - 'scripts/run-tdlib-device-smoke-test.sh'
+      - 'scripts/build-openssl-android.sh'
       - '.github/workflows/android-device-smoke.yml'
       - 'app/build.gradle.kts'
 
@@ -69,6 +70,8 @@ jobs:
             -noprompt
 
       - name: Verify official TDLib artifacts
+        env:
+          TDLIB_CHECK_ABI: x86_64
         run: ./scripts/check-tdlib-artifacts.sh
 
       - name: Build x86_64 debug and instrumentation APKs
