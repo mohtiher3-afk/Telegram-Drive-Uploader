@@ -88,21 +88,7 @@ jobs:
           profile: pixel_2
           emulator-options: -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -camera-back none
           disable-animations: true
-          script: |
-            # android-emulator-runner executes this block with POSIX sh; pipefail is not portable there.
-            set -eu
-            BUILD_ROOT="${{ github.workspace }}/app/build"
-            TEST_APK="$(find "$BUILD_ROOT" -type f -name '*androidTest*.apk' | head -n 1)"
-            APP_APK="$(find "$BUILD_ROOT" -type f \( -name "app-${ABI}-debug.apk" -o -name 'app-debug.apk' \) | head -n 1)"
-            printf 'Discovered APKs:\n'
-            find "$BUILD_ROOT" -type f -name '*.apk' -print || true
-            test -n "$TEST_APK"
-            test -n "$APP_APK"
-            ./scripts/run-tdlib-device-smoke-test.sh \
-              --apk "$APP_APK" \
-              --test-apk "$TEST_APK" \
-              --serial "${ANDROID_SERIAL:-emulator-5554}" \
-              --log-dir "artifacts/tdlib-smoke/${ABI}"
+          script: ./scripts/run-tdlib-device-smoke-ci.sh
 
       - name: Upload TDLib runtime evidence
         if: always()
