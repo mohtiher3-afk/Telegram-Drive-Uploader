@@ -87,3 +87,10 @@
 - [ ] Improve channel selection, upload lifecycle feedback, retry behavior, and actionable error reporting.
 - [ ] Preserve official TDLib and confirmed delivery semantics; do not add simulated success.
 - [ ] Add regression coverage and publish a validated new Android build.
+
+## Repository and browser correction request
+
+- [ ] Inspect the latest repository, diagnostics, and browser-visible gateway state.
+- [ ] Identify remaining defects in channel discovery, WorkManager startup, file access, and real TDLib delivery.
+- [ ] Apply targeted fixes with regression tests and validate Android CI.
+- [ ] Recheck the browser-visible project without performing a real external upload.

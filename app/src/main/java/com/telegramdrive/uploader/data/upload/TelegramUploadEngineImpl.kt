@@ -4,6 +4,9 @@ import android.net.Uri
 import android.os.SystemClock
 import com.telegramdrive.uploader.data.telegram.client.TelegramClient
 import com.telegramdrive.uploader.data.telegram.client.TelegramUploadEvent
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.data.upload.reader.StreamingFileReader
 import com.telegramdrive.uploader.domain.model.UploadProgress
 import com.telegramdrive.uploader.domain.model.UploadTask
@@ -49,6 +52,12 @@ class TelegramUploadEngineImpl @Inject constructor(
 
             emit(progress(0L, totalBytes, speedCalculator))
             val uploadStartedAt = SystemClock.elapsedRealtime()
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_STARTED,
+                severity = DiagnosticSeverity.INFO,
+                message = "Staged source is ready; handing off to TDLib upload.",
+                uploadId = task.id
+            )
             telegramClient.uploadLocalDocument(task, stagedFile.absolutePath).collect { event ->
                 when (event) {
                     is TelegramUploadEvent.Progress -> {

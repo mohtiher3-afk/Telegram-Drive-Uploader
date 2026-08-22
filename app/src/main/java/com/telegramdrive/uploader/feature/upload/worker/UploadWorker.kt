@@ -62,9 +62,9 @@ class UploadWorker @AssistedInject constructor(
 
         repository.updateStatus(uploadId, UploadStatus.PREPARING)
         DiagnosticsManager.log(
-            category = DiagnosticCategory.UPLOAD_STARTED,
+            category = DiagnosticCategory.UPLOAD_PREPARING,
             severity = DiagnosticSeverity.INFO,
-            message = "Upload task state transitioned to PREPARING.",
+            message = "Upload task entered preflight; waiting for TDLib handoff.",
             uploadId = uploadId
         )
 
