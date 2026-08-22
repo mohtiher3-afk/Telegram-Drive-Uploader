@@ -53,9 +53,40 @@ fun UploadStatusIndicator(
             if (video.status == UploadStatus.UPLOADING || video.status == UploadStatus.PREPARING) {
                 Spacer(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(
-                    progress = { video.progress },
+                    progress = { video.progress.coerceIn(0f, 1f) },
                     modifier = Modifier.fillMaxWidth()
                 )
+                if (video.status == UploadStatus.UPLOADING) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(
+                                com.telegramdrive.uploader.R.string.upload_speed,
+                                formatTransferSpeed(video.speed)
+                            ),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        val etaText = formatRemainingTime(video.eta)
+                        val etaLabel = when {
+                            etaText.isNotEmpty() -> etaText
+                            video.speed > 0L -> stringResource(com.telegramdrive.uploader.R.string.upload_eta_calculating)
+                            else -> stringResource(com.telegramdrive.uploader.R.string.upload_eta_stalled)
+                        }
+                        Text(
+                            text = stringResource(
+                                com.telegramdrive.uploader.R.string.upload_eta,
+                                etaLabel
+                            ),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
 
             if (onPauseClick != null || onResumeClick != null || onRetryClick != null || onCancelClick != null) {

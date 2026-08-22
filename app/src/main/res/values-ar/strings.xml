@@ -70,6 +70,10 @@
     <string name="clear_history">مسح السجل</string>
     <string name="upload_history">سجل الرفع</string>
     <string name="upload_time">وقت الرفع: %1$s</string>
+    <string name="upload_speed">السرعة: %1$s</string>
+    <string name="upload_eta">المتبقي: %1$s</string>
+    <string name="upload_eta_calculating">جارٍ الحساب…</string>
+    <string name="upload_eta_stalled">بانتظار بيانات الرفع…</string>
     <string name="search_file_names">البحث في أسماء الملفات</string>
     <string name="filter_completed_uploads">اكتب لتصفية عمليات الرفع المكتملة</string>
     <string name="newest">الأحدث</string>
