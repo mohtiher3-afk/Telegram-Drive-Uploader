@@ -107,3 +107,10 @@
 - [ ] Determine why the Android TDLib emulator smoke test was cancelled while all ABI builds succeeded.
 - [ ] Correct concurrency or workflow triggering so the smoke test receives a final result.
 - [ ] Verify a subsequent smoke-test run and document whether JNI validation actually executed.
+
+## Repository-wide error audit
+
+- [ ] Audit source, Gradle, workflows, TDLib integration, WorkManager, channel search, and upload paths.
+- [ ] Reproduce or classify confirmed errors and separate blockers from warnings.
+- [ ] Apply targeted fixes and add regression coverage.
+- [ ] Run local and GitHub Actions validation before delivery.

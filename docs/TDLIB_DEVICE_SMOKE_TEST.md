@@ -14,14 +14,13 @@ gradle --no-daemon --max-workers=1 \
   :app:assembleDebug :app:assembleDebugAndroidTest
 ```
 
-The expected files are normally:
+The exact output paths depend on the Android Gradle Plugin and ABI split configuration. Locate both files below the Gradle build directory:
 
-```text
-app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
-app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+```bash
+find app/build/outputs -type f -name '*.apk' -print
 ```
 
-The exact test APK filename can vary by Android Gradle Plugin version; locate it under `app/build/outputs/apk/androidTest/debug/` when necessary.
+Select the application APK matching the device ABI and the instrumentation APK whose name contains `androidTest`. Do not assume a fixed `outputs/apk/androidTest/debug/` path.
 
 ## Run on a connected device or emulator
 
@@ -30,9 +29,13 @@ Enable USB debugging on a physical device or start an emulator, then confirm tha
 ```bash
 adb devices -l
 
+APP_APK="$(find app/build/outputs -type f \( -name 'app-arm64-v8a-debug.apk' -o -name 'app-debug.apk' \) | head -n 1)"
+TEST_APK="$(find app/build/outputs -type f -name '*androidTest*.apk' | head -n 1)"
+test -n "$APP_APK" && test -n "$TEST_APK"
+
 ./scripts/run-tdlib-device-smoke-test.sh \
-  --apk app/build/outputs/apk/debug/app-arm64-v8a-debug.apk \
-  --test-apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+  --apk "$APP_APK" \
+  --test-apk "$TEST_APK" \
   --serial emulator-5554
 ```
 
@@ -60,7 +63,7 @@ The instrumentation test also emits `AUTH_STATE=...` if TDLib produces an author
 
 ## CI integration
 
-A self-hosted GitHub Actions runner with an Android emulator can run the same harness after building the ABI-specific debug and test APKs. The runner must provide `adb`, an online emulator, and an API level compatible with the project’s `minSdk`. Do not treat a hosted CI build without an attached device or emulator as JNI runtime evidence.
+The repository workflow uses a standard `ubuntu-24.04` hosted runner and `reactivecircus/android-emulator-runner` to launch an x86_64 emulator. The workflow must not use an unregistered custom label such as `ubuntu-24.04-4core`, because that leaves the job queued indefinitely. The runner must provide `adb`, an online emulator, and an API level compatible with the project’s `minSdk`. Do not treat a hosted CI build without an attached device or emulator as JNI runtime evidence.
 
 A minimal CI sequence is:
 
@@ -69,9 +72,14 @@ gradle --no-daemon --max-workers=1 \
   -PtargetAbi=${ABI} \
   :app:assembleDebug :app:assembleDebugAndroidTest
 
+BUILD_ROOT="${GITHUB_WORKSPACE:-$PWD}/app/build"
+TEST_APK="$(find "$BUILD_ROOT" -type f -name '*androidTest*.apk' | head -n 1)"
+APP_APK="$(find "$BUILD_ROOT" -type f \( -name "app-${ABI}-debug.apk" -o -name 'app-debug.apk' \) | head -n 1)"
+test -n "$TEST_APK" && test -n "$APP_APK"
+
 ./scripts/run-tdlib-device-smoke-test.sh \
-  --apk "app/build/outputs/apk/debug/app-${ABI}-debug.apk" \
-  --test-apk "$(find app/build/outputs/apk/androidTest/debug -type f -name '*.apk' | head -n 1)" \
+  --apk "$APP_APK" \
+  --test-apk "$TEST_APK" \
   --serial "$ANDROID_SERIAL" \
   --log-dir "artifacts/tdlib-smoke/${ABI}"
 ```
