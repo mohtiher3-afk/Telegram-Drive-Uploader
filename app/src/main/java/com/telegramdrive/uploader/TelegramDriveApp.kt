@@ -2,13 +2,26 @@ package com.telegramdrive.uploader
 
 import android.app.Application
 import android.content.ComponentCallbacks2
+import android.util.Log
+import androidx.work.Configuration
+import androidx.hilt.work.HiltWorkerFactory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
-class TelegramDriveApp : Application() {
+class TelegramDriveApp : Application(), Configuration.Provider {
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(Log.INFO)
+            .build()
+
     override fun onCreate() {
         super.onCreate()
         DiagnosticsManager.log(
