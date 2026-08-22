@@ -90,7 +90,14 @@
 
 ## Repository and browser correction request
 
-- [ ] Inspect the latest repository, diagnostics, and browser-visible gateway state.
-- [ ] Identify remaining defects in channel discovery, WorkManager startup, file access, and real TDLib delivery.
-- [ ] Apply targeted fixes with regression tests and validate Android CI.
-- [ ] Recheck the browser-visible project without performing a real external upload.
+- [x] Inspect the latest repository, diagnostics, and browser-visible gateway state.
+- [x] Identify remaining defects in channel discovery, WorkManager startup, file access, and real TDLib delivery.
+- [x] Apply targeted fixes with regression tests and validate Android CI.
+- [x] Recheck the browser-visible project without performing a real external upload.
+
+## Android emulator JNI smoke-test runner blocker
+
+- [ ] Inspect why the TDLib JNI smoke-test job is waiting for `ubuntu-24.04-4core`.
+- [ ] Verify repository runner availability and workflow label configuration.
+- [ ] Apply a safe scheduling correction or document the required self-hosted runner setup.
+- [ ] Recheck the smoke-test workflow status and report whether the test actually executed.
