@@ -42,7 +42,12 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install Android SDK packages
-        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;26.3.11579264"
+
+      - name: Prepare official OpenSSL runtime dependencies
+        env:
+          TARGET_ABIS: ${{ matrix.abi }}
+        run: ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/26.3.11579264" ./scripts/build-openssl-android.sh
 
       - name: Set up Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
