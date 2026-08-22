@@ -41,6 +41,7 @@ import com.telegramdrive.uploader.core.ui.components.EmptyState
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -154,6 +155,17 @@ fun HistoryScreen(
                                         video = video,
                                         onRemoveClick = { viewModel.deleteUpload(video.id) }
                                     )
+                                    if (video.uploadDurationMs > 0L) {
+                                        Text(
+                                            text = stringResource(
+                                                com.telegramdrive.uploader.R.string.upload_time,
+                                                formatElapsedUploadTime(video.uploadDurationMs)
+                                            ),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.padding(top = 4.dp)
+                                        )
+                                    }
                                     UploadStatusIndicator(
                                         video = video,
                                         modifier = Modifier.padding(top = 4.dp)
@@ -174,4 +186,15 @@ private fun periodLabel(period: HistoryPeriod): String = when (period) {
     HistoryPeriod.TODAY -> "Today"
     HistoryPeriod.LAST_7_DAYS -> "7 days"
     HistoryPeriod.LAST_30_DAYS -> "30 days"
+}
+
+private fun formatElapsedUploadTime(durationMs: Long): String {
+    val totalSeconds = (durationMs / 1_000L).coerceAtLeast(0L)
+    val minutes = totalSeconds / 60L
+    val seconds = totalSeconds % 60L
+    return if (minutes > 0L) {
+        "%dm %02ds".format(Locale.US, minutes, seconds)
+    } else {
+        "%ds".format(Locale.US, seconds)
+    }
 }

@@ -46,6 +46,10 @@ class UploadRepositoryImpl @Inject constructor(
         uploadDao.updateProgress(id, uploadedBytes, totalBytes, progress, speed, averageSpeed, eta)
     }
 
+    override suspend fun updateUploadDuration(id: String, durationMs: Long) {
+        uploadDao.updateUploadDuration(id, durationMs.coerceAtLeast(0L))
+    }
+
     override suspend fun deleteUploadById(id: String) {
         uploadDao.deleteUploadById(id)
     }
@@ -82,7 +86,8 @@ class UploadRepositoryImpl @Inject constructor(
             duration = duration,
                         width = width,
             height = height,
-            scheduledAt = scheduledAt
+            scheduledAt = scheduledAt,
+            uploadDurationMs = uploadDurationMs
         )
     }
     private fun UploadTask.toEntity(): UploadEntity {
@@ -109,7 +114,8 @@ class UploadRepositoryImpl @Inject constructor(
             duration = duration,
             width = width,
             height = height,
-            scheduledAt = scheduledAt
+            scheduledAt = scheduledAt,
+            uploadDurationMs = uploadDurationMs
         )
     }
 }

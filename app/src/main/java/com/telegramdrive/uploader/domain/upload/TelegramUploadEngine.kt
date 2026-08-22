@@ -10,6 +10,6 @@ interface TelegramUploadEngine {
 
 sealed class UploadEngineResult {
     data class Progress(val progress: UploadProgress) : UploadEngineResult()
-    object Success : UploadEngineResult()
+    data class Success(val uploadDurationMs: Long) : UploadEngineResult()
     data class Error(val message: String, val isRetryable: Boolean) : UploadEngineResult()
 }

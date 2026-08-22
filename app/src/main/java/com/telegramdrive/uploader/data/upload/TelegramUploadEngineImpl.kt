@@ -1,6 +1,7 @@
 package com.telegramdrive.uploader.data.upload
 
 import android.net.Uri
+import android.os.SystemClock
 import com.telegramdrive.uploader.data.telegram.client.TelegramClient
 import com.telegramdrive.uploader.data.telegram.client.TelegramUploadEvent
 import com.telegramdrive.uploader.data.upload.reader.StreamingFileReader
@@ -47,13 +48,18 @@ class TelegramUploadEngineImpl @Inject constructor(
             }
 
             emit(progress(0L, totalBytes, speedCalculator))
+            val uploadStartedAt = SystemClock.elapsedRealtime()
             telegramClient.uploadLocalDocument(task, stagedFile.absolutePath).collect { event ->
                 when (event) {
                     is TelegramUploadEvent.Progress -> {
                         val uploaded = event.uploadedBytes.coerceIn(0L, totalBytes)
                         emit(progress(uploaded, totalBytes, speedCalculator))
                     }
-                    TelegramUploadEvent.Completed -> emit(UploadEngineResult.Success)
+                    TelegramUploadEvent.Completed -> emit(
+                        UploadEngineResult.Success(
+                            uploadDurationMs = (SystemClock.elapsedRealtime() - uploadStartedAt).coerceAtLeast(0L)
+                        )
+                    )
                     is TelegramUploadEvent.Failed -> emit(
                         UploadEngineResult.Error(event.message, event.retryable)
                     )

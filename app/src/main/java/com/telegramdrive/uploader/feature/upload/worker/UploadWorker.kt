@@ -90,6 +90,7 @@ class UploadWorker @AssistedInject constructor(
                     }
                     is UploadEngineResult.Success -> {
                         terminalEventReceived = true
+                        repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
                         repository.updateStatus(uploadId, UploadStatus.COMPLETED)
                         result = Result.success()
                         val duration = System.currentTimeMillis() - startTime

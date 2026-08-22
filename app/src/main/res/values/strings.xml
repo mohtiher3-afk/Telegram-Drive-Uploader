@@ -68,7 +68,8 @@
     <string name="copy_logs">Copy Logs</string>
     <string name="clear_logs">Clear Logs</string>
     <string name="clear_history">Clear history</string>
-    <string name="upload_history">Upload history</string>
+    <string name="upload_history">Upload History</string>
+    <string name="upload_time">Upload time: %1$s</string>
     <string name="search_file_names">Search file names</string>
     <string name="filter_completed_uploads">Type to filter completed uploads</string>
     <string name="newest">Newest</string>
