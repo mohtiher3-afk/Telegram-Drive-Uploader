@@ -52,7 +52,16 @@ class TelegramClientImpl @Inject constructor(
     private val chats = LinkedHashMap<Long, TdApi.Chat>()
     private val _chatDestinations = MutableStateFlow<List<TelegramDestination>>(emptyList())
     private val chatsRequested = AtomicBoolean(false)
-    private val pendingUploads = ConcurrentHashMap<Int, SendChannel<TelegramUploadEvent>>()
+    private data class PendingUpload(
+        val channel: SendChannel<TelegramUploadEvent>,
+        val destinationId: Long,
+        val totalBytes: Long,
+        val provisionalMessageId: Long? = null
+    )
+
+    private val pendingUploads = ConcurrentHashMap<Int, PendingUpload>()
+    private val pendingMessageSuccesses = ConcurrentHashMap<Long, TdApi.UpdateMessageSendSucceeded>()
+    private val pendingMessageFailures = ConcurrentHashMap<Long, TdApi.UpdateMessageSendFailed>()
     private var tdClient: Client? = null
 
     override val connectionState: StateFlow<TelegramConnectionState> = _connectionState.asStateFlow()
@@ -196,7 +205,11 @@ class TelegramClientImpl @Inject constructor(
                     close()
                 } else {
                     val fileId = result.id
-                    pendingUploads[fileId] = this@callbackFlow
+                    pendingUploads[fileId] = PendingUpload(
+                        channel = this@callbackFlow,
+                        destinationId = task.destinationId,
+                        totalBytes = task.fileSize.coerceAtLeast(result.size.toLong())
+                    )
                     trySend(TelegramUploadEvent.Progress(result.remote.uploadedSize, result.size.coerceAtLeast(task.fileSize)))
                     val content = TdApi.InputMessageDocument(
                         TdApi.InputDocument(TdApi.InputFileId(fileId), null, false),
@@ -206,10 +219,13 @@ class TelegramClientImpl @Inject constructor(
                         TdApi.SendMessage(task.destinationId, null, null, null, null, content),
                         { sent ->
                             if (sent is TdApi.Message) {
-                                trySend(TelegramUploadEvent.Progress(task.fileSize, task.fileSize))
-                                trySend(TelegramUploadEvent.Completed)
-                                pendingUploads.remove(fileId)
-                                close()
+                                // SendMessage returns a local/pending Message first. It is not proof
+                                // that Telegram accepted the message. Wait for UpdateMessageSendSucceeded.
+                                pendingUploads.computeIfPresent(fileId) { _, pending ->
+                                    pending.copy(provisionalMessageId = sent.id)
+                                }
+                                pendingMessageSuccesses.remove(sent.id)?.let(::handleMessageSendSucceeded)
+                                pendingMessageFailures.remove(sent.id)?.let(::handleMessageSendFailed)
                             } else if (sent is TdApi.Error) {
                                 trySend(TelegramUploadEvent.Failed(sent.message, isRetryableTelegramError(sent.code)))
                                 pendingUploads.remove(fileId)
@@ -229,7 +245,7 @@ class TelegramClientImpl @Inject constructor(
                 close()
             }
         )
-        awaitClose { pendingUploads.entries.removeIf { it.value == this@callbackFlow } }
+        awaitClose { pendingUploads.entries.removeIf { it.value.channel == this@callbackFlow } }
     }
 
     private fun isRetryableTelegramError(code: Int): Boolean = code == 420 || code == 429 || code >= 500
@@ -254,6 +270,8 @@ class TelegramClientImpl @Inject constructor(
             is TdApi.UpdateAuthorizationState -> handleAuthorizationState(objectValue.authorizationState)
             is TdApi.UpdateNewChat -> upsertChat(objectValue.chat)
             is TdApi.UpdateFile -> handleFileUpdate(objectValue)
+            is TdApi.UpdateMessageSendSucceeded -> handleMessageSendSucceeded(objectValue)
+            is TdApi.UpdateMessageSendFailed -> handleMessageSendFailed(objectValue)
             is TdApi.UpdateChatTitle -> updateChatTitle(objectValue)
             is TdApi.UpdateChatPermissions -> updateChatPermissions(objectValue)
             is TdApi.Chats -> objectValue.chatIds.forEach(::requestChat)
@@ -266,8 +284,38 @@ class TelegramClientImpl @Inject constructor(
     private fun handleFileUpdate(update: TdApi.UpdateFile) {
         val channel = pendingUploads[update.file.id] ?: return
         val total = update.file.size.coerceAtLeast(update.file.expectedSize)
-        channel.trySend(TelegramUploadEvent.Progress(update.file.remote.uploadedSize, total))
+        channel.channel.trySend(TelegramUploadEvent.Progress(update.file.remote.uploadedSize, total))
     }
+
+    private fun handleMessageSendSucceeded(update: TdApi.UpdateMessageSendSucceeded) {
+        val match = pendingUploads.entries.firstOrNull { (_, pending) ->
+            pending.destinationId == update.message.chatId &&
+                pending.provisionalMessageId != null && pending.provisionalMessageId == update.oldMessageId
+        } ?: run {
+            if (update.oldMessageId != 0L) pendingMessageSuccesses[update.oldMessageId] = update
+            return
+        }
+        val pending = pendingUploads.remove(match.key) ?: return
+        pending.channel.trySend(TelegramUploadEvent.Progress(pending.totalBytes, pending.totalBytes))
+        pending.channel.trySend(TelegramUploadEvent.Completed)
+        pending.channel.close()
+    }
+
+    private fun handleMessageSendFailed(update: TdApi.UpdateMessageSendFailed) {
+        val match = pendingUploads.entries.firstOrNull { (_, pending) ->
+            pending.destinationId == update.message.chatId &&
+                pending.provisionalMessageId != null && pending.provisionalMessageId == update.oldMessageId
+        } ?: run {
+            if (update.oldMessageId != 0L) pendingMessageFailures[update.oldMessageId] = update
+            return
+        }
+        val pending = pendingUploads.remove(match.key) ?: return
+        pending.channel.trySend(
+            TelegramUploadEvent.Failed(update.error.message, isRetryableTelegramError(update.error.code))
+        )
+        pending.channel.close()
+    }
+
 
     private fun handleAuthorizationState(state: TdApi.AuthorizationState) {
         when (state) {

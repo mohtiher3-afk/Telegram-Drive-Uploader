@@ -11,10 +11,11 @@ import com.telegramdrive.uploader.core.diagnostics.ErrorCode
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
+import com.telegramdrive.uploader.domain.upload.UploadCompletionPolicy
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 
 @HiltWorker
 class UploadWorker @AssistedInject constructor(
@@ -67,11 +68,12 @@ class UploadWorker @AssistedInject constructor(
             uploadId = uploadId
         )
 
-        var result: Result = Result.success()
+        var result: Result = Result.failure()
+        var terminalEventReceived = false
         val startTime = System.currentTimeMillis()
 
         try {
-            uploadEngine.uploadFile(uploadTask).collectLatest { engineResult ->
+            uploadEngine.uploadFile(uploadTask).collect { engineResult ->
                 when (engineResult) {
                     is UploadEngineResult.Progress -> {
                         val p = engineResult.progress
@@ -87,6 +89,7 @@ class UploadWorker @AssistedInject constructor(
                         // Do not log every progress event at high frequency in production to preserve resource usage.
                     }
                     is UploadEngineResult.Success -> {
+                        terminalEventReceived = true
                         repository.updateStatus(uploadId, UploadStatus.COMPLETED)
                         result = Result.success()
                         val duration = System.currentTimeMillis() - startTime
@@ -99,6 +102,7 @@ class UploadWorker @AssistedInject constructor(
                         )
                     }
                     is UploadEngineResult.Error -> {
+                        terminalEventReceived = true
                         val canRetry = engineResult.isRetryable && runAttemptCount < MAX_RETRY_ATTEMPTS
                         repository.updateStatus(
                             uploadId,
@@ -125,6 +129,17 @@ class UploadWorker @AssistedInject constructor(
                         }
                     }
                 }
+            }
+            if (UploadCompletionPolicy.decide(terminalEventReceived) == UploadCompletionPolicy.Decision.UNCONFIRMED) {
+                repository.updateStatus(uploadId, UploadStatus.FAILED)
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.UPLOAD_FAILED,
+                    severity = DiagnosticSeverity.ERROR,
+                    message = "TDLib upload stream ended without confirmed Telegram delivery.",
+                    uploadId = uploadId,
+                    errorCode = ErrorCode.UPLOAD_FAILED
+                )
+                result = Result.failure()
             }
         } catch (e: Exception) {
             val canRetry = runAttemptCount < MAX_RETRY_ATTEMPTS
