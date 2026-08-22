@@ -95,10 +95,15 @@ jobs:
           script: |
             # android-emulator-runner executes this block with POSIX sh; pipefail is not portable there.
             set -eu
-            TEST_APK="$(find app/build/outputs/apk -type f -name '*.apk' | head -n 1)"
+            BUILD_ROOT="${GITHUB_WORKSPACE:-$PWD}/app/build"
+            TEST_APK="$(find "$BUILD_ROOT" -type f -name '*androidTest*.apk' | head -n 1)"
+            APP_APK="$(find "$BUILD_ROOT" -type f \( -name "app-${ABI}-debug.apk" -o -name 'app-debug.apk' \) | head -n 1)"
+            printf 'Discovered APKs:\n'
+            find "$BUILD_ROOT" -type f -name '*.apk' -print || true
             test -n "$TEST_APK"
+            test -n "$APP_APK"
             ./scripts/run-tdlib-device-smoke-test.sh \
-              --apk "app/build/outputs/apk/debug/app-${ABI}-debug.apk" \
+              --apk "$APP_APK" \
               --test-apk "$TEST_APK" \
               --serial "${ANDROID_SERIAL:-emulator-5554}" \
               --log-dir "artifacts/tdlib-smoke/${ABI}"
