@@ -1,5 +1,6 @@
 package com.telegramdrive.uploader.data.upload
 
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -12,5 +13,15 @@ class UploadWorkPolicyTest {
 
         assertEquals(NetworkType.CONNECTED, constraints.requiredNetworkType)
         assertFalse(constraints.requiresBatteryNotLow())
+    }
+
+    @Test
+    fun initialWorkKeepsActiveRequest() {
+        assertEquals(ExistingWorkPolicy.KEEP, UploadWorkPolicy.existingWorkPolicy(false))
+    }
+
+    @Test
+    fun retryAndResumeReplaceTerminalRequest() {
+        assertEquals(ExistingWorkPolicy.REPLACE, UploadWorkPolicy.existingWorkPolicy(true))
     }
 }
