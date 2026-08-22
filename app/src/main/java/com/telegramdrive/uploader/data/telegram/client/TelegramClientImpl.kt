@@ -211,10 +211,7 @@ class TelegramClientImpl @Inject constructor(
                         totalBytes = task.fileSize.coerceAtLeast(result.size.toLong())
                     )
                     trySend(TelegramUploadEvent.Progress(result.remote.uploadedSize, result.size.coerceAtLeast(task.fileSize)))
-                    val content = TdApi.InputMessageDocument(
-                        TdApi.InputDocument(TdApi.InputFileId(fileId), null, false),
-                        TdApi.FormattedText(task.fileName, emptyArray())
-                    )
+                    val content = buildUploadMessageContent(task, fileId)
                     client.send(
                         TdApi.SendMessage(task.destinationId, null, null, null, null, content),
                         { sent ->
@@ -510,4 +507,36 @@ class TelegramClientImpl @Inject constructor(
     companion object {
         private val nativeLoaded = AtomicBoolean(false)
     }
+}
+
+
+internal fun buildUploadMessageContent(
+    task: com.telegramdrive.uploader.domain.model.UploadTask,
+    fileId: Int
+): TdApi.InputMessageContent {
+    val caption = TdApi.FormattedText(task.fileName, emptyArray())
+    if (!task.mimeType.startsWith("video/", ignoreCase = true)) {
+        return TdApi.InputMessageDocument(
+            TdApi.InputDocument(TdApi.InputFileId(fileId), null, false),
+            caption
+        )
+    }
+    val durationSeconds = (task.duration / 1_000L).coerceIn(0L, Int.MAX_VALUE.toLong()).toInt()
+    return TdApi.InputMessageVideo(
+        TdApi.InputVideo(
+            TdApi.InputFileId(fileId),
+            null,
+            null,
+            0,
+            intArrayOf(),
+            durationSeconds,
+            task.width.coerceAtLeast(0),
+            task.height.coerceAtLeast(0),
+            true
+        ),
+        caption,
+        false,
+        null,
+        false
+    )
 }
