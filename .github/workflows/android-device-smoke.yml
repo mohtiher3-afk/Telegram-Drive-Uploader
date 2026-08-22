@@ -93,7 +93,8 @@ jobs:
           emulator-options: -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -camera-back none
           disable-animations: true
           script: |
-            set -euo pipefail
+            # android-emulator-runner executes this block with POSIX sh; pipefail is not portable there.
+            set -eu
             TEST_APK="$(find app/build/outputs/apk/androidTest/debug -type f -name '*.apk' | head -n 1)"
             test -n "$TEST_APK"
             ./scripts/run-tdlib-device-smoke-test.sh \
