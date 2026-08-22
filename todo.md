@@ -45,3 +45,4 @@
 - [ ] Add safe worker-start and worker-failure diagnostics plus regression coverage.
 - [ ] Build and verify the repaired queue path across ARM64, ARMv7, and x86_64.
 - [ ] Publish a new signed Android release containing the WorkManager enqueue fix and corrected diagnostics version.
+- [ ] Publish a fresh signed Android release containing the WorkManager enqueue repair and diagnostic version fix.
