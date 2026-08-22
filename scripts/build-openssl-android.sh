@@ -91,14 +91,14 @@ EOF
     CC="$wrapper" \
     AR="$TOOLCHAIN/bin/llvm-ar" \
     RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
-    "$SOURCE_ROOT/Configure" "$configure_target" shared no-tests no-engine no-legacy \
+    "$SOURCE_ROOT/Configure" "$configure_target" shared no-tests no-apps no-engine no-legacy \
       --prefix="$install_dir" --openssldir="$install_dir/ssl" \
       -D__ANDROID_API__="$ANDROID_API" \
       -fPIC \
       -static-libgcc \
       -Wl,-z,max-page-size=16384
   PATH="$wrapper_dir:$TOOLCHAIN/bin:$PATH" \
-    make -j"${OPENSSL_JOBS:-2}" build_libs \
+    make -j"${OPENSSL_JOBS:-2}" install_sw \
       CC="$wrapper" AR="$TOOLCHAIN/bin/llvm-ar" RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
       CFLAGS="$cflags"
   popd >/dev/null
@@ -106,17 +106,20 @@ EOF
   local destination="$PROJECT_ROOT/app/src/main/jniLibs/$abi"
   mkdir -p "$destination"
   local crypto_so ssl_so
-  crypto_so="$(find "$build_dir" -maxdepth 2 -type f -name 'libcrypto.so.*' | sort | head -n 1)"
-  ssl_so="$(find "$build_dir" -maxdepth 2 -type f -name 'libssl.so.*' | sort | head -n 1)"
-  test -n "$crypto_so" -a -f "$crypto_so"
-  test -n "$ssl_so" -a -f "$ssl_so"
+  crypto_so="$(find "$install_dir/lib" -type f -name 'libcrypto.so*' | sort | head -n 1)"
+  ssl_so="$(find "$install_dir/lib" -type f -name 'libssl.so*' | sort | head -n 1)"
+  if [[ -z "$crypto_so" || -z "$ssl_so" ]]; then
+    echo "OpenSSL install did not produce both shared libraries for $abi." >&2
+    find "$build_dir" "$install_dir" -maxdepth 4 -type f -name 'lib*.so*' -print >&2 || true
+    exit 1
+  fi
 
   # TDLib's existing ELF files request the unversioned names. Keep the
   # versioned files too because libssl.so.* may request libcrypto.so.*.
-  cp -f "$crypto_so" "$destination/$(basename "$crypto_so")"
-  cp -f "$ssl_so" "$destination/$(basename "$ssl_so")"
-  cp -f "$crypto_so" "$destination/libcrypto.so"
-  cp -f "$ssl_so" "$destination/libssl.so"
+  cp -Lf "$crypto_so" "$destination/$(basename "$crypto_so")"
+  cp -Lf "$ssl_so" "$destination/$(basename "$ssl_so")"
+  cp -Lf "$crypto_so" "$destination/libcrypto.so"
+  cp -Lf "$ssl_so" "$destination/libssl.so"
 
   echo "${abi}: OpenSSL shared libraries installed in $destination"
 }
