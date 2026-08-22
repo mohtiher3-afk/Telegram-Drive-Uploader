@@ -4,6 +4,18 @@ Telegram Drive Uploader is an Android application for preparing and uploading vi
 
 > **Current status:** The repository contains the official TDLib **v1.8.66** Java bindings and native integrations for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. The current diagnostic build is **1.0.12**.
 
+## Application preview
+
+The following visuals show the current Material 3 Expressive direction and the main destination-selection and video-preparation flow. The interface image is a design preview with sample content; it is not a substitute for authenticated Telegram delivery testing.
+
+<p align="center">
+  <img src="design/multi_device_ui_preview.png" alt="Telegram Drive Uploader destination selection and video preparation preview across phone and tablet layouts" width="900" />
+</p>
+
+<p align="center">
+  <img src="design/app_icon_concept.png" alt="Telegram Drive Uploader application icon concept" width="260" />
+</p>
+
 ## Features
 
 | Feature | Description |

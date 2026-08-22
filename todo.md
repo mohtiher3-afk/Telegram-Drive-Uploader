@@ -127,3 +127,9 @@
 - [ ] Add or rebuild official-source-compatible OpenSSL/zlib native dependencies required by TDLib without using simulated binaries.
 - [ ] Update artifact checks, Gradle packaging, and smoke-test validation for the complete native dependency set.
 - [ ] Re-run cloud emulator JNI smoke test and verify `JNI_LOAD_STATUS=PASS` and `CLIENT_CREATE_STATUS=PASS`.
+
+## Repository screenshot gallery
+
+- [x] Create truthful application screenshots for the key Android flows and upload them to the repository.
+- [x] Add a README screenshot gallery with captions and GitHub-relative image links.
+- [x] Verify image files, README rendering links, and repository cleanliness before delivery.
