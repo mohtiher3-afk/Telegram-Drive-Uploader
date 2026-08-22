@@ -2,6 +2,8 @@ package com.telegramdrive.uploader.core.di
 
 import com.telegramdrive.uploader.data.upload.UploadManagerImpl
 import com.telegramdrive.uploader.data.upload.TelegramUploadEngineImpl
+import com.telegramdrive.uploader.data.upload.reader.StreamingFileReader
+import com.telegramdrive.uploader.data.upload.reader.StreamingFileReaderImpl
 import com.telegramdrive.uploader.domain.upload.UploadManager
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import dagger.Binds
@@ -25,4 +27,10 @@ abstract class UploadModule {
     abstract fun bindTelegramUploadEngine(
         telegramUploadEngineImpl: TelegramUploadEngineImpl
     ): TelegramUploadEngine
+
+    @Binds
+    @Singleton
+    abstract fun bindStreamingFileReader(
+        streamingFileReaderImpl: StreamingFileReaderImpl
+    ): StreamingFileReader
 }
