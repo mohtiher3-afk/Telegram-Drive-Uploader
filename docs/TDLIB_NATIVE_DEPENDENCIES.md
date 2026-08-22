@@ -27,3 +27,7 @@ Run:
 The checker validates the ELF headers, architecture, Java bindings, and every `libssl.so` or `libcrypto.so` dependency requested by each TDLib binary. The Android emulator smoke test then proves the packaged libraries can load together and that a real `org.drinkless.tdlib.Client` can be created.
 
 `libz.so`, `liblog.so`, `libdl.so`, `libm.so`, and `libc.so` remain Android platform dependencies. They are not copied into the application because the Android platform supplies them.
+
+## Source provenance
+
+The pinned source is the official OpenSSL 3.0.16 release listed at <https://openssl-library.org/source/old/3.0/> and downloaded from <https://github.com/openssl/openssl/releases/download/openssl-3.0.16/openssl-3.0.16.tar.gz>. The published SHA-256 checksum is `57e03c50feab5d31b152af2b764f10379aecd8ee92f16c985983ce4a99f7ef86`.
