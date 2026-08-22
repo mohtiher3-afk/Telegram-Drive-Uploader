@@ -26,9 +26,10 @@ env:
 jobs:
   tdlib-device-smoke:
     name: TDLib JNI smoke test on Android emulator
-    # Android Emulator requires nested virtualization; standard runners cannot provide KVM.
-    runs-on: ubuntu-24.04-4core
-    timeout-minutes: 45
+    # The custom ubuntu-24.04-4core label is not registered for this repository and leaves the job queued forever.
+    # Use a standard hosted runner; the KVM step below enables acceleration when available.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
 
     steps:
       - name: Check out source
