@@ -39,3 +39,9 @@
 - [x] Inspect long-upload resource lifecycle for stream, coroutine, TDLib client, and WorkManager leaks; cleanup paths are bounded and explicit.
 - [x] Review evidence-based leak safeguards and regression coverage; no concrete leak requiring a code change was found.
 - [x] Document the evidence limits and physical-device profiler steps required for definitive leak confirmation.
+
+- [ ] Trace WorkManager enqueue, worker registration, Hilt factory, constraints, and startup logs for tasks stuck at Enqueued.
+- [ ] Fix the verified WorkManager startup or constraint defect without bypassing real TDLib confirmation.
+- [ ] Add safe worker-start and worker-failure diagnostics plus regression coverage.
+- [ ] Build and verify the repaired queue path across ARM64, ARMv7, and x86_64.
+- [ ] Publish a new signed Android release containing the WorkManager enqueue fix and corrected diagnostics version.

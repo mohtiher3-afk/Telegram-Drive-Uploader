@@ -1,6 +1,9 @@
 package com.telegramdrive.uploader.data.upload
 
 import androidx.work.*
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.UploadManager
@@ -23,10 +26,7 @@ class UploadManagerImpl @Inject constructor(
             .putString("upload_id", task.id)
             .build()
 
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
-            .build()
+        val constraints = UploadWorkPolicy.constraints()
 
         val uploadRequest = OneTimeWorkRequestBuilder<UploadWorker>()
             .setConstraints(constraints)
@@ -45,6 +45,12 @@ class UploadManagerImpl @Inject constructor(
             task.id,
             ExistingWorkPolicy.KEEP,
             uploadRequest
+        )
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.WORKER_ENQUEUED,
+            severity = DiagnosticSeverity.INFO,
+            message = "WorkManager accepted upload work request.",
+            uploadId = task.id
         )
     }
 
