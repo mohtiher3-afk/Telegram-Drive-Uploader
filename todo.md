@@ -101,3 +101,9 @@
 - [ ] Verify repository runner availability and workflow label configuration.
 - [ ] Apply a safe scheduling correction or document the required self-hosted runner setup.
 - [ ] Recheck the smoke-test workflow status and report whether the test actually executed.
+
+## Cancelled emulator smoke-test check
+
+- [ ] Determine why the Android TDLib emulator smoke test was cancelled while all ABI builds succeeded.
+- [ ] Correct concurrency or workflow triggering so the smoke test receives a final result.
+- [ ] Verify a subsequent smoke-test run and document whether JNI validation actually executed.
