@@ -31,6 +31,14 @@
     <string name="remove_selection">إزالة التحديد</string>
     <string name="confirm_destination">تأكيد اختيار الوجهة</string>
     <string name="selected">محدد</string>
+    <string name="telegram_disconnected_title">تيليجرام غير متصل</string>
+    <string name="telegram_disconnected_message">اربط حساب تيليجرام أولاً لاستعراض القنوات والمجموعات المصرح بها.</string>
+    <string name="direct_upload_info">يتم رفع الملفات مباشرةً من هذا الجهاز إلى تيليجرام، ولا تحتاج إلى وسيط مدفوع.</string>
+    <string name="target_destination">الوجهة المحددة</string>
+    <string name="eligible_targets">الوجهات المتاحة</string>
+    <string name="no_destinations_found">لم يتم العثور على وجهات.</string>
+    <string name="no_destinations_found_for_query">لا توجد قنوات أو مجموعات مطابقة.</string>
+    <string name="selected_destination_summary">الوجهة المحددة: %1$s</string>
     <string name="connect_telegram">ربط تيليجرام</string>
     <string name="phone_number">رقم الهاتف</string>
     <string name="continue_action">متابعة</string>
