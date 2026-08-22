@@ -54,3 +54,10 @@
 - [ ] Repair genuine video sending with terminal confirmation from TDLib and preserve progress, speed, ETA, retry, and failure states.
 - [ ] Add regression tests for video message construction, channel destination handling, and confirmed completion semantics.
 - [ ] Run multi-ABI CI and document the physical-device test that verifies the message appears in the Telegram channel.
+
+## Channel search and upload failure report
+
+- [ ] Investigate why channels are absent from search results, including local chat loading limits and missing global username search.
+- [ ] Investigate why the upload path still does not execute or deliver the selected video to the chosen channel.
+- [ ] Implement evidence-based fixes and add regression tests for channel search, channel destination IDs, and real upload completion.
+- [ ] Re-run multi-ABI CI and document the exact device diagnostics needed if the physical device still fails.

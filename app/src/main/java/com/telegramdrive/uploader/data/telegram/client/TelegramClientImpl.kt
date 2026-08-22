@@ -50,6 +50,7 @@ class TelegramClientImpl @Inject constructor(
     private val _qrLoginLink = MutableStateFlow<String?>(null)
     private val chatLock = Any()
     private val chats = LinkedHashMap<Long, TdApi.Chat>()
+    private val supergroups = LinkedHashMap<Long, TdApi.Supergroup>()
     private val _chatDestinations = MutableStateFlow<List<TelegramDestination>>(emptyList())
     private val chatsRequested = AtomicBoolean(false)
     private data class PendingUpload(
@@ -160,7 +161,10 @@ class TelegramClientImpl @Inject constructor(
             _currentUser.value = null
             _error.value = null
             _qrLoginLink.value = null
-            synchronized(chatLock) { chats.clear() }
+            synchronized(chatLock) {
+                chats.clear()
+                supergroups.clear()
+            }
             _chatDestinations.value = emptyList()
             chatsRequested.set(false)
             _connectionState.value = TelegramConnectionState.DISCONNECTED
@@ -173,8 +177,9 @@ class TelegramClientImpl @Inject constructor(
         _error.value = null
     }
 
-    override fun getDestinations(query: String): Flow<List<TelegramDestination>> =
-        _chatDestinations.map { destinations ->
+    override fun getDestinations(query: String): Flow<List<TelegramDestination>> {
+        requestDestinationSearch(query)
+        return _chatDestinations.map { destinations ->
             val normalized = query.trim().lowercase(Locale.US)
             if (normalized.isBlank()) destinations
             else destinations.filter { destination ->
@@ -182,6 +187,22 @@ class TelegramClientImpl @Inject constructor(
                     destination.username?.lowercase(Locale.US)?.contains(normalized) == true
             }
         }.distinctUntilChanged()
+    }
+
+    private fun requestDestinationSearch(query: String) {
+        val normalized = query.trim()
+        if (normalized.isBlank() || _connectionState.value != TelegramConnectionState.AUTHORIZED) return
+        val client = tdClient ?: return
+        val searchText = normalized.removePrefix("@").trim()
+        if (searchText.isBlank()) return
+        // SearchPublicChat resolves an exact public username; SearchChatsOnServer handles names and partial matches.
+        client.send(TdApi.SearchPublicChat(searchText), { result -> handleTdLibObject(result) }, null)
+        client.send(
+            TdApi.SearchChatsOnServer(searchText, TdApi.SearchChatTypeFilterChannel(), 50),
+            { result -> handleTdLibObject(result) },
+            null
+        )
+    }
 
     override fun uploadLocalDocument(task: com.telegramdrive.uploader.domain.model.UploadTask, localPath: String): Flow<TelegramUploadEvent> = callbackFlow {
         val client = tdClient
@@ -271,8 +292,10 @@ class TelegramClientImpl @Inject constructor(
             is TdApi.UpdateMessageSendFailed -> handleMessageSendFailed(objectValue)
             is TdApi.UpdateChatTitle -> updateChatTitle(objectValue)
             is TdApi.UpdateChatPermissions -> updateChatPermissions(objectValue)
+            is TdApi.UpdateSupergroup -> upsertSupergroup(objectValue.supergroup)
             is TdApi.Chats -> objectValue.chatIds.forEach(::requestChat)
             is TdApi.Chat -> upsertChat(objectValue)
+            is TdApi.Supergroup -> upsertSupergroup(objectValue)
             is TdApi.User -> handleAuthenticatedUser(objectValue)
             is TdApi.Error -> mapError(objectValue)
         }
@@ -384,8 +407,20 @@ class TelegramClientImpl @Inject constructor(
         tdClient?.send(TdApi.GetChat(chatId), { result -> handleTdLibObject(result) }, null)
     }
 
+    private fun requestSupergroup(supergroupId: Long) {
+        tdClient?.send(TdApi.GetSupergroup(supergroupId), { result -> handleTdLibObject(result) }, null)
+    }
+
     private fun upsertChat(chat: TdApi.Chat) {
+        if (chat.type is TdApi.ChatTypeSupergroup) {
+            requestSupergroup((chat.type as TdApi.ChatTypeSupergroup).supergroupId)
+        }
         synchronized(chatLock) { chats[chat.id] = chat }
+        rebuildDestinations()
+    }
+
+    private fun upsertSupergroup(supergroup: TdApi.Supergroup) {
+        synchronized(chatLock) { supergroups[supergroup.id] = supergroup }
         rebuildDestinations()
     }
 
@@ -412,13 +447,23 @@ class TelegramClientImpl @Inject constructor(
                     }
                     else -> null
                 } ?: return@mapNotNull null
-                val canSend = chat.type is TdApi.ChatTypePrivate ||
-                    chat.permissions?.canSendBasicMessages == true
+                val supergroup = (chat.type as? TdApi.ChatTypeSupergroup)?.let { supergroups[it.supergroupId] }
+                val username = supergroup?.usernames?.editableUsername
+                    ?: supergroup?.usernames?.activeUsernames?.firstOrNull()
+                val canSend = when {
+                    chat.type is TdApi.ChatTypePrivate -> true
+                    supergroup?.status is TdApi.ChatMemberStatusCreator -> true
+                    supergroup?.status is TdApi.ChatMemberStatusAdministrator ->
+                        (supergroup.status as TdApi.ChatMemberStatusAdministrator).rights?.canPostMessages == true
+                    supergroup?.status is TdApi.ChatMemberStatusRestricted ->
+                        (supergroup.status as TdApi.ChatMemberStatusRestricted).permissions?.canSendBasicMessages == true
+                    else -> chat.permissions?.canSendBasicMessages == true || supergroup == null
+                }
                 if (!canSend) return@mapNotNull null
                 TelegramDestination(
                     id = chat.id,
                     title = chat.title.ifBlank { "Telegram chat" },
-                    username = null,
+                    username = username,
                     type = type,
                     photo = null,
                     canSendMessages = true
