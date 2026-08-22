@@ -1,8 +1,8 @@
 # Telegram Drive Uploader
 
-Telegram Drive Uploader is an Android application for preparing and uploading video files to Telegram destinations such as Saved Messages, groups, supergroups, and channels. The project uses the official [TDLib](https://github.com/tdlib/td) Java bindings and an ARM64 native library, a local queue for upload preparation, WorkManager-oriented background processing, Arabic localization with RTL support, and a local Smart File Assistant for filename and keyword suggestions.
+Telegram Drive Uploader is an Android application for preparing and uploading video files to Telegram destinations such as Saved Messages, groups, supergroups, and channels. The project uses the official [TDLib](https://github.com/tdlib/td) Java bindings and native libraries for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, a local queue for upload preparation, WorkManager background processing, Arabic localization with RTL support, and a local Smart File Assistant for filename and keyword suggestions.
 
-> **Current status:** The repository contains the official TDLib **v1.8.66** Java bindings and an optimized `arm64-v8a` native integration. The current release target is ARM64 Android devices.
+> **Current status:** The repository contains the official TDLib **v1.8.66** Java bindings and native integrations for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. The current diagnostic build is **1.0.12**.
 
 ## Features
 
@@ -16,13 +16,13 @@ Telegram Drive Uploader is an Android application for preparing and uploading vi
 | Smart File Assistant | Lightweight, fully local filename and keyword suggestions with Arabic-aware and English-aware inference. Uploads do not depend on an online AI service. |
 | Material 3 Expressive UI | Modern Compose interface with expressive shapes, adaptive layout, onboarding, and visual feedback. |
 | Arabic and RTL | Arabic resources and right-to-left rendering through Android locale support and Compose layout direction. |
-| ARM64 optimization | Release packaging is restricted to `arm64-v8a` to avoid shipping unnecessary native ABIs. |
+| Multi-ABI packaging | CI builds ABI-specific APKs for `arm64-v8a`, `armeabi-v7a`, and `x86_64`; install the APK matching the device architecture. |
 
 ## Requirements
 
-The project requires Android Studio with an Android SDK that includes API 36, JDK 11-compatible Android tooling, Android Gradle Plugin support for the project’s Gradle wrapper, and an ARM64 Android device for the packaged release APK. The minimum Android API level is 24 and the target API level is 36.
+The project requires Android Studio with an Android SDK that includes API 36, JDK 17 for CI-compatible builds, Android Gradle Plugin support for the project’s Gradle wrapper, and a device or emulator matching one of the packaged ABIs. The minimum Android API level is 24 and the target API level is 36.
 
-The project is intentionally ARM64-only because the included TDLib artifact is `arm64-v8a`. It is not expected to install or run on 32-bit ARM, x86, or x86_64-only devices unless additional official TDLib artifacts are built and integrated.
+CI packages official TDLib artifacts for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. Install only the APK matching the device architecture; Android will reject an incompatible native ABI when no compatible library is packaged.
 
 ## Telegram API configuration
 
@@ -38,10 +38,12 @@ The project stores official source bindings under:
 app/src/main/java/org/drinkless/tdlib/
 ```
 
-The ARM64 native library is stored at:
+The native libraries are stored at:
 
 ```text
 app/src/main/jniLibs/arm64-v8a/libtdjni.so
+app/src/main/jniLibs/armeabi-v7a/libtdjni.so
+app/src/main/jniLibs/x86_64/libtdjni.so
 ```
 
 Run the repository integrity gate from the project root:
@@ -56,7 +58,7 @@ A successful check ends with:
 STATUS: TDLIB_ARTIFACTS_PRESENT=true
 ```
 
-The checker validates the required manifest, the ARM64 ELF native library, the AArch64 machine type, and the generated Java bindings. It does not replace testing on a physical Android device.
+The checker validates the required manifest, each configured ELF native library and machine type, and the generated Java bindings. It does not replace testing on a physical Android device.
 
 For a complete source-build procedure, see [`docs/TDLIB_ANDROID_BUILD.md`](docs/TDLIB_ANDROID_BUILD.md), [`docs/TDLIB_ARTIFACT_MANIFEST.md`](docs/TDLIB_ARTIFACT_MANIFEST.md), and [`docs/tdlib_v1.8.0_android_workflow.md`](docs/tdlib_v1.8.0_android_workflow.md) when present.
 
@@ -70,11 +72,7 @@ From the repository root, use the project’s Gradle wrapper where available:
 ./gradlew :app:assembleRelease
 ```
 
-The ARM64 release APK is produced at:
-
-```text
-app/build/outputs/apk/release/app-arm64-v8a-release.apk
-```
+ABI-specific release APKs are produced under the Gradle output directory. CI publishes matching debug artifacts for `arm64-v8a`, `armeabi-v7a`, and `x86_64`; select the artifact matching the target device.
 
 Before building locally, create a machine-specific `local.properties` file containing the path to the Android SDK. This file is intentionally excluded from Git. Release signing must use a keystore configured for the local environment; signing material must never be committed.
 
@@ -102,11 +100,11 @@ The TDLib artifact gate should be run before packaging:
 ./scripts/check-tdlib-artifacts.sh
 ```
 
-A sandbox or JVM build cannot prove native behavior on every handset. On a physical ARM64 device, test first-run onboarding, Arabic RTL layout, media selection, Telegram phone authentication, QR authentication, destination loading, uploading to a permitted destination, scheduling after process restart, logout/login recovery, low-storage behavior, and network loss during an upload.
+A sandbox or JVM build cannot prove native behavior on every handset. On a physical device matching the selected ABI, test first-run onboarding, Arabic RTL layout, media selection, Telegram phone authentication, QR authentication, destination loading, uploading to a permitted destination, scheduling after process restart, logout/login recovery, low-storage behavior, and network loss during an upload.
 
 ## Installation and first run
 
-Install only the ARM64 release APK on a compatible device. If Android reports that the package conflicts with an existing installation, uninstall the older development build first unless both APKs were signed with the same key. On first launch, follow the onboarding flow and grant only the storage or media permissions requested by the current Android version.
+Install only the release APK matching the device ABI. If Android reports that the package conflicts with an existing installation, uninstall the older development build first unless both APKs were signed with the same key. On first launch, follow the onboarding flow and grant only the storage or media permissions requested by the current Android version.
 
 Open **Connect Telegram**, choose phone or QR authentication, and complete the Telegram login flow. The app should display a controlled error state if TDLib cannot initialize. It must not report a successful Telegram connection unless TDLib has actually entered an authorized state.
 
@@ -114,8 +112,8 @@ Open **Connect Telegram**, choose phone or QR authentication, and complete the T
 
 | Symptom | Recommended action |
 |---|---|
-| The app closes when pressing Connect Telegram | Confirm that the latest Release ARM64 APK is installed. Rebuild after verifying the TDLib R8 keep rules in `app/proguard-rules.pro`. If the problem remains, collect the Android `FATAL EXCEPTION` or native crash entry from Logcat. |
-| TDLib runtime unavailable | Confirm that the device is ARM64, that `lib/arm64-v8a/libtdjni.so` is present in the APK, and that `./scripts/check-tdlib-artifacts.sh` passes. |
+| The app closes when pressing Connect Telegram | Confirm that the latest ABI-matching APK is installed. Rebuild after verifying the TDLib R8 keep rules in `app/proguard-rules.pro`. If the problem remains, collect the Android `FATAL EXCEPTION` or native crash entry from Logcat. |
+| TDLib runtime unavailable | Confirm that the device ABI matches the APK, the corresponding `lib/<abi>/libtdjni.so` is present, and that `./scripts/check-tdlib-artifacts.sh` passes. |
 | Telegram credentials are rejected | Confirm that the configured API ID is numeric and the API hash is complete. Do not confuse Telegram API credentials with the phone login code or account password. |
 | No chats appear in destination search | Complete authentication, wait for TDLib authorization and chat updates, then retry the destination screen. Confirm that the account has permission to send messages to the selected destination. |
 | Arabic layout looks incorrect | Set Arabic as the Android system language, restart the app, and verify that RTL support is enabled. Report the specific screen and Android version if a layout remains misaligned. |
@@ -134,8 +132,8 @@ app/src/main/java/org/drinkless/tdlib/
   Client.java           Official TDLib Java client binding
   TdApi.java            Official generated TDLib API binding
   Log.java              Official TDLib logging binding
-app/src/main/jniLibs/arm64-v8a/
-  libtdjni.so           Official TDLib v1.8.66 ARM64 native library
+app/src/main/jniLibs/{arm64-v8a,armeabi-v7a,x86_64}/
+  libtdjni.so           Official TDLib v1.8.66 native libraries
 docs/                   Build, artifact, and audit documentation
 scripts/                Artifact validation and project helper scripts
 ```
