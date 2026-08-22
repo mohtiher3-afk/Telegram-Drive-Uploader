@@ -145,3 +145,8 @@
 - [ ] Prevent destination lookup errors from being surfaced as Telegram authentication failures.
 - [ ] Handle `GetSupergroup`/destination resolution errors separately and preserve actionable search feedback.
 - [ ] Add regression coverage and validate the corrected Android build.
+
+## Repaired connection build publication
+
+- [ ] Bump the Android version for the destination-error repair without reusing v1.0.12.
+- [ ] Trigger and verify the signed multi-ABI release for the repaired build.
