@@ -18,10 +18,18 @@ class UploadManagerImpl @Inject constructor(
     private val workManager: WorkManager
 ) : UploadManager {
     override fun enqueueUpload(task: UploadTask) {
-        enqueueUpload(task, 0L)
+        enqueueUpload(task, 0L, UploadWorkPolicy.existingWorkPolicy(false))
     }
 
     override fun enqueueUpload(task: UploadTask, delayMs: Long) {
+        enqueueUpload(task, delayMs, UploadWorkPolicy.existingWorkPolicy(false))
+    }
+
+    private fun enqueueUpload(
+        task: UploadTask,
+        delayMs: Long,
+        workPolicy: ExistingWorkPolicy
+    ) {
         val inputData = Data.Builder()
             .putString("upload_id", task.id)
             .build()
@@ -41,11 +49,7 @@ class UploadManagerImpl @Inject constructor(
             .addTag("upload_${task.id}")
             .build()
 
-        workManager.enqueueUniqueWork(
-            task.id,
-            ExistingWorkPolicy.KEEP,
-            uploadRequest
-        )
+        workManager.enqueueUniqueWork(task.id, workPolicy, uploadRequest)
         DiagnosticsManager.log(
             category = DiagnosticCategory.WORKER_ENQUEUED,
             severity = DiagnosticSeverity.INFO,
@@ -80,7 +84,11 @@ class UploadManagerImpl @Inject constructor(
     }
 
     override fun resumeUpload(task: UploadTask) {
-        enqueueUpload(task, task.scheduledAt?.let { (it - System.currentTimeMillis()).coerceAtLeast(0L) } ?: 0L)
+        enqueueUpload(
+            task,
+            task.scheduledAt?.let { (it - System.currentTimeMillis()).coerceAtLeast(0L) } ?: 0L,
+            UploadWorkPolicy.existingWorkPolicy(true)
+        )
     }
 
     override fun cancelUpload(id: String) {
@@ -88,7 +96,7 @@ class UploadManagerImpl @Inject constructor(
     }
 
     override fun retryUpload(task: UploadTask) {
-        enqueueUpload(task, 0L)
+        enqueueUpload(task, 0L, UploadWorkPolicy.existingWorkPolicy(true))
     }
 
     override fun observeUpload(id: String): Flow<UploadTask?> {

@@ -77,6 +77,13 @@
 
 ## Repository upload request
 
-- [ ] Review the current multi-format video changes and repository version state.
-- [ ] Push the new version to the selected GitHub repository.
-- [ ] Verify the triggered multi-ABI CI run and report the available APK artifacts.
+- [x] Review the current multi-format video changes and repository version state.
+- [x] Push the new version to the selected GitHub repository.
+- [x] Verify the triggered multi-ABI CI run and report the available APK artifacts.
+
+## Primary-flow reliability improvement request
+
+- [ ] Audit why the installed app still does not complete the required channel discovery and real video upload flow.
+- [ ] Improve channel selection, upload lifecycle feedback, retry behavior, and actionable error reporting.
+- [ ] Preserve official TDLib and confirmed delivery semantics; do not add simulated success.
+- [ ] Add regression coverage and publish a validated new Android build.
