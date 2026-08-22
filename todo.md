@@ -33,3 +33,4 @@
 - [ ] Display speed and ETA beside the real upload progress bar with Arabic/localized labels.
 - [ ] Add regression tests for speed, ETA, stalled transfers, and confirmed completion.
 - [ ] Build and verify the Android app across ARM64, ARMv7, and x86_64.
+- [ ] Publish a fresh signed Android release containing the real upload speed and ETA UI.
