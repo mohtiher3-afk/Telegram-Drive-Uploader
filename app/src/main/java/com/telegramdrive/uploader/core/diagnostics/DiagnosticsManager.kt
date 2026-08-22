@@ -27,6 +27,7 @@ enum class DiagnosticCategory {
     UPLOAD_CANCELLED,
     UPLOAD_COMPLETED,
     UPLOAD_FAILED,
+    WORKER_ENQUEUED,
     WORKER_STARTED,
     WORKER_STOPPED,
     NETWORK_CHANGED,
@@ -267,7 +268,7 @@ object DiagnosticsManager {
             sb.append("==================================================\n")
             sb.append("Timestamp: ").append(formatter.format(Date())).append("\n")
             sb.append("Android version: API ").append(Build.VERSION.SDK_INT).append("\n")
-            sb.append("App Version: 1.0.0 (Release)\n")
+            sb.append("App Version: ").append(BuildConfig.VERSION_NAME).append(" (Release)\n")
             sb.append("Total Diagnostic Events: ").append(_events.value.size).append("\n")
             sb.append("==================================================\n\n")
 
