@@ -9,6 +9,19 @@ JAVA_BINDING_DIR="$PROJECT_ROOT/app/src/main/java/org/drinkless/tdlib"
 MANIFEST_FILE="$PROJECT_ROOT/docs/TDLIB_ARTIFACT_MANIFEST.md"
 
 MISSING_COUNT=0
+CHECK_ABI="${TDLIB_CHECK_ABI:-all}"
+case "$CHECK_ABI" in
+    all|arm64-v8a|armeabi-v7a|x86_64) ;;
+    *)
+        echo "Unsupported TDLIB_CHECK_ABI: $CHECK_ABI" >&2
+        exit 2
+        ;;
+esac
+
+should_check_abi() {
+    local abi="$1"
+    [[ "$CHECK_ABI" == "all" || "$CHECK_ABI" == "$abi" ]]
+}
 
 check_file() {
     local file_path="$1"
@@ -88,16 +101,22 @@ fi
 
 echo ""
 echo "2. Checking Native JNI Libraries (.so)..."
-check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v1.8.66 arm64-v8a Native Library" && check_elf_arch "arm64-v8a" "AArch64"
-check_file "$JNI_DIR/armeabi-v7a/libtdjni.so" 5000000 "TDLib v1.8.66 armeabi-v7a Native Library" && check_elf_arch "armeabi-v7a" "ARM"
-check_file "$JNI_DIR/x86_64/libtdjni.so" 5000000 "TDLib v1.8.66 x86_64 Native Library" && check_elf_arch "x86_64" "Advanced Micro Devices X86-64"
+if should_check_abi "arm64-v8a"; then
+    check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v1.8.66 arm64-v8a Native Library" && check_elf_arch "arm64-v8a" "AArch64"
+fi
+if should_check_abi "armeabi-v7a"; then
+    check_file "$JNI_DIR/armeabi-v7a/libtdjni.so" 5000000 "TDLib v1.8.66 armeabi-v7a Native Library" && check_elf_arch "armeabi-v7a" "ARM"
+fi
+if should_check_abi "x86_64"; then
+    check_file "$JNI_DIR/x86_64/libtdjni.so" 5000000 "TDLib v1.8.66 x86_64 Native Library" && check_elf_arch "x86_64" "Advanced Micro Devices X86-64"
+fi
 
 if command -v readelf >/dev/null 2>&1; then
     echo ""
     echo "2b. Checking Native Runtime Dependencies..."
-    check_runtime_dependencies "arm64-v8a"
-    check_runtime_dependencies "armeabi-v7a"
-    check_runtime_dependencies "x86_64"
+    if should_check_abi "arm64-v8a"; then check_runtime_dependencies "arm64-v8a"; fi
+    if should_check_abi "armeabi-v7a"; then check_runtime_dependencies "armeabi-v7a"; fi
+    if should_check_abi "x86_64"; then check_runtime_dependencies "x86_64"; fi
 fi
 
 echo ""
@@ -114,6 +133,6 @@ if [ "$MISSING_COUNT" -gt 0 ]; then
     exit 1
 else
     echo "STATUS: TDLIB_ARTIFACTS_PRESENT=true"
-    echo "All required official TDLib v1.8.66 native and Java artifacts verified successfully."
+    echo "All required official TDLib v1.8.66 native and Java artifacts verified successfully for ABI scope '$CHECK_ABI'."
     exit 0
 fi

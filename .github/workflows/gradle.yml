@@ -68,6 +68,8 @@ jobs:
             -dname "CN=Android Debug,O=Android,C=US"
 
       - name: Verify official TDLib artifacts
+        env:
+          TDLIB_CHECK_ABI: ${{ matrix.abi }}
         run: ./scripts/check-tdlib-artifacts.sh
 
       - name: Run JVM unit tests

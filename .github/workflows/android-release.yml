@@ -81,6 +81,8 @@ jobs:
             -alias "$RELEASE_KEY_ALIAS" > /dev/null
 
       - name: Verify official TDLib artifacts
+        env:
+          TDLIB_CHECK_ABI: ${{ matrix.abi }}
         run: ./scripts/check-tdlib-artifacts.sh
 
       - name: Run JVM unit tests
