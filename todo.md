@@ -28,9 +28,14 @@
 
 - [x] Publish a new signed release containing real upload timing and the removed dual-Wi-Fi feature.
 
-- [ ] Calculate current upload speed from real TDLib UpdateFile progress samples.
-- [ ] Calculate estimated remaining time only when speed and remaining bytes are sufficient.
-- [ ] Display speed and ETA beside the real upload progress bar with Arabic/localized labels.
-- [ ] Add regression tests for speed, ETA, stalled transfers, and confirmed completion.
-- [ ] Build and verify the Android app across ARM64, ARMv7, and x86_64.
-- [ ] Publish a fresh signed Android release containing the real upload speed and ETA UI.
+- [x] Calculate current upload speed from real TDLib UpdateFile progress samples.
+- [x] Calculate estimated remaining time only when speed and remaining bytes are sufficient.
+- [x] Display speed and ETA beside the real upload progress bar with Arabic/localized labels.
+- [x] Add regression tests for speed, ETA, stalled transfers, and confirmed completion.
+- [x] Build and verify the Android app across ARM64, ARMv7, and x86_64.
+- [x] Publish a fresh signed Android release containing the real upload speed and ETA UI.
+
+- [x] Collect available Android/CI logs and scan for memory pressure, OOM, and upload-resource warnings; no leak signatures were found.
+- [x] Inspect long-upload resource lifecycle for stream, coroutine, TDLib client, and WorkManager leaks; cleanup paths are bounded and explicit.
+- [x] Review evidence-based leak safeguards and regression coverage; no concrete leak requiring a code change was found.
+- [x] Document the evidence limits and physical-device profiler steps required for definitive leak confirmation.
