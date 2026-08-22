@@ -21,6 +21,7 @@ if [[ -z "$NDK_ROOT" || ! -x "$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bi
 fi
 
 TOOLCHAIN="$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64"
+SYSROOT="$TOOLCHAIN/sysroot"
 mkdir -p "$CACHE_ROOT"
 
 if [[ ! -f "$SOURCE_ARCHIVE" ]]; then
@@ -37,25 +38,25 @@ build_abi() {
   local abi="$1"
   local configure_target
   local host_prefix
+  local target_triple
   local cflags="-fPIC -O2 -D__ANDROID_API__=${ANDROID_API}"
-  local cc
 
   case "$abi" in
     arm64-v8a)
       configure_target="android-arm64"
       host_prefix="aarch64-linux-android"
-      cc="$TOOLCHAIN/bin/${host_prefix}${ANDROID_API}-clang"
+      target_triple="aarch64-linux-android"
       ;;
     armeabi-v7a)
       configure_target="android-arm"
       host_prefix="armv7a-linux-androideabi"
-      cc="$TOOLCHAIN/bin/${host_prefix}${ANDROID_API}-clang"
+      target_triple="armv7a-linux-androideabi"
       cflags="$cflags -march=armv7-a -mfloat-abi=softfp"
       ;;
     x86_64)
       configure_target="android-x86_64"
       host_prefix="x86_64-linux-android"
-      cc="$TOOLCHAIN/bin/${host_prefix}${ANDROID_API}-clang"
+      target_triple="x86_64-linux-android"
       ;;
     *)
       echo "Unsupported ABI: $abi" >&2
@@ -63,32 +64,50 @@ build_abi() {
       ;;
   esac
 
-  if ! readelf -d "$PROJECT_ROOT/app/src/main/jniLibs/$abi/libtdjni.so" | grep -q 'Shared library: \[libssl.so\]'; then
+  local tdjni="$PROJECT_ROOT/app/src/main/jniLibs/$abi/libtdjni.so"
+  if ! readelf -d "$tdjni" | grep -q 'Shared library: \[libssl.so\]'; then
     echo "${abi}: libtdjni.so does not require libssl.so; no OpenSSL build needed."
     return 0
   fi
 
   local build_dir="$CACHE_ROOT/build-$abi"
   local install_dir="$CACHE_ROOT/install-$abi"
-  rm -rf "$build_dir" "$install_dir"
-  mkdir -p "$build_dir" "$install_dir"
+  local wrapper_dir="$CACHE_ROOT/toolchain-$abi/bin"
+  local compiler_name="${host_prefix}${ANDROID_API}-clang"
+  local wrapper="$wrapper_dir/$compiler_name"
+  rm -rf "$build_dir" "$install_dir" "$wrapper_dir"
+  mkdir -p "$build_dir" "$install_dir" "$wrapper_dir"
+
+  # Some NDK distributions do not ship API-specific clang launcher scripts for
+  # every API level. Use a deterministic wrapper around the NDK clang binary.
+  cat > "$wrapper" <<EOF
+#!/usr/bin/env bash
+exec "$TOOLCHAIN/bin/clang" --target=${target_triple}${ANDROID_API} --sysroot="$SYSROOT" "\$@"
+EOF
+  chmod +x "$wrapper"
 
   pushd "$build_dir" >/dev/null
-  PATH="$TOOLCHAIN/bin:$PATH" CC="$cc" "$SOURCE_ROOT/Configure" "$configure_target" shared no-tests no-engine no-legacy \
-    --prefix="$install_dir" --openssldir="$install_dir/ssl" \
-    -D__ANDROID_API__="$ANDROID_API" \
-    -fPIC \
-    -static-libgcc \
-    -Wl,-z,max-page-size=16384
-  PATH="$TOOLCHAIN/bin:$PATH" make -j"${OPENSSL_JOBS:-2}" build_libs CFLAGS="$cflags" CC="$cc"
-  make install_sw
+  PATH="$wrapper_dir:$TOOLCHAIN/bin:$PATH" \
+    CC="$compiler_name" \
+    AR="$TOOLCHAIN/bin/llvm-ar" \
+    RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
+    "$SOURCE_ROOT/Configure" "$configure_target" shared no-tests no-engine no-legacy \
+      --prefix="$install_dir" --openssldir="$install_dir/ssl" \
+      -D__ANDROID_API__="$ANDROID_API" \
+      -fPIC \
+      -static-libgcc \
+      -Wl,-z,max-page-size=16384
+  PATH="$wrapper_dir:$TOOLCHAIN/bin:$PATH" \
+    make -j"${OPENSSL_JOBS:-2}" build_libs \
+      CC="$compiler_name" AR="$TOOLCHAIN/bin/llvm-ar" RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
+      CFLAGS="$cflags"
   popd >/dev/null
 
   local destination="$PROJECT_ROOT/app/src/main/jniLibs/$abi"
   mkdir -p "$destination"
   local crypto_so ssl_so
-  crypto_so="$(find "$install_dir" -type f -name 'libcrypto.so.*' | sort | head -n 1)"
-  ssl_so="$(find "$install_dir" -type f -name 'libssl.so.*' | sort | head -n 1)"
+  crypto_so="$(find "$build_dir" -maxdepth 2 -type f -name 'libcrypto.so.*' | sort | head -n 1)"
+  ssl_so="$(find "$build_dir" -maxdepth 2 -type f -name 'libssl.so.*' | sort | head -n 1)"
   test -n "$crypto_so" -a -f "$crypto_so"
   test -n "$ssl_so" -a -f "$ssl_so"
 
@@ -99,7 +118,6 @@ build_abi() {
   cp -f "$crypto_so" "$destination/libcrypto.so"
   cp -f "$ssl_so" "$destination/libssl.so"
 
-  readelf -d "$destination/libssl.so" | grep -q 'Shared library: \[libcrypto.so' || true
   echo "${abi}: OpenSSL shared libraries installed in $destination"
 }
 
