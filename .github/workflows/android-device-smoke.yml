@@ -15,11 +15,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: android-device-smoke-${{ github.ref }}
-  # Emulator smoke tests must finish; a later push may queue behind this run but must not cancel it.
-  cancel-in-progress: false
-
 env:
   ABI: x86_64
   API_LEVEL: '35'

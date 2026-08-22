@@ -114,3 +114,9 @@
 - [ ] Reproduce or classify confirmed errors and separate blockers from warnings.
 - [ ] Apply targeted fixes and add regression coverage.
 - [ ] Run local and GitHub Actions validation before delivery.
+
+## Manual TDLib JNI smoke test
+
+- [ ] Dispatch the Android TDLib Device Smoke Test for the latest repository state.
+- [ ] Monitor the cloud emulator job until it completes or reports a runner/environment failure.
+- [ ] Inspect explicit `JNI_LOAD_STATUS` and `CLIENT_CREATE_STATUS` markers and report the result.
