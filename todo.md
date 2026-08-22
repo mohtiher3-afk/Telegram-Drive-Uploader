@@ -17,3 +17,5 @@
 - [ ] Require genuine TDLib UpdateFile and message/file confirmation before marking uploads complete.
 - [ ] Add regression tests proving failed or unconfirmed sends never report success.
 - [ ] Build and verify the permanent real-upload fix across ARM64, ARMv7, and x86_64.
+
+- [ ] Publish a new signed release containing the permanent confirmed-delivery fix; do not reuse the old v1.0.7 tag.
