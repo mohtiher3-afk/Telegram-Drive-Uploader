@@ -232,3 +232,10 @@
 
 - [x] Correct the earlier Smart Assistant status/maps to include the real local `SmartFileAssistant` and `SmartFileSuggestion` implementation without changing behavior.
 - [x] Continue the approved Features and Screens inventory after the correction.
+
+## Approved DI and Hilt audit
+
+- [x] Inspect current Hilt modules, bindings, providers, scopes, and injectable classes.
+- [x] Create a truthful DI responsibility and dependency-flow map.
+- [x] Apply only safe Hilt organization if justified; do not change dependencies or runtime behavior.
+- [x] Validate injection, protected integration surfaces, CI gates, and repository cleanliness; then push the focused commit.
