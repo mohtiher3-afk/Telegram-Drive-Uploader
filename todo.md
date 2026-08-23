@@ -398,3 +398,12 @@
 - [x] Normalize documentation status, indexes, build/TDLib/upload/configuration references, and add maintenance audit records.
 - [x] Run structural, security, self-check, build, and diff validation; record limitations honestly.
 - [x] Commit and push only the focused cleanup and documentation changes.
+
+
+## Supplied final release candidate verification and GO/NO-GO gate
+
+- [x] Inspect the phase-28 source-of-truth documents and actual Git/repository state.
+- [x] Verify release identity, build environment, clean build, release artifacts, TDLib, security, and available runtime evidence without modifying product code.
+- [x] Create the final release identity, artifact verification, GO/NO-GO matrix, and release certification reports.
+- [x] Run final self-check and inspect the certification-only diff.
+- [x] Commit the certification reports and deliver the exact evidence-based GO/NO-GO decision without publishing a release.
