@@ -32,7 +32,7 @@ Because the existing package layout already separates Telegram integration from 
 | Design system | Pending |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Pending this phase's CI run |
+| CI | Complete: GitHub Actions run `32611631918` succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
@@ -41,6 +41,6 @@ No TDLib version, generated binding, native artifact, ABI configuration, credent
 
 ## Verification status
 
-Static verification must confirm that there is no stale `core.datastore` import, the WorkManager manifest guard remains passing, and the diff contains no protected native or manifest changes. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
+Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, no `smartassistant` package was created without a real implementation, and no protected native, Telegram, upload, or manifest changes were made. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
-The prior DataStore refactor commit `5e1f185` was validated by GitHub Actions run `32610172806`, which completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
+The prior DataStore refactor commit `5e1f185` was validated by GitHub Actions run `32610172806`, and the Smart Assistant documentation commit was validated by GitHub Actions run `32611631918`; both completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
