@@ -159,5 +159,10 @@
 ## Repeated queued upload report
 
 - [x] Trace the queued upload from database insertion through WorkManager enqueue and worker startup.
-- [ ] Identify and repair the verified WorkManager constraint, registration, policy, or worker-execution blocker.
+- [x] Identify and repair the verified WorkManager constraint, registration, policy, or worker-execution blocker.
 - [ ] Add regression coverage and validate the repaired queue path on Android CI and a device/emulator where available.
+
+## Queued-upload repair release
+
+- [ ] Bump the Android version for the WorkManager startup repair without reusing v1.0.13.
+- [ ] Trigger and verify the signed multi-ABI release for the queued-upload repair.

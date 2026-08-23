@@ -4,11 +4,11 @@
 
 | Application | Current version | Android application ID |
 |---|---|---|
-| **Telegram Drive Uploader** | **v1.0.13** | `com.telegramdrive.uploader` |
+| **Telegram Drive Uploader** | **v1.0.14** | `com.telegramdrive.uploader` |
 
 Telegram Drive Uploader is an Android application for preparing and uploading video files to Telegram destinations such as Saved Messages, groups, supergroups, and channels. The project uses the official [TDLib](https://github.com/tdlib/td) Java bindings and native libraries for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, a local queue for upload preparation, WorkManager background processing, Arabic localization with RTL support, and a local Smart File Assistant for filename and keyword suggestions.
 
-> **Current status:** The repository contains the official TDLib **v1.8.66** Java bindings and native integrations for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. The current diagnostic build is **1.0.13**.
+> **Current status:** The repository contains the official TDLib **v1.8.66** Java bindings and native integrations for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. The current diagnostic build is **1.0.14**.
 
 ## Application preview
 
