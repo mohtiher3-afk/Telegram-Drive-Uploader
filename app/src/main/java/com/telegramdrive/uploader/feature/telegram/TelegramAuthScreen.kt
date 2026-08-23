@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
+import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.domain.model.TelegramError
 
 @Composable
@@ -94,7 +95,8 @@ fun TelegramAuthScreen(
             AnimatedContent(
                 targetState = connectionState,
                 transitionSpec = {
-                    fadeIn() togetherWith fadeOut()
+                    fadeIn(animationSpec = AppMotion.shortTween()) togetherWith
+                        fadeOut(animationSpec = AppMotion.shortTween())
                 },
                 label = "auth_screen_transitions"
             ) { state ->

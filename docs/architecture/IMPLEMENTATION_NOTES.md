@@ -53,3 +53,9 @@ The settings diagnostic log now uses `MaterialTheme.colorScheme` roles for error
 The verified startup flow is process creation through `TelegramDriveApp`, then `MainActivity`, theme preference collection, `TelegramDriveTheme`, and `AppNavigation`. `AppNavigation` reads the existing `SettingsDataStore.onboardingCompleted` flow through `OnboardingViewModel`; false renders onboarding and true renders the unchanged graph with `home` as its start destination.
 
 No separate splash Activity, fake progress, fixed delay, `Thread.sleep`, duplicate TDLib initialization, or StartupViewModel is present or justified by the observed code. No `androidx.core.splashscreen` dependency or explicit splash API usage exists in the current checkout, so no new dependency or startup coordination was introduced. Database, WorkManager, Telegram, TDLib, and session work remain lazy or feature-owned. The new startup documents record these decisions and their limitations without changing runtime behavior.
+
+## App-wide Motion and Animation phase
+
+The motion audit found two existing custom state-driven transitions: onboarding page changes and Telegram authentication state changes. Both use built-in Compose `AnimatedContent`; no infinite animation, custom framework, list-item entrance animation, or navigation transition was found. `AppMotion` now provides short semantic duration/easing tokens, and those two existing transitions use the tokens without changing their triggers or state sources.
+
+Upload progress remains Material-driven and reflects real state and byte values. No business logic, worker behavior, progress calculation, navigation destination, Telegram/TDLib flow, or upload confirmation semantics changed. The repository does not yet expose a dedicated reduced-motion abstraction; this phase keeps motion short and non-essential and documents device-level animator-scale validation as future work rather than inventing a new accessibility layer.

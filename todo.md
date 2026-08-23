@@ -267,3 +267,10 @@
 - [x] Create truthful startup flow, startup task, and state classification documents.
 - [x] Apply only real-state startup or splash UX improvements; do not add delays, fake progress, duplicate initialization, or new dependencies unless justified.
 - [x] Validate cold/warm/first-launch paths, retry/error handling, themes, RTL, protected integrations, CI gates, and repository cleanliness; then push the focused commit.
+
+## Confirmed App-wide Motion and Animation phase
+
+- [x] Audit existing Compose animations, transitions, progress presentation, list changes, and reduced-motion handling.
+- [x] Create truthful motion audit, principles, and semantic token documents.
+- [x] Implement only minimal state-driven motion using built-in Compose APIs; preserve business logic and avoid new dependencies.
+- [x] Validate motion performance, reduced motion, RTL, protected integrations, CI gates, and repository cleanliness; then push the focused commit.

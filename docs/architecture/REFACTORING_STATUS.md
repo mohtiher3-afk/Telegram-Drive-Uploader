@@ -38,6 +38,14 @@ The startup audit found a single Activity flow: `TelegramDriveApp` initializes t
 
 The phase adds `STARTUP_FLOW.md`, `STARTUP_TASKS.md`, and `STARTUP_STATE.md`. The official splash dependency is not currently present, and adding it without a measured blocking startup task would introduce unnecessary startup coordination. The platform launch behavior, DataStore keys, authentication/session ownership, TDLib fail-closed behavior, WorkManager configuration, and navigation destinations remain unchanged.
 
+## App-wide Motion and Animation result
+
+The motion audit found two existing custom state-driven transitions: onboarding page changes and Telegram authentication state changes. Both use built-in Compose `AnimatedContent`. No infinite animation, custom animation framework, blanket list-item entrance animation, or explicit navigation transition was found.
+
+The phase adds `core.ui.theme.AppMotion` with short semantic duration/easing tokens and applies those tokens only to the existing onboarding and Telegram authentication transitions. Upload progress remains Material-driven and tied to real state and byte values. No upload calculation, worker logic, progress state, navigation destination, Telegram/TDLib flow, or database behavior changed. Reduced-motion handling is documented as a follow-up device-validation item because no existing reduced-motion abstraction was present.
+
+The new design documents are `docs/design/CURRENT_MOTION_AUDIT.md` and `docs/design/MOTION_SYSTEM.md`. No new dependency or animation framework was introduced.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -56,7 +64,7 @@ The phase adds `STARTUP_FLOW.md`, `STARTUP_TASKS.md`, and `STARTUP_STATE.md`. Th
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Complete: startup audit run `32614622996` succeeded for all three ABIs |
+| CI | Pending motion run; startup audit run `32614622996` previously succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
@@ -65,6 +73,6 @@ No TDLib version, generated binding, native artifact, ABI configuration, credent
 
 ## Verification status
 
-Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, or manifest changes were made, and the design tokens, navigation maps, and startup maps match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
+Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, or manifest changes were made, and the design tokens, navigation maps, startup maps, and motion tokens match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
 The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the first DI/Hilt documentation commit by run `32612714343`, the navigation commit by run `32613243711`, the DI/Hilt re-audit commit by run `32613705590`, the Material 3 design-system commit by run `32614106585`, and the startup audit commit by run `32614622996`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
