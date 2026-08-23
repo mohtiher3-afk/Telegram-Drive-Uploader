@@ -204,3 +204,11 @@
 
 - [x] Move `SettingsDataStore` to `data/local/datastore` without changing behavior.
 - [x] Update only required imports and package references, then validate CI and protected Telegram/WorkManager files.
+
+## Approved Telegram application-layer isolation
+
+- [x] Read the current architecture documents and inspect the source tree after the DataStore move.
+- [x] Map direct TDLib usage and actual Telegram application-layer dependencies.
+- [x] Create or update truthful Telegram dependency and TdApi usage maps.
+- [x] Apply only justified package organization using existing classes; preserve behavior and protected integration surfaces.
+- [ ] Validate compilation, tests, artifact gates, and protected-file integrity; then push the refactoring commit.
