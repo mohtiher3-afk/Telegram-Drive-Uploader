@@ -2,9 +2,9 @@
 
 | Build | Command | Result | Verified |
 |---|---|---|---:|
-| Debug | `gradle :app:assembleDebug` or `./gradlew :app:assembleDebug` | NOT VERIFIED — Gradle tooling unavailable locally | No |
-| Release APK | `gradle :app:assembleRelease` or `./gradlew :app:assembleRelease` | NOT VERIFIED — signing/tooling gate | No |
-| Release AAB | `gradle :app:bundleRelease` or `./gradlew :app:bundleRelease` | NOT VERIFIED — task/build/signing gate | No |
-| Unit tests | `gradle :app:testDebugUnitTest` | NOT VERIFIED locally | No |
-| Lint | `gradle :app:lintVitalRelease` | NOT VERIFIED locally | No |
-| TDLib artifacts | `./scripts/check-tdlib-artifacts.sh` | FAIL locally: `readelf` unavailable for exact ELF checks | No |
+| Debug | `./gradlew :app:assembleDebug` | PASS for arm64-v8a after local debug keystore setup | Yes |
+| Release APK | `./gradlew :app:assembleRelease` | PASS for all three ABIs; outputs are unsigned | Yes: build only |
+| Release AAB | `./gradlew :app:bundleRelease` | PASS; output is unsigned | Yes: build only |
+| Unit tests | `./gradlew :app:testDebugUnitTest` | PASS | Yes |
+| Lint | `./gradlew :app:lintVitalRelease` | PASS | Yes |
+| TDLib artifacts | `./scripts/check-tdlib-artifacts.sh` | PASS after building pinned OpenSSL 3.0.16 runtime dependencies | Yes |

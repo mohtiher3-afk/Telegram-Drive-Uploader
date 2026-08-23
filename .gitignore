@@ -20,3 +20,4 @@ build/
 # Generated native/build intermediates
 .externalNativeBuild/
 .cxx/
+.native-build/

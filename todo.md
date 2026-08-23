@@ -336,3 +336,9 @@
 - [x] Inspect and scope `pasted_content_23.txt` against the current repository and protected architecture boundaries.
 - [x] Apply only safe, evidence-based changes requested by phase 23: release environment, signing, artifact, build-matrix, checklist, privacy, limitations, and candidate-readiness documentation.
 - [ ] Validate the phase with local checks, tests where available, protected-surface checks, and GitHub Actions.
+
+## Comprehensive audit and repair requested by user
+
+- [x] Audit the complete repository, source tree, Gradle/CI configuration, resources, tests, security, TDLib artifacts, WorkManager, and release readiness.
+- [x] Fix only confirmed defects with minimal reversible changes and preserve real Telegram/TDLib/upload behavior: add Gradle Wrapper, restore official OpenSSL runtime dependencies, prevent debug-keystore release fallback, and ignore native build cache.
+- [ ] Run all available local checks and remote CI validation; document unavailable environment checks honestly.

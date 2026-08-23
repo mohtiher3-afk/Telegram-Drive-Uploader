@@ -28,41 +28,39 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
+  var releaseSigningConfigured = false
   signingConfigs {
     create("release") {
       val envKeystoreBase64 = System.getenv("RELEASE_KEYSTORE_BASE64")
       val keystorePath = System.getenv("RELEASE_KEYSTORE_PATH")
         ?: project.findProperty("RELEASE_KEYSTORE_PATH")?.toString()
         ?: "${rootDir}/release.keystore"
-      
-      var keystoreFile = file(keystorePath)
-      
+
+      val keystoreFile = file(keystorePath)
       if (!envKeystoreBase64.isNullOrEmpty()) {
         try {
           val decoded = Base64.getDecoder().decode(envKeystoreBase64.trim())
           keystoreFile.parentFile.mkdirs()
           keystoreFile.writeBytes(decoded)
-        } catch (e: Exception) {
-          project.logger.error("Failed to decode RELEASE_KEYSTORE_BASE64", e)
+        } catch (_: Exception) {
+          project.logger.error("Failed to decode RELEASE_KEYSTORE_BASE64 without exposing its value")
         }
       }
-      
-      if (keystoreFile.exists()) {
+
+      val configuredStorePassword = System.getenv("RELEASE_STORE_PASSWORD")
+        ?: project.findProperty("RELEASE_STORE_PASSWORD")?.toString()
+      val configuredKeyAlias = System.getenv("RELEASE_KEY_ALIAS")
+        ?: project.findProperty("RELEASE_KEY_ALIAS")?.toString()
+      val configuredKeyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+        ?: project.findProperty("RELEASE_KEY_PASSWORD")?.toString()
+      if (keystoreFile.isFile && !configuredStorePassword.isNullOrBlank() &&
+        !configuredKeyAlias.isNullOrBlank() && !configuredKeyPassword.isNullOrBlank()
+      ) {
         storeFile = keystoreFile
-        storePassword = System.getenv("RELEASE_STORE_PASSWORD")
-          ?: project.findProperty("RELEASE_STORE_PASSWORD")?.toString()
-          ?: "android"
-        keyAlias = System.getenv("RELEASE_KEY_ALIAS")
-          ?: project.findProperty("RELEASE_KEY_ALIAS")?.toString()
-          ?: "upload"
-        keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
-          ?: project.findProperty("RELEASE_KEY_PASSWORD")?.toString()
-          ?: "android"
-      } else {
-        storeFile = file("${rootDir}/debug.keystore")
-        storePassword = "android"
-        keyAlias = "androiddebugkey"
-        keyPassword = "android"
+        storePassword = configuredStorePassword
+        keyAlias = configuredKeyAlias
+        keyPassword = configuredKeyPassword
+        releaseSigningConfigured = true
       }
     }
     create("debugConfig") {
@@ -100,7 +98,9 @@ android {
       isMinifyEnabled = true
       isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = signingConfigs.getByName("release")
+      if (releaseSigningConfigured) {
+        signingConfig = signingConfigs.getByName("release")
+      }
     }
     debug { signingConfig = signingConfigs.getByName("debugConfig") }
   }
