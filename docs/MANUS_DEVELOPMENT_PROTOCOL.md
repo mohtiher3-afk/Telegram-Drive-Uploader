@@ -16,3 +16,6 @@ For every future task:
 12. Report exact results and remaining blockers.
 
 Manus must not modify unrelated files, add speculative features, rewrite modules, upgrade dependencies unnecessarily, delete code without proof, bypass failing tests, fake external-service success, or modify TDLib casually.
+
+
+After every meaningful code or configuration change, run the targeted tests first and then run `./scripts/verify-project.sh FULL` unless the documented change scope justifies `QUICK` or `RELEASE`. Inspect the complete diff, report every failure with its original diagnostic, and do not proceed when a critical verification gate fails. The self-check system detects problems only; it must not rewrite code, delete files, modify dependencies, or alter architecture automatically.

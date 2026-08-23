@@ -18,7 +18,7 @@ Uploads flow through the existing queue and worker architecture. Progress must r
 
 ## Tests and CI
 
-Run the repository guards, `./gradlew :app:testDebugUnitTest`, release lint, and the relevant build task. CI runs security, resource, WorkManager, TDLib, JVM, lint, and multi-ABI gates. Device smoke tests require an emulator or physical device.
+The master self-check is `./scripts/verify-project.sh`. Use `QUICK` for compile plus JVM unit tests, `FULL` for repository, TDLib, Gradle, compile, tests, lint, debug build, and security gates, `RELEASE` for the full checks plus release assembly, and `CLEAN` when project outputs must be cleared before a full run. The command writes the uncommitted machine-readable result to `build/reports/verification/verification-summary.txt`. CI runs security, resource, WorkManager, TDLib, JVM, lint, and multi-ABI gates. Device smoke tests require an emulator or physical device and remain separate from basic CI.
 
 ## Releases
 

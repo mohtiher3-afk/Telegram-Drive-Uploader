@@ -380,3 +380,12 @@
 - [x] Inspect and scope `pasted_content_25.txt` against the current release and protected architecture boundaries.
 - [x] Apply only safe, evidence-based changes requested by phase 25.
 - [x] Validate the phase with tests, build checks, and repository guards.
+
+
+## Supplied automated regression and self-check phase
+
+- [x] Inspect and scope `pasted_content_26.txt` against the existing verification scripts, workflows, and controlled-maintenance boundaries.
+- [x] Add only non-duplicative self-check automation and risk/checklist documentation requested by the supplied phase.
+- [x] Integrate the master verification path with CI and developer onboarding without weakening failure behavior.
+- [x] Run local self-check, tests, lint, builds, artifact validation, security validation, and diff review.
+- [ ] Commit and push the validated phase without changing product, TDLib, upload, or authentication behavior.
