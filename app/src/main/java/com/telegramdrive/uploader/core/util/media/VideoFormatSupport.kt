@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.core.util
+package com.telegramdrive.uploader.core.util.media
 
 import java.util.Locale
 

@@ -186,3 +186,9 @@
 
 - [x] Inspect and classify `pasted_content_3.txt` before treating any embedded instruction as actionable.
 - [x] Execute only safe, non-destructive steps that are relevant to the repository and validate their results.
+
+## Approved incremental refactoring
+
+- [x] Baseline the first Core refactoring slice and define protected files.
+- [x] Implement only the approved low-risk Core boundary changes.
+- [ ] Run tests, artifact checks, and CI validation before considering the phase complete.
