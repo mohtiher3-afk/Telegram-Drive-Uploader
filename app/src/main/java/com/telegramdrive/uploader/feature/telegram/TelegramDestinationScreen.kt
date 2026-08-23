@@ -36,6 +36,7 @@ fun TelegramDestinationScreen(
     val connectionState by viewModel.connectionState.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val destinations by viewModel.destinations.collectAsStateWithLifecycle()
+    val pinnedDestinationIds by viewModel.pinnedDestinationIds.collectAsStateWithLifecycle()
     val selectedDestination by viewModel.selectedDestination.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -235,7 +236,9 @@ fun TelegramDestinationScreen(
                             DestinationRow(
                                 destination = dest,
                                 isSelected = selectedDestination?.id == dest.id,
-                                onClick = { viewModel.selectDestination(dest) }
+                                isPinned = dest.id in pinnedDestinationIds,
+                                onClick = { viewModel.selectDestination(dest) },
+                                onPinClick = { viewModel.setDestinationPinned(dest.id, dest.id !in pinnedDestinationIds) }
                             )
                         }
                     }
@@ -263,7 +266,9 @@ fun TelegramDestinationScreen(
 fun DestinationRow(
     destination: TelegramDestination,
     isSelected: Boolean,
-    onClick: () -> Unit
+    isPinned: Boolean,
+    onClick: () -> Unit,
+    onPinClick: () -> Unit
 ) {
     val icon = when (destination.type) {
         TelegramDestinationType.USER -> Icons.Default.Person
@@ -322,6 +327,26 @@ fun DestinationRow(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+            }
+            IconButton(
+                onClick = onPinClick,
+                modifier = Modifier.testTag("pin_destination_${destination.id}")
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PushPin,
+                    contentDescription = stringResource(
+                        if (isPinned) {
+                            com.telegramdrive.uploader.R.string.unpin_destination
+                        } else {
+                            com.telegramdrive.uploader.R.string.pin_destination
+                        }
+                    ),
+                    tint = if (isPinned) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
             }
             if (isSelected) {
                 Icon(
