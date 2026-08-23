@@ -76,6 +76,14 @@ The QA phase is documented under `docs/testing`: test inventory, coverage map, c
 
 Static resource integrity and WorkManager manifest checks pass. Local Gradle execution, exact local ELF validation, connected-device instrumentation, runtime RTL/dark-mode/accessibility checks, broad ViewModel/repository/Room/DataStore/WorkManager/Compose UI suites, and end-to-end real Telegram delivery remain explicitly blocked or incomplete in the temporary environment. No fake result, real credential, real user file, or simulated production behavior was introduced. The GitHub Actions workflow remains the authoritative compile, test, lint, and multi-ABI evidence source.
 
+## Performance, Memory, Battery, and Stability result
+
+The performance phase was completed as a measurement-first audit. `docs/performance` now contains the baseline, inventory, memory audit, battery audit, optimization log, performance guide, and final performance report. Runtime metrics are explicitly marked `NOT MEASURED — TOOLING UNAVAILABLE`; no speculative numeric improvement is claimed.
+
+Source inspection found structured stream closure in `StreamingFileReader`, no `GlobalScope` or `Thread.sleep` in the audited production paths, stable item keys in the inspected queue list, and existing WorkManager/retry/persistence safeguards. No upload buffer, progress frequency, Room write policy, coroutine scope, Flow topology, notification cadence, or Compose state was changed without measurements. Telegram, TDLib, JNI, ABI, authentication, upload correctness, WorkManager, database, and navigation remain unchanged.
+
+Device profiling, long-running upload measurement, battery/memory/CPU traces, local Gradle execution, and runtime stability tests remain environment-gated. The phase therefore records audit evidence and repeatable guidance but does not claim performance optimization completion without before/after measurements.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -94,7 +102,7 @@ Static resource integrity and WorkManager manifest checks pass. Local Gradle exe
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
 | Resources | Complete: resource inventory, usage review, asset reports, and integrity guard added; no unsafe deletion |
 | Tests | QA documentation complete; local Gradle execution and broad missing suites remain explicitly blocked |
-| CI | Pending QA-phase workflow result |
+| CI | Pending performance-phase workflow result |
 | Final audit | Pending |
 
 ## Protected behavior and assets
