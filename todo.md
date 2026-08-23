@@ -366,5 +366,5 @@
 
 - [x] Inspect current versioning, release workflow, and pinned-channel commit state.
 - [x] Prepare the next release version and release notes without changing protected upload behavior: versionCode 15, versionName 1.0.15.
-- [ ] Run signed multi-ABI Release build and verification.
-- [ ] Publish and verify the new release artifacts.
+- [x] Run signed multi-ABI Release build and verification: GitHub Actions run `32630539974` passed all ABI builds, tests, lint, TDLib, and signature verification.
+- [x] Publish and verify the new release artifacts: GitHub Release `v1.0.15` contains signed APKs and SHA-256 checksum files.
