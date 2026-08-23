@@ -4,11 +4,11 @@
 
 | Application | Current version | Android application ID |
 |---|---|---|
-| **Telegram Drive Uploader** | **v1.0.14** | `com.telegramdrive.uploader` |
+| **Telegram Drive Uploader** | **v1.0.15** | `com.telegramdrive.uploader` |
 
 Telegram Drive Uploader is an Android application for preparing and uploading video files to Telegram destinations such as Saved Messages, groups, supergroups, and channels. The project uses the official [TDLib](https://github.com/tdlib/td) Java bindings and native libraries for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, a local queue for upload preparation, WorkManager background processing, Arabic localization with RTL support, and a local Smart File Assistant for filename and keyword suggestions.
 
-> **Current status:** The repository contains the official TDLib **v1.8.66** Java bindings and native integrations for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. The current diagnostic build is **1.0.14**.
+> **Current status:** The repository contains the official TDLib **v1.8.66** Java bindings and native integrations for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. The current published release is **v1.0.15**; unrestricted production certification still requires real-device evidence.
 
 ## Application preview
 
@@ -85,10 +85,12 @@ For native dependency preparation and runtime loading, see [`docs/TDLIB_NATIVE_D
 From the repository root, use the project’s Gradle wrapper where available:
 
 ```bash
-./gradlew :app:testDebugUnitTest
-./gradlew :app:lintVitalRelease
-./gradlew :app:assembleRelease
+./scripts/verify-project.sh QUICK
+./scripts/verify-project.sh FULL
+./scripts/verify-project.sh RELEASE
 ```
+
+The self-check modes run the repository, TDLib, Gradle, compilation, tests, lint, build, security, resource, and WorkManager gates appropriate to each mode. See [`docs/DEVELOPER_ONBOARDING.md`](docs/DEVELOPER_ONBOARDING.md) and [`docs/maintenance/README.md`](docs/maintenance/README.md) for the maintenance workflow.
 
 ABI-specific release APKs are produced under the Gradle output directory. CI publishes matching debug artifacts for `arm64-v8a`, `armeabi-v7a`, and `x86_64`; select the artifact matching the target device.
 
@@ -164,7 +166,7 @@ Diagnostics are intended to be privacy-conscious and bounded. Before sharing log
 
 ## Documentation and references
 
-The project audit and remaining device-level validation items are documented in [`docs/PROJECT_AUDIT_2026-08-21.md`](docs/PROJECT_AUDIT_2026-08-21.md). The official TDLib source and Android documentation are available through the links below.
+The project audit and remaining device-level validation items are documented in [`docs/PROJECT_AUDIT_2026-08-21.md`](docs/PROJECT_AUDIT_2026-08-21.md). Current maintenance and repository-cleanup records are indexed in [`docs/maintenance/README.md`](docs/maintenance/README.md). The official TDLib source and Android documentation are available through the links below.
 
 [1]: https://github.com/tdlib/td "Official TDLib repository"
 [2]: https://core.telegram.org/api/obtaining_api_id "Telegram API ID and API hash documentation"
