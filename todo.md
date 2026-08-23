@@ -425,3 +425,12 @@
 - [x] Add reusable feature-request and planning templates or indexes only where missing.
 - [x] Validate documentation-only changes, repository protections, and absence of production-code changes.
 - [x] Commit and report the controlled feature-development protocol without changing application behavior.
+
+
+## Supplied controlled bug-fix and regression protocol phase
+
+- [x] Inspect the phase-30 bug-fix protocol and compare it with existing architecture, testing, security, performance, operations, and release documentation.
+- [x] Identify bug-triage gaps and protected-system constraints without fixing a specific bug.
+- [x] Add reusable bug-report, root-cause, high-risk-plan, and fix-report templates only where missing.
+- [x] Validate documentation-only changes, security boundaries, and absence of production-code modifications.
+- [x] Commit and report the controlled bug-fix protocol without changing application behavior.

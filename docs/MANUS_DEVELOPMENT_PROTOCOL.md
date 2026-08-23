@@ -32,3 +32,12 @@ Any feature affecting TDLib, JNI, ABI, authentication, Upload Engine, WorkManage
 All user-visible strings must support English and Arabic, preserve RTL/LTR behavior, and use resources rather than hardcoded text. UI changes must preserve Material 3, dark mode, accessibility, and loading/empty/error/success states. Performance changes require measurement against a baseline rather than assumption.
 
 The feature status must be one of `PLANNED`, `IN_PROGRESS`, `TESTING`, `BLOCKED`, `READY_FOR_RELEASE`, or `RELEASED`. The release decision must be explicitly recorded as `READY_FOR_RELEASE` or `BLOCKED`; no feature is released automatically. Before review, run the applicable focused tests, `./scripts/verify-project.sh`, security and TDLib/resource gates, the complete diff review, and documentation checks. Report exact results and remaining risks using the feature status and final review record.
+
+
+## Controlled Bug Fix and Regression Protocol
+
+Every future bug must follow: report, reproduce, isolate, root cause, impact analysis, minimal fix, regression test, build, security check, TDLib check when applicable, self-check, diff review, documentation, and release decision. Start each confirmed issue under `docs/bugs/<bug-id>/` with the bug report; add root-cause and fix reports, and add `HIGH_RISK_PLAN.md` before implementation when TDLib, JNI, ABI, authentication, Upload Engine, WorkManager, database, security, or native libraries are affected.
+
+Never fix a bug by guessing. If reproduction is unavailable, record `REPRODUCTION NOT CONFIRMED` and do not claim a root cause or fix. Collect only relevant redacted evidence. A bug is `FIXED` only when the root cause is confirmed, the minimal fix is implemented, the regression test passes where practical, and build validation passes; otherwise use `PARTIALLY FIXED` or `UNVERIFIED`.
+
+Use `bugfix/<bug-id>` for normal work and `hotfix/<bug-id>` for critical or security issues. Do not work directly on the production branch. Keep bug commits focused, classify release impact as `NO RELEASE REQUIRED`, `PATCH RELEASE REQUIRED`, `HOTFIX RELEASE REQUIRED`, or `SECURITY RELEASE REQUIRED`, and update the changelog only when released behavior actually changes. Security findings must remain private or redacted in public documentation.
