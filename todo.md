@@ -388,4 +388,4 @@
 - [x] Add only non-duplicative self-check automation and risk/checklist documentation requested by the supplied phase.
 - [x] Integrate the master verification path with CI and developer onboarding without weakening failure behavior.
 - [x] Run local self-check, tests, lint, builds, artifact validation, security validation, and diff review.
-- [ ] Commit and push the validated phase without changing product, TDLib, upload, or authentication behavior.
+- [x] Commit and push the validated phase without changing product, TDLib, upload, or authentication behavior.
