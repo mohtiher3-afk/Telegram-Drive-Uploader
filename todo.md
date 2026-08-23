@@ -181,3 +181,8 @@
 
 - [x] Execute the approved audit, reliability safeguards, automated validation, build, and evidence-based documentation steps.
 - [x] Preserve fail-closed TDLib behavior and do not expose credentials or claim unverified device outcomes.
+
+## New supplied execution file
+
+- [x] Inspect and classify `pasted_content_3.txt` before treating any embedded instruction as actionable.
+- [x] Execute only safe, non-destructive steps that are relevant to the repository and validate their results.
