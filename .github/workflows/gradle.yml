@@ -72,6 +72,9 @@ jobs:
           TDLIB_CHECK_ABI: ${{ matrix.abi }}
         run: ./scripts/check-tdlib-artifacts.sh
 
+      - name: Verify WorkManager manifest configuration
+        run: ./scripts/check-workmanager-manifest.sh
+
       - name: Run JVM unit tests
         run: gradle --no-daemon --max-workers=2 :app:testDebugUnitTest
 
