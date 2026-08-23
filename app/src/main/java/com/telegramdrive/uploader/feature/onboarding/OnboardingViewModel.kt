@@ -2,7 +2,7 @@ package com.telegramdrive.uploader.feature.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telegramdrive.uploader.core.datastore.SettingsDataStore
+import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

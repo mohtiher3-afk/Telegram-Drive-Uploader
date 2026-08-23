@@ -3,7 +3,7 @@ package com.telegramdrive.uploader.feature.settings
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telegramdrive.uploader.core.datastore.SettingsDataStore
+import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity

@@ -199,3 +199,8 @@
 - [ ] Baseline the affected files and tests before the next refactoring slice.
 - [ ] Implement only the low-risk changes approved by the actual next-phase instructions.
 - [ ] Run tests, artifact checks, and multi-ABI CI validation before retaining the phase.
+
+## Authorized SettingsDataStore move
+
+- [x] Move `SettingsDataStore` to `data/local/datastore` without changing behavior.
+- [x] Update only required imports and package references, then validate CI and protected Telegram/WorkManager files.
