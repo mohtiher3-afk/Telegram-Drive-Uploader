@@ -36,6 +36,8 @@
     <string name="direct_upload_info">يتم رفع الملفات مباشرةً من هذا الجهاز إلى تيليجرام، ولا تحتاج إلى وسيط مدفوع.</string>
     <string name="target_destination">الوجهة المحددة</string>
     <string name="eligible_targets">الوجهات المتاحة</string>
+    <string name="pin_destination">تثبيت الوجهة</string>
+    <string name="unpin_destination">إلغاء تثبيت الوجهة</string>
     <string name="no_destinations_found">لم يتم العثور على وجهات.</string>
     <string name="no_destinations_found_for_query">لا توجد قنوات أو مجموعات مطابقة.</string>
     <string name="selected_destination_summary">الوجهة المحددة: %1$s</string>

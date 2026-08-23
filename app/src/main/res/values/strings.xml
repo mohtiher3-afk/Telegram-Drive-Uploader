@@ -36,6 +36,8 @@
     <string name="direct_upload_info">Files are uploaded directly from this device to Telegram. No paid relay is required.</string>
     <string name="target_destination">Target Destination</string>
     <string name="eligible_targets">Eligible Targets</string>
+    <string name="pin_destination">Pin destination</string>
+    <string name="unpin_destination">Unpin destination</string>
     <string name="no_destinations_found">No destinations found.</string>
     <string name="no_destinations_found_for_query">No matching channels or groups.</string>
     <string name="selected_destination_summary">Selected destination: %1$s</string>

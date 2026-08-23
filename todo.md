@@ -354,3 +354,10 @@
 - [x] Dispatch the manual Release workflow for tag `v1.0.14` after confirming the required secret names exist.
 - [x] Monitor signed multi-ABI build, APK verification, checksums, and GitHub Release publication without exposing secret values.
 - [x] Record the exact final workflow and publication result: run `32622361563` succeeded and GitHub Release `v1.0.14` is published.
+
+## Pinned channels in search results
+
+- [x] Inspect channel search results, destination screen, local persistence, and localized resources.
+- [x] Add persistent pinned-channel state without changing TDLib or upload behavior.
+- [x] Add an accessible Material 3 pin/unpin action with English, Arabic, and RTL support.
+- [x] Validate unit tests, resource integrity, build, and protected-source boundaries.
