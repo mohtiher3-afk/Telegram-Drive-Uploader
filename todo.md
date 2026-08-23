@@ -164,5 +164,11 @@
 
 ## Queued-upload repair release
 
-- [ ] Bump the Android version for the WorkManager startup repair without reusing v1.0.13.
-- [ ] Trigger and verify the signed multi-ABI release for the queued-upload repair.
+- [x] Bump the Android version for the WorkManager startup repair without reusing v1.0.13.
+- [x] Trigger and verify the signed multi-ABI release for the queued-upload repair.
+
+## Master-prompt analysis and build validation
+
+- [ ] Create a factual audit mapping the master prompt to the current repository and known limitations.
+- [ ] Add a regression guard for the corrected AndroidX Startup and WorkManager manifest configuration.
+- [ ] Document the reproducible CI build gates and the distinction between build verification and real Telegram device QA.
