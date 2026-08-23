@@ -289,3 +289,8 @@
 - [ ] Add or update English and Arabic resources and extract only UI text; preserve user content, Telegram content, filenames, IDs, hashes, URLs, and technical values.
 - [ ] Apply only safe locale formatting and logical RTL fixes; preserve behavior and protected integrations.
 - [ ] Validate resources, English/Arabic contracts, protected surfaces, CI gates, and repository cleanliness; then push the focused commit.
+
+## Apply supplied implementation instructions
+
+- [ ] Apply the implementation instructions from `pasted_content_16.txt` after auditing their scope and compatibility with the current Android architecture.
+- [ ] Validate all changes with static checks, tests, and the repository CI workflow before delivery.

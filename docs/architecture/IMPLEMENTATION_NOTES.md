@@ -54,6 +54,16 @@ The verified startup flow is process creation through `TelegramDriveApp`, then `
 
 No separate splash Activity, fake progress, fixed delay, `Thread.sleep`, duplicate TDLib initialization, or StartupViewModel is present or justified by the observed code. No `androidx.core.splashscreen` dependency or explicit splash API usage exists in the current checkout, so no new dependency or startup coordination was introduced. Database, WorkManager, Telegram, TDLib, and session work remain lazy or feature-owned. The new startup documents record these decisions and their limitations without changing runtime behavior.
 
+## Resources and Assets phase
+
+The supplied resource phase was applied as a conservative audit rather than a blind cleanup. The repository contains launcher adaptive-icon resources, density fallback WebP assets, a referenced launcher foreground PNG, one application JPEG, English/Arabic strings, legacy XML colors, the manifest theme, and protected backup/data-extraction XML. No production `font`, `raw`, `assets`, `values-night`, or RTL-qualified resource files were present in the audited checkout.
+
+Required resource documentation was added under `docs/resources`: `RESOURCE_INVENTORY.md`, `UNUSED_RESOURCES.md`, `LARGE_ASSETS.md`, `DUPLICATE_ASSETS.md`, and `RESOURCE_ARCHITECTURE.md`. Identical launcher `ic_launcher`/`ic_launcher_round` pairs were retained because their distinct names are manifest/framework contracts. No resource was deleted, no branding asset was replaced, and no large image was recompressed without evidence.
+
+`colors.xml` remains classified as review because Compose `MaterialTheme` is the active theme source but generated or indirect resource usage must be validated by Android tooling before deletion. Release resource shrinking and R8 were already enabled and were not changed. `scripts/check-resource-integrity.sh` now checks locale ID parity, duplicate string IDs, manifest-protected resources, adaptive-icon references, and dynamic resource lookup.
+
+The resource phase did not change Telegram, TDLib, JNI, ABI, upload, WorkManager, database, authentication, navigation, notifications, file sharing, or application behavior. Local Gradle execution remains unavailable because this checkout has no wrapper and the sandbox has no standalone Gradle executable; CI is required for final compile/resource/lint evidence.
+
 ## App-wide Motion and Animation phase
 
 The motion audit found two existing custom state-driven transitions: onboarding page changes and Telegram authentication state changes. Both use built-in Compose `AnimatedContent`; no infinite animation, custom framework, list-item entrance animation, or navigation transition was found. `AppMotion` now provides short semantic duration/easing tokens, and those two existing transitions use the tokens without changing their triggers or state sources.
