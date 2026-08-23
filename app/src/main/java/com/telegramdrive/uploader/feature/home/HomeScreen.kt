@@ -99,7 +99,7 @@ fun HomeScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.CloudQueue,
-                                    contentDescription = "Connected",
+                                    contentDescription = stringResource(com.telegramdrive.uploader.R.string.connected_status_description),
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(32.dp)
                                 )

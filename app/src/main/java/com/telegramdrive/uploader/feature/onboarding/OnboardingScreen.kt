@@ -76,20 +76,20 @@ fun OnboardingScreen(
     var page by remember { mutableIntStateOf(0) }
     val pages = listOf(
             OnboardingPage(
-                title = "Your files, in your Telegram",
-                description = "Prepare videos, choose a Telegram destination, and keep your uploads organized in one private workspace.",
+                title = stringResource(R.string.onboarding_page_upload_title),
+                description = stringResource(R.string.onboarding_page_upload_description),
                 icon = Icons.Default.CloudUpload,
                 accent = MaterialTheme.colorScheme.primaryContainer
             ),
             OnboardingPage(
-                title = "Upload on your schedule",
-                description = "Queue multiple videos, schedule uploads, and track progress without losing your place.",
+                title = stringResource(R.string.onboarding_page_schedule_title),
+                description = stringResource(R.string.onboarding_page_schedule_description),
                 icon = Icons.Default.Schedule,
                 accent = MaterialTheme.colorScheme.tertiaryContainer
             ),
             OnboardingPage(
-                title = "Private by design",
-                description = "The app uses the official TDLib client and requests access only when a feature needs it.",
+                title = stringResource(R.string.onboarding_page_private_title),
+                description = stringResource(R.string.onboarding_page_private_description),
                 icon = Icons.Default.Security,
                 accent = MaterialTheme.colorScheme.secondaryContainer
             )

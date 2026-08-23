@@ -116,7 +116,7 @@ fun TelegramAuthScreen(
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "Connect your Telegram account to prepare video uploads and manage files in Saved Messages, Channels, or Groups.",
+                                text = stringResource(com.telegramdrive.uploader.R.string.telegram_auth_description),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -129,7 +129,7 @@ fun TelegramAuthScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "Developer Notice: Telegram API ID & Hash are not configured. Connection attempts will fail securely.",
+                                        text = stringResource(com.telegramdrive.uploader.R.string.telegram_api_not_configured),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onErrorContainer,
                                         modifier = Modifier.padding(12.dp),
@@ -162,7 +162,7 @@ fun TelegramAuthScreen(
                         TelegramConnectionState.CONNECTING -> {
                             CircularProgressIndicator(modifier = Modifier.size(48.dp))
                             Text(
-                                text = "Connecting to Telegram servers...",
+                                text = stringResource(com.telegramdrive.uploader.R.string.connecting_telegram),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -170,13 +170,13 @@ fun TelegramAuthScreen(
 
                         TelegramConnectionState.WAITING_FOR_PHONE -> {
                             Text(
-                                text = "Telegram Phone Number",
+                                text = stringResource(com.telegramdrive.uploader.R.string.telegram_phone_number),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = "Enter your phone number with your country code.",
+                                text = stringResource(com.telegramdrive.uploader.R.string.phone_number_help),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -233,13 +233,13 @@ fun TelegramAuthScreen(
 
                         TelegramConnectionState.WAITING_FOR_CODE -> {
                             Text(
-                                text = "Enter Verification Code",
+                                text = stringResource(com.telegramdrive.uploader.R.string.enter_verification_code),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = "A verification code was sent to your Telegram app.",
+                                text = stringResource(com.telegramdrive.uploader.R.string.verification_code_sent),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -284,14 +284,14 @@ fun TelegramAuthScreen(
 
                         TelegramConnectionState.WAITING_FOR_QR -> {
                             Text(
-                                text = "Scan QR code in Telegram",
+                                text = stringResource(com.telegramdrive.uploader.R.string.scan_qr_title),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "Open Telegram on a device where you are already signed in, go to Settings > Devices > Link Desktop Device, and scan this link.",
+                                text = stringResource(com.telegramdrive.uploader.R.string.scan_qr_instructions),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -322,13 +322,13 @@ fun TelegramAuthScreen(
 
                         TelegramConnectionState.WAITING_FOR_PASSWORD -> {
                             Text(
-                                text = "Two-Step Verification",
+                                text = stringResource(com.telegramdrive.uploader.R.string.two_step_verification),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = "Enter your Telegram cloud password.",
+                                text = stringResource(com.telegramdrive.uploader.R.string.enter_cloud_password),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -341,7 +341,7 @@ fun TelegramAuthScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    text = "Enter your Telegram two-step verification password.",
+                                    text = stringResource(com.telegramdrive.uploader.R.string.enter_two_step_password),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                                     modifier = Modifier.padding(12.dp)
@@ -402,7 +402,7 @@ fun TelegramAuthScreen(
                                 Text(stringResource(com.telegramdrive.uploader.R.string.logging_out))
                             } else {
                                 Text(
-                                    text = "Authentication Error",
+                                    text = stringResource(com.telegramdrive.uploader.R.string.authentication_error),
                                     style = MaterialTheme.typography.headlineSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.error

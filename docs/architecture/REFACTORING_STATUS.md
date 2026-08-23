@@ -54,6 +54,14 @@ The first screen slice is complete for `HomeScreen` only. The source-based inven
 
 The Home slice is validated by Android CI run `32617922174`, which succeeded for all three ABIs. Further screen redesigns remain intentionally sequential and require a separate screen-level slice.
 
+## RTL, Arabic, and Localization result
+
+The localization phase added a complete Arabic resource counterpart for the existing English resource IDs and extended both locales with semantic IDs for audited onboarding, upload, Telegram authentication, and supporting UI text. The onboarding, Home connection content description, UploadScreen, and TelegramAuthScreen now use resource-backed UI strings for the extracted literals. Telegram usernames, chat names, filenames, URIs, IDs, hashes, phone-number identity values, MIME types, and diagnostic payloads remain non-translatable content or technical values.
+
+`AndroidManifest.xml` already declares `android:supportsRtl="true"`. The phase preserves existing navigation and business logic. Date/time, size, duration, percentage, and count formatting remains presentation-only and is documented for a later focused pass where tests can cover English and Arabic plural/locale cases. Remaining SettingsScreen and HistoryScreen hardcoded UI strings are tracked in `LOCALIZATION_AUDIT.md` and are not silently claimed as complete.
+
+The localization documents are `docs/localization/LOCALIZATION_AUDIT.md`, `docs/localization/TERMINOLOGY.md`, and `docs/localization/LOCALE_FORMATTING.md`.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -70,14 +78,14 @@ The Home slice is validated by Android CI run `32617922174`, which succeeded for
 | Navigation | Complete: routes centralized safely; graph and coupling documented |
 | DI | Complete: Hilt responsibility, inventory, graph, and cycle audit documented |
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
-| Resources | Pending |
+| Resources | In progress: English/Arabic resource pairs added; remaining hardcoded UI literals tracked |
 | Tests | Pending full local Gradle execution |
-| CI | Complete: Home screen run `32617922174` succeeded for all three ABIs |
+| CI | Pending localization commit |
 | Final audit | Pending |
 
 ## Protected behavior and assets
 
-No TDLib version, generated binding, native artifact, ABI configuration, credential, authentication flow, session behavior, logout path, upload behavior, WorkManager behavior, application ID, or UI was changed by this phase.
+No TDLib version, generated binding, native artifact, ABI configuration, credential, authentication flow, session behavior, logout path, upload behavior, WorkManager behavior, application ID, or business logic was changed by this phase. UI text extraction is limited to resource-backed presentation and does not alter action or state contracts.
 
 ## Verification status
 

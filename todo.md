@@ -281,3 +281,11 @@
 - [x] Create `SCREEN_REDESIGN_PLAN.md`, `SCREEN_STATE_MATRIX.md`, and `SCREEN_FUNCTIONAL_CONTRACTS.md` from source evidence.
 - [x] Redesign one existing screen at a time using established Material 3, motion, spacing, RTL, and accessibility foundations; preserve all functionality and avoid fake data.
 - [ ] Validate each screen slice before continuing, then complete final CI and protected-surface verification.
+
+## Confirmed RTL, Arabic, and Localization phase
+
+- [ ] Audit user-visible strings, resources, pluralization, formatting, directionality, icons, and locale-sensitive presentation.
+- [ ] Create `LOCALIZATION_AUDIT.md`, `TERMINOLOGY.md`, and formatting/RTL findings from actual source evidence.
+- [ ] Add or update English and Arabic resources and extract only UI text; preserve user content, Telegram content, filenames, IDs, hashes, URLs, and technical values.
+- [ ] Apply only safe locale formatting and logical RTL fixes; preserve behavior and protected integrations.
+- [ ] Validate resources, English/Arabic contracts, protected surfaces, CI gates, and repository cleanliness; then push the focused commit.
