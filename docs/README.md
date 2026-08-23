@@ -17,4 +17,5 @@
 | Maintenance | `maintenance/README.md`, `REPOSITORY_INVENTORY.md`, `DUPLICATE_FILE_AUDIT.md`, `FINAL_REPOSITORY_STRUCTURE.md`, `FINAL_CLEANUP_REPORT.md`, `REPOSITORY_CERTIFICATION.md` |
 | Controlled feature development | `features/_template/README.md` and the feature request, impact, requirements, flow, design, implementation, status, and database templates |
 | Controlled bug fixing | `bugs/_template/README.md` and the bug report, root-cause, high-risk-plan, and fix-report templates |
+| Controlled dependency updates | `dependencies/_template/README.md`, `CURRENT_TOOLCHAIN.md`, and `DEPENDENCY_INVENTORY.md` |
 | Development protocol | `MANUS_DEVELOPMENT_PROTOCOL.md` |

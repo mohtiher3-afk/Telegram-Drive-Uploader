@@ -41,3 +41,14 @@ Every future bug must follow: report, reproduce, isolate, root cause, impact ana
 Never fix a bug by guessing. If reproduction is unavailable, record `REPRODUCTION NOT CONFIRMED` and do not claim a root cause or fix. Collect only relevant redacted evidence. A bug is `FIXED` only when the root cause is confirmed, the minimal fix is implemented, the regression test passes where practical, and build validation passes; otherwise use `PARTIALLY FIXED` or `UNVERIFIED`.
 
 Use `bugfix/<bug-id>` for normal work and `hotfix/<bug-id>` for critical or security issues. Do not work directly on the production branch. Keep bug commits focused, classify release impact as `NO RELEASE REQUIRED`, `PATCH RELEASE REQUIRED`, `HOTFIX RELEASE REQUIRED`, or `SECURITY RELEASE REQUIRED`, and update the changelog only when released behavior actually changes. Security findings must remain private or redacted in public documentation.
+
+
+## Controlled Dependency Update Protocol
+
+Use the dependency protocol only when a real dependency, build-tool, SDK, NDK/CMake, Java/JDK, or third-party-library update is requested or required. Do not update versions merely because they are old, and never choose the newest version automatically. Begin with `docs/dependencies/changes/<change-id>/REQUEST.md`, record the current toolchain and dependency inventory, inspect transitive dependencies, document official compatibility sources, and define a rollback plan before changing versions.
+
+Update one dependency or one justified compatibility group at a time. Do not combine upgrades with cleanup, formatting, architecture refactoring, UI redesign, resource cleanup, or unrelated fixes. A generic dependency update must not silently include TDLib; TDLib, JNI, ABI, NDK/CMake, authentication, Upload Engine, WorkManager, database, or security-architecture changes require the applicable specialized protocol.
+
+Before changing versions, establish a passing baseline with clean build, tests, lint, debug assembly, and TDLib artifact validation. After the update, repeat compilation, full tests, lint, debug/release builds where applicable, dependency-graph inspection, security checks, TDLib checks, runtime checks when available, performance comparison, and complete diff review. Stop on unexplained failures, compatibility conflicts, security regressions, native mismatches, or undefined rollback. Do not suppress warnings, disable tests, or use force resolution to hide conflicts.
+
+Use `dependency/<change-id>` for normal updates and `security/dependency-<change-id>` for security-critical updates. Record the final result as `DEPENDENCY UPDATE VERIFIED`, `DEPENDENCY UPDATE CONDITIONALLY VERIFIED`, or `DEPENDENCY UPDATE REJECTED`. No dependency update is released automatically.
