@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,15 +71,15 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = AppSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
         ) {
             // Telegram Connection Status Card
             item {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
+                        .padding(top = AppSpacing.sm)
                         .testTag("telegram_status_card"),
                     colors = CardDefaults.cardColors(
                         containerColor = if (uiState.telegramConnectionState == TelegramConnectionState.AUTHORIZED) {
@@ -150,10 +151,10 @@ fun HomeScreen(
 
             // 1. Upload Hero Card
             item {
-                Card(
+                ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
+                        .padding(top = AppSpacing.sm)
                         .testTag("upload_hero_card"),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -301,9 +302,9 @@ fun StatCard(
     value: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    ElevatedCard(
         modifier = modifier,
-        colors = CardDefaults.cardColors(
+        colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         )
     ) {
