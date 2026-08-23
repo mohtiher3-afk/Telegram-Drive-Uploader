@@ -64,6 +64,12 @@ Required resource documentation was added under `docs/resources`: `RESOURCE_INVE
 
 The resource phase did not change Telegram, TDLib, JNI, ABI, upload, WorkManager, database, authentication, navigation, notifications, file sharing, or application behavior. Local Gradle execution remains unavailable because this checkout has no wrapper and the sandbox has no standalone Gradle executable; CI is required for final compile/resource/lint evidence.
 
+## Testing and Quality Assurance phase
+
+The QA phase is documentation-first because the existing repository already contains focused deterministic tests and no confirmed production defect from the current audit. The new `docs/testing` suite records the test inventory, architecture coverage map, critical flows, environment, baseline limitations, crash-risk and flaky-test reviews, regression matrix, results, QA guide, and final report.
+
+Local `check-resource-integrity.sh` and `check-workmanager-manifest.sh` pass. Local Gradle execution and exact ELF validation are unavailable in the temporary environment; connected Android instrumentation and runtime English/Arabic, dark-mode, accessibility, lifecycle, and real Telegram upload checks require a device/emulator. No fake result, credential, real user file, simulated production behavior, or test-suppressing change was introduced. Missing broad ViewModel, repository, database, DataStore, WorkManager, Compose UI, and queue integration suites remain explicitly documented gaps.
+
 ## App-wide Motion and Animation phase
 
 The motion audit found two existing custom state-driven transitions: onboarding page changes and Telegram authentication state changes. Both use built-in Compose `AnimatedContent`; no infinite animation, custom framework, list-item entrance animation, or navigation transition was found. `AppMotion` now provides short semantic duration/easing tokens, and those two existing transitions use the tokens without changing their triggers or state sources.

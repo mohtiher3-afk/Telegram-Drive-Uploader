@@ -70,6 +70,12 @@ No resource was deleted, renamed, recompressed, or replaced without dependency e
 
 Protected functionality remains unchanged: Telegram, TDLib, JNI, ABI, authentication, upload, WorkManager, database, navigation, notifications, file sharing, and application behavior. Full Gradle resource compilation, lint, APK assembly, and runtime checks remain CI/device gates because the temporary checkout has no Gradle wrapper or local Gradle executable.
 
+## Testing and Quality Assurance result
+
+The QA phase is documented under `docs/testing`: test inventory, coverage map, critical flows, environment, baseline limitations, crash-risk audit, flaky-test audit, regression matrix, results, QA guide, and final report. The current suite contains focused JVM tests for SmartFileAssistant, upload telemetry formatting, video format support, TDLib message mapping, WorkManager policy, and confirmed Telegram delivery semantics, plus an Android TDLib runtime smoke test.
+
+Static resource integrity and WorkManager manifest checks pass. Local Gradle execution, exact local ELF validation, connected-device instrumentation, runtime RTL/dark-mode/accessibility checks, broad ViewModel/repository/Room/DataStore/WorkManager/Compose UI suites, and end-to-end real Telegram delivery remain explicitly blocked or incomplete in the temporary environment. No fake result, real credential, real user file, or simulated production behavior was introduced. The GitHub Actions workflow remains the authoritative compile, test, lint, and multi-ABI evidence source.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -87,8 +93,8 @@ Protected functionality remains unchanged: Telegram, TDLib, JNI, ABI, authentica
 | DI | Complete: Hilt responsibility, inventory, graph, and cycle audit documented |
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
 | Resources | Complete: resource inventory, usage review, asset reports, and integrity guard added; no unsafe deletion |
-| Tests | Pending full local Gradle execution |
-| CI | Pending resource-phase CI run |
+| Tests | QA documentation complete; local Gradle execution and broad missing suites remain explicitly blocked |
+| CI | Pending QA-phase workflow result |
 | Final audit | Pending |
 
 ## Protected behavior and assets
