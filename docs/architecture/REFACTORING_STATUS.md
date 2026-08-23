@@ -109,8 +109,9 @@ A redacted scan found no committed keystore, PEM, private-key, or signing artifa
 | Resources | Complete: resource inventory, usage review, asset reports, and integrity guard added; no unsafe deletion |
 | Tests | QA documentation complete; local Gradle execution and broad missing suites remain explicitly blocked |
 | Security | Complete: redacted source/configuration audit and threat model documented; no behavior-changing hardening patch justified |
-| CI | Pending security-phase workflow result |
-| Final audit | Pending |
+| CI | Configured: canonical Android CI, security/resource/TDLib/WorkManager gates, manual release workflow; latest remote conclusion pending |
+| Final audit | Complete: comprehensive source/configuration audit, verification matrix, blockers, structure, documentation index, and post-release backlog |
+| Release preparation | Blocked pending final remote CI, TDLib, build, and real-device authentication/upload evidence |
 
 ## Protected behavior and assets
 
