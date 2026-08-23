@@ -64,7 +64,7 @@ The new design documents are `docs/design/CURRENT_MOTION_AUDIT.md` and `docs/des
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Pending motion run; startup audit run `32614622996` previously succeeded for all three ABIs |
+| CI | Complete: motion run `32615099417` succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
@@ -75,4 +75,4 @@ No TDLib version, generated binding, native artifact, ABI configuration, credent
 
 Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, or manifest changes were made, and the design tokens, navigation maps, startup maps, and motion tokens match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
-The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the first DI/Hilt documentation commit by run `32612714343`, the navigation commit by run `32613243711`, the DI/Hilt re-audit commit by run `32613705590`, the Material 3 design-system commit by run `32614106585`, and the startup audit commit by run `32614622996`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
+The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the first DI/Hilt documentation commit by run `32612714343`, the navigation commit by run `32613243711`, the DI/Hilt re-audit commit by run `32613705590`, the Material 3 design-system commit by run `32614106585`, the startup audit commit by run `32614622996`, and the motion-system commit by run `32615099417`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
