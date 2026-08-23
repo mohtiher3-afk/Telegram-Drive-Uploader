@@ -249,7 +249,7 @@
 
 ## Confirmed DI/Hilt re-audit phase
 
-- [ ] Re-read the current architecture context and baseline all Hilt modules, providers, bindings, scopes, and injectable classes.
-- [ ] Create or update `DI_INVENTORY.md`, `DI_GRAPH.md`, and `DI_CIRCULAR_DEPENDENCIES.md` from actual source evidence.
-- [ ] Apply only confirmed low-risk DI organization; preserve all runtime behavior and protected integrations.
-- [ ] Validate Hilt graph, WorkManager integration, protected surfaces, CI gates, and repository cleanliness; then push the focused commit.
+- [x] Re-read the current architecture context and baseline all Hilt modules, providers, bindings, scopes, and injectable classes.
+- [x] Create or update `DI_INVENTORY.md`, `DI_GRAPH.md`, and `DI_CIRCULAR_DEPENDENCIES.md` from actual source evidence.
+- [x] Apply only confirmed low-risk DI organization; preserve all runtime behavior and protected integrations.
+- [x] Validate Hilt graph, WorkManager integration, protected surfaces, CI gates, and repository cleanliness; then push the focused commit.

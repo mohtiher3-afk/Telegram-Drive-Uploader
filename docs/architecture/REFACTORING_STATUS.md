@@ -46,7 +46,7 @@ The current Hilt graph contains four `SingletonComponent` modules, three provide
 | Design system | Pending |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Complete: DI/Hilt re-audit pending final run; prior navigation run `32613243711` succeeded for all three ABIs |
+| CI | Complete: DI/Hilt re-audit run `32613705590` succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
@@ -57,4 +57,4 @@ No TDLib version, generated binding, native artifact, ABI configuration, credent
 
 Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, UI, or manifest changes were made, and the feature/navigation maps match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
-The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the DI/Hilt audit by run `32612714343`, and the navigation commit by run `32613243711`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
+The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the first DI/Hilt documentation commit by run `32612714343`, the navigation commit by run `32613243711`, and the DI/Hilt re-audit commit by run `32613705590`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
