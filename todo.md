@@ -191,4 +191,11 @@
 
 - [x] Baseline the first Core refactoring slice and define protected files.
 - [x] Implement only the approved low-risk Core boundary changes.
-- [ ] Run tests, artifact checks, and CI validation before considering the phase complete.
+- [x] Run tests, artifact checks, and CI validation before considering the phase complete.
+
+## Next architecture refactoring phase
+
+- [ ] Read and scope `pasted_content_4.txt` against the current architecture plan.
+- [ ] Baseline the affected files and tests before the next refactoring slice.
+- [ ] Implement only the low-risk changes approved by the actual next-phase instructions.
+- [ ] Run tests, artifact checks, and multi-ABI CI validation before retaining the phase.
