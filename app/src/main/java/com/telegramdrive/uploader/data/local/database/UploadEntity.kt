@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.data.local
+package com.telegramdrive.uploader.data.local.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

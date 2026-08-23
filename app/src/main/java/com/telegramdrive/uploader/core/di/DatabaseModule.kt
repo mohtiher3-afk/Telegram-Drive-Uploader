@@ -2,8 +2,8 @@ package com.telegramdrive.uploader.core.di
 
 import android.content.Context
 import androidx.room.Room
-import com.telegramdrive.uploader.data.local.AppDatabase
-import com.telegramdrive.uploader.data.local.UploadDao
+import com.telegramdrive.uploader.data.local.database.AppDatabase
+import com.telegramdrive.uploader.data.local.database.UploadDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

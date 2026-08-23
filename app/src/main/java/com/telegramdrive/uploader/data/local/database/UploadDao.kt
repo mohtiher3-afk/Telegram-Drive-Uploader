@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.data.local
+package com.telegramdrive.uploader.data.local.database
 
 import androidx.room.Dao
 import androidx.room.Insert

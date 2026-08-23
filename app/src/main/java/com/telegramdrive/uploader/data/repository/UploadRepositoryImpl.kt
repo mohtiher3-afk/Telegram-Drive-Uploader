@@ -1,7 +1,7 @@
 package com.telegramdrive.uploader.data.repository
 
-import com.telegramdrive.uploader.data.local.UploadDao
-import com.telegramdrive.uploader.data.local.UploadEntity
+import com.telegramdrive.uploader.data.local.database.UploadDao
+import com.telegramdrive.uploader.data.local.database.UploadEntity
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.repository.UploadRepository
