@@ -2,15 +2,15 @@
 
 ## Highlights
 
-No product feature changes were made in this release-preparation phase.
+Added persistent pinning for Telegram channels and destinations directly from search results. Pinned destinations appear first while preserving Telegram’s existing result order within each group.
 
 ## Improvements
 
-Added release-environment, signing, artifact, build-matrix, privacy-data, limitation, and candidate-readiness documentation based on the actual repository state.
+Added Arabic and RTL-friendly pin and unpin labels, accessible content descriptions, deterministic local persistence of pinned destination IDs, and unit coverage for serialization and toggle behavior.
 
 ## Bug Fixes
 
-No application behavior was changed in this phase.
+No Telegram authorization, TDLib, WorkManager, or upload behavior was changed. Pinning is a local destination-selection preference only.
 
 ## Performance
 
@@ -22,4 +22,4 @@ No signing keys or secret values were added. Release workflow publication remain
 
 ## Known Limitations
 
-Final Gradle/TDLib/build execution, real Telegram authentication/upload, device background testing, and release signing verification remain pending.
+The release workflow still requires the configured GitHub signing secrets and manual tag dispatch. Real Telegram authentication, upload, and device background testing remain separate validation steps.

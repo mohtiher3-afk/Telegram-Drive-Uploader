@@ -361,3 +361,10 @@
 - [x] Add persistent pinned-channel state without changing TDLib or upload behavior.
 - [x] Add an accessible Material 3 pin/unpin action with English, Arabic, and RTL support.
 - [x] Validate unit tests, resource integrity, build, and protected-source boundaries.
+
+## New application release
+
+- [x] Inspect current versioning, release workflow, and pinned-channel commit state.
+- [x] Prepare the next release version and release notes without changing protected upload behavior: versionCode 15, versionName 1.0.15.
+- [ ] Run signed multi-ABI Release build and verification.
+- [ ] Publish and verify the new release artifacts.
