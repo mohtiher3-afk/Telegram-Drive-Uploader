@@ -71,9 +71,9 @@ fun UploadScreen(
                 is UploadUiState.Idle -> {
                     EmptyState(
                         icon = Icons.Default.VideoLibrary,
-                        title = "No videos selected",
-                        supportingText = "Please select videos from the Home tab to begin preparation.",
-                        actionText = "Go Back",
+                        title = stringResource(com.telegramdrive.uploader.R.string.no_videos_selected),
+                        supportingText = stringResource(com.telegramdrive.uploader.R.string.select_videos_from_home),
+                        actionText = stringResource(com.telegramdrive.uploader.R.string.go_back),
                         onActionClick = onBackClick,
                         modifier = Modifier.testTag("upload_empty_state")
                     )
@@ -89,7 +89,7 @@ fun UploadScreen(
                         CircularProgressIndicator()
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Extracting video metadata...",
+                            text = stringResource(com.telegramdrive.uploader.R.string.extracting_video_metadata),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -106,9 +106,9 @@ fun UploadScreen(
                     if (state.preparedVideos.isEmpty()) {
                         EmptyState(
                             icon = Icons.Default.VideoLibrary,
-                            title = "All videos removed",
-                            supportingText = "Select more videos from the Home tab to prepare them.",
-                            actionText = "Go Back",
+                            title = stringResource(com.telegramdrive.uploader.R.string.all_videos_removed),
+                            supportingText = stringResource(com.telegramdrive.uploader.R.string.select_more_videos),
+                            actionText = stringResource(com.telegramdrive.uploader.R.string.go_back),
                             onActionClick = onBackClick,
                             modifier = Modifier.testTag("upload_empty_state")
                         )
@@ -145,17 +145,17 @@ fun UploadScreen(
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
-                                            text = "Telegram Destination",
+                                            text = stringResource(com.telegramdrive.uploader.R.string.telegram_destination_label),
                                             style = MaterialTheme.typography.labelMedium,
                                             color = MaterialTheme.colorScheme.primary
                                         )
                                         Text(
-                                            text = selectedDestination?.title ?: "Select Target...",
+                                            text = selectedDestination?.title ?: stringResource(com.telegramdrive.uploader.R.string.select_target),
                                             style = MaterialTheme.typography.titleLarge
                                         )
                                     }
                                     TextButton(onClick = onSelectDestination) {
-                                        Text(if (selectedDestination == null) "Select" else "Change")
+                                        Text(stringResource(if (selectedDestination == null) com.telegramdrive.uploader.R.string.select_action else com.telegramdrive.uploader.R.string.schedule_change))
                                     }
                                 }
                             }
@@ -179,7 +179,7 @@ fun UploadScreen(
                                         Text(
                                             scheduledAt?.let {
                                                 DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(it)
-                                            } ?: "Start immediately",
+                                            } ?: stringResource(com.telegramdrive.uploader.R.string.start_immediately),
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -213,7 +213,7 @@ fun UploadScreen(
                                             ).show()
                                         },
                                         modifier = Modifier.testTag("schedule_upload_button")
-                                    ) { Text(if (scheduledAt == null) "Choose" else "Change") }
+                                    ) { Text(stringResource(if (scheduledAt == null) com.telegramdrive.uploader.R.string.schedule_choose else com.telegramdrive.uploader.R.string.schedule_change)) }
                                     if (scheduledAt != null) {
                                         TextButton(onClick = { viewModel.setScheduledAt(null) }) { Text(stringResource(com.telegramdrive.uploader.R.string.clear)) }
                                     }
@@ -275,13 +275,13 @@ fun UploadScreen(
                                     modifier = Modifier.padding(16.dp)
                                 ) {
                                     Text(
-                                        text = "${state.preparedVideos.size} videos selected",
+                                        text = stringResource(com.telegramdrive.uploader.R.string.videos_selected_summary, state.preparedVideos.size),
                                         style = MaterialTheme.typography.headlineSmall,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
-                                        text = "Total size: ${formatFileSize(totalSize)}",
+                                        text = stringResource(com.telegramdrive.uploader.R.string.total_size_summary, formatFileSize(totalSize)),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                                     )
@@ -322,7 +322,7 @@ fun UploadScreen(
                                 )
                             ) {
                                 Text(
-                                    text = "Add to Queue",
+                                    text = stringResource(com.telegramdrive.uploader.R.string.add_to_queue),
                                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
