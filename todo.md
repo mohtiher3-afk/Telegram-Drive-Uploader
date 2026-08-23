@@ -342,3 +342,15 @@
 - [x] Audit the complete repository, source tree, Gradle/CI configuration, resources, tests, security, TDLib artifacts, WorkManager, and release readiness.
 - [x] Fix only confirmed defects with minimal reversible changes and preserve real Telegram/TDLib/upload behavior: add Gradle Wrapper, restore official OpenSSL runtime dependencies, prevent debug-keystore release fallback, and ignore native build cache.
 - [ ] Run all available local checks and remote CI validation; document unavailable environment checks honestly.
+
+## Configure GitHub Release signing secrets
+
+- [x] Inspect repository secret names and the Release workflow without printing values; workflow references all four required secret names correctly.
+- [x] Apply only safe signing-workflow adjustments if a confirmed defect is found; no workflow defect was found, so no source change was required.
+- [x] Validate secret wiring and report any missing user-supplied keystore inputs without exposing them; the logged-in GitHub settings page shows all four required secret names, while values remain unread. Dispatch was not triggered because it requires a tag and includes a publish job.
+
+## Confirmed Release workflow dispatch for v1.0.14
+
+- [x] Dispatch the manual Release workflow for tag `v1.0.14` after confirming the required secret names exist.
+- [x] Monitor signed multi-ABI build, APK verification, checksums, and GitHub Release publication without exposing secret values.
+- [x] Record the exact final workflow and publication result: run `32622361563` succeeded and GitHub Release `v1.0.14` is published.
