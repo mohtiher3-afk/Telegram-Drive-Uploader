@@ -1,0 +1,14 @@
+# Release Documentation
+
+| Topic | Document |
+|---|---|
+| Production baseline | [PRODUCTION_BASELINE.md](PRODUCTION_BASELINE.md) |
+| Release checklist | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) |
+| Release candidate | [RELEASE_CANDIDATE_REPORT.md](RELEASE_CANDIDATE_REPORT.md) |
+| Artifacts | [RELEASE_ARTIFACTS.md](RELEASE_ARTIFACTS.md) |
+| Signing | [SIGNING_GUIDE.md](SIGNING_GUIDE.md) and [SECRET_MANAGEMENT.md](SECRET_MANAGEMENT.md) |
+| Known limitations | [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) and [USER_FACING_LIMITATIONS.md](USER_FACING_LIMITATIONS.md) |
+| Privacy data inventory | [../security/PRIVACY_DATA_INVENTORY.md](../security/PRIVACY_DATA_INVENTORY.md) |
+| Release notes | [RELEASE_NOTES.md](RELEASE_NOTES.md) |
+| Final certification | [PRODUCTION_CERTIFICATION.md](PRODUCTION_CERTIFICATION.md) and [FINAL_CERTIFICATION_MATRIX.md](FINAL_CERTIFICATION_MATRIX.md) |
+| Production handoff | [FINAL_PRODUCTION_HANDOFF.md](FINAL_PRODUCTION_HANDOFF.md) |

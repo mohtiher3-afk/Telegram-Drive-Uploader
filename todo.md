@@ -368,3 +368,9 @@
 - [x] Prepare the next release version and release notes without changing protected upload behavior: versionCode 15, versionName 1.0.15.
 - [x] Run signed multi-ABI Release build and verification: GitHub Actions run `32630539974` passed all ABI builds, tests, lint, TDLib, and signature verification.
 - [x] Publish and verify the new release artifacts: GitHub Release `v1.0.15` contains signed APKs and SHA-256 checksum files.
+
+## Supplied phase 24
+
+- [x] Inspect and scope `pasted_content_24.txt` against the current release and protected architecture boundaries.
+- [x] Apply only safe, evidence-based changes requested by phase 24: production baseline, certification matrix, handoff report, operations procedures, indexes, and maintenance rules.
+- [x] Validate the phase with tests, build checks, and repository guards: documentation completeness, resource integrity, WorkManager manifest, security scan, diff check, and private-artifact scan passed.

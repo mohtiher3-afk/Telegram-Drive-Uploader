@@ -117,6 +117,12 @@ A redacted scan found no committed keystore, PEM, private-key, or signing artifa
 
 No TDLib version, generated binding, native artifact, ABI configuration, credential, authentication flow, session behavior, logout path, upload behavior, WorkManager behavior, application ID, or business logic was changed by this phase. UI text extraction is limited to resource-backed presentation and does not alter action or state contracts.
 
+## Production Handoff and Certification result
+
+The production handoff phase created the baseline, secret-management, logging, incident-response, rollback, hotfix, monitoring, change-management, technical-debt, support, diagnostic, TDLib-update, developer-onboarding, and development-rules documents. Release and operations indexes now link the required maintenance procedures. The final certification matrix records each area as PASS, NOT VERIFIED, or NOT APPLICABLE with evidence references.
+
+The v1.0.15 signed multi-ABI APK release is published and its checksums are documented. However, production certification remains **NOT CERTIFIED** because real-device Telegram authentication, real upload delivery, background recovery, runtime accessibility/RTL verification, and controlled performance evidence are not available in this handoff. The release candidate is not declared frozen under the certification rule. No automatic publication, feature change, architecture refactor, dependency upgrade, database change, or protected Telegram/TDLib/upload modification was made by this phase.
+
 ## Verification status
 
 Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, or manifest changes were made, and the design tokens, navigation maps, startup maps, and motion tokens match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
