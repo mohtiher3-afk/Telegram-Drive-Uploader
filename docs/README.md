@@ -18,4 +18,5 @@
 | Controlled feature development | `features/_template/README.md` and the feature request, impact, requirements, flow, design, implementation, status, and database templates |
 | Controlled bug fixing | `bugs/_template/README.md` and the bug report, root-cause, high-risk-plan, and fix-report templates |
 | Controlled dependency updates | `dependencies/_template/README.md`, `CURRENT_TOOLCHAIN.md`, and `DEPENDENCY_INVENTORY.md` |
+| Observability and diagnostics | `observability/OBSERVABILITY_ARCHITECTURE.md`, `EVENT_CATALOG.md`, `LOGGING_INVENTORY.md`, `PRIVACY_LOGGING_POLICY.md`, and `FINAL_OBSERVABILITY_REPORT.md` |
 | Development protocol | `MANUS_DEVELOPMENT_PROTOCOL.md` |

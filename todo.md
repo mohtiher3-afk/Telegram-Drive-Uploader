@@ -452,3 +452,28 @@
 - [x] Add reusable dependency request, inventory, impact, compatibility, graph, change-report, and rollback templates only where missing.
 - [x] Validate documentation-only changes and confirm dependency graph, versions, and application behavior are unchanged.
 - [x] Commit and report the controlled dependency protocol without performing a dependency update.
+
+
+## Supplied controlled Android SDK, NDK, and build-toolchain protocol phase
+
+- [x] Inspect the phase-34 toolchain protocol and compare it with the current repository context.
+- [x] Confirm no actual toolchain update request exists and preserve the current baseline.
+- [x] Report non-activation and preserve the protected TDLib, JNI, ABI, database, upload, authentication, and release boundaries.
+
+
+## Supplied controlled backup, restore, and disaster-recovery protocol phase
+
+- [ ] Inspect the phase-35 recovery protocol and compare it with current release, repository, artifact, database, and maintenance controls.
+- [ ] Identify recovery-policy gaps and protected source, artifact, credential, database, TDLib, and documentation boundaries without executing recovery actions.
+- [ ] Add reusable recovery environment, backup, artifact, incident, and validation templates only where missing.
+- [ ] Validate documentation-only changes and confirm no release, database, credential, or production state was modified.
+- [ ] Commit and report the controlled recovery protocol without changing application behavior.
+
+
+## Supplied observability, diagnostics, and production troubleshooting protocol phase
+
+- [x] Inspect the phase-36 observability protocol and compare it with existing logging, diagnostics, security, operations, and release documentation.
+- [x] Audit existing logging and diagnostic behavior for safe context, privacy, release behavior, and protected integration boundaries.
+- [x] Add or normalize safe observability documentation only where evidence shows a gap; do not add analytics or crash SDKs blindly.
+- [x] Validate documentation-only changes and security boundaries without changing product behavior.
+- [x] Commit and report observability protocol status.
