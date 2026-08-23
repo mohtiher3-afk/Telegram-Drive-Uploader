@@ -176,3 +176,8 @@
 ## Master-prompt delivery report
 
 - [x] Create the final report with verified build evidence, known limitations, and physical-device QA requirements.
+
+## Authorized master-prompt execution
+
+- [x] Execute the approved audit, reliability safeguards, automated validation, build, and evidence-based documentation steps.
+- [x] Preserve fail-closed TDLib behavior and do not expose credentials or claim unverified device outcomes.
