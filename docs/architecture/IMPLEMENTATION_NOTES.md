@@ -15,3 +15,13 @@ The phase did not change TDLib version or generated bindings, native libraries, 
 The dependency and direct-usage maps are based on a source-tree inventory. Static checks can prove package references and protected-file diffs, but they cannot prove `System.loadLibrary`, `Client.create`, Telegram authorization, or end-to-end delivery on a physical device. Those runtime claims require the existing Android emulator/device smoke tests and real Telegram test account/channel setup.
 
 The local repository lacks a Gradle wrapper and the sandbox lacks a standalone Gradle installation. CI remains the authoritative compile and multi-ABI validation path for this checkout. Any future package relocation should be performed as a separate, explicitly reviewed slice with a rollback commit and full CI validation.
+
+## Smart Assistant phase decision
+
+The source inventory found no real Smart File Assistant, suggestion engine, recommendation engine, AI service, model, or intelligent classifier. The only related code is deterministic media/upload preparation: `VideoFormatSupport`, `VideoMetadataExtractor`, and `StreamingFileReaderImpl`.
+
+No files were moved, renamed, merged, or deleted in this phase. No package, dependency, Hilt, database, UI, navigation, upload, Telegram, TDLib, authentication, or WorkManager changes were required. The phase is therefore intentionally documentation-only, as permitted when the requested feature does not exist.
+
+The unresolved items are the mixed responsibility of `VideoMetadataExtractor`—metadata extraction plus `UploadTask` construction—and the temporary-file staging behavior in `TelegramUploadEngineImpl`. Both are high-risk behavior boundaries and remain unchanged pending dedicated characterization tests. No duplicate implementation was confirmed safe to remove.
+
+Protected files and surfaces remain unchanged: generated TDLib bindings, `app/src/main/jniLibs/**`, ABI configuration, TDLib build scripts and version, AndroidManifest/WorkManager configuration, credentials, database schema/entities/DAOs/migrations, upload engine behavior, and UI/navigation code.

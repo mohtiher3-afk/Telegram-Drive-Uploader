@@ -211,4 +211,11 @@
 - [x] Map direct TDLib usage and actual Telegram application-layer dependencies.
 - [x] Create or update truthful Telegram dependency and TdApi usage maps.
 - [x] Apply only justified package organization using existing classes; preserve behavior and protected integration surfaces.
-- [ ] Validate compilation, tests, artifact gates, and protected-file integrity; then push the refactoring commit.
+- [x] Validate compilation, tests, artifact gates, and protected-file integrity; then push the refactoring commit.
+
+## Approved Smart File Assistant refactoring
+
+- [ ] Inspect the latest architecture documents and current repository for actual smart/file-analysis implementation.
+- [ ] Create truthful component, status, flow, performance, and duplication maps.
+- [ ] Apply only justified package-level organization; do not add AI, providers, models, services, or new features.
+- [ ] Validate protected behavior and Android CI gates, then push the phase if changes are required.
