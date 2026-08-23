@@ -62,6 +62,14 @@ The localization phase added a complete Arabic resource counterpart for the exis
 
 The localization documents are `docs/localization/LOCALIZATION_AUDIT.md`, `docs/localization/TERMINOLOGY.md`, and `docs/localization/LOCALE_FORMATTING.md`.
 
+## Resources and Assets result
+
+The supplied resource phase is complete as a conservative, source-grounded audit. `docs/resources/RESOURCE_INVENTORY.md`, `UNUSED_RESOURCES.md`, `LARGE_ASSETS.md`, `DUPLICATE_ASSETS.md`, and `RESOURCE_ARCHITECTURE.md` document the current resource tree, usage classes, protected manifest/XML/icon resources, duplicate launcher pairs, large assets, naming policy, theme ownership, RTL/localization behavior, and shrinking risks.
+
+No resource was deleted, renamed, recompressed, or replaced without dependency evidence. The existing adaptive launcher stack, backup/data-extraction rules, theme resource, and both locale files were retained. Duplicate string definitions were removed and English/Arabic resource-ID parity was checked. Release R8/resource shrinking settings were reviewed and left unchanged. `scripts/check-resource-integrity.sh` provides a repeatable guard for locale parity, duplicate IDs, protected manifest references, adaptive-icon references, and dynamic resource lookup.
+
+Protected functionality remains unchanged: Telegram, TDLib, JNI, ABI, authentication, upload, WorkManager, database, navigation, notifications, file sharing, and application behavior. Full Gradle resource compilation, lint, APK assembly, and runtime checks remain CI/device gates because the temporary checkout has no Gradle wrapper or local Gradle executable.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -78,9 +86,9 @@ The localization documents are `docs/localization/LOCALIZATION_AUDIT.md`, `docs/
 | Navigation | Complete: routes centralized safely; graph and coupling documented |
 | DI | Complete: Hilt responsibility, inventory, graph, and cycle audit documented |
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
-| Resources | In progress: English/Arabic resource pairs added; remaining hardcoded UI literals tracked |
+| Resources | Complete: resource inventory, usage review, asset reports, and integrity guard added; no unsafe deletion |
 | Tests | Pending full local Gradle execution |
-| CI | Pending localization commit |
+| CI | Pending resource-phase CI run |
 | Final audit | Pending |
 
 ## Protected behavior and assets
