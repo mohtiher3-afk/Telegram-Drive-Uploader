@@ -239,3 +239,10 @@
 - [x] Create a truthful DI responsibility and dependency-flow map.
 - [x] Apply only safe Hilt organization if justified; do not change dependencies or runtime behavior.
 - [x] Validate injection, protected integration surfaces, CI gates, and repository cleanliness; then push the focused commit.
+
+## Approved Navigation Architecture refactoring
+
+- [x] Inspect the current navigation implementation and all route usages.
+- [x] Create truthful navigation inventory and current graph documents.
+- [x] Centralize route definitions only where safe; preserve route strings and behavior.
+- [x] Validate back-stack, authentication flow, protected surfaces, CI gates, and repository cleanliness; then push the focused commit.

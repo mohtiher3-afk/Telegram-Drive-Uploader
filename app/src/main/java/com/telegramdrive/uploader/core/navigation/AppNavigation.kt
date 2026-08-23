@@ -39,10 +39,10 @@ import com.telegramdrive.uploader.feature.telegram.TelegramAuthScreen
 import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
 
 sealed class Screen(val route: String, val title: String, val selectedIcon: ImageVector, val unselectedIcon: ImageVector) {
-    object Home : Screen("home", "Home", Icons.Filled.Home, Icons.Outlined.Home)
-    object Queue : Screen("queue", "Queue", Icons.Filled.Layers, Icons.Outlined.Layers)
-    object History : Screen("history", "History", Icons.Filled.History, Icons.Outlined.History)
-    object Settings : Screen("settings", "Settings", Icons.Filled.Settings, Icons.Outlined.Settings)
+    object Home : Screen(AppRoutes.HOME, "Home", Icons.Filled.Home, Icons.Outlined.Home)
+    object Queue : Screen(AppRoutes.QUEUE, "Queue", Icons.Filled.Layers, Icons.Outlined.Layers)
+    object History : Screen(AppRoutes.HISTORY, "History", Icons.Filled.History, Icons.Outlined.History)
+    object Settings : Screen(AppRoutes.SETTINGS, "Settings", Icons.Filled.Settings, Icons.Outlined.Settings)
 }
 
 val bottomNavItems = listOf(
@@ -152,17 +152,17 @@ fun AppNavigation(
                 composable(Screen.Home.route) {
                     HomeScreen(
                         onSettingsClick = { navController.navigate(Screen.Settings.route) },
-                        onConnectClick = { navController.navigate("telegram_auth") },
+                        onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
                         onVideosSelected = { uris ->
                             uploadViewModel.setPrepareUris(uris)
-                            navController.navigate("upload_preparation")
+                            navController.navigate(AppRoutes.UPLOAD_PREPARATION)
                         }
                     )
                 }
-                composable("upload_preparation") {
+                composable(AppRoutes.UPLOAD_PREPARATION) {
                     UploadScreen(
                         onBackClick = { navController.popBackStack() },
-                        onSelectDestination = { navController.navigate("telegram_destination") },
+                        onSelectDestination = { navController.navigate(AppRoutes.TELEGRAM_DESTINATION) },
                         onQueueAdded = {
                             navController.navigate(Screen.Queue.route) {
                                 popUpTo(Screen.Home.route)
@@ -171,17 +171,17 @@ fun AppNavigation(
                         viewModel = uploadViewModel
                     )
                 }
-                composable("telegram_auth") {
+                composable(AppRoutes.TELEGRAM_AUTH) {
                     TelegramAuthScreen(
                         onBackClick = { navController.popBackStack() },
                         onAuthSuccess = { navController.popBackStack() }
                     )
                 }
-                composable("telegram_destination") {
+                composable(AppRoutes.TELEGRAM_DESTINATION) {
                     TelegramDestinationScreen(
                         onBackClick = { navController.popBackStack() },
                         onConnectClick = {
-                            navController.navigate("telegram_auth")
+                            navController.navigate(AppRoutes.TELEGRAM_AUTH)
                         },
                         onDestinationSelected = { dest ->
                             uploadViewModel.onDestinationSelected(dest)
@@ -193,7 +193,7 @@ fun AppNavigation(
                 composable(Screen.History.route) { HistoryScreen() }
                 composable(Screen.Settings.route) {
                     SettingsScreen(
-                        onConnectClick = { navController.navigate("telegram_auth") }
+                        onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
                     )
                 }
             }
