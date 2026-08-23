@@ -294,3 +294,9 @@
 
 - [x] Apply the implementation instructions from `pasted_content_16.txt` after auditing their scope and compatibility with the current Android architecture.
 - [ ] Validate all changes with static checks, tests, and the repository CI workflow before delivery.
+
+## Apply supplied implementation phase 17
+
+- [x] Inspect and scope `pasted_content_17.txt` against the current repository and protected architecture boundaries.
+- [x] Apply only safe, evidence-based changes requested by phase 17; the byte-identical phase was already implemented in commit `8ed8500`.
+- [ ] Validate the phase with local checks, tests where available, protected-surface checks, and GitHub Actions.
