@@ -312,3 +312,9 @@
 - [ ] Inspect and scope `pasted_content_19.txt` against the current repository and protected architecture boundaries.
 - [ ] Apply only safe, evidence-based changes requested by phase 19.
 - [ ] Validate the phase with local checks, tests where available, protected-surface checks, and GitHub Actions.
+
+## Apply supplied implementation phase 20
+
+- [ ] Inspect and scope `pasted_content_20.txt` against the current repository and protected architecture boundaries.
+- [ ] Apply only safe, evidence-based changes requested by phase 20.
+- [ ] Validate the phase with local checks, tests where available, protected-surface checks, and GitHub Actions.
