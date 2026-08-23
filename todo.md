@@ -169,6 +169,10 @@
 
 ## Master-prompt analysis and build validation
 
-- [ ] Create a factual audit mapping the master prompt to the current repository and known limitations.
-- [ ] Add a regression guard for the corrected AndroidX Startup and WorkManager manifest configuration.
-- [ ] Document the reproducible CI build gates and the distinction between build verification and real Telegram device QA.
+- [x] Create a factual audit mapping the master prompt to the current repository and known limitations.
+- [x] Add a regression guard for the corrected AndroidX Startup and WorkManager manifest configuration.
+- [x] Document the reproducible CI build gates and the distinction between build verification and real Telegram device QA.
+
+## Master-prompt delivery report
+
+- [x] Create the final report with verified build evidence, known limitations, and physical-device QA requirements.
