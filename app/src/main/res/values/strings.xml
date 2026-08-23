@@ -117,17 +117,4 @@
     <string name="select_target">Select Target...</string>
     <string name="select_action">Select</string>
     <string name="start_immediately">Start immediately</string>
-    <string name="telegram_auth_description">Connect your Telegram account to prepare video uploads and manage files in Saved Messages, Channels, or Groups.</string>
-    <string name="telegram_api_not_configured">Developer Notice: Telegram API ID &amp; Hash are not configured. Connection attempts will fail securely.</string>
-    <string name="connecting_telegram">Connecting to Telegram servers...</string>
-    <string name="telegram_phone_number">Telegram Phone Number</string>
-    <string name="phone_number_help">Enter your phone number with your country code.</string>
-    <string name="enter_verification_code">Enter Verification Code</string>
-    <string name="verification_code_sent">A verification code was sent to your Telegram app.</string>
-    <string name="scan_qr_title">Scan QR code in Telegram</string>
-    <string name="scan_qr_instructions">Open Telegram on a device where you are already signed in, go to Settings &gt; Devices &gt; Link Desktop Device, and scan this link.</string>
-    <string name="two_step_verification">Two-Step Verification</string>
-    <string name="enter_cloud_password">Enter your Telegram cloud password.</string>
-    <string name="enter_two_step_password">Enter your Telegram two-step verification password.</string>
-    <string name="authentication_error">Authentication Error</string>
 </resources>

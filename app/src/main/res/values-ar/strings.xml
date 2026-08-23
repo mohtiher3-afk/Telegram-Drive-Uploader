@@ -117,17 +117,4 @@
     <string name="select_target">اختيار الوجهة...</string>
     <string name="select_action">اختيار</string>
     <string name="start_immediately">البدء فورًا</string>
-    <string name="telegram_auth_description">اربط حساب تيليجرام لتجهيز عمليات رفع الفيديو وإدارة الملفات في الرسائل المحفوظة والقنوات والمجموعات.</string>
-    <string name="telegram_api_not_configured">تنبيه للمطور: لم يتم إعداد معرّف Telegram API والـ Hash. ستفشل محاولات الاتصال بأمان.</string>
-    <string name="connecting_telegram">جارٍ الاتصال بخوادم تيليجرام...</string>
-    <string name="telegram_phone_number">رقم هاتف تيليجرام</string>
-    <string name="phone_number_help">أدخل رقم هاتفك مع رمز الدولة.</string>
-    <string name="enter_verification_code">أدخل رمز التحقق</string>
-    <string name="verification_code_sent">تم إرسال رمز التحقق إلى تطبيق تيليجرام.</string>
-    <string name="scan_qr_title">امسح رمز QR في تيليجرام</string>
-    <string name="scan_qr_instructions">افتح تيليجرام على جهاز سبق تسجيل الدخول إليه، ثم انتقل إلى الإعدادات &gt; الأجهزة &gt; ربط جهاز سطح المكتب، وامسح هذا الرابط.</string>
-    <string name="two_step_verification">التحقق بخطوتين</string>
-    <string name="enter_cloud_password">أدخل كلمة مرور تيليجرام السحابية.</string>
-    <string name="enter_two_step_password">أدخل كلمة مرور التحقق بخطوتين في تيليجرام.</string>
-    <string name="authentication_error">خطأ في المصادقة</string>
 </resources>
