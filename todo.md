@@ -9,7 +9,7 @@
 
 - [x] Refine channel selection UX with complete localized labels, explicit loading/empty states, and clear direct-upload context.
 - [x] Bump the Android app version to 1.0.7 and align release notes with official TDLib v1.8.66.
-- [ ] Validate local Gradle tests and artifact gates; GitHub's signed multi-ABI workflow is verified successfully.
+- [x] Validate local Gradle tests and artifact gates; GitHub's signed multi-ABI workflow is verified successfully.
 - [x] Trigger and verify the signed GitHub Release v1.0.7.
 - [x] Provide physical-device test instructions for Telegram authorization, channel selection, staging, and upload progress.
 
@@ -341,7 +341,7 @@
 
 - [x] Audit the complete repository, source tree, Gradle/CI configuration, resources, tests, security, TDLib artifacts, WorkManager, and release readiness.
 - [x] Fix only confirmed defects with minimal reversible changes and preserve real Telegram/TDLib/upload behavior: add Gradle Wrapper, restore official OpenSSL runtime dependencies, prevent debug-keystore release fallback, and ignore native build cache.
-- [ ] Run all available local checks and remote CI validation; document unavailable environment checks honestly.
+- [x] Run all available local checks and remote CI validation; document unavailable environment checks honestly.
 
 ## Configure GitHub Release signing secrets
 
@@ -374,3 +374,9 @@
 - [x] Inspect and scope `pasted_content_24.txt` against the current release and protected architecture boundaries.
 - [x] Apply only safe, evidence-based changes requested by phase 24: production baseline, certification matrix, handoff report, operations procedures, indexes, and maintenance rules.
 - [x] Validate the phase with tests, build checks, and repository guards: documentation completeness, resource integrity, WorkManager manifest, security scan, diff check, and private-artifact scan passed.
+
+## Supplied phase 25
+
+- [x] Inspect and scope `pasted_content_25.txt` against the current release and protected architecture boundaries.
+- [x] Apply only safe, evidence-based changes requested by phase 25.
+- [x] Validate the phase with tests, build checks, and repository guards.

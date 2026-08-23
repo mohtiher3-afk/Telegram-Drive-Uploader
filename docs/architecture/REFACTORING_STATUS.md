@@ -128,3 +128,24 @@ The v1.0.15 signed multi-ABI APK release is published and its checksums are docu
 Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, or manifest changes were made, and the design tokens, navigation maps, startup maps, and motion tokens match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
 The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the first DI/Hilt documentation commit by run `32612714343`, the navigation commit by run `32613243711`, the DI/Hilt re-audit commit by run `32613705590`, the Material 3 design-system commit by run `32614106585`, the startup audit commit by run `32614622996`, and the motion-system commit by run `32615099417`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
+
+
+## Controlled Maintenance Mode completion
+
+The post-release maintenance phase is complete at the governance and repository-validation level. The repository now includes the maintenance policy, bug-fix workflow, dependency policy, pull-request policy, code-review checklist, maintenance index, maintenance certification, issue templates, and the finalized Manus development protocol.
+
+Local verification evidence for this phase:
+
+| Gate | Result |
+|---|---|
+| Security scan | PASS |
+| Resource integrity | PASS |
+| WorkManager manifest | PASS |
+| TDLib v1.8.66 artifact and ABI checks | PASS |
+| Debug unit tests | PASS |
+| Release lint | PASS |
+| Debug APK assembly | PASS |
+| Release APK assembly | PASS with JDK 17 and `/tmp/android-sdk` |
+| Diff whitespace check | PASS |
+
+The release remains **NOT CERTIFIED for unrestricted production runtime** until real-device evidence confirms Telegram authorization, channel selection, real TDLib video upload, confirmed delivery, background recovery, runtime accessibility/RTL behavior, and controlled performance measurements. No product feature, upload path, TDLib artifact, WorkManager behavior, or security boundary was changed in this maintenance closeout.
