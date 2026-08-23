@@ -23,3 +23,10 @@ Confirm the selected file remains readable and that the device has sufficient fr
 ## Network Problems
 
 Confirm connectivity and whether a VPN, captive portal, or restrictive network is involved. Record network condition only at a high level. The application must not claim that multiple Wi-Fi links are bonded unless a measured implementation exists.
+
+
+## Observability and Diagnostic Exports
+
+When troubleshooting, request only the app version, Android/API version, device/ABI, high-level network condition, operation, visible error, reproduction steps, timestamps, and sanitized incident IDs. If the app provides a diagnostic export, ask the user to review it before sharing and remove any private information that remains.
+
+Never request passwords, Telegram authentication codes, API hashes, bot tokens, session files, private messages, private media, authorization headers, cookies, or unredacted filesystem paths. Diagnostics are local and bounded; the application has no authorized remote analytics or automatic crash-reporting pipeline. Do not claim a production runtime issue is resolved solely because static self-checks pass.
