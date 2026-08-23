@@ -11,7 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.telegramdrive.uploader.core.datastore.SettingsDataStore
+import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import dagger.hilt.android.AndroidEntryPoint
 import com.telegramdrive.uploader.core.navigation.AppNavigation
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme

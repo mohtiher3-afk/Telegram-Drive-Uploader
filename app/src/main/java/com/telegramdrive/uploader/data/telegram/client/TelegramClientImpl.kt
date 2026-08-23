@@ -3,7 +3,7 @@ package com.telegramdrive.uploader.data.telegram.client
 import android.content.Context
 import android.os.Build
 import com.telegramdrive.uploader.BuildConfig
-import com.telegramdrive.uploader.core.datastore.SettingsDataStore
+import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
