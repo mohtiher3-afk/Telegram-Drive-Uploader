@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-The repository is **CONDITIONALLY READY** for release-preparation work, not unconditionally release-ready. Source/configuration audits show no confirmed critical architecture or security defect, CI quality gates are configured, and protected Telegram/TDLib/upload behavior remains intact. Final release confidence is blocked by pending remote CI evidence, absent local Gradle wrapper/tooling, and missing device/emulator evidence for real authentication and upload.
+The repository is **NOT READY** for release preparation. Source/configuration audits show no confirmed critical architecture or security defect, and CI quality gates are configured, but final release confidence is blocked by pending remote CI evidence, unavailable local Gradle wrapper/tooling, and missing device/emulator evidence for real authentication and upload.
 
 ## Repository Structure
 
@@ -54,4 +54,4 @@ Focused commits were used. No tracked APK, keystore, temporary artifact, or unre
 
 ## Release Decision
 
-**CONDITIONALLY READY**. Proceed to release preparation only after remote CI passes all required gates, signing configuration is verified without exposing secrets, and device/emulator smoke tests produce actual evidence for authentication, upload, background recovery, and critical UI modes. Do not publish automatically.
+**NOT READY**. Release preparation must remain stopped until remote CI passes all required gates, signing configuration is verified without exposing secrets, and device/emulator smoke tests produce actual evidence for authentication, upload, background recovery, and critical UI modes. Do not publish automatically.
