@@ -23,3 +23,4 @@
 | Pre-push checklist | [PRE_PUSH_CHECKLIST.md](PRE_PUSH_CHECKLIST.md) |
 | Change risk matrix | [CHANGE_RISK_MATRIX.md](CHANGE_RISK_MATRIX.md) |
 | Verification command | `../../scripts/verify-project.sh` |
+| Repository cleanup | [../maintenance/README.md](../maintenance/README.md), inventory, duplicate audit, cleanup report, and certification |

@@ -389,3 +389,12 @@
 - [x] Integrate the master verification path with CI and developer onboarding without weakening failure behavior.
 - [x] Run local self-check, tests, lint, builds, artifact validation, security validation, and diff review.
 - [x] Commit and push the validated phase without changing product, TDLib, upload, or authentication behavior.
+
+
+## Supplied final repository cleanup and documentation normalization phase
+
+- [x] Inspect and inventory the complete repository tree and root-level files from `pasted_content_27.txt`.
+- [x] Audit duplicate/dead files, temporary artifacts, Git hygiene, scripts, workflows, and configuration without deleting on filename evidence alone.
+- [x] Normalize documentation status, indexes, build/TDLib/upload/configuration references, and add maintenance audit records.
+- [x] Run structural, security, self-check, build, and diff validation; record limitations honestly.
+- [x] Commit and push only the focused cleanup and documentation changes.
