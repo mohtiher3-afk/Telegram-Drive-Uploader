@@ -1,9 +1,6 @@
 name: Android Multi-ABI Release
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       tag:

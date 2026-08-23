@@ -318,3 +318,9 @@
 - [ ] Inspect and scope `pasted_content_20.txt` against the current repository and protected architecture boundaries.
 - [ ] Apply only safe, evidence-based changes requested by phase 20.
 - [ ] Validate the phase with local checks, tests where available, protected-surface checks, and GitHub Actions.
+
+## Apply supplied implementation phase 21
+
+- [x] Inspect and scope `pasted_content_21.txt` against the current repository and protected architecture boundaries.
+- [x] Apply only safe, evidence-based changes requested by phase 21: canonical Android CI, redacted security gate, local verification script, CI documentation, PR template, and manual release trigger.
+- [ ] Validate the phase with local checks, tests where available, protected-surface checks, and GitHub Actions.
