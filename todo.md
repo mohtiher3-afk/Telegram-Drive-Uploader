@@ -434,3 +434,21 @@
 - [x] Add reusable bug-report, root-cause, high-risk-plan, and fix-report templates only where missing.
 - [x] Validate documentation-only changes, security boundaries, and absence of production-code modifications.
 - [x] Commit and report the controlled bug-fix protocol without changing application behavior.
+
+
+## Supplied controlled database migration and data-integrity protocol phase
+
+- [ ] Inspect the phase-32 persistence protocol and compare it with the current data architecture and maintenance rules.
+- [ ] Inventory Room, DataStore, file persistence, schema, DAOs, and migration state using actual source evidence.
+- [ ] Add reusable persistence inventory, schema, user-data contract, migration, and integrity templates only where missing.
+- [ ] Validate documentation-only changes and confirm no schema, data, or production-source modifications.
+- [ ] Commit and report the controlled persistence protocol without changing application behavior.
+
+
+## Supplied controlled dependency update and upgrade protocol phase
+
+- [x] Inspect the phase-33 dependency protocol and compare it with current toolchain, dependency, and maintenance documentation.
+- [x] Identify dependency-control gaps and protected TDLib, JNI, ABI, database, upload, authentication, and release boundaries without changing versions.
+- [x] Add reusable dependency request, inventory, impact, compatibility, graph, change-report, and rollback templates only where missing.
+- [x] Validate documentation-only changes and confirm dependency graph, versions, and application behavior are unchanged.
+- [x] Commit and report the controlled dependency protocol without performing a dependency update.
