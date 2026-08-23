@@ -25,3 +25,13 @@ No files were moved, renamed, merged, or deleted in this phase. No package, depe
 The unresolved items are the mixed responsibility of `VideoMetadataExtractor`—metadata extraction plus `UploadTask` construction—and the temporary-file staging behavior in `TelegramUploadEngineImpl`. Both are high-risk behavior boundaries and remain unchanged pending dedicated characterization tests. No duplicate implementation was confirmed safe to remove.
 
 Protected files and surfaces remain unchanged: generated TDLib bindings, `app/src/main/jniLibs/**`, ABI configuration, TDLib build scripts and version, AndroidManifest/WorkManager configuration, credentials, database schema/entities/DAOs/migrations, upload engine behavior, and UI/navigation code.
+
+## Smart Assistant correction
+
+The earlier note stating that no Smart File Assistant existed was incorrect. Current source inspection found `core.ai.SmartFileAssistant` and `SmartFileSuggestion`, with deterministic offline filename and keyword suggestions consumed by `UploadViewModel`. The status and component maps were corrected. No assistant behavior or tests were changed.
+
+## Features and Screens phase
+
+The current feature package is already organized by existing responsibilities: `onboarding`, `home`, `telegram`, `upload`, `queue`, `history`, and `settings`. `AppNavigation` owns routes and cross-screen callbacks. The inventory found no standalone `about`, `scheduler`, `selectvideo`, or separate `uploadqueue` screen packages. No files were moved or split because the conceptual target would require broad package and navigation changes without a demonstrated behavioral benefit.
+
+The phase created `FEATURE_INVENTORY.md`, `SCREEN_RESPONSIBILITY_MAP.md`, `NAVIGATION_COUPLING_AUDIT.md`, `FEATURE_DEPENDENCY_MAP.md`, and `FEATURE_SHARED_STATE_AUDIT.md`. The UI, navigation, ViewModel state, Telegram, upload, WorkManager, database, dependency, and Material 3 behavior remain unchanged.

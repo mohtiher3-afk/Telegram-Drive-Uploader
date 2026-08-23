@@ -219,3 +219,16 @@
 - [x] Create truthful component, status, flow, performance, and duplication maps.
 - [x] Apply only justified package-level organization; do not add AI, providers, models, services, or new features.
 - [x] Validate protected behavior and Android CI gates, then push the phase if changes are required.
+
+## Approved Features and Screens refactoring
+
+- [x] Inspect the latest architecture documents and current UI source tree.
+- [x] Inventory existing screens, ViewModels, UI state, events, routes, dialogs, sheets, and shared components.
+- [x] Create truthful feature, screen responsibility, dependency, and navigation-coupling maps.
+- [x] Apply only safe package organization using existing files; preserve UI, navigation, and application behavior.
+- [x] Validate protected surfaces, CI build gates, tests, and repository cleanliness; then push the focused refactoring commit.
+
+## Discovered SmartFileAssistant implementation correction
+
+- [x] Correct the earlier Smart Assistant status/maps to include the real local `SmartFileAssistant` and `SmartFileSuggestion` implementation without changing behavior.
+- [x] Continue the approved Features and Screens inventory after the correction.
