@@ -19,3 +19,7 @@
 | Support | [SUPPORT_GUIDE.md](SUPPORT_GUIDE.md) |
 | Diagnostics | [DIAGNOSTIC_GUIDE.md](DIAGNOSTIC_GUIDE.md) |
 | Technical debt | [TECHNICAL_DEBT.md](TECHNICAL_DEBT.md) |
+| Automated self-check | [FINAL_SELF_CHECK_REPORT.md](FINAL_SELF_CHECK_REPORT.md) |
+| Pre-push checklist | [PRE_PUSH_CHECKLIST.md](PRE_PUSH_CHECKLIST.md) |
+| Change risk matrix | [CHANGE_RISK_MATRIX.md](CHANGE_RISK_MATRIX.md) |
+| Verification command | `../../scripts/verify-project.sh` |
