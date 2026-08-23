@@ -84,6 +84,12 @@ Source inspection found structured stream closure in `StreamingFileReader`, no `
 
 Device profiling, long-running upload measurement, battery/memory/CPU traces, local Gradle execution, and runtime stability tests remain environment-gated. The phase therefore records audit evidence and repeatable guidance but does not claim performance optimization completion without before/after measurements.
 
+## Security, Privacy, and Android Hardening result
+
+The security phase is documented under `docs/security`: security inventory, manifest audit, backup security, permission audit, security architecture, threat model, and final security report. The manifest has one required exported launcher activity and a non-exported AndroidX Startup provider; no exported service, receiver, FileProvider, deep link, or WebView was found. Database and DataStore paths are excluded from cloud and device-transfer backup rules.
+
+A redacted scan found no committed keystore, PEM, private-key, or signing artifact. CI configuration uses secret references and the Android source contains no trust-all TLS, custom hostname bypass, or application cleartext policy in the audited paths. Diagnostics pass through sanitization. TDLib, JNI, ABI, authentication, upload, WorkManager, database, and navigation behavior were not changed. Residual risks include unavailable runtime backup/restore, device, dependency, lint, and complete historical secret-scanning evidence.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -102,7 +108,8 @@ Device profiling, long-running upload measurement, battery/memory/CPU traces, lo
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
 | Resources | Complete: resource inventory, usage review, asset reports, and integrity guard added; no unsafe deletion |
 | Tests | QA documentation complete; local Gradle execution and broad missing suites remain explicitly blocked |
-| CI | Pending performance-phase workflow result |
+| Security | Complete: redacted source/configuration audit and threat model documented; no behavior-changing hardening patch justified |
+| CI | Pending security-phase workflow result |
 | Final audit | Pending |
 
 ## Protected behavior and assets
