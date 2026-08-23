@@ -28,6 +28,10 @@ The existing navigation graph remains in `core.navigation.AppNavigation`, and ro
 
 The current Hilt graph contains four `SingletonComponent` modules, three providers, six interface bindings, eight Hilt ViewModels, one Hilt Worker, and one Hilt application entry point. The audit found no duplicate unqualified providers, no confirmed constructor cycle, no custom service locator, and no justified scope correction. Existing interfaces remain useful domain and test seams. No DI source organization change beyond documentation was justified.
 
+## Material 3 Design System result
+
+The existing Material 3 foundation was audited and retained. The shared theme already provides branded light/dark schemes, Android 12+ dynamic color support, semantic color roles, and expressive shape tokens. The phase adds a complete shared typography scale, semantic spacing tokens in `core.ui.theme.AppSpacing`, and replaces settings diagnostic raw colors with Material 3 semantic roles. No screen-wide redesign or behavior change was introduced.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -43,10 +47,10 @@ The current Hilt graph contains four `SingletonComponent` modules, three provide
 | Features | Complete: existing screens and ViewModels inventoried; no unnecessary moves |
 | Navigation | Complete: routes centralized safely; graph and coupling documented |
 | DI | Complete: Hilt responsibility, inventory, graph, and cycle audit documented |
-| Design system | Pending |
+| Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Complete: DI/Hilt re-audit run `32613705590` succeeded for all three ABIs |
+| CI | Pending design-system run; DI/Hilt re-audit run `32613705590` previously succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
@@ -55,6 +59,6 @@ No TDLib version, generated binding, native artifact, ABI configuration, credent
 
 ## Verification status
 
-Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, UI, or manifest changes were made, and the feature/navigation maps match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
+Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, or manifest changes were made, and the design tokens and navigation maps match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
 The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the first DI/Hilt documentation commit by run `32612714343`, the navigation commit by run `32613243711`, and the DI/Hilt re-audit commit by run `32613705590`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.

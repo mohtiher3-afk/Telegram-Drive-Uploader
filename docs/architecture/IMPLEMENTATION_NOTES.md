@@ -41,3 +41,9 @@ The phase created `FEATURE_INVENTORY.md`, `SCREEN_RESPONSIBILITY_MAP.md`, `NAVIG
 The current Hilt implementation was re-audited after the Navigation phase. Four `SingletonComponent` modules are present: `DatabaseModule`, `RepositoryModule`, `UploadModule`, and `WorkModule`. They expose three providers and six bindings. Eight feature ViewModels use Hilt ViewModel injection, `UploadWorker` uses `@HiltWorker` with `@AssistedInject`, and `TelegramDriveApp` is the Hilt application entry point.
 
 No duplicate unqualified provider, confirmed constructor cycle, custom service locator, or clearly unsafe scope was found. Existing interfaces remain justified as domain and test boundaries. No empty conceptual modules were added, and no scopes, providers, bindings, dependencies, or runtime behavior were changed. TDLib client lifecycle, real upload delivery, WorkManager startup, Room database identity, DataStore keys, authentication, navigation, and UI remain protected.
+
+## Material 3 Design System phase
+
+The current Compose theme already provides light and dark semantic color schemes, Android 12+ dynamic-color support, and an expressive shape scale. The foundation phase preserves those decisions and adds a complete shared typography scale in `core.ui.theme.Type`, semantic spacing tokens in `core.ui.theme.Dimensions`, and design documentation under `docs/design`.
+
+The settings diagnostic log now uses `MaterialTheme.colorScheme` roles for error, warning, informational, container, and secondary text colors rather than raw colors embedded in the feature screen. This keeps the existing diagnostic states while improving theme and dark-mode consistency. No upload, Telegram, authentication, WorkManager, database, navigation, or screen-state behavior changed. RTL guidance was documented without rewriting existing screen layouts; future components must prefer logical start/end APIs and auto-mirrored directional icons only where semantically correct.

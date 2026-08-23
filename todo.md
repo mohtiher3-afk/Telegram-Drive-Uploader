@@ -253,3 +253,10 @@
 - [x] Create or update `DI_INVENTORY.md`, `DI_GRAPH.md`, and `DI_CIRCULAR_DEPENDENCIES.md` from actual source evidence.
 - [x] Apply only confirmed low-risk DI organization; preserve all runtime behavior and protected integrations.
 - [x] Validate Hilt graph, WorkManager integration, protected surfaces, CI gates, and repository cleanliness; then push the focused commit.
+
+## Confirmed Material 3 Design System phase
+
+- [x] Audit current Compose theme, colors, typography, shapes, spacing, components, resources, splash, dark mode, and RTL usage.
+- [x] Create truthful design audit, principles, and RTL guideline documents.
+- [x] Implement only shared Material 3 tokens/components that are justified; preserve screen behavior and avoid new dependencies.
+- [x] Validate light/dark/RTL contracts, protected surfaces, CI gates, and repository cleanliness; then push the focused commit.

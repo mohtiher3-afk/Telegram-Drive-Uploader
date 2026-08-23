@@ -21,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -420,14 +419,14 @@ fun SettingsScreen(
                                 ) {
                                     items(latestEvents) { event ->
                                         val color = when (event.severity) {
-                                            "ERROR" -> Color(0xFFD32F2F)
-                                            "WARN" -> Color(0xFFFFA000)
-                                            else -> Color(0xFF1976D2)
+                                            "ERROR" -> MaterialTheme.colorScheme.error
+                                            "WARN" -> MaterialTheme.colorScheme.tertiary
+                                            else -> MaterialTheme.colorScheme.primary
                                         }
                                         val bgColor = when (event.severity) {
-                                            "ERROR" -> Color(0xFFFDE8E8)
-                                            "WARN" -> Color(0xFFFFF9E6)
-                                            else -> Color(0xFFE8F0FE)
+                                            "ERROR" -> MaterialTheme.colorScheme.errorContainer
+                                            "WARN" -> MaterialTheme.colorScheme.tertiaryContainer
+                                            else -> MaterialTheme.colorScheme.primaryContainer
                                         }
                                         val formattedTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(event.timestamp))
                                         
@@ -441,7 +440,7 @@ fun SettingsScreen(
                                             Text(
                                                 text = formattedTime,
                                                 style = MaterialTheme.typography.labelSmall.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace),
-                                                color = Color.Gray
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                             Text(
                                                 text = "[${event.severity}]",
