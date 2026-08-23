@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.R
+import com.telegramdrive.uploader.core.ui.theme.AppMotion
 
 private data class OnboardingPage(
     val title: String,
@@ -173,8 +174,10 @@ fun OnboardingScreen(
             AnimatedContent(
                 targetState = page,
                 transitionSpec = {
-                    (slideInHorizontally { it / 3 } + fadeIn()).togetherWith(
-                        slideOutHorizontally { -it / 3 } + fadeOut()
+                    (slideInHorizontally(animationSpec = AppMotion.offsetShortTween()) { it / 3 } +
+                        fadeIn(animationSpec = AppMotion.shortTween())).togetherWith(
+                        slideOutHorizontally(animationSpec = AppMotion.offsetShortTween()) { -it / 3 } +
+                        fadeOut(animationSpec = AppMotion.shortTween())
                     ).using(SizeTransform(clip = false))
                 },
                 label = "onboarding_page"
