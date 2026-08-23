@@ -155,3 +155,9 @@
 
 - [x] Add the application name and current version clearly to the README and repository-facing metadata.
 - [x] Verify the metadata matches the Android Gradle version and published release before pushing.
+
+## Repeated queued upload report
+
+- [x] Trace the queued upload from database insertion through WorkManager enqueue and worker startup.
+- [ ] Identify and repair the verified WorkManager constraint, registration, policy, or worker-execution blocker.
+- [ ] Add regression coverage and validate the repaired queue path on Android CI and a device/emulator where available.

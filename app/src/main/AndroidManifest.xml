@@ -20,9 +20,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
-        <meta-data
-            android:name="androidx.work.WorkManagerInitializer"
-            tools:node="remove" />
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="remove">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                tools:node="remove" />
+        </provider>
         <activity
             android:name="com.telegramdrive.uploader.MainActivity"
             android:exported="true"
