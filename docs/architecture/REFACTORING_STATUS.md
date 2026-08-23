@@ -2,7 +2,7 @@
 
 ## Current status
 
-The incremental refactoring is in the Smart File Assistant analysis phase. The previous low-risk moves are complete: media utilities are under `core.util.media`, Room database classes are under `data.local.database`, `SettingsDataStore` is under `data.local.datastore`, and Telegram integration is documented under `data.telegram`.
+The incremental refactoring is in the Features and Screens structural phase. The previous low-risk moves are complete: media utilities are under `core.util.media`, Room database classes are under `data.local.database`, `SettingsDataStore` is under `data.local.datastore`, Telegram integration is documented under `data.telegram`, and the local SmartFileAssistant is documented under `core.ai`.
 
 ## Telegram isolation result
 
@@ -12,7 +12,13 @@ Because the existing package layout already separates Telegram integration from 
 
 ## Smart Assistant result
 
-**SMART ASSISTANT IMPLEMENTATION STATUS: NOT CURRENTLY IMPLEMENTED.** No suggestion engine, recommendation model, AI provider, machine-learning model, or intelligent classifier was found. Existing deterministic media utilities were mapped but were not moved because they have real upload-preparation responsibilities and a package-only move would not improve the boundary.
+**SMART ASSISTANT IMPLEMENTATION STATUS: PARTIALLY IMPLEMENTED — LOCAL DETERMINISTIC ASSISTANT.** `core.ai.SmartFileAssistant` and `SmartFileSuggestion` exist and are consumed by `UploadViewModel`; their behavior is documented without modification.
+
+## Features and Screens result
+
+The existing feature-oriented structure is already present under `feature/` with `onboarding`, `home`, `telegram`, `upload`, `queue`, `history`, and `settings`. The inventory found no standalone `about`, `scheduler`, `selectvideo`, or separate `uploadqueue` screen packages. No source files were moved or split because doing so would create broad navigation and import changes without a demonstrated behavioral benefit.
+
+`AppNavigation` remains the navigation owner. Screens use callbacks, ViewModels coordinate feature state, and no direct `NavController` usage was found in the inspected ViewModels. The UI, colors, typography, Material 3 components, navigation behavior, authentication, upload flow, Telegram/TDLib, WorkManager, and database behavior remain unchanged.
 
 ## Smart Assistant validation checklist
 
@@ -25,9 +31,9 @@ Because the existing package layout already separates Telegram integration from 
 | Telegram | Complete |
 | TDLib verification | Complete |
 | Upload engine | Complete |
-| Smart Assistant | Complete as analysis; not implemented as a feature |
-| Features | Pending |
-| Navigation | Pending |
+| Smart Assistant | Complete: existing local deterministic assistant documented |
+| Features | Complete: existing screens and ViewModels inventoried; no unnecessary moves |
+| Navigation | Complete: coupling audit documented; behavior unchanged |
 | DI | Pending |
 | Design system | Pending |
 | Resources | Pending |
@@ -41,6 +47,6 @@ No TDLib version, generated binding, native artifact, ABI configuration, credent
 
 ## Verification status
 
-Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, no `smartassistant` package was created without a real implementation, and no protected native, Telegram, upload, or manifest changes were made. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
+Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, UI, or manifest changes were made, and the feature/navigation maps match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
 The prior DataStore refactor commit `5e1f185` was validated by GitHub Actions run `32610172806`, and the Smart Assistant documentation commit was validated by GitHub Actions run `32611631918`; both completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.

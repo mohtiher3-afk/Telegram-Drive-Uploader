@@ -6,6 +6,8 @@ This map covers only existing file-analysis and media-processing code. It does n
 
 | Class | Current path | Responsibility | Classification | Target path | Risk |
 |---|---|---|---|---|---|
+| `SmartFileAssistant` | `core/ai/SmartFileAssistant.kt` | Deterministically derives a suggested filename and keywords from `UploadTask` filename and media metadata; does not inspect file contents or use a network service | `SUGGESTION_ENGINE` / `CLASSIFIER` | Keep `core/ai` for now; a future package move must update `UploadViewModel` imports only | Medium |
+| `SmartFileSuggestion` | `core/ai/SmartFileAssistant.kt` | Immutable result containing task ID, suggested name, and keywords | `SUGGESTION_ENGINE` model | Keep with the existing assistant until a separately reviewed model split | Low |
 | `VideoFormatSupport` | `core/util/media/VideoFormatSupport.kt` | Normalizes provider MIME values and recognizes supported video extensions | `TYPE_DETECTOR` / `FILE_UTILITY` | Keep `core/util/media` | Low |
 | `VideoMetadataExtractor` | `core/util/media/VideoMetadataExtractor.kt` | Persists content URI permission, reads display name and size, detects MIME, extracts duration and dimensions, and constructs `UploadTask` | `METADATA_ANALYZER` with upload-preparation coupling | Keep `core/util/media` pending a separately tested boundary | Medium |
 | `StreamingFileReader` | `data/upload/reader/StreamingFileReader.kt` | Opens content/file URIs and streams bytes through a bounded buffer for upload preparation | `FILE_UTILITY` / `UPLOAD_LOGIC` | Keep under `data/upload/reader` | Medium |
@@ -15,8 +17,10 @@ This map covers only existing file-analysis and media-processing code. It does n
 
 ## Finding
 
-No class named or behaving as a Smart Assistant, suggestion engine, recommendation engine, classifier, AI service, or machine-learning model was found. The existing media utilities perform deterministic upload preflight and metadata extraction; they do not generate recommendations or intelligent classifications.
+A real local Smart File Assistant exists in `core/ai/SmartFileAssistant.kt`. It is deterministic and offline: `SmartFileAssistant.suggest(task)` derives a normalized filename and up to four keywords from the existing `UploadTask` filename, dimensions, duration, and creation time. `SmartFileSuggestion` is the result model. No cloud AI, LLM, machine-learning model, API key, or file-content inspection is used.
+
+The assistant is consumed by `feature/upload/UploadViewModel`, which computes suggestions after metadata extraction and allows the user to apply one or all suggested filenames. This is existing upload UI behavior and must not be changed during structural refactoring.
 
 ## Safe organization decision
 
-No new `smartassistant/` package is created because it would be empty of a real assistant implementation. `VideoFormatSupport` remains a generic media policy utility. `VideoMetadataExtractor` remains in `core.util.media` for this phase because it currently constructs the domain `UploadTask` and is directly used by `UploadViewModel`; moving it without first splitting and testing responsibilities would be a behavioral refactor, not a safe package move.
+No broad move was performed yet. The current `core.ai` package is a valid generic local-assistant boundary, while `UploadViewModel` remains the feature orchestrator. Moving these classes into a new `smartassistant/` package could be safe but requires updating references and CI validation; it should be treated as a focused package-only change rather than mixed with screen reorganization. `VideoFormatSupport` remains a generic media policy utility, and `VideoMetadataExtractor` remains in `core.util.media` because it constructs `UploadTask` and owns URI/media metadata access.
