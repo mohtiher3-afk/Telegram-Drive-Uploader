@@ -46,6 +46,14 @@ The phase adds `core.ui.theme.AppMotion` with short semantic duration/easing tok
 
 The new design documents are `docs/design/CURRENT_MOTION_AUDIT.md` and `docs/design/MOTION_SYSTEM.md`. No new dependency or animation framework was introduced.
 
+## Screen-by-Screen UI Redesign result
+
+The first screen slice is complete for `HomeScreen` only. The source-based inventory, state matrix, and functional contracts document the real screens and states without inventing scheduler, about, upload-details, or file-picker screens that are not present as standalone routes.
+
+`HomeScreen` now uses the established Material 3 spacing tokens and elevated card hierarchy for the upload hero and statistic tiles. Its settings, Telegram connection, Android document picker, test tags, real HomeUiState, active upload list, empty state, and UploadStatusIndicator behavior remain unchanged. No screen beyond Home was redesigned in this slice.
+
+The Home slice is validated by Android CI run `32617922174`, which succeeded for all three ABIs. Further screen redesigns remain intentionally sequential and require a separate screen-level slice.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -64,7 +72,7 @@ The new design documents are `docs/design/CURRENT_MOTION_AUDIT.md` and `docs/des
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Complete: motion run `32615099417` succeeded for all three ABIs |
+| CI | Complete: Home screen run `32617922174` succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
