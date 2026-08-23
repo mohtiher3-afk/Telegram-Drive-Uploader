@@ -10,7 +10,7 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.ErrorCode
-import com.telegramdrive.uploader.core.util.VideoMetadataExtractor
+import com.telegramdrive.uploader.core.util.media.VideoMetadataExtractor
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.TelegramDestination

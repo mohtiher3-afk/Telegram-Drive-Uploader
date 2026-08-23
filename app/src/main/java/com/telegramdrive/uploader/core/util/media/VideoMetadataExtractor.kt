@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.core.util
+package com.telegramdrive.uploader.core.util.media
 
 import android.content.Context
 import android.graphics.Bitmap
