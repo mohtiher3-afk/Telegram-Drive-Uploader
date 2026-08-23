@@ -260,3 +260,10 @@
 - [x] Create truthful design audit, principles, and RTL guideline documents.
 - [x] Implement only shared Material 3 tokens/components that are justified; preserve screen behavior and avoid new dependencies.
 - [x] Validate light/dark/RTL contracts, protected surfaces, CI gates, and repository cleanliness; then push the focused commit.
+
+## Confirmed Splash and Startup Experience phase
+
+- [x] Audit Android application startup, splash, MainActivity, theme, session restoration, onboarding state, TDLib initialization, DataStore, ViewModels, and WorkManager startup.
+- [x] Create truthful startup flow, startup task, and state classification documents.
+- [x] Apply only real-state startup or splash UX improvements; do not add delays, fake progress, duplicate initialization, or new dependencies unless justified.
+- [x] Validate cold/warm/first-launch paths, retry/error handling, themes, RTL, protected integrations, CI gates, and repository cleanliness; then push the focused commit.

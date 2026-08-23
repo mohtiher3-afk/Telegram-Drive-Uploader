@@ -32,6 +32,12 @@ The current Hilt graph contains four `SingletonComponent` modules, three provide
 
 The existing Material 3 foundation was audited and retained. The shared theme already provides branded light/dark schemes, Android 12+ dynamic color support, semantic color roles, and expressive shape tokens. The phase adds a complete shared typography scale, semantic spacing tokens in `core.ui.theme.AppSpacing`, and replaces settings diagnostic raw colors with Material 3 semantic roles. No screen-wide redesign or behavior change was introduced.
 
+## Splash and Startup Experience result
+
+The startup audit found a single Activity flow: `TelegramDriveApp` initializes the process, `MainActivity` applies the theme and collects the existing theme preference, and `AppNavigation` reads the existing onboarding completion flow before rendering either onboarding or the unchanged `home`-started graph. No separate `SplashActivity`, fake delay, fake progress, duplicate TDLib initialization, or startup coordinator is present.
+
+The phase adds `STARTUP_FLOW.md`, `STARTUP_TASKS.md`, and `STARTUP_STATE.md`. The official splash dependency is not currently present, and adding it without a measured blocking startup task would introduce unnecessary startup coordination. The platform launch behavior, DataStore keys, authentication/session ownership, TDLib fail-closed behavior, WorkManager configuration, and navigation destinations remain unchanged.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -50,7 +56,7 @@ The existing Material 3 foundation was audited and retained. The shared theme al
 | Design system | Complete: theme audit, typography scale, spacing tokens, semantic diagnostic colors, and RTL guidance |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Complete: Material 3 run `32614106585` succeeded for all three ABIs |
+| CI | Pending startup run; Material 3 run `32614106585` previously succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
@@ -59,6 +65,6 @@ No TDLib version, generated binding, native artifact, ABI configuration, credent
 
 ## Verification status
 
-Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, or manifest changes were made, and the design tokens and navigation maps match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
+Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, or manifest changes were made, and the design tokens, navigation maps, and startup maps match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
 The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the first DI/Hilt documentation commit by run `32612714343`, the navigation commit by run `32613243711`, the DI/Hilt re-audit commit by run `32613705590`, and the Material 3 design-system commit by run `32614106585`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
