@@ -35,3 +35,9 @@ The earlier note stating that no Smart File Assistant existed was incorrect. Cur
 The current feature package is already organized by existing responsibilities: `onboarding`, `home`, `telegram`, `upload`, `queue`, `history`, and `settings`. `AppNavigation` owns routes and cross-screen callbacks. The inventory found no standalone `about`, `scheduler`, `selectvideo`, or separate `uploadqueue` screen packages. No files were moved or split because the conceptual target would require broad package and navigation changes without a demonstrated behavioral benefit.
 
 The phase created `FEATURE_INVENTORY.md`, `SCREEN_RESPONSIBILITY_MAP.md`, `NAVIGATION_COUPLING_AUDIT.md`, `FEATURE_DEPENDENCY_MAP.md`, and `FEATURE_SHARED_STATE_AUDIT.md`. The UI, navigation, ViewModel state, Telegram, upload, WorkManager, database, dependency, and Material 3 behavior remain unchanged.
+
+## DI/Hilt re-audit
+
+The current Hilt implementation was re-audited after the Navigation phase. Four `SingletonComponent` modules are present: `DatabaseModule`, `RepositoryModule`, `UploadModule`, and `WorkModule`. They expose three providers and six bindings. Eight feature ViewModels use Hilt ViewModel injection, `UploadWorker` uses `@HiltWorker` with `@AssistedInject`, and `TelegramDriveApp` is the Hilt application entry point.
+
+No duplicate unqualified provider, confirmed constructor cycle, custom service locator, or clearly unsafe scope was found. Existing interfaces remain justified as domain and test boundaries. No empty conceptual modules were added, and no scopes, providers, bindings, dependencies, or runtime behavior were changed. TDLib client lifecycle, real upload delivery, WorkManager startup, Room database identity, DataStore keys, authentication, navigation, and UI remain protected.
