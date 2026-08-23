@@ -20,6 +20,10 @@ The existing feature-oriented structure is already present under `feature/` with
 
 `AppNavigation` remains the navigation owner. Screens use callbacks, ViewModels coordinate feature state, and no direct `NavController` usage was found in the inspected ViewModels. The UI, colors, typography, Material 3 components, navigation behavior, authentication, upload flow, Telegram/TDLib, WorkManager, and database behavior remain unchanged.
 
+## Navigation Architecture result
+
+The existing navigation graph remains in `core.navigation.AppNavigation`, and route values are now centralized in `core.navigation.AppRoutes` without changing any route string. The onboarding gate, `home` start destination, bottom navigation, transient Telegram/upload routes, `popBackStack`, `popUpTo`, `saveState`, `launchSingleTop`, and `restoreState` behavior remain unchanged. No screens, deep links, arguments, navigation framework, or authentication flow were added or removed.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -33,12 +37,12 @@ The existing feature-oriented structure is already present under `feature/` with
 | Upload engine | Complete |
 | Smart Assistant | Complete: existing local deterministic assistant documented |
 | Features | Complete: existing screens and ViewModels inventoried; no unnecessary moves |
-| Navigation | Complete: coupling audit documented; behavior unchanged |
-| DI | Pending |
+| Navigation | Complete: routes centralized safely; graph and coupling documented |
+| DI | Complete: Hilt responsibility and flow documented |
 | Design system | Pending |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Complete: GitHub Actions run `32611631918` succeeded for all three ABIs |
+| CI | Complete: navigation run `32613243711` succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
@@ -49,4 +53,4 @@ No TDLib version, generated binding, native artifact, ABI configuration, credent
 
 Static verification confirmed that there is no stale `core.datastore` import, the WorkManager manifest guard passes, the existing local SmartFileAssistant remains under `core.ai`, no protected native, Telegram, upload, UI, or manifest changes were made, and the feature/navigation maps match the current source tree. Android compilation and unit tests are delegated to the repository GitHub Actions workflow because the local checkout does not include `gradlew` and the sandbox has no standalone `gradle` command.
 
-The prior DataStore refactor commit `5e1f185` was validated by GitHub Actions run `32610172806`, and the Smart Assistant documentation commit was validated by GitHub Actions run `32611631918`; both completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
+The prior DataStore refactor commit `5e1f185` was validated by run `32610172806`, the Smart Assistant documentation commit by run `32611631918`, the DI/Hilt audit by run `32612714343`, and the navigation commit by run `32613243711`; each completed successfully for `arm64-v8a`, `armeabi-v7a`, and `x86_64`.
