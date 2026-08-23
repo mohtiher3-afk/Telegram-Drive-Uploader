@@ -407,3 +407,21 @@
 - [x] Create the final release identity, artifact verification, GO/NO-GO matrix, and release certification reports.
 - [x] Run final self-check and inspect the certification-only diff.
 - [x] Commit the certification reports and deliver the exact evidence-based GO/NO-GO decision without publishing a release.
+
+
+## Supplied controlled production and maintenance mode phase
+
+- [ ] Inspect the phase-28 release state, tag state, and existing maintenance policies.
+- [ ] Audit release baseline and document any package-readiness or certification blockers without changing product code.
+- [ ] Add freeze, post-release monitoring, incident severity, hotfix, and maintenance-dashboard records with no invented metrics.
+- [ ] Run the controlled-maintenance self-check, tests, lint, build, security, TDLib, and documentation diff validation.
+- [ ] Commit and report the documentation-only maintenance-mode transition without automatic release publication.
+
+
+## Supplied controlled feature-development protocol phase
+
+- [x] Inspect the phase-29 protocol and compare it with existing architecture, maintenance, release, testing, security, and operations documentation.
+- [x] Identify protocol gaps and document protected-system constraints without implementing a feature.
+- [x] Add reusable feature-request and planning templates or indexes only where missing.
+- [x] Validate documentation-only changes, repository protections, and absence of production-code changes.
+- [x] Commit and report the controlled feature-development protocol without changing application behavior.
