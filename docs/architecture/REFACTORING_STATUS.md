@@ -2,7 +2,7 @@
 
 ## Current status
 
-The incremental refactoring is in the Features and Screens structural phase. The previous low-risk moves are complete: media utilities are under `core.util.media`, Room database classes are under `data.local.database`, `SettingsDataStore` is under `data.local.datastore`, Telegram integration is documented under `data.telegram`, and the local SmartFileAssistant is documented under `core.ai`.
+The incremental refactoring has completed the Navigation phase and is now recording the DI/Hilt re-audit. The previous low-risk moves are complete. media utilities are under `core.util.media`, Room database classes are under `data.local.database`, `SettingsDataStore` is under `data.local.datastore`, Telegram integration is documented under `data.telegram`, and the local SmartFileAssistant is documented under `core.ai`.
 
 ## Telegram isolation result
 
@@ -24,6 +24,10 @@ The existing feature-oriented structure is already present under `feature/` with
 
 The existing navigation graph remains in `core.navigation.AppNavigation`, and route values are now centralized in `core.navigation.AppRoutes` without changing any route string. The onboarding gate, `home` start destination, bottom navigation, transient Telegram/upload routes, `popBackStack`, `popUpTo`, `saveState`, `launchSingleTop`, and `restoreState` behavior remain unchanged. No screens, deep links, arguments, navigation framework, or authentication flow were added or removed.
 
+## DI/Hilt re-audit result
+
+The current Hilt graph contains four `SingletonComponent` modules, three providers, six interface bindings, eight Hilt ViewModels, one Hilt Worker, and one Hilt application entry point. The audit found no duplicate unqualified providers, no confirmed constructor cycle, no custom service locator, and no justified scope correction. Existing interfaces remain useful domain and test seams. No DI source organization change beyond documentation was justified.
+
 ## Smart Assistant validation checklist
 
 | Area | Status |
@@ -38,11 +42,11 @@ The existing navigation graph remains in `core.navigation.AppNavigation`, and ro
 | Smart Assistant | Complete: existing local deterministic assistant documented |
 | Features | Complete: existing screens and ViewModels inventoried; no unnecessary moves |
 | Navigation | Complete: routes centralized safely; graph and coupling documented |
-| DI | Complete: Hilt responsibility and flow documented |
+| DI | Complete: Hilt responsibility, inventory, graph, and cycle audit documented |
 | Design system | Pending |
 | Resources | Pending |
 | Tests | Pending full local Gradle execution |
-| CI | Complete: navigation run `32613243711` succeeded for all three ABIs |
+| CI | Complete: DI/Hilt re-audit pending final run; prior navigation run `32613243711` succeeded for all three ABIs |
 | Final audit | Pending |
 
 ## Protected behavior and assets
