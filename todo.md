@@ -504,3 +504,12 @@
 - [x] Create background architecture, worker inventory, reliability, recovery, and runtime limitation records only from verified repository behavior.
 - [x] Validate documentation-only changes and protected upload/background boundaries.
 - [x] Commit and report the background reliability protocol without changing application behavior.
+
+
+## Supplied controlled file handling and large-file reliability phase
+
+- [x] Inspect the phase-40 file-handling protocol and compare it with current picker, URI, upload, metadata, and operations documentation.
+- [x] Audit actual file selection, URI permissions/lifetime, MIME, filenames, sizes, streaming, buffers, descriptors, metadata, temporary files, cleanup, and provider behavior without changing semantics.
+- [x] Create file-flow, file-access, memory, temporary-file, provider, and reliability records only from verified repository behavior.
+- [x] Validate documentation-only changes and protected file/upload boundaries.
+- [x] Commit and report the file-handling reliability protocol without changing application behavior.

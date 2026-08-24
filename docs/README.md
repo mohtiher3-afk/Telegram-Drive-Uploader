@@ -22,4 +22,5 @@
 | Privacy and data governance | `privacy/README.md`, `DATA_INVENTORY.md`, `DATA_FLOW_MAP.md`, `DATA_RETENTION_POLICY.md`, `PRIVACY_GOVERNANCE.md`, and `FINAL_PRIVACY_REPORT.md` |
 | Android compatibility and platform behavior | `compatibility/README.md`, `SUPPORTED_ENVIRONMENT.md`, `ANDROID_VERSION_MATRIX.md`, `DEVICE_AND_SCREEN_MATRIX.md`, `PLATFORM_BEHAVIOR.md`, and `FINAL_COMPATIBILITY_REPORT.md` |
 | Background execution and upload reliability | `background/README.md`, `BACKGROUND_ARCHITECTURE.md`, `WORKER_INVENTORY.md`, `RELIABILITY_AND_RECOVERY.md`, and `FINAL_BACKGROUND_REPORT.md` |
+| File handling and large-file reliability | `files/README.md`, `FILE_FLOW.md`, `FILE_ACCESS_INVENTORY.md`, `LARGE_FILE_MEMORY_AUDIT.md`, `TEMPORARY_FILE_POLICY.md`, and `FINAL_FILE_RELIABILITY_REPORT.md` |
 | Development protocol | `MANUS_DEVELOPMENT_PROTOCOL.md` |
