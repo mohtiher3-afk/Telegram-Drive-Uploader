@@ -604,3 +604,12 @@
 - [x] Create factual error inventory, error-flow architecture, retry/recovery matrix, and final report only from verified repository behavior.
 - [x] Validate error documentation-only or minimal safe changes, secret/privacy boundaries, TDLib artifacts, protected behavior, and available build verification.
 - [x] Commit and report the error-handling and failure-recovery review without changing product behavior.
+
+
+## Approved Telegram error-handling fixes
+
+- [x] Replace hard-coded TelegramError user messages with localized Android string resources without changing error categories or authentication behavior.
+- [x] Replace raw TelegramError.Unknown user output with a privacy-safe localized generic message while preserving raw diagnostics only where safe and intended.
+- [x] Add focused regression tests for every Telegram error mapping, English/Arabic resources, and unknown-error sanitization.
+- [x] Run static, unit, compile, lint, TDLib artifact, secret, diff, and protected upload/authentication verification; document Android SDK limits.
+- [x] Commit and report the approved error-handling fixes and remaining runtime evidence gaps.

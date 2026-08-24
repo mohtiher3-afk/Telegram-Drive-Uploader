@@ -123,6 +123,16 @@
     <string name="enter_cloud_password">Enter your Telegram cloud password.</string>
     <string name="enter_two_step_password">Enter your Telegram two-step verification password.</string>
     <string name="authentication_error">Authentication Error</string>
+    <string name="telegram_error_invalid_phone">Invalid phone number. Please enter a valid international number.</string>
+    <string name="telegram_error_invalid_code">The verification code is invalid. Please try again.</string>
+    <string name="telegram_error_invalid_password">The two-step verification password is incorrect. Please try again.</string>
+    <string name="telegram_error_rate_limited">Too many attempts. Please try again later.</string>
+    <string name="telegram_error_network_unavailable">Network is unavailable. Please check your internet connection.</string>
+    <string name="telegram_error_session_expired">Your Telegram session has expired. Please authenticate again.</string>
+    <string name="telegram_error_invalid_credentials">Telegram API credentials are not configured correctly.</string>
+    <string name="telegram_error_app_update_required">Telegram requires a compatible app update or QR login. Try QR login or update the app.</string>
+    <string name="telegram_error_tdlib_unavailable">Telegram integration could not initialize on this device. Verify the APK ABI and configuration.</string>
+    <string name="telegram_error_unknown">Telegram could not complete this action. Please try again.</string>
     <string name="about">About</string>
     <string name="application_version">Application Version</string>
     <string name="built_with_compose">Built with Jetpack Compose &amp; Material 3</string>

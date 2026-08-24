@@ -408,7 +408,7 @@ fun TelegramAuthScreen(
                                     color = MaterialTheme.colorScheme.error
                                 )
                                 Text(
-                                    text = error?.getLocalizedMessage() ?: "An unknown Telegram error occurred. Please try again.",
+                                    text = error?.let { stringResource(it.messageResId()) } ?: "",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center,
@@ -458,7 +458,7 @@ fun TelegramAuthScreen(
                         .align(Alignment.BottomCenter)
                         .testTag("error_snackbar")
                 ) {
-                    Text(error?.getLocalizedMessage() ?: "")
+                    Text(error?.let { stringResource(it.messageResId()) } ?: "")
                 }
             }
         }
