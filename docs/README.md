@@ -25,4 +25,5 @@
 | File handling and large-file reliability | `files/README.md`, `FILE_FLOW.md`, `FILE_ACCESS_INVENTORY.md`, `LARGE_FILE_MEMORY_AUDIT.md`, `TEMPORARY_FILE_POLICY.md`, and `FINAL_FILE_RELIABILITY_REPORT.md` |
 | Telegram authentication and session lifecycle | `telegram/AUTHENTICATION_INVENTORY.md`, `telegram/AUTHENTICATION_ARCHITECTURE.md`, `telegram/AUTHENTICATION_FLOW.md`, `telegram/AUTHENTICATION_TEST_MATRIX.md`, `telegram/SESSION_LIFECYCLE.md`, and `telegram/FINAL_AUTHENTICATION_REPORT.md` |
 | Telegram destination and file routing | `telegram/DESTINATION_INVENTORY.md`, `telegram/DESTINATION_ARCHITECTURE.md`, `telegram/DESTINATION_FLOW.md`, `telegram/DESTINATION_TEST_MATRIX.md`, and `telegram/FINAL_DESTINATION_REPORT.md` |
+| Upload state and queue consistency | `upload/UPLOAD_STATE_INVENTORY.md`, `upload/ACTUAL_UPLOAD_STATE_MACHINE.md`, `upload/INVALID_STATE_TRANSITIONS.md`, `upload/UPLOAD_STATE_RACE_AUDIT.md`, `upload/QUEUE_CONSISTENCY.md`, `upload/UPLOAD_RECOVERY.md`, `upload/UPLOAD_STATE_TESTING.md`, and `upload/FINAL_UPLOAD_STATE_REPORT.md` |
 | Development protocol | `MANUS_DEVELOPMENT_PROTOCOL.md` |
