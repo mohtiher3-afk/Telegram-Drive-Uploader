@@ -18,7 +18,7 @@ permissions:
 
 env:
   ABI: x86_64
-  API_LEVEL: '35'
+  API_LEVEL: '36'
 
 jobs:
   tdlib-device-smoke:

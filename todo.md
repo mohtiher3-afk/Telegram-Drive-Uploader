@@ -671,3 +671,14 @@
 - [x] Run or dispatch the smoke test and inspect logs and artifacts.
 - [x] Document the device-test result, limitations, and certification impact.
 - [x] Report the emulator smoke-test outcome and next action.
+
+
+## Full validation matrix follow-up
+
+- [ ] Define ABI/API validation matrix, evidence requirements, and safe boundaries for all requested tracks.
+- [ ] Run JNI smoke coverage for arm64-v8a, armeabi-v7a, x86_64, and API 36 where the hosted runner supports it.
+- [ ] Audit and validate authentication, channel discovery, destination permissions, and selection behavior without using private credentials in source.
+- [ ] Validate real TDLib upload and WorkManager execution only with explicit user-provided test data and safe credentials; do not fake or delay results.
+- [ ] Review lint warnings and GitHub Actions quality without unrelated dependency upgrades.
+- [ ] Document evidence, gaps, certification impact, and any safe repository changes.
+- [ ] Report the complete validation outcome and next action.
