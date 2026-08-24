@@ -140,4 +140,8 @@
     <string name="select_target">اختيار الوجهة...</string>
     <string name="select_action">اختيار</string>
     <string name="start_immediately">البدء فورًا</string>
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_queue">قائمة الرفع</string>
+    <string name="nav_history">السجل</string>
+    <string name="nav_settings">الإعدادات</string>
 </resources>

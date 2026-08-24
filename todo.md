@@ -613,3 +613,14 @@
 - [x] Add focused regression tests for every Telegram error mapping, English/Arabic resources, and unknown-error sanitization.
 - [x] Run static, unit, compile, lint, TDLib artifact, secret, diff, and protected upload/authentication verification; document Android SDK limits.
 - [x] Commit and report the approved error-handling fixes and remaining runtime evidence gaps.
+
+
+## Approved official Material 3 / M3 Expressive UI modernization
+
+- [x] Research current official Material 3 and M3 Expressive guidance and record source links and design decisions.
+- [x] Audit current theme, tokens, navigation, app bars, buttons, cards, fields, lists, progress, empty/error/loading states, spacing, motion, RTL, and accessibility.
+- [x] Define centralized semantic tokens and screen-by-screen adaptive modernization scope without changing navigation routes or product behavior.
+- [x] Implement the approved UI modernization incrementally, preserving real TDLib/upload/authentication behavior and Arabic RTL support.
+- [x] Add or update focused UI/resource tests and perform visual/accessibility checks where available.
+- [x] Run build, unit, lint, localization, artifact, security, diff, and protected-behavior verification; document environment limits.
+- [x] Commit and report the Material 3 modernization and remaining device-validation gaps.

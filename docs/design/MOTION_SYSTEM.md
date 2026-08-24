@@ -20,4 +20,4 @@ All animation is non-essential. Content, errors, and upload states must remain u
 
 ## Scope
 
-This system documents and lightly tokenizes the two existing state-driven transitions. It does not add animation to every composable, introduce a new framework, alter navigation destinations, or change business logic.
+This system documents the existing state-driven transitions and the selective M3 Expressive motion boundary. It does not add animation to every composable, introduce a new framework, alter navigation destinations, or change business logic. Future motion changes must remain compatible with `AppMotion`, the shared design tokens, and reduced-motion expectations.
