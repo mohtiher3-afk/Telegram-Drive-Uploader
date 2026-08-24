@@ -16,7 +16,7 @@ The project has a Telegram-specific sealed error model and an upload engine resu
 
 Known Telegram errors include invalid phone, invalid code, invalid password, rate limiting, network unavailable, expired session, invalid credentials, required app update, and unavailable TDLib runtime. Upload failures include file/destination preflight failures and TDLib upload events. Worker failures are converted to bounded retry or terminal failure based on retryability and attempt count.
 
-The mapping has two confirmed risks: `TelegramError.getLocalizedMessage()` contains hard-coded English, and `TelegramError.Unknown` returns its raw message. These paths can violate the localized-message and raw-internal-error boundaries. They were documented rather than changed because a safe mapping change requires a separate implementation and regression-test phase.
+Telegram errors now map to localized Android resources through `messageResId()`. `TelegramError.Unknown` maps to a generic localized message, so raw TDLib text is no longer used as the authentication UI message. The raw value remains inside the domain object for controlled diagnostic handling only.
 
 ## Retry Policy
 
@@ -24,7 +24,7 @@ The client marks Telegram code 420, 429, and 5xx responses as retryable. WorkMan
 
 ## Authentication, Telegram, and TDLib Errors
 
-Authentication input is validated before requests, and passwords/codes are not intended for diagnostics. Session expiration is mapped to a re-authentication path. TDLib runtime unavailability is reported as a configuration/ABI/native-load problem. The application does not modify TDLib. Raw unknown Telegram text remains a privacy/localization risk.
+Authentication input is validated before requests, and passwords/codes are not intended for diagnostics. Session expiration is mapped to a re-authentication path. TDLib runtime unavailability is reported as a configuration/ABI/native-load problem. The application does not modify TDLib. Unknown Telegram errors now use a safe localized generic user message.
 
 ## File, Upload, Queue, and Worker Errors
 
@@ -38,26 +38,26 @@ The scheduler is embedded in one-time WorkManager upload creation. The Room-inse
 
 ## Notifications, Accessibility, and Localization
 
-No upload notification implementation was found, so notification error actions are not applicable. Error text and action labels should be localized and accessible, but hard-coded English in the Telegram error model and raw unknown messages are known gaps. Arabic resource parity exists from the internationalization review, but error-specific runtime testing is pending.
+No upload notification implementation was found, so notification error actions are not applicable. Telegram authentication error text and action labels now resolve through localized resources, including Arabic. Error-specific runtime testing is still pending.
 
 ## Logging and Privacy
 
-Developer diagnostics should retain category, operation, and safe context without passwords, verification codes, session secrets, tokens, private file contents, or unnecessary raw identifiers. The current raw unknown-message path requires follow-up review. No credentials were added to source.
+Developer diagnostics should retain category, operation, and safe context without passwords, verification codes, session secrets, tokens, private file contents, or unnecessary raw identifiers. The user-visible raw unknown-message path was removed; diagnostic logging remains a separate privacy boundary. No credentials were added to source.
 
 ## Final Safety Check
 
 | Check | Decision |
 |---|---|
-| Raw exceptions shown to users | UNKNOWN: raw unknown TDLib text can reach mapping output |
+| Raw exceptions shown to users | NO in the Telegram authentication mapping reviewed; other error surfaces remain runtime-unverified |
 | Empty catch blocks | NO confirmed in reviewed paths |
 | Infinite retries | NO evidence |
 | Permanent errors retried | UNKNOWN for every category; known policy is bounded |
-| Sensitive data logged | NO evidence of credentials/codes/passwords; raw-message privacy risk remains |
+| Sensitive data logged | NO evidence of credentials/codes/passwords; raw diagnostic content remains subject to ongoing review |
 | Authentication errors mapped | YES for known categories |
 | Upload failures recoverable | UNKNOWN: repository paths exist; runtime incomplete |
 | Queue remains consistent | UNKNOWN: Room/Worker paths exist; race/runtime tests incomplete |
 | Startup cannot get permanently stuck | UNKNOWN |
-| Error states localized | NO: hard-coded English exists in TelegramError |
+| Error states localized | YES for TelegramError authentication mappings; other error categories remain partial |
 | Error states accessible | UNKNOWN |
 | TDLib changed | NO |
 | Database schema changed | NO |
@@ -71,7 +71,7 @@ Static repository review and targeted checks were performed. Real device/emulato
 
 # ERROR HANDLING CONDITIONALLY VERIFIED
 
-Known error categories and bounded retry paths are documented, queue terminal semantics are preserved, and no TDLib, schema, or upload architecture change was made. Full verification is blocked by the hard-coded/raw Telegram error-message path, incomplete universal error mapping, unverified runtime and process-death behavior, and unavailable Android SDK/device evidence.
+Known error categories and bounded retry paths are documented, queue terminal semantics are preserved, and no TDLib, schema, or upload architecture change was made. The Telegram authentication message path is now localized and privacy-safe. Full verification remains blocked by incomplete universal error mapping, unverified runtime and process-death behavior, and unavailable Android SDK/device evidence.
 
 ## References
 

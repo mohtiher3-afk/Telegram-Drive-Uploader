@@ -1,5 +1,8 @@
 package com.telegramdrive.uploader.domain.model
 
+import androidx.annotation.StringRes
+import com.telegramdrive.uploader.R
+
 sealed class TelegramError {
     object InvalidPhoneNumber : TelegramError()
     object InvalidCode : TelegramError()
@@ -12,18 +15,17 @@ sealed class TelegramError {
     object TdLibRuntimeUnavailable : TelegramError()
     data class Unknown(val message: String) : TelegramError()
 
-    fun getLocalizedMessage(): String {
-        return when (this) {
-            is InvalidPhoneNumber -> "Invalid phone number. Please enter a valid international number."
-            is InvalidCode -> "The verification code you entered is invalid. Please try again."
-            is InvalidPassword -> "Two-step verification password incorrect. Please try again."
-            is RateLimited -> "Too many attempts. Please try again later."
-            is NetworkUnavailable -> "Network is unavailable. Please check your internet connection."
-            is SessionExpired -> "Your Telegram session has expired. Please authenticate again."
-            is InvalidCredentials -> "Telegram API credentials not configured. Please add valid TELEGRAM_API_ID and TELEGRAM_API_HASH."
-            is AppUpdateRequired -> "Telegram rejected this login code with UPDATE_APP_TO_LOGIN. This official TDLib v1.8.66 build cannot complete codes delivered by another Telegram app. Use QR login, or rebuild with a newer official TDLib version."
-            is TdLibRuntimeUnavailable -> "Telegram integration could not initialize TDLib on this device. Verify the APK ABI, native library load, and app configuration."
-            is Unknown -> message
-        }
+    @StringRes
+    fun messageResId(): Int = when (this) {
+        is InvalidPhoneNumber -> R.string.telegram_error_invalid_phone
+        is InvalidCode -> R.string.telegram_error_invalid_code
+        is InvalidPassword -> R.string.telegram_error_invalid_password
+        is RateLimited -> R.string.telegram_error_rate_limited
+        is NetworkUnavailable -> R.string.telegram_error_network_unavailable
+        is SessionExpired -> R.string.telegram_error_session_expired
+        is InvalidCredentials -> R.string.telegram_error_invalid_credentials
+        is AppUpdateRequired -> R.string.telegram_error_app_update_required
+        is TdLibRuntimeUnavailable -> R.string.telegram_error_tdlib_unavailable
+        is Unknown -> R.string.telegram_error_unknown
     }
 }

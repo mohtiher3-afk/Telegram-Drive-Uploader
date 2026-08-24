@@ -123,6 +123,16 @@
     <string name="enter_cloud_password">أدخل كلمة مرور تيليجرام السحابية.</string>
     <string name="enter_two_step_password">أدخل كلمة مرور التحقق بخطوتين في تيليجرام.</string>
     <string name="authentication_error">خطأ في المصادقة</string>
+    <string name="telegram_error_invalid_phone">رقم الهاتف غير صالح. أدخل رقماً دولياً صحيحاً.</string>
+    <string name="telegram_error_invalid_code">رمز التحقق غير صالح. حاول مرة أخرى.</string>
+    <string name="telegram_error_invalid_password">كلمة مرور التحقق بخطوتين غير صحيحة. حاول مرة أخرى.</string>
+    <string name="telegram_error_rate_limited">محاولات كثيرة. حاول مرة أخرى لاحقاً.</string>
+    <string name="telegram_error_network_unavailable">الشبكة غير متاحة. تحقق من اتصالك بالإنترنت.</string>
+    <string name="telegram_error_session_expired">انتهت جلسة تيليجرام. سجّل الدخول مرة أخرى.</string>
+    <string name="telegram_error_invalid_credentials">بيانات اعتماد Telegram API غير مُعدّة بشكل صحيح.</string>
+    <string name="telegram_error_app_update_required">يتطلب تيليجرام تحديثاً متوافقاً أو تسجيل الدخول عبر QR. جرّب QR أو حدّث التطبيق.</string>
+    <string name="telegram_error_tdlib_unavailable">تعذر تشغيل تكامل تيليجرام على هذا الجهاز. تحقق من ABI وإعدادات التطبيق.</string>
+    <string name="telegram_error_unknown">تعذر إكمال الإجراء في تيليجرام. حاول مرة أخرى.</string>
     <string name="about">حول التطبيق</string>
     <string name="application_version">إصدار التطبيق</string>
     <string name="built_with_compose">مبني باستخدام Jetpack Compose وMaterial 3</string>

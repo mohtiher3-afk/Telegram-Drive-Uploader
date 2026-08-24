@@ -4,8 +4,8 @@
 
 | Error source | Location | Current handling | User visible | Recovery | Risk |
 |---|---|---|---:|---|---|
-| Invalid phone/code/password | `TelegramClientImpl`, auth ViewModel | Validated before TDLib request; mapped to `TelegramError` | Yes | Correct input / retry action | Messages are hard-coded English in the domain model. |
-| TDLib error | `TelegramClientImpl` | Maps known codes to rate-limit, session, network, update, or unknown | Yes through auth/engine paths | Re-auth, wait, retry, or stop depending on type | `Unknown` retains raw message and may reach UI. |
+| Invalid phone/code/password | `TelegramClientImpl`, auth ViewModel | Validated before TDLib request; mapped to `TelegramError` and localized resource ID | Yes | Correct input / retry action | Runtime locale presentation still needs device testing. |
+| TDLib error | `TelegramClientImpl` | Maps known codes to rate-limit, session, network, update, or unknown; user output resolves to a localized resource | Yes through auth/engine paths | Re-auth, wait, retry, or stop depending on type | Unknown raw value remains internal and runtime privacy coverage is pending. |
 | Missing TDLib runtime | Client initialization | `TdLibRuntimeUnavailable` | Yes | Verify APK ABI/native load/configuration | Runtime proof unavailable. |
 | Network / server | Client and engine | Codes 420/429/5xx classified retryable; engine exposes retryable flag | Yes through queue state/error | Bounded Worker retry | Code-only classification may be incomplete for other network failures. |
 | File metadata/source | Metadata extractor, reader, engine | Exceptions become preparation/engine errors | Yes where caller exposes them | Select another file or retry depending on path | Provider/URI cases require runtime verification. |

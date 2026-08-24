@@ -4,7 +4,7 @@
 
 `TDLib/validation failure → TelegramClientImpl mapping → TelegramError → TelegramAuthViewModel state/message → TelegramAuthScreen`
 
-Known errors include invalid phone, invalid code, invalid password, rate limiting, network unavailability, expired session, invalid API credentials, required app update, and unavailable TDLib runtime. Unknown errors retain a raw message in `TelegramError.Unknown`; this is a confirmed mapping/privacy risk because raw internal text may be shown through `getLocalizedMessage()`.
+Known errors include invalid phone, invalid code, invalid password, rate limiting, network unavailability, expired session, invalid API credentials, required app update, and unavailable TDLib runtime. Each Telegram error now maps to a localized Android resource. Unknown errors map to a safe generic resource instead of exposing the stored raw TDLib message to the user.
 
 ## Upload
 
