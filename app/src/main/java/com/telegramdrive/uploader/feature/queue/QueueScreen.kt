@@ -54,7 +54,11 @@ fun QueueScreen(
                     Column {
                         Text(stringResource(com.telegramdrive.uploader.R.string.upload_queue))
                         Text(
-                            text = "${uiState.activeCount} active · ${uiState.failedCount} failed",
+                            text = stringResource(
+                                com.telegramdrive.uploader.R.string.queue_count_summary,
+                                uiState.activeCount,
+                                uiState.failedCount
+                            ),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -71,8 +75,8 @@ fun QueueScreen(
             if (uiState.queueItems.isEmpty() && uiState.selectedFilter == QueueFilter.ALL) {
                 EmptyState(
                     icon = Icons.Default.HourglassEmpty,
-                    title = "Your queue is empty",
-                    supportingText = "Select videos from Home to start a reliable background upload.",
+                    title = stringResource(com.telegramdrive.uploader.R.string.queue_empty_title),
+                    supportingText = stringResource(com.telegramdrive.uploader.R.string.queue_empty_supporting),
                     modifier = Modifier.testTag("queue_empty_state")
                 )
             } else {
@@ -118,11 +122,11 @@ fun QueueScreen(
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
-                                            text = "Queue controls",
+                                            text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_title),
                                             style = MaterialTheme.typography.titleSmall
                                         )
                                         Text(
-                                            text = "Manage uploads without opening each item.",
+                                            text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_supporting),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSecondaryContainer
                                         )
@@ -134,7 +138,7 @@ fun QueueScreen(
                                         ) {
                                             Icon(Icons.Default.Refresh, contentDescription = null)
                                             Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                                            Text("Retry")
+                                            Text(stringResource(com.telegramdrive.uploader.R.string.retry))
                                         }
                                     }
                                     if (uiState.activeCount > 0) {
@@ -144,7 +148,7 @@ fun QueueScreen(
                                         ) {
                                             Icon(Icons.Default.PauseCircleOutline, contentDescription = null)
                                             Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                                            Text("Pause")
+                                            Text(stringResource(com.telegramdrive.uploader.R.string.pause))
                                         }
                                     }
                                 }
@@ -155,8 +159,8 @@ fun QueueScreen(
                         item {
                             EmptyState(
                                 icon = Icons.Default.HourglassEmpty,
-                                title = "No matching uploads",
-                                supportingText = "Try another filter to see more queue items.",
+                                title = stringResource(com.telegramdrive.uploader.R.string.queue_no_matching_title),
+                                supportingText = stringResource(com.telegramdrive.uploader.R.string.queue_no_matching_supporting),
                                 modifier = Modifier.testTag("queue_filtered_empty_state")
                             )
                         }
@@ -189,9 +193,10 @@ fun QueueScreen(
     }
 }
 
+@Composable
 private fun filterLabel(filter: QueueFilter): String = when (filter) {
-    QueueFilter.ALL -> "All"
-    QueueFilter.ACTIVE -> "Active"
-    QueueFilter.PAUSED -> "Paused"
-    QueueFilter.FAILED -> "Failed"
+    QueueFilter.ALL -> stringResource(com.telegramdrive.uploader.R.string.queue_filter_all)
+    QueueFilter.ACTIVE -> stringResource(com.telegramdrive.uploader.R.string.queue_filter_active)
+    QueueFilter.PAUSED -> stringResource(com.telegramdrive.uploader.R.string.queue_filter_paused)
+    QueueFilter.FAILED -> stringResource(com.telegramdrive.uploader.R.string.queue_filter_failed)
 }

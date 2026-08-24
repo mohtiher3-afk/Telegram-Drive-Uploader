@@ -81,6 +81,17 @@
     <string name="newest">الأحدث</string>
     <string name="largest">الأكبر حجمًا</string>
     <string name="upload_queue">قائمة الرفع</string>
+    <string name="queue_count_summary">%1$d نشطة · %2$d فاشلة</string>
+    <string name="queue_empty_title">قائمة الرفع فارغة</string>
+    <string name="queue_empty_supporting">اختر فيديوهات من الصفحة الرئيسية لبدء رفع موثوق في الخلفية.</string>
+    <string name="queue_controls_title">التحكم في القائمة</string>
+    <string name="queue_controls_supporting">إدارة عمليات الرفع دون فتح كل عنصر.</string>
+    <string name="queue_no_matching_title">لا توجد عمليات رفع مطابقة</string>
+    <string name="queue_no_matching_supporting">جرّب مرشحًا آخر لعرض المزيد من عناصر القائمة.</string>
+    <string name="queue_filter_all">الكل</string>
+    <string name="queue_filter_active">نشطة</string>
+    <string name="queue_filter_paused">متوقفة مؤقتًا</string>
+    <string name="queue_filter_failed">فاشلة</string>
     <string name="connected_status_description">متصل</string>
     <string name="onboarding_page_upload_title">ملفاتك في تيليجرام</string>
     <string name="onboarding_page_upload_description">جهّز الفيديوهات، واختر وجهة في تيليجرام، ونظّم عمليات الرفع في مساحة خاصة واحدة.</string>
