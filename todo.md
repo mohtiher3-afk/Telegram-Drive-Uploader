@@ -661,3 +661,13 @@
 - [x] Restore missing `AppSpacing.sm`/`AppSpacing.lg` references in `HomeScreen` using the existing centralized token contract.
 - [x] Restore the missing `rememberSaveable` import and re-run the onboarding motion compile check.
 - [x] Re-run tests, lint, and release assembly after the compile-only repairs.
+
+
+## JNI smoke-test follow-up — cloud Android emulator
+
+- [x] Inspect the JNI smoke-test workflow, instrumentation test, and current Actions state.
+- [x] Validate emulator runner, KVM, SDK, ABI, secrets, and workflow prerequisites.
+- [x] Apply only evidence-backed workflow or smoke-test corrections without changing TDLib or upload logic.
+- [x] Run or dispatch the smoke test and inspect logs and artifacts.
+- [x] Document the device-test result, limitations, and certification impact.
+- [x] Report the emulator smoke-test outcome and next action.
