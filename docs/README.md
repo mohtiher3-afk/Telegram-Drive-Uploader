@@ -28,4 +28,5 @@
 | Upload state and queue consistency | `upload/UPLOAD_STATE_INVENTORY.md`, `upload/ACTUAL_UPLOAD_STATE_MACHINE.md`, `upload/INVALID_STATE_TRANSITIONS.md`, `upload/UPLOAD_STATE_RACE_AUDIT.md`, `upload/QUEUE_CONSISTENCY.md`, `upload/UPLOAD_RECOVERY.md`, `upload/UPLOAD_STATE_TESTING.md`, and `upload/FINAL_UPLOAD_STATE_REPORT.md` |
 | End-to-end upload transaction reliability | `upload/END_TO_END_UPLOAD_FLOW.md`, `upload/END_TO_END_TRANSACTION_AUDIT.md`, `upload/END_TO_END_UPLOAD_TEST_MATRIX.md`, and `upload/FINAL_END_TO_END_UPLOAD_REPORT.md` |
 | Application lifecycle and crash recovery | `lifecycle/LIFECYCLE_INVENTORY.md`, `lifecycle/APP_LIFECYCLE.md`, `lifecycle/STATE_RESTORATION_MATRIX.md`, `lifecycle/CRASH_RECOVERY.md`, `lifecycle/LIFECYCLE_TEST_MATRIX.md`, and `lifecycle/FINAL_LIFECYCLE_REPORT.md` |
+| Accessibility and adaptive UI | `accessibility/ACCESSIBILITY_INVENTORY.md`, `accessibility/ACCESSIBILITY_GUIDE.md`, `accessibility/ADAPTIVE_UI_GUIDE.md`, `accessibility/ACCESSIBILITY_TEST_MATRIX.md`, `accessibility/KNOWN_ACCESSIBILITY_LIMITATIONS.md`, and `accessibility/FINAL_ACCESSIBILITY_REPORT.md` |
 | Development protocol | `MANUS_DEVELOPMENT_PROTOCOL.md` |
