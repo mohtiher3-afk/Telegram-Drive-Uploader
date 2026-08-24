@@ -1,6 +1,8 @@
 package com.telegramdrive.uploader.feature.settings
 
-import androidx.compose.foundation.clickable
+import com.telegramdrive.uploader.BuildConfig
+
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -57,8 +60,8 @@ fun SettingsScreen(
     if (showLogoutConfirmation) {
         AlertDialog(
             onDismissRequest = { showLogoutConfirmation = false },
-            title = { Text("Log out of Telegram") },
-            text = { Text("Are you sure you want to log out? This will clear your Telegram session, but your local upload history and statistics will remain intact.") },
+            title = { Text(stringResource(com.telegramdrive.uploader.R.string.logout_dialog_title)) },
+            text = { Text(stringResource(com.telegramdrive.uploader.R.string.logout_dialog_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -75,7 +78,7 @@ fun SettingsScreen(
                     onClick = { showLogoutConfirmation = false },
                     modifier = Modifier.testTag("logout_confirm_cancel_button")
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(com.telegramdrive.uploader.R.string.cancel))
                 }
             },
             modifier = Modifier.testTag("logout_confirm_dialog")
@@ -85,7 +88,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") }
+                title = { Text(stringResource(com.telegramdrive.uploader.R.string.settings)) }
             )
         }
     ) { innerPadding ->
@@ -100,27 +103,35 @@ fun SettingsScreen(
             // 1. Appearance Section
             SettingsSection(
                 icon = Icons.Default.Palette,
-                title = "Appearance"
+                title = stringResource(com.telegramdrive.uploader.R.string.appearance)
             ) {
-                val themes = listOf("System", "Light", "Dark")
-                themes.forEach { themeOption ->
+                val themes = listOf(
+                    "System" to com.telegramdrive.uploader.R.string.theme_system,
+                    "Light" to com.telegramdrive.uploader.R.string.theme_light,
+                    "Dark" to com.telegramdrive.uploader.R.string.theme_dark
+                )
+                themes.forEach { (themeKey, themeLabelRes) ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.setTheme(themeOption) }
+                            .selectable(
+                                selected = uiState.theme == themeKey,
+                                onClick = { viewModel.setTheme(themeKey) },
+                                role = Role.RadioButton
+                            )
                             .padding(vertical = 12.dp)
-                            .testTag("settings_theme_${themeOption.lowercase()}"),
+                            .testTag("settings_theme_${themeKey.lowercase()}"),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = themeOption,
+                            text = stringResource(themeLabelRes),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         RadioButton(
-                            selected = uiState.theme == themeOption,
-                            onClick = { viewModel.setTheme(themeOption) }
+                            selected = uiState.theme == themeKey,
+                            onClick = null
                         )
                     }
                 }
@@ -129,7 +140,7 @@ fun SettingsScreen(
             // 2. Storage Section
             SettingsSection(
                 icon = Icons.Default.Storage,
-                title = "Storage & Cache"
+                title = stringResource(com.telegramdrive.uploader.R.string.storage_cache)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -138,7 +149,7 @@ fun SettingsScreen(
                 ) {
                     Column {
                         Text(
-                            text = "Thumbnail Cache Size",
+                            text = stringResource(com.telegramdrive.uploader.R.string.thumbnail_cache_size),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -157,7 +168,7 @@ fun SettingsScreen(
                         ),
                         modifier = Modifier.testTag("clear_cache_button")
                     ) {
-                        Text("Clear Cache")
+                        Text(stringResource(com.telegramdrive.uploader.R.string.clear_cache))
                     }
                 }
             }
@@ -165,7 +176,7 @@ fun SettingsScreen(
             // 3. Upload Config (Disabled Placeholders)
             SettingsSection(
                 icon = Icons.Default.UploadFile,
-                title = "Upload Settings"
+                title = stringResource(com.telegramdrive.uploader.R.string.upload_settings)
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -178,12 +189,12 @@ fun SettingsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Auto-retry failed uploads",
+                                text = stringResource(com.telegramdrive.uploader.R.string.auto_retry_failed_uploads),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                             Text(
-                                text = "Attempts upload again if it disconnects",
+                                text = stringResource(com.telegramdrive.uploader.R.string.auto_retry_failed_uploads_summary),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                             )
@@ -202,12 +213,12 @@ fun SettingsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Upload only on Wi-Fi",
+                                text = stringResource(com.telegramdrive.uploader.R.string.upload_only_wifi),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                             Text(
-                                text = "Preserve cellular data",
+                                text = stringResource(com.telegramdrive.uploader.R.string.preserve_cellular_data),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                             )
@@ -224,7 +235,7 @@ fun SettingsScreen(
             // 4. Telegram Account Integration
             SettingsSection(
                 icon = Icons.AutoMirrored.Filled.Send,
-                title = "Telegram Integration",
+                title = stringResource(com.telegramdrive.uploader.R.string.telegram_integration),
                 modifier = Modifier.testTag("telegram_integration_section")
             ) {
                 if (uiState.telegramConnectionState == TelegramConnectionState.AUTHORIZED) {
@@ -242,8 +253,8 @@ fun SettingsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("Status", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-                            Text("Connected", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                            Text(stringResource(com.telegramdrive.uploader.R.string.status), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                            Text(stringResource(com.telegramdrive.uploader.R.string.connected), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                         }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -266,7 +277,7 @@ fun SettingsScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Phone Number", style = MaterialTheme.typography.bodyLarge)
+                                Text(stringResource(com.telegramdrive.uploader.R.string.phone_number), style = MaterialTheme.typography.bodyLarge)
                                 Text(phone, style = MaterialTheme.typography.bodyMedium)
                             }
                         }
@@ -288,7 +299,6 @@ fun SettingsScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onConnectClick() }
                             .padding(vertical = 12.dp)
                             .testTag("telegram_status_disconnected"),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -296,18 +306,18 @@ fun SettingsScreen(
                     ) {
                         Column {
                             Text(
-                                "Telegram Account",
+                                stringResource(com.telegramdrive.uploader.R.string.telegram_account),
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                "Disconnected",
+                                stringResource(com.telegramdrive.uploader.R.string.disconnected),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
                         TextButton(onClick = onConnectClick) {
-                            Text("Connect")
+                            Text(stringResource(com.telegramdrive.uploader.R.string.connect))
                         }
                     }
                 }
@@ -321,7 +331,7 @@ fun SettingsScreen(
 
             SettingsSection(
                 icon = Icons.Default.BugReport,
-                title = "Diagnostics & Privacy Logs",
+                title = stringResource(com.telegramdrive.uploader.R.string.diagnostics_privacy_logs),
                 modifier = Modifier.testTag("diagnostics_section")
             ) {
                 Column(
@@ -335,12 +345,12 @@ fun SettingsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Developer Logging",
+                                text = stringResource(com.telegramdrive.uploader.R.string.developer_logging),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Show sanitized background logs",
+                                text = stringResource(com.telegramdrive.uploader.R.string.show_sanitized_logs),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -363,7 +373,7 @@ fun SettingsScreen(
                                 onClick = {
                                     val exportedText = DiagnosticsManager.exportDiagnostics()
                                     clipboardManager.setText(AnnotatedString(exportedText))
-                                    Toast.makeText(context, "Sanitized logs copied!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, com.telegramdrive.uploader.R.string.sanitized_logs_copied, Toast.LENGTH_SHORT).show()
                                 },
                                 modifier = Modifier.weight(1f).testTag("copy_logs_button"),
                                 colors = ButtonDefaults.buttonColors(
@@ -377,7 +387,7 @@ fun SettingsScreen(
                             Button(
                                 onClick = {
                                     DiagnosticsManager.clearDiagnostics()
-                                    Toast.makeText(context, "Logs cleared!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, com.telegramdrive.uploader.R.string.logs_cleared, Toast.LENGTH_SHORT).show()
                                 },
                                 modifier = Modifier.weight(1f).testTag("clear_logs_button"),
                                 colors = ButtonDefaults.buttonColors(
@@ -406,7 +416,7 @@ fun SettingsScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "No logs recorded yet.",
+                                        text = stringResource(com.telegramdrive.uploader.R.string.no_logs_recorded),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -455,7 +465,7 @@ fun SettingsScreen(
                                                 )
                                                 if (event.incidentId != null) {
                                                     Text(
-                                                        text = "Incident: ${event.incidentId}",
+                                                        text = stringResource(com.telegramdrive.uploader.R.string.incident_id, event.incidentId),
                                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                                         color = MaterialTheme.colorScheme.error
                                                     )
@@ -473,7 +483,7 @@ fun SettingsScreen(
             // 6. About
             SettingsSection(
                 icon = Icons.Default.Info,
-                title = "About"
+                title = stringResource(com.telegramdrive.uploader.R.string.about)
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -484,17 +494,17 @@ fun SettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Application Version",
+                            text = stringResource(com.telegramdrive.uploader.R.string.application_version),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "1.0.0",
+                            text = BuildConfig.VERSION_NAME,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
                     Text(
-                        text = "Built with Jetpack Compose & Material 3",
+                        text = stringResource(com.telegramdrive.uploader.R.string.built_with_compose),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -27,7 +27,7 @@ fun ErrorState(
     ) {
         Icon(
             imageVector = Icons.Default.ErrorOutline,
-            contentDescription = "Error Icon",
+            contentDescription = stringResource(com.telegramdrive.uploader.R.string.error_icon),
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(64.dp)
         )
@@ -35,7 +35,7 @@ fun ErrorState(
         Spacer(modifier = Modifier.height(16.dp))
         
         Text(
-            text = "An Error Occurred",
+            text = stringResource(com.telegramdrive.uploader.R.string.error_occurred),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface

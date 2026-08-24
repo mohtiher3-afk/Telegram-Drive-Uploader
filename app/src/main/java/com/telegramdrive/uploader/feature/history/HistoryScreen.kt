@@ -75,8 +75,8 @@ fun HistoryScreen(
             if (uiState.totalMatches == 0 && uiState.query.isBlank() && uiState.period == HistoryPeriod.ALL) {
                 EmptyState(
                     icon = Icons.Default.History,
-                    title = "No upload history",
-                    supportingText = "Completed uploads will appear here with searchable metadata.",
+                    title = stringResource(com.telegramdrive.uploader.R.string.history_no_uploads),
+                    supportingText = stringResource(com.telegramdrive.uploader.R.string.history_no_uploads_supporting),
                     modifier = Modifier.testTag("history_empty_state")
                 )
             } else {
@@ -123,7 +123,11 @@ fun HistoryScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "${uiState.totalMatches} matches · ${formatFileSize(uiState.totalSize)}",
+                                text = stringResource(
+                                    com.telegramdrive.uploader.R.string.history_matches_summary,
+                                    uiState.totalMatches,
+                                    formatFileSize(uiState.totalSize)
+                                ),
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -137,20 +141,14 @@ fun HistoryScreen(
                         item {
                             EmptyState(
                                 icon = Icons.Default.History,
-                                title = "No matching uploads",
-                                supportingText = "Try a different name or time range.",
+                                title = stringResource(com.telegramdrive.uploader.R.string.history_no_matching),
+                                supportingText = stringResource(com.telegramdrive.uploader.R.string.history_no_matching_supporting),
                                 modifier = Modifier.testTag("history_filtered_empty_state")
                             )
                         }
                     } else {
                         items(uiState.historyItems, key = { it.id }) { video ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                                )
-                            ) {
-                                Column(modifier = Modifier.padding(12.dp)) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
                                     VideoItem(
                                         video = video,
                                         onRemoveClick = { viewModel.deleteUpload(video.id) }
@@ -170,7 +168,6 @@ fun HistoryScreen(
                                         video = video,
                                         modifier = Modifier.padding(top = 4.dp)
                                     )
-                                }
                             }
                         }
                     }
@@ -181,11 +178,12 @@ fun HistoryScreen(
     }
 }
 
+@Composable
 private fun periodLabel(period: HistoryPeriod): String = when (period) {
-    HistoryPeriod.ALL -> "All time"
-    HistoryPeriod.TODAY -> "Today"
-    HistoryPeriod.LAST_7_DAYS -> "7 days"
-    HistoryPeriod.LAST_30_DAYS -> "30 days"
+    HistoryPeriod.ALL -> stringResource(com.telegramdrive.uploader.R.string.history_period_all)
+    HistoryPeriod.TODAY -> stringResource(com.telegramdrive.uploader.R.string.history_period_today)
+    HistoryPeriod.LAST_7_DAYS -> stringResource(com.telegramdrive.uploader.R.string.history_period_7_days)
+    HistoryPeriod.LAST_30_DAYS -> stringResource(com.telegramdrive.uploader.R.string.history_period_30_days)
 }
 
 private fun formatElapsedUploadTime(durationMs: Long): String {
