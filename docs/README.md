@@ -29,4 +29,5 @@
 | End-to-end upload transaction reliability | `upload/END_TO_END_UPLOAD_FLOW.md`, `upload/END_TO_END_TRANSACTION_AUDIT.md`, `upload/END_TO_END_UPLOAD_TEST_MATRIX.md`, and `upload/FINAL_END_TO_END_UPLOAD_REPORT.md` |
 | Application lifecycle and crash recovery | `lifecycle/LIFECYCLE_INVENTORY.md`, `lifecycle/APP_LIFECYCLE.md`, `lifecycle/STATE_RESTORATION_MATRIX.md`, `lifecycle/CRASH_RECOVERY.md`, `lifecycle/LIFECYCLE_TEST_MATRIX.md`, and `lifecycle/FINAL_LIFECYCLE_REPORT.md` |
 | Accessibility and adaptive UI | `accessibility/ACCESSIBILITY_INVENTORY.md`, `accessibility/ACCESSIBILITY_GUIDE.md`, `accessibility/ADAPTIVE_UI_GUIDE.md`, `accessibility/ACCESSIBILITY_TEST_MATRIX.md`, `accessibility/KNOWN_ACCESSIBILITY_LIMITATIONS.md`, and `accessibility/FINAL_ACCESSIBILITY_REPORT.md` |
+| Internationalization and locale edge cases | `i18n/LOCALE_INVENTORY.md`, `i18n/I18N_GUIDE.md`, `i18n/TIMEZONE_POLICY.md`, `i18n/I18N_TEST_MATRIX.md`, and `i18n/FINAL_I18N_REPORT.md` |
 | Development protocol | `MANUS_DEVELOPMENT_PROTOCOL.md` |
