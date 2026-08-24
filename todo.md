@@ -682,3 +682,13 @@
 - [ ] Review lint warnings and GitHub Actions quality without unrelated dependency upgrades.
 - [ ] Document evidence, gaps, certification impact, and any safe repository changes.
 - [ ] Report the complete validation outcome and next action.
+
+
+## Lint and GitHub Actions quality review
+
+- [x] Inventory lint warning IDs, workflow action versions, annotations, and protected CI boundaries.
+- [x] Classify warnings and identify only safe fixes that do not require dependency or behavior changes.
+- [x] Apply minimal lint or GitHub Actions hygiene corrections if justified.
+- [x] Re-run lint, tests, CI checks, security scans, and protected-boundary verification.
+- [x] Document findings and remaining warnings.
+- [ ] Commit and report the lint and CI review outcome.
