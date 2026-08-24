@@ -595,3 +595,12 @@
 - [x] Create factual locale inventory, formatting/RTL audit, and test records only from verified repository behavior.
 - [x] Validate resource parity, placeholders, secret/privacy boundaries, TDLib artifacts, protected business behavior, and available build verification.
 - [x] Commit and report the internationalization and formatting review without changing product semantics.
+
+
+## Supplied error handling and failure recovery phase
+
+- [x] Inspect the phase-49 protocol and compare it with current authentication, Telegram/TDLib, file, network, queue, Worker, scheduler, database, DataStore, UI, and testing documentation.
+- [x] Trace actual error classification, propagation, user-facing messages, retryability, cancellation, pause/resume, recovery actions, and cross-layer state consistency without changing product semantics.
+- [x] Create factual error inventory, error-flow architecture, retry/recovery matrix, and final report only from verified repository behavior.
+- [x] Validate error documentation-only or minimal safe changes, secret/privacy boundaries, TDLib artifacts, protected behavior, and available build verification.
+- [x] Commit and report the error-handling and failure-recovery review without changing product behavior.
