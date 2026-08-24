@@ -644,3 +644,20 @@
 - [x] Add focused motion/interaction regression coverage and update design documentation.
 - [x] Run static, unit, build, performance, accessibility, artifact, security, diff, and protected-behavior checks; document environment limits.
 - [ ] Commit and report the motion audit, corrections, and remaining runtime evidence gaps.
+
+
+## Build verification follow-up — Android SDK environment
+
+- [x] Inspect Gradle, AGP, compileSdk, minSdk, build-tools, NDK, and Java requirements.
+- [x] Install or configure only the required Android SDK components and local environment variables.
+- [x] Run Gradle unit tests, lint, and `assembleRelease` without changing app behavior.
+- [x] Document build outputs, signing/artifact status, and any remaining SDK, dependency, or TDLib blockers.
+- [x] Report the verified build outcome and next action.
+
+
+## Build blockers discovered during Android SDK verification
+
+- [x] Resolve duplicate `Dimensions`/`DesignTokens` declarations without changing token behavior.
+- [x] Restore missing `AppSpacing.sm`/`AppSpacing.lg` references in `HomeScreen` using the existing centralized token contract.
+- [x] Restore the missing `rememberSaveable` import and re-run the onboarding motion compile check.
+- [x] Re-run tests, lint, and release assembly after the compile-only repairs.
