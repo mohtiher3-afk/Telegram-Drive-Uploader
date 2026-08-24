@@ -568,3 +568,12 @@
 - [x] Create factual end-to-end flow, identity, input-integrity, transaction, failure-window, and test records only from verified repository behavior.
 - [x] Validate end-to-end documentation-only changes, secret/privacy boundaries, TDLib artifacts, protected authentication/destination/file/upload behavior, and master verification limits.
 - [x] Commit and report the end-to-end transaction reliability review without changing application behavior.
+
+
+## Supplied application lifecycle and crash-recovery phase
+
+- [x] Inspect the phase-46 protocol and compare it with current application, Activity, Compose, ViewModel, TDLib, WorkManager, upload, persistence, and testing documentation.
+- [x] Trace startup, background/foreground, recreation, process death, state restoration, coroutine cancellation, collectors, callbacks, authentication, logout/relogin, navigation, and crash recovery without changing behavior.
+- [x] Create factual lifecycle inventory, app lifecycle, state restoration matrix, recovery, leak, and test records only from verified repository behavior.
+- [x] Validate lifecycle documentation-only changes, secret/privacy boundaries, TDLib artifacts, protected behavior, and available build verification.
+- [x] Commit and report the lifecycle and crash-recovery review without changing application behavior.
