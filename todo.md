@@ -577,3 +577,12 @@
 - [x] Create factual lifecycle inventory, app lifecycle, state restoration matrix, recovery, leak, and test records only from verified repository behavior.
 - [x] Validate lifecycle documentation-only changes, secret/privacy boundaries, TDLib artifacts, protected behavior, and available build verification.
 - [x] Commit and report the lifecycle and crash-recovery review without changing application behavior.
+
+
+## Supplied accessibility and adaptive UI phase
+
+- [x] Inspect the phase-47 protocol and compare it with current Compose screens, Material 3 components, localization, onboarding, upload, destination, settings, and testing documentation.
+- [x] Audit semantics, content descriptions, state descriptions, touch targets, text/display scaling, overflow, contrast, dark/light themes, RTL/LTR, focus, IME, reduced motion, and adaptive layouts without changing product functionality.
+- [x] Create factual accessibility inventory, semantics/adaptive audit, and test records only from verified repository behavior.
+- [x] Validate accessibility documentation-only or minimal safe changes, localization and security boundaries, TDLib artifacts, protected behavior, and available build verification.
+- [x] Commit and report the accessibility and adaptive UI review without changing product semantics.
