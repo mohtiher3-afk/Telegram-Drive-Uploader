@@ -702,3 +702,31 @@
 - [x] Re-run Gradle tests, lint, release assembly, artifact, security, workflow, and protected-behavior gates.
 - [x] Document resolved findings and retained compatibility-sensitive items.
 - [x] Commit, push, and report the complete actionable-fix outcome.
+
+
+## APK publication follow-up
+
+- [x] Inspect app version, existing tags/releases, release workflow, and signing prerequisites.
+- [x] Choose a non-conflicting release tag and verify the release workflow inputs.
+- [x] Dispatch the signed multi-ABI release workflow and monitor all jobs.
+- [x] Verify APK signatures, ABI contents, checksums, and published assets.
+- [x] Document the published app version and artifact links.
+- [x] Report the GitHub Release and APK download links.
+
+
+## Release metadata correction follow-up
+
+- [x] Confirm the published APK internal version and document the v1.0.16 tag mismatch.
+- [ ] Bump only version metadata to the matching release version without changing application behavior.
+- [ ] Run local version/build checks and dispatch the corrected signed multi-ABI release workflow.
+- [ ] Verify final APK metadata, signatures, ABI contents, checksums, and release assets.
+- [ ] Correct release documentation and record the final publication state.
+- [ ] Report the corrected APK release and remaining validation gaps.
+
+
+## Corrected non-conflicting release follow-up
+
+- [ ] Keep the existing v1.0.16 release intact and publish a corrected non-conflicting v1.0.17 release.
+- [ ] Align app `versionName` and `versionCode` with v1.0.17 using metadata-only changes.
+- [ ] Rebuild and verify the corrected signed multi-ABI APKs.
+- [ ] Update release documentation to distinguish v1.0.16 metadata mismatch from the corrected v1.0.17 release.
