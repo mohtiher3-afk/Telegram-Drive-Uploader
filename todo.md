@@ -624,3 +624,13 @@
 - [x] Add or update focused UI/resource tests and perform visual/accessibility checks where available.
 - [x] Run build, unit, lint, localization, artifact, security, diff, and protected-behavior verification; document environment limits.
 - [x] Commit and report the Material 3 modernization and remaining device-validation gaps.
+
+
+## Phase 51 — Official Material 3 component audit
+
+- [x] Inventory actual Material 3 components used by the app and record official source references.
+- [x] Audit each used component by current API, official pattern, actual usage, states, semantics, accessibility, adaptive behavior, and priority.
+- [x] Apply only confirmed component corrections without changing features, business logic, authentication, TDLib, JNI, ABI, Upload Engine, database, WorkManager, scheduler, or routes.
+- [x] Add focused component/resource tests and update design documentation.
+- [x] Run component-level build, unit, lint, resource, accessibility, artifact, security, diff, and protected-behavior checks.
+- [x] Commit and report the component audit and final certification decision.

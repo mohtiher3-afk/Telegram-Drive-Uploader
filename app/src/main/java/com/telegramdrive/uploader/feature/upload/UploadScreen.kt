@@ -122,7 +122,6 @@ fun UploadScreen(
                         ) {
                             // Destination Selection
                             Card(
-                                onClick = onSelectDestination,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 12.dp)
