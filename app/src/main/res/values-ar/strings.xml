@@ -26,7 +26,7 @@
     <string name="schedule_upload">جدولة الرفع</string>
     <string name="clear">مسح</string>
     <string name="select_destination">اختيار الوجهة</string>
-    <string name="search_destinations">البحث في المحادثات والقنوات والمجموعات...</string>
+    <string name="search_destinations">البحث في المحادثات والقنوات والمجموعات…</string>
     <string name="clear_search">مسح البحث</string>
     <string name="remove_selection">إزالة التحديد</string>
     <string name="confirm_destination">تأكيد اختيار الوجهة</string>
@@ -50,7 +50,7 @@
     <string name="password">كلمة المرور</string>
     <string name="hide_password">إخفاء كلمة المرور</string>
     <string name="show_password">إظهار كلمة المرور</string>
-    <string name="logging_out">جارٍ تسجيل الخروج بأمان...</string>
+    <string name="logging_out">جارٍ تسجيل الخروج بأمان…</string>
     <string name="continue_qr">المتابعة عبر تسجيل الدخول بـ QR</string>
     <string name="retry_connection">إعادة محاولة الاتصال</string>
     <string name="authorized_success">تم تسجيل الدخول بنجاح!</string>
@@ -106,13 +106,13 @@
     <string name="add_to_queue">إضافة إلى القائمة</string>
     <string name="no_videos_selected">لم يتم اختيار فيديوهات</string>
     <string name="select_videos_from_home">اختر فيديوهات من تبويب الصفحة الرئيسية لبدء التجهيز.</string>
-    <string name="extracting_video_metadata">جارٍ استخراج بيانات الفيديو...</string>
+    <string name="extracting_video_metadata">جارٍ استخراج بيانات الفيديو…</string>
     <string name="all_videos_removed">تمت إزالة جميع الفيديوهات</string>
     <string name="select_more_videos">اختر المزيد من الفيديوهات من تبويب الصفحة الرئيسية لتجهيزها.</string>
     <string name="telegram_destination_label">وجهة تيليجرام</string>
     <string name="telegram_auth_description">اربط حساب تيليجرام لتجهيز عمليات رفع الفيديو وإدارة الملفات في الرسائل المحفوظة والقنوات والمجموعات.</string>
     <string name="telegram_api_not_configured">تنبيه للمطور: لم يتم إعداد معرّف Telegram API والـ Hash. ستفشل محاولات الاتصال بأمان.</string>
-    <string name="connecting_telegram">جارٍ الاتصال بخوادم تيليجرام...</string>
+    <string name="connecting_telegram">جارٍ الاتصال بخوادم تيليجرام…</string>
     <string name="telegram_phone_number">رقم هاتف تيليجرام</string>
     <string name="phone_number_help">أدخل رقم هاتفك مع رمز الدولة.</string>
     <string name="enter_verification_code">أدخل رمز التحقق</string>
@@ -137,7 +137,7 @@
     <string name="application_version">إصدار التطبيق</string>
     <string name="built_with_compose">مبني باستخدام Jetpack Compose وMaterial 3</string>
     <string name="go_back">رجوع</string>
-    <string name="select_target">اختيار الوجهة...</string>
+    <string name="select_target">اختيار الوجهة…</string>
     <string name="select_action">اختيار</string>
     <string name="start_immediately">البدء فورًا</string>
     <string name="nav_home">الرئيسية</string>

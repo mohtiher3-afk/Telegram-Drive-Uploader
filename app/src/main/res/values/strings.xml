@@ -26,7 +26,7 @@
     <string name="schedule_upload">Schedule upload</string>
     <string name="clear">Clear</string>
     <string name="select_destination">Select Destination</string>
-    <string name="search_destinations">Search chats, channels, groups...</string>
+    <string name="search_destinations">Search chats, channels, groups…</string>
     <string name="clear_search">Clear search</string>
     <string name="remove_selection">Remove selection</string>
     <string name="confirm_destination">Confirm Destination Selection</string>
@@ -50,7 +50,7 @@
     <string name="password">Password</string>
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
-    <string name="logging_out">Logging out safely...</string>
+    <string name="logging_out">Logging out safely…</string>
     <string name="continue_qr">Continue with QR login</string>
     <string name="retry_connection">Retry Connection</string>
     <string name="authorized_success">Authorized Successfully!</string>
@@ -106,13 +106,13 @@
     <string name="add_to_queue">Add to Queue</string>
     <string name="no_videos_selected">No videos selected</string>
     <string name="select_videos_from_home">Please select videos from the Home tab to begin preparation.</string>
-    <string name="extracting_video_metadata">Extracting video metadata...</string>
+    <string name="extracting_video_metadata">Extracting video metadata…</string>
     <string name="all_videos_removed">All videos removed</string>
     <string name="select_more_videos">Select more videos from the Home tab to prepare them.</string>
     <string name="telegram_destination_label">Telegram Destination</string>
     <string name="telegram_auth_description">Connect your Telegram account to prepare video uploads and manage files in Saved Messages, Channels, or Groups.</string>
     <string name="telegram_api_not_configured">Developer Notice: Telegram API ID &amp; Hash are not configured. Connection attempts will fail securely.</string>
-    <string name="connecting_telegram">Connecting to Telegram servers...</string>
+    <string name="connecting_telegram">Connecting to Telegram servers…</string>
     <string name="telegram_phone_number">Telegram Phone Number</string>
     <string name="phone_number_help">Enter your phone number with your country code.</string>
     <string name="enter_verification_code">Enter Verification Code</string>
@@ -137,7 +137,7 @@
     <string name="application_version">Application Version</string>
     <string name="built_with_compose">Built with Jetpack Compose &amp; Material 3</string>
     <string name="go_back">Go Back</string>
-    <string name="select_target">Select Target...</string>
+    <string name="select_target">Select Target…</string>
     <string name="select_action">Select</string>
     <string name="start_immediately">Start immediately</string>
     <string name="nav_home">Home</string>
