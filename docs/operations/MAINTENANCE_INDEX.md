@@ -7,6 +7,7 @@
 | Regression policy | [REGRESSION_POLICY.md](REGRESSION_POLICY.md) |
 | Dependency policy | [DEPENDENCY_POLICY.md](DEPENDENCY_POLICY.md) |
 | TDLib policy | [TDLIB_UPDATE_POLICY.md](TDLIB_UPDATE_POLICY.md) |
+| Telegram authentication and session lifecycle | [../telegram/AUTHENTICATION_ARCHITECTURE.md](../telegram/AUTHENTICATION_ARCHITECTURE.md), [../telegram/AUTHENTICATION_FLOW.md](../telegram/AUTHENTICATION_FLOW.md), [../telegram/SESSION_LIFECYCLE.md](../telegram/SESSION_LIFECYCLE.md), and [../telegram/FINAL_AUTHENTICATION_REPORT.md](../telegram/FINAL_AUTHENTICATION_REPORT.md) |
 | Database policy | [DATABASE_POLICY.md](DATABASE_POLICY.md) |
 | Security policy | [../security/ONGOING_SECURITY_POLICY.md](../security/ONGOING_SECURITY_POLICY.md) |
 | Pull requests | [PULL_REQUEST_POLICY.md](PULL_REQUEST_POLICY.md) |

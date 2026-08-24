@@ -513,3 +513,12 @@
 - [x] Create file-flow, file-access, memory, temporary-file, provider, and reliability records only from verified repository behavior.
 - [x] Validate documentation-only changes and protected file/upload boundaries.
 - [x] Commit and report the file-handling reliability protocol without changing application behavior.
+
+
+## Supplied controlled Telegram authentication and account lifecycle phase
+
+- [x] Inspect the phase-41 authentication protocol and compare it with current Telegram, TDLib, UI, persistence, security, and release documentation.
+- [x] Audit actual authorization states, client lifecycle, update handlers, session persistence, UI flow, errors, logout, reconnect, and credential boundaries without changing behavior.
+- [x] Create authentication inventory, flow, state ownership, persistence, lifecycle, and runtime limitation records only from verified repository behavior.
+- [x] Validate documentation-only changes and authentication/security boundaries.
+- [x] Commit and report the authentication protocol without changing application behavior.
