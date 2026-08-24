@@ -692,3 +692,13 @@
 - [x] Re-run lint, tests, CI checks, security scans, and protected-boundary verification.
 - [x] Document findings and remaining warnings.
 - [ ] Commit and report the lint and CI review outcome.
+
+
+## Actionable lint and CI remediation
+
+- [x] Re-inventory current lint findings and GitHub Actions annotations on the latest commit.
+- [x] Separate safe source/resource fixes from compatibility-sensitive dependency and action upgrades.
+- [x] Fix safe lint findings and refresh compatible CI action majors with one-family-at-a-time validation.
+- [x] Re-run Gradle tests, lint, release assembly, artifact, security, workflow, and protected-behavior gates.
+- [x] Document resolved findings and retained compatibility-sensitive items.
+- [x] Commit, push, and report the complete actionable-fix outcome.
