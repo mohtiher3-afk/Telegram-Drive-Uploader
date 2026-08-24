@@ -20,4 +20,5 @@
 | Controlled dependency updates | `dependencies/_template/README.md`, `CURRENT_TOOLCHAIN.md`, and `DEPENDENCY_INVENTORY.md` |
 | Observability and diagnostics | `observability/OBSERVABILITY_ARCHITECTURE.md`, `EVENT_CATALOG.md`, `LOGGING_INVENTORY.md`, `PRIVACY_LOGGING_POLICY.md`, and `FINAL_OBSERVABILITY_REPORT.md` |
 | Privacy and data governance | `privacy/README.md`, `DATA_INVENTORY.md`, `DATA_FLOW_MAP.md`, `DATA_RETENTION_POLICY.md`, `PRIVACY_GOVERNANCE.md`, and `FINAL_PRIVACY_REPORT.md` |
+| Android compatibility and platform behavior | `compatibility/README.md`, `SUPPORTED_ENVIRONMENT.md`, `ANDROID_VERSION_MATRIX.md`, `DEVICE_AND_SCREEN_MATRIX.md`, `PLATFORM_BEHAVIOR.md`, and `FINAL_COMPATIBILITY_REPORT.md` |
 | Development protocol | `MANUS_DEVELOPMENT_PROTOCOL.md` |
