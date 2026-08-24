@@ -717,16 +717,16 @@
 ## Release metadata correction follow-up
 
 - [x] Confirm the published APK internal version and document the v1.0.16 tag mismatch.
-- [ ] Bump only version metadata to the matching release version without changing application behavior.
-- [ ] Run local version/build checks and dispatch the corrected signed multi-ABI release workflow.
-- [ ] Verify final APK metadata, signatures, ABI contents, checksums, and release assets.
-- [ ] Correct release documentation and record the final publication state.
-- [ ] Report the corrected APK release and remaining validation gaps.
+- [x] Bump only version metadata to the matching release version without changing application behavior.
+- [x] Run local version/build checks and dispatch the corrected signed multi-ABI release workflow.
+- [x] Verify final APK metadata, signatures, ABI contents, checksums, and release assets.
+- [x] Correct release documentation and record the final publication state.
+- [x] Report the corrected APK release and remaining validation gaps.
 
 
 ## Corrected non-conflicting release follow-up
 
-- [ ] Keep the existing v1.0.16 release intact and publish a corrected non-conflicting v1.0.17 release.
-- [ ] Align app `versionName` and `versionCode` with v1.0.17 using metadata-only changes.
-- [ ] Rebuild and verify the corrected signed multi-ABI APKs.
-- [ ] Update release documentation to distinguish v1.0.16 metadata mismatch from the corrected v1.0.17 release.
+- [x] Keep the existing v1.0.16 release intact and publish a corrected non-conflicting v1.0.17 release.
+- [x] Align app `versionName` and `versionCode` with v1.0.17 using metadata-only changes.
+- [x] Rebuild and verify the corrected signed multi-ABI APKs.
+- [x] Update release documentation to distinguish v1.0.16 metadata mismatch from the corrected v1.0.17 release.
