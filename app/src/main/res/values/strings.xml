@@ -81,6 +81,17 @@
     <string name="newest">Newest</string>
     <string name="largest">Largest</string>
     <string name="upload_queue">Upload queue</string>
+    <string name="queue_count_summary">%1$d active · %2$d failed</string>
+    <string name="queue_empty_title">Your queue is empty</string>
+    <string name="queue_empty_supporting">Select videos from Home to start a reliable background upload.</string>
+    <string name="queue_controls_title">Queue controls</string>
+    <string name="queue_controls_supporting">Manage uploads without opening each item.</string>
+    <string name="queue_no_matching_title">No matching uploads</string>
+    <string name="queue_no_matching_supporting">Try another filter to see more queue items.</string>
+    <string name="queue_filter_all">All</string>
+    <string name="queue_filter_active">Active</string>
+    <string name="queue_filter_paused">Paused</string>
+    <string name="queue_filter_failed">Failed</string>
     <string name="connected_status_description">Connected</string>
     <string name="onboarding_page_upload_title">Your files, in your Telegram</string>
     <string name="onboarding_page_upload_description">Prepare videos, choose a Telegram destination, and keep your uploads organized in one private workspace.</string>

@@ -10,6 +10,12 @@ import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 
+internal fun uploadProgressFraction(percentage: Float): Float =
+    (percentage / 100f).coerceIn(0f, 1f)
+
+internal fun uploadProgressPercent(percentage: Float): Int =
+    percentage.coerceIn(0f, 100f).toInt()
+
 @Composable
 fun UploadStatusIndicator(
     video: UploadTask,
@@ -44,7 +50,7 @@ fun UploadStatusIndicator(
 
                 if (video.progress > 0 && video.status != UploadStatus.COMPLETED) {
                     Text(
-                        text = "${(video.progress * 100).toInt()}%",
+                        text = "${uploadProgressPercent(video.progress)}%",
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
@@ -53,7 +59,7 @@ fun UploadStatusIndicator(
             if (video.status == UploadStatus.UPLOADING || video.status == UploadStatus.PREPARING) {
                 Spacer(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(
-                    progress = { video.progress.coerceIn(0f, 1f) },
+                    progress = { uploadProgressFraction(video.progress) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 if (video.status == UploadStatus.UPLOADING) {

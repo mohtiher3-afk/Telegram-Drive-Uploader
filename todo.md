@@ -549,3 +549,13 @@
 - [x] Create history inventory, scheduler inventory, notification/consistency audit, and final report only from verified repository behavior.
 - [x] Validate history/scheduler-only documentation changes, secret/privacy boundaries, TDLib artifacts, protected upload behavior, and master verification limits.
 - [x] Commit and report the history, scheduler, and notification consistency protocol without changing application behavior.
+
+
+## User-requested application completeness pass
+
+- [x] Audit missing or incomplete app behavior, build configuration, onboarding, runtime permissions, UI state consistency, and release verification against the current repository.
+- [x] Record a minimal change plan with exact scope, risks, and rollback boundaries before implementation.
+- [x] Implement only confirmed safe gaps, preserving real TDLib/upload behavior, Arabic RTL support, and existing persistence semantics.
+- [x] Add or update focused automated tests for each implemented fix.
+- [x] Run build, unit, lint, manifest, ABI, TDLib, security, and regression checks; document environment limits.
+- [ ] Commit and report the completeness pass and remaining runtime evidence gaps.
