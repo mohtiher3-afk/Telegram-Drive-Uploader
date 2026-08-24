@@ -634,3 +634,13 @@
 - [x] Add focused component/resource tests and update design documentation.
 - [x] Run component-level build, unit, lint, resource, accessibility, artifact, security, diff, and protected-behavior checks.
 - [x] Commit and report the component audit and final certification decision.
+
+
+## Phase 52 — Material 3 expressive motion and interaction polish
+
+- [x] Inventory existing motion, interaction feedback, lifecycle visibility, and performance-sensitive UI paths.
+- [x] Classify each motion instance and compare it with current official Material 3 motion and accessibility guidance.
+- [x] Apply only justified motion or interaction corrections with reduced-motion safeguards and no product or upload behavior changes.
+- [x] Add focused motion/interaction regression coverage and update design documentation.
+- [x] Run static, unit, build, performance, accessibility, artifact, security, diff, and protected-behavior checks; document environment limits.
+- [ ] Commit and report the motion audit, corrections, and remaining runtime evidence gaps.

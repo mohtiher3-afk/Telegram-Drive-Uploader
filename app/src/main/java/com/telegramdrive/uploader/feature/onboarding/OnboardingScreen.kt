@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.R
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
+import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 private data class OnboardingPage(
     val title: String,
@@ -73,7 +74,8 @@ fun OnboardingScreen(
     viewModel: OnboardingViewModel
 ) {
     val context = LocalContext.current
-    var page by remember { mutableIntStateOf(0) }
+    var page by rememberSaveable { mutableIntStateOf(0) }
+    val motionEnabled = rememberSystemMotionEnabled()
     val pages = listOf(
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_upload_title),
@@ -174,10 +176,10 @@ fun OnboardingScreen(
             AnimatedContent(
                 targetState = page,
                 transitionSpec = {
-                    (slideInHorizontally(animationSpec = AppMotion.offsetShortTween()) { it / 3 } +
-                        fadeIn(animationSpec = AppMotion.shortTween())).togetherWith(
-                        slideOutHorizontally(animationSpec = AppMotion.offsetShortTween()) { -it / 3 } +
-                        fadeOut(animationSpec = AppMotion.shortTween())
+                    (slideInHorizontally(animationSpec = AppMotion.shortSpatialSpring(motionEnabled)) { it / 3 } +
+                        fadeIn(animationSpec = AppMotion.shortTween<Float>(motionEnabled))).togetherWith(
+                        slideOutHorizontally(animationSpec = AppMotion.shortSpatialSpring(motionEnabled)) { -it / 3 } +
+                        fadeOut(animationSpec = AppMotion.shortTween<Float>(motionEnabled))
                     ).using(SizeTransform(clip = false))
                 },
                 label = "onboarding_page"

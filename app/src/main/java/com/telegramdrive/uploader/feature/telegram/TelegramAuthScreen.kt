@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
+import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramError
 
 @Composable
@@ -55,6 +56,7 @@ fun TelegramAuthScreen(
     val password by viewModel.passwordInput.collectAsStateWithLifecycle()
 
     var showPassword by remember { mutableStateOf(false) }
+    val motionEnabled = rememberSystemMotionEnabled()
 
     // When connection is authorized, notify parent to navigate back or to home
     LaunchedEffect(connectionState) {
@@ -95,8 +97,8 @@ fun TelegramAuthScreen(
             AnimatedContent(
                 targetState = connectionState,
                 transitionSpec = {
-                    fadeIn(animationSpec = AppMotion.shortTween()) togetherWith
-                        fadeOut(animationSpec = AppMotion.shortTween())
+                    fadeIn(animationSpec = AppMotion.shortTween<Float>(motionEnabled)) togetherWith
+                        fadeOut(animationSpec = AppMotion.shortTween<Float>(motionEnabled))
                 },
                 label = "auth_screen_transitions"
             ) { state ->
