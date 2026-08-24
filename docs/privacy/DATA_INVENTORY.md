@@ -1,0 +1,21 @@
+# Data Inventory
+
+This inventory describes data confirmed by repository inspection. It is not a legal privacy notice and does not authorize new collection.
+
+| Data | Category | Source | Storage | Transmitted | Retention | Sensitivity |
+|---|---|---|---|---|---|---|
+| Selected media URI/reference | FILES | Android picker/content resolver | Upload record and transient processing path as required by the upload flow | To Telegram through TDLib when upload starts | Until the upload/history lifecycle removes or no longer needs the reference; exact duration is not explicitly defined | PERSONAL |
+| Filename, size, MIME/media metadata | FILE METADATA | Content resolver/media metadata | Upload record and UI state | Relevant metadata is sent to Telegram as part of the upload; no third-party destination identified | Upload/history lifecycle; exact duration is not explicitly defined | PERSONAL |
+| File bytes | FILES | User-selected local media | Transient read/upload path; not stored in diagnostics | Telegram/TDLib upload path | Active operation only in the application path; exact cleanup duration is not explicitly defined | SENSITIVE |
+| Upload ID, state, progress, duration, retry state | UPLOAD DATA / QUEUE | Upload preparation and worker | Room upload record; WorkManager input carries the upload ID | Not transmitted as a separate analytics stream | Until history/queue lifecycle removes it; exact policy is not explicitly defined | PERSONAL |
+| Destination identifier/type | TELEGRAM / UPLOAD DATA | Telegram destination selection | Upload record/settings as applicable | Telegram/TDLib destination operations | Until related state is removed; exact duration is not explicitly defined | PERSONAL |
+| Telegram authorization state | AUTHENTICATION | TDLib authorization callbacks | TDLib-managed session state and safe app connection state; session internals are not exposed in app diagnostics | Telegram | Session-bound; exact TDLib retention is not defined by this repository | CREDENTIAL / SECRET boundary |
+| Telegram username/phone display fields | IDENTITY / AUTHENTICATION | Authorized Telegram user state | SettingsDataStore keys exist for user display data | Telegram during authorization; no third-party service identified | Until logout clears the Telegram user settings; exact backup retention is excluded | PERSONAL / SENSITIVE |
+| Pinned destination IDs | TELEGRAM / SETTINGS | User settings | DataStore | Telegram lookup when used; no analytics transmission | User-controlled until changed or cleared | PERSONAL |
+| Onboarding completion, theme, language, upload preferences, notification settings | SETTINGS | User choices | DataStore | No third-party transmission identified | User-controlled; exact duration is not explicitly defined | INTERNAL / PERSONAL |
+| Diagnostic event metadata | DIAGNOSTICS / LOGS | Application lifecycle, worker, upload, Telegram, database, settings | Bounded in-memory DiagnosticsManager; local logcat; user-initiated local export | Not automatically uploaded | In memory up to 200 events and 24 hours; logcat/export retention is environment/user controlled | INTERNAL / PERSONAL |
+| Notifications | NOTIFICATIONS | Upload/background state | Android notification system | Local device only unless Android system behavior applies | System/user controlled | PERSONAL if message text contains context |
+| Cache and transient buffers | CACHE / TEMPORARY | Image/media and upload operations | App cache/files/transient memory where used | Telegram upload path only when needed | Rebuildable or operation-bound; exact cleanup duration is not explicitly defined | PERSONAL / SENSITIVE |
+| Analytics/crash data | ANALYTICS / CRASH DATA | No identified implementation | None identified | **NO THIRD-PARTY DATA SERVICE IDENTIFIED** | Not applicable | Not collected by identified code |
+
+The manifest declares `INTERNET`, `ACCESS_NETWORK_STATE`, `READ_MEDIA_VIDEO`, `READ_EXTERNAL_STORAGE` up to API 32, and `WAKE_LOCK`. Android backup rules exclude the Room database and `datastore/` from cloud backup and device transfer. Application signing credentials and API secrets are not user-data records and must never be included in this inventory as recoverable plaintext values.

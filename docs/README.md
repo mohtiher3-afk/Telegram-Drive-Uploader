@@ -19,4 +19,5 @@
 | Controlled bug fixing | `bugs/_template/README.md` and the bug report, root-cause, high-risk-plan, and fix-report templates |
 | Controlled dependency updates | `dependencies/_template/README.md`, `CURRENT_TOOLCHAIN.md`, and `DEPENDENCY_INVENTORY.md` |
 | Observability and diagnostics | `observability/OBSERVABILITY_ARCHITECTURE.md`, `EVENT_CATALOG.md`, `LOGGING_INVENTORY.md`, `PRIVACY_LOGGING_POLICY.md`, and `FINAL_OBSERVABILITY_REPORT.md` |
+| Privacy and data governance | `privacy/README.md`, `DATA_INVENTORY.md`, `DATA_FLOW_MAP.md`, `DATA_RETENTION_POLICY.md`, `PRIVACY_GOVERNANCE.md`, and `FINAL_PRIVACY_REPORT.md` |
 | Development protocol | `MANUS_DEVELOPMENT_PROTOCOL.md` |
