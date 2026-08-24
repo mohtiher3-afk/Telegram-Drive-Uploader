@@ -586,3 +586,12 @@
 - [x] Create factual accessibility inventory, semantics/adaptive audit, and test records only from verified repository behavior.
 - [x] Validate accessibility documentation-only or minimal safe changes, localization and security boundaries, TDLib artifacts, protected behavior, and available build verification.
 - [x] Commit and report the accessibility and adaptive UI review without changing product semantics.
+
+
+## Supplied internationalization and locale edge-case phase
+
+- [x] Inspect the phase-48 protocol and compare it with current English/Arabic resources, locale helpers, date/time display, number formatting, files, chat names, scheduler, and tests.
+- [x] Trace locale-sensitive strings, placeholders, plurals, timestamps, time zones, percentages, sizes, speed, durations, technical identifiers, mixed Arabic/English text, filenames, chat names, URLs, and scheduler display without changing stored semantics.
+- [x] Create factual locale inventory, formatting/RTL audit, and test records only from verified repository behavior.
+- [x] Validate resource parity, placeholders, secret/privacy boundaries, TDLib artifacts, protected business behavior, and available build verification.
+- [x] Commit and report the internationalization and formatting review without changing product semantics.
