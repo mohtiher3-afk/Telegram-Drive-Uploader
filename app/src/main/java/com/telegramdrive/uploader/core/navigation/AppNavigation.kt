@@ -1,8 +1,10 @@
 package com.telegramdrive.uploader.core.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
@@ -13,11 +15,13 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
+import androidx.compose.ui.Alignment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,12 +41,19 @@ import com.telegramdrive.uploader.feature.upload.UploadScreen
 import com.telegramdrive.uploader.feature.upload.UploadViewModel
 import com.telegramdrive.uploader.feature.telegram.TelegramAuthScreen
 import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
+import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
+import com.telegramdrive.uploader.R
 
-sealed class Screen(val route: String, val title: String, val selectedIcon: ImageVector, val unselectedIcon: ImageVector) {
-    object Home : Screen(AppRoutes.HOME, "Home", Icons.Filled.Home, Icons.Outlined.Home)
-    object Queue : Screen(AppRoutes.QUEUE, "Queue", Icons.Filled.Layers, Icons.Outlined.Layers)
-    object History : Screen(AppRoutes.HISTORY, "History", Icons.Filled.History, Icons.Outlined.History)
-    object Settings : Screen(AppRoutes.SETTINGS, "Settings", Icons.Filled.Settings, Icons.Outlined.Settings)
+sealed class Screen(
+    val route: String,
+    @androidx.annotation.StringRes val titleRes: Int,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector
+) {
+    object Home : Screen(AppRoutes.HOME, R.string.nav_home, Icons.Filled.Home, Icons.Outlined.Home)
+    object Queue : Screen(AppRoutes.QUEUE, R.string.nav_queue, Icons.Filled.Layers, Icons.Outlined.Layers)
+    object History : Screen(AppRoutes.HISTORY, R.string.nav_history, Icons.Filled.History, Icons.Outlined.History)
+    object Settings : Screen(AppRoutes.SETTINGS, R.string.nav_settings, Icons.Filled.Settings, Icons.Outlined.Settings)
 }
 
 val bottomNavItems = listOf(
@@ -98,10 +109,10 @@ fun AppNavigation(
                         icon = {
                             Icon(
                                 imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
-                                contentDescription = screen.title
+                                contentDescription = stringResource(screen.titleRes)
                             )
                         },
-                        label = { Text(screen.title) },
+                        label = { Text(stringResource(screen.titleRes)) },
                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                     )
                 }
@@ -131,10 +142,10 @@ fun AppNavigation(
                                 icon = {
                                     Icon(
                                         imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
-                                        contentDescription = screen.title
+                                        contentDescription = stringResource(screen.titleRes)
                                     )
                                 },
-                                label = { Text(screen.title) },
+                                label = { Text(stringResource(screen.titleRes)) },
                                 modifier = Modifier.testTag("nav_tab_${screen.route}")
                             )
                         }
@@ -142,13 +153,18 @@ fun AppNavigation(
                 }
             }
         ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Home.route,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
             ) {
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Home.route,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .widthIn(max = AppContentWidth.max)
+                        .padding(innerPadding)
+                ) {
                 composable(Screen.Home.route) {
                     HomeScreen(
                         onSettingsClick = { navController.navigate(Screen.Settings.route) },
@@ -191,10 +207,11 @@ fun AppNavigation(
                 }
                 composable(Screen.Queue.route) { QueueScreen() }
                 composable(Screen.History.route) { HistoryScreen() }
-                composable(Screen.Settings.route) {
-                    SettingsScreen(
-                        onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
-                    )
+                    composable(Screen.Settings.route) {
+                        SettingsScreen(
+                            onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
+                        )
+                    }
                 }
             }
         }

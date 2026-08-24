@@ -3,6 +3,7 @@
 | Topic | Document |
 |---|---|
 | Maintenance policy | [MAINTENANCE_POLICY.md](MAINTENANCE_POLICY.md) |
+| Official Material 3 modernization | [../design/M3_OFFICIAL_REVIEW.md](../design/M3_OFFICIAL_REVIEW.md), [../design/OFFICIAL_M3_DESIGN_SYSTEM.md](../design/OFFICIAL_M3_DESIGN_SYSTEM.md), [../design/M3_COMPONENT_MAP.md](../design/M3_COMPONENT_MAP.md), [../design/M3_SCREEN_DESIGN_MATRIX.md](../design/M3_SCREEN_DESIGN_MATRIX.md), [../design/M3_ADAPTIVE_UI.md](../design/M3_ADAPTIVE_UI.md), and [../design/M3_EXPRESSIVE_USAGE.md](../design/M3_EXPRESSIVE_USAGE.md) |
 | Bug workflow | [BUG_FIX_WORKFLOW.md](BUG_FIX_WORKFLOW.md) and [BUG_TEMPLATE.md](BUG_TEMPLATE.md) |
 | Regression policy | [REGRESSION_POLICY.md](REGRESSION_POLICY.md) |
 | Dependency policy | [DEPENDENCY_POLICY.md](DEPENDENCY_POLICY.md) |
