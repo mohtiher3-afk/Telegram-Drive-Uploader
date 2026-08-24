@@ -8,6 +8,7 @@
 | Dependency policy | [DEPENDENCY_POLICY.md](DEPENDENCY_POLICY.md) |
 | TDLib policy | [TDLIB_UPDATE_POLICY.md](TDLIB_UPDATE_POLICY.md) |
 | Telegram authentication and session lifecycle | [../telegram/AUTHENTICATION_ARCHITECTURE.md](../telegram/AUTHENTICATION_ARCHITECTURE.md), [../telegram/AUTHENTICATION_FLOW.md](../telegram/AUTHENTICATION_FLOW.md), [../telegram/SESSION_LIFECYCLE.md](../telegram/SESSION_LIFECYCLE.md), and [../telegram/FINAL_AUTHENTICATION_REPORT.md](../telegram/FINAL_AUTHENTICATION_REPORT.md) |
+| Telegram destination and file routing | [../telegram/DESTINATION_ARCHITECTURE.md](../telegram/DESTINATION_ARCHITECTURE.md), [../telegram/DESTINATION_FLOW.md](../telegram/DESTINATION_FLOW.md), [../telegram/DESTINATION_TEST_MATRIX.md](../telegram/DESTINATION_TEST_MATRIX.md), and [../telegram/FINAL_DESTINATION_REPORT.md](../telegram/FINAL_DESTINATION_REPORT.md) |
 | Database policy | [DATABASE_POLICY.md](DATABASE_POLICY.md) |
 | Security policy | [../security/ONGOING_SECURITY_POLICY.md](../security/ONGOING_SECURITY_POLICY.md) |
 | Pull requests | [PULL_REQUEST_POLICY.md](PULL_REQUEST_POLICY.md) |

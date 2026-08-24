@@ -522,3 +522,12 @@
 - [x] Create authentication inventory, flow, state ownership, persistence, lifecycle, and runtime limitation records only from verified repository behavior.
 - [x] Validate documentation-only changes and authentication/security boundaries.
 - [x] Commit and report the authentication protocol without changing application behavior.
+
+
+## Supplied controlled Telegram destination and file-routing phase
+
+- [x] Inspect the phase-42 destination protocol and compare it with current Telegram, TDLib, UI, persistence, upload, and operations documentation.
+- [x] Trace actual destination loading, search, selection, ID propagation, validation, permissions, stale-session behavior, worker propagation, scheduler behavior, history, RTL, dark mode, and accessibility without changing behavior.
+- [x] Create destination inventory, architecture, flow, test matrix, and runtime-limitation records only from verified repository behavior.
+- [x] Validate destination-only documentation changes, secret/privacy boundaries, TDLib artifacts, and protected upload/authentication behavior.
+- [x] Commit and report the destination-routing protocol without changing application behavior.
