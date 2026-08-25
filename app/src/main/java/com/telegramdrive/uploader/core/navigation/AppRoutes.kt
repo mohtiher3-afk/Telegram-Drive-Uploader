@@ -7,6 +7,7 @@ package com.telegramdrive.uploader.core.navigation
  * by external navigation state. This object centralizes definitions only.
  */
 object AppRoutes {
+    const val SPLASH = "splash"
     const val HOME = "home"
     const val QUEUE = "queue"
     const val HISTORY = "history"

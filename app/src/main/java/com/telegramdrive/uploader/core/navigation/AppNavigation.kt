@@ -32,6 +32,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.telegramdrive.uploader.feature.home.HomeScreen
+import com.telegramdrive.uploader.feature.splash.SplashScreen
 import com.telegramdrive.uploader.feature.queue.QueueScreen
 import com.telegramdrive.uploader.feature.history.HistoryScreen
 import com.telegramdrive.uploader.feature.onboarding.OnboardingScreen
@@ -69,14 +70,6 @@ fun AppNavigation(
 ) {
     val onboardingViewModel: OnboardingViewModel = hiltViewModel()
     val onboardingCompleted by onboardingViewModel.completed.collectAsStateWithLifecycle()
-
-    if (!onboardingCompleted) {
-        OnboardingScreen(
-            onFinished = { },
-            viewModel = onboardingViewModel
-        )
-        return
-    }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -159,21 +152,37 @@ fun AppNavigation(
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = Screen.Home.route,
+                    startDestination = AppRoutes.SPLASH,
                     modifier = Modifier
                         .fillMaxSize()
                         .widthIn(max = AppContentWidth.max)
                         .padding(innerPadding)
                 ) {
-                composable(Screen.Home.route) {
-                    HomeScreen(
-                        onSettingsClick = { navController.navigate(Screen.Settings.route) },
-                        onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
-                        onVideosSelected = { uris ->
-                            uploadViewModel.setPrepareUris(uris)
-                            navController.navigate(AppRoutes.UPLOAD_PREPARATION)
+                composable(AppRoutes.SPLASH) {
+                    SplashScreen(
+                        onFinished = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                            }
                         }
                     )
+                }
+                composable(Screen.Home.route) {
+                    if (!onboardingCompleted) {
+                        OnboardingScreen(
+                            onFinished = { },
+                            viewModel = onboardingViewModel
+                        )
+                    } else {
+                        HomeScreen(
+                            onSettingsClick = { navController.navigate(Screen.Settings.route) },
+                            onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
+                            onVideosSelected = { uris ->
+                                uploadViewModel.setPrepareUris(uris)
+                                navController.navigate(AppRoutes.UPLOAD_PREPARATION)
+                            }
+                        )
+                    }
                 }
                 composable(AppRoutes.UPLOAD_PREPARATION) {
                     UploadScreen(

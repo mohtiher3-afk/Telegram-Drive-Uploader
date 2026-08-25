@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">محمل تيليجرام درايف</string>
+    <string name="splash_logo_description">شعار مركز تحكم رفع تيليجرام درايف</string>
+    <string name="splash_starting">جارٍ تجهيز الرفع الآمن…</string>
     <string name="smart_file_assistant_title">المساعد الذكي للملفات</string>
     <string name="smart_file_assistant_description">اقتراح أسماء وكلمات مفتاحية منظمة محليًا. الرفع لا يعتمد عليه.</string>
     <string name="smart_file_assistant_suggest">اقتراح</string>

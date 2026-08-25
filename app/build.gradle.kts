@@ -144,6 +144,7 @@ dependencies {
   implementation(libs.androidx.hilt.navigation.compose)
   implementation(libs.androidx.work.runtime.ktx)
   implementation(platform(libs.androidx.compose.bom))
+  implementation(libs.androidx.compose.animation.graphics)
   // implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
   // implementation(libs.androidx.camera.camera2)
@@ -157,6 +158,7 @@ dependencies {
   implementation(libs.androidx.compose.ui.graphics)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.core.ktx)
+  implementation(libs.androidx.core.splashscreen)
   implementation(libs.androidx.datastore.preferences)
   // implementation(libs.kotlogram)
   // implementation("org.telegram:tdlib:1.8.0") // Replace with latest version if possible, but 1.8.0 is a reasonable start if not specified

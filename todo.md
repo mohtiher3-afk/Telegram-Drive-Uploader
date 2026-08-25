@@ -859,3 +859,27 @@
 - [x] Update localization, accessibility semantics, and regression coverage.
 - [x] Build, lint, test, and inspect the resulting Android artifacts.
 - [x] Commit and push the verified sequential UI implementation.
+
+
+## Mission Control interface mockup set
+
+- [ ] Define shared continuity and key mockup states for the implemented redesign.
+- [ ] Generate light, dark, uploading, completed, tablet, and Arabic RTL interface mockups.
+- [ ] Review readability, hierarchy, state accuracy, and RTL intent.
+- [ ] Deliver the mockup set with implementation boundaries.
+
+
+## Mission Control redesign slide summary
+
+- [x] Define a concise slide narrative covering the selected UI, palette, states, motion, and implementation boundaries.
+- [x] Initialize and build an editable slide deck in the new Mission Control visual direction.
+- [x] Present the completed deck and summarize its design message.
+
+
+## Animated Mission Control splash screen
+
+- [x] Audit current Android startup, themes, manifest, and splash-screen dependencies.
+- [x] Design an animated splash icon and theme configuration consistent with Mission Control.
+- [x] Implement official Splash Screen API integration and animated vector resources.
+- [x] Build and test startup behavior across supported API levels without affecting TDLib initialization.
+- [ ] Commit and push the verified splash-screen implementation.

@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Telegram Drive Uploader</string>
+    <string name="splash_logo_description">Telegram Drive Uploader mission control logo</string>
+    <string name="splash_starting">Preparing secure uploads…</string>
     <string name="smart_file_assistant_title">Smart File Assistant</string>
     <string name="smart_file_assistant_description">Suggest organized names and keywords locally. Uploads never depend on it.</string>
     <string name="smart_file_assistant_suggest">Suggest</string>
