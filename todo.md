@@ -699,6 +699,13 @@
 - [x] مراجعة التغييرات ونتائج التحقق ثم إنشاء التزام واضح.
 - [x] دفع الالتزام إلى المستودع المرتبط والتحقق من مرجعه.
 
+## Authorized GitHub Debug APK release
+
+- [x] فحص الوسوم والإصدارات الحالية واختيار وسم إصدار جديد.
+- [x] إعداد ملاحظات إصدار توضح أن الأصول موقعة بتوقيع Debug وحدود التحقق.
+- [x] إنشاء GitHub Release وإرفاق ملفات APK المحدثة للمعماريات الثلاث.
+- [x] التحقق من الرابط والأصول المنشورة وتوثيقها.
+
 ## User-requested application completeness pass
 
 - [x] Audit missing or incomplete app behavior, build configuration, onboarding, runtime permissions, UI state consistency, and release verification against the current repository.
