@@ -34,7 +34,10 @@ class MainActivity : ComponentActivity() {
                 else -> isSystemInDarkTheme()
             }
 
-            TelegramDriveTheme(darkTheme = darkTheme) {
+            TelegramDriveTheme(
+                darkTheme = darkTheme,
+                dynamicColor = false
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
