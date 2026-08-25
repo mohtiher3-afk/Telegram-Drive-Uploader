@@ -24,4 +24,4 @@ for density, size in {
 foreground_dir = project / 'app/src/main/res/drawable-nodpi'
 foreground_dir.mkdir(parents=True, exist_ok=True)
 foreground = image.resize((432, 432), Image.Resampling.LANCZOS)
-foreground.save(foreground_dir / 'ic_launcher_foreground_image.png', 'PNG', optimize=True)
+foreground.save(foreground_dir / 'mission_control_logo.png', 'PNG', optimize=True)

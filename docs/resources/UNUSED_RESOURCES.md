@@ -7,15 +7,15 @@ The audit follows a conservative rule: a resource is not removed merely because 
 | `@mipmap/ic_launcher`, `@mipmap/ic_launcher_round` | Direct manifest references | KEEP | No change |
 | `mipmap-anydpi-v26/ic_launcher*.xml` | Manifest-selected adaptive icon resources | KEEP | No change |
 | `ic_launcher_background`, `ic_launcher_foreground`, `ic_launcher_monochrome` | Adaptive icon XML references | KEEP | No change |
-| `ic_launcher_foreground_image.png` | Referenced by `ic_launcher_foreground.xml` | KEEP | No change |
+| `mission_control_logo.png` | Referenced by `ic_launcher_foreground.xml` and Compose screens | KEEP | Retained as the live logo asset |
 | Density-specific launcher WebP files | Launcher fallback resources | KEEP | No change |
 | `backup_rules.xml`, `data_extraction_rules.xml` | Direct manifest references | KEEP | No change |
 | `themes.xml` | Direct manifest theme reference | KEEP | No change |
 | `values/strings.xml`, `values-ar/strings.xml` | Compose and manifest resource usage | KEEP | No change |
 | `colors.xml` | Legacy-looking names; Compose theme is primary source | REVIEW | Do not delete without full generated-resource/lint evidence |
-| `ic_tg_drive_uploader_1786926729865.jpg` | Requires source and indirect-reference confirmation | REVIEW | Do not delete |
+| `ic_tg_drive_uploader_1786926729865.jpg` | No source or indirect references after branding audit | REMOVED | Deleted in the logo replacement change |
 
-No resource is classified `SAFE_TO_REMOVE` in this phase. Android lint/resource-shrinking reports were not available in the temporary checkout because the repository does not include the Gradle wrapper; CI remains the authoritative build gate. The absence of a local report is not evidence that a resource is unused.
+The two legacy image files were classified as removable only after source and repository-reference checks. Android lint/resource-shrinking remains a separate build gate; the live launcher, onboarding, and splash now use `mission_control_logo.png`.
 
 ## Dynamic and indirect access
 

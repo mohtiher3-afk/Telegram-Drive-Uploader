@@ -9,9 +9,9 @@
 | `ic_launcher.webp` / round variants | Density launcher assets | `res/mipmap-*/` | Adaptive-icon fallback and launcher compatibility | KEEP; framework-referenced |
 | `ic_launcher_background.xml` | Vector/background drawable | `res/drawable/` | Adaptive launcher icon XML | KEEP |
 | `ic_launcher_foreground.xml` | Drawable wrapper | `res/drawable/` | Adaptive launcher icon XML | KEEP |
-| `ic_launcher_foreground_image.png` | Raster foreground asset | `res/drawable-nodpi/` | `ic_launcher_foreground.xml` | KEEP; indirectly referenced |
+| `mission_control_logo.png` | Raster Mission Control logo | `res/drawable-nodpi/` | `ic_launcher_foreground.xml`, Compose onboarding/splash | KEEP; indirectly and directly referenced |
 | `ic_launcher_monochrome.xml` | Monochrome vector | `res/drawable/` | Adaptive launcher icon XML | KEEP |
-| `ic_tg_drive_uploader_1786926729865.jpg` | Raster application asset | `res/drawable/` | Requires source-reference review before any removal | REVIEW; no deletion |
+| `ic_tg_drive_uploader_1786926729865.jpg` | Legacy raster application asset | `res/drawable/` | None after branding replacement | REMOVED |
 | `strings.xml` | English string resources | `res/values/` | Compose `stringResource` and Android manifest | KEEP; duplicate IDs removed in prior fix |
 | `strings.xml` | Arabic string resources | `res/values-ar/` | Locale-qualified Compose resources | KEEP; IDs/placeholders must stay aligned |
 | `colors.xml` | Legacy XML colors | `res/values/` | No primary Compose theme ownership found; usage review required | REVIEW; no deletion |
