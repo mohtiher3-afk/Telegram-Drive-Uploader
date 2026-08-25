@@ -893,3 +893,10 @@
 - [x] Persist completion safely so the opening screen is shown once per installation, without changing TDLib or upload behavior.
 - [x] Verify English/Arabic parity, RTL layout, reduced motion, accessibility semantics, and adaptive sizing.
 - [x] Build, test, inspect APK resources, and push the finished branding update.
+
+
+## Replace obsolete repository image
+
+- [x] Audit repository images and all references to identify the obsolete asset.
+- [x] Remove the obsolete image and install the updated Mission Control logo in its intended locations.
+- [x] Verify references, commit, and push the image replacement.
