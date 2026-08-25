@@ -3,6 +3,7 @@ package com.telegramdrive.uploader.core.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
@@ -20,9 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,6 +48,10 @@ import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.feature.telegram.TelegramAuthScreen
 import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
 import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.components.MissionControlPage
+import com.telegramdrive.uploader.core.ui.components.glowSignalRim
+import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.R
 import kotlinx.coroutines.launch
 
@@ -108,11 +115,16 @@ fun AppNavigation(
                         icon = {
                             Icon(
                                 imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
-                                contentDescription = stringResource(screen.titleRes)
+                                contentDescription = null
                             )
                         },
                         label = { Text(stringResource(screen.titleRes)) },
-                        modifier = Modifier.testTag("nav_tab_${screen.route}")
+                        modifier = Modifier
+                            .glowSignalRim(
+                                shape = MaterialTheme.shapes.small,
+                                enabled = isSelected
+                            )
+                            .testTag("nav_tab_${screen.route}")
                     )
                 }
             }
@@ -122,40 +134,72 @@ fun AppNavigation(
             contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 if (!isExpanded && showBottomBar) {
-                    NavigationBar {
-                        bottomNavItems.forEach { screen ->
-                            val isSelected = currentRoute == screen.route
-                            NavigationBarItem(
-                                selected = isSelected,
-                                onClick = {
-                                    if (currentRoute != screen.route) {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = AppSpacing.sm)
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .liquidGlassOverlay(
+                                    shape = MaterialTheme.shapes.extraLarge,
+                                    accent = MaterialTheme.colorScheme.primary
+                                ),
+                            shape = MaterialTheme.shapes.extraLarge,
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            tonalElevation = 6.dp,
+                            shadowElevation = 8.dp
+                        ) {
+                            NavigationBar(
+                                containerColor = Color.Transparent,
+                                tonalElevation = 0.dp,
+                                windowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0)
+                            ) {
+                                bottomNavItems.forEach { screen ->
+                                    val isSelected = currentRoute == screen.route
+                                    NavigationBarItem(
+                                        selected = isSelected,
+                                        onClick = {
+                                            if (currentRoute != screen.route) {
+                                                navController.navigate(screen.route) {
+                                                    popUpTo(navController.graph.findStartDestination().id) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
+                                                }
                                             }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                    }
-                                },
-                                icon = {
-                                    Icon(
-                                        imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
-                                        contentDescription = stringResource(screen.titleRes)
+                                        },
+                                        icon = {
+                                            Icon(
+                                                imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
+                                                contentDescription = null
+                                            )
+                                        },
+                                        label = { Text(stringResource(screen.titleRes)) },
+                                        colors = NavigationBarItemDefaults.colors(
+                                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                            selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                            indicatorColor = MaterialTheme.colorScheme.primary,
+                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                        ),
+                                        modifier = Modifier
+                                            .glowSignalRim(
+                                                shape = MaterialTheme.shapes.small,
+                                                enabled = isSelected
+                                            )
+                                            .testTag("nav_tab_${screen.route}")
                                     )
-                                },
-                                label = { Text(stringResource(screen.titleRes)) },
-                                modifier = Modifier.testTag("nav_tab_${screen.route}")
-                            )
+                                }
+                            }
                         }
                     }
                 }
             }
         ) { innerPadding ->
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter
-            ) {
+            MissionControlPage(pageKey = currentRoute, modifier = Modifier.fillMaxSize()) {
                 NavHost(
                     navController = navController,
                     startDestination = if (openingCompleted) Screen.Home.route else AppRoutes.SPLASH,
@@ -163,6 +207,7 @@ fun AppNavigation(
                         .fillMaxSize()
                         .widthIn(max = AppContentWidth.max)
                         .padding(innerPadding)
+                        .align(Alignment.TopCenter)
                 ) {
                 composable(AppRoutes.SPLASH) {
                     SplashScreen(

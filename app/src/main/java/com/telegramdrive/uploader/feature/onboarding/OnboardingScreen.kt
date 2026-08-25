@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -59,6 +61,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.R
+import com.telegramdrive.uploader.core.ui.components.glowSignalRim
+import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
@@ -110,6 +114,9 @@ fun OnboardingScreen(
             if (Build.VERSION.SDK_INT >= 33 &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED
             ) add(Manifest.permission.READ_MEDIA_VIDEO)
+            if (Build.VERSION.SDK_INT >= 33 &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+            ) add(Manifest.permission.POST_NOTIFICATIONS)
             else if (Build.VERSION.SDK_INT <= 32 &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
             ) add(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -148,7 +155,12 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Surface(
-                modifier = Modifier.size(176.dp),
+                modifier = Modifier
+                    .size(176.dp)
+                    .liquidGlassOverlay(
+                        shape = MaterialTheme.shapes.extraLarge,
+                        accent = MaterialTheme.colorScheme.primary
+                    ),
                 shape = MaterialTheme.shapes.extraLarge,
                 color = pages[page].accent,
                 tonalElevation = 4.dp
@@ -207,14 +219,22 @@ fun OnboardingScreen(
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 pages.indices.forEach { index ->
+                    val active = index == page
+                    val dotWidth by animateDpAsState(
+                        targetValue = if (active) 28.dp else 8.dp,
+                        animationSpec = AppMotion.shortTween(motionEnabled),
+                        label = "onboarding_dot_width_$index"
+                    )
+                    val dotColor by animateColorAsState(
+                        targetValue = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                        animationSpec = AppMotion.shortTween(motionEnabled),
+                        label = "onboarding_dot_color_$index"
+                    )
                     Box(
                         modifier = Modifier
-                            .size(if (index == page) 28.dp else 8.dp, 8.dp)
+                            .size(dotWidth, 8.dp)
                             .clip(CircleShape)
-                            .background(
-                                if (index == page) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.outlineVariant
-                            )
+                            .background(dotColor)
                     )
                 }
             }
@@ -225,7 +245,9 @@ fun OnboardingScreen(
                 onClick = {
                     if (page < pages.lastIndex) page++ else finishOnboarding()
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .glowSignalRim(MaterialTheme.shapes.extraLarge),
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {

@@ -22,6 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.telegramdrive.uploader.core.ui.components.glowSignalRim
+import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramDestinationType
@@ -100,6 +102,7 @@ fun TelegramDestinationScreen(
                         onClick = onConnectClick,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .glowSignalRim(MaterialTheme.shapes.extraLarge)
                             .testTag("destination_connect_telegram_button")
                     ) {
                         Text(stringResource(com.telegramdrive.uploader.R.string.connect_telegram))
@@ -129,7 +132,13 @@ fun TelegramDestinationScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .liquidGlassOverlay(
+                            shape = MaterialTheme.shapes.medium,
+                            accent = MaterialTheme.colorScheme.secondary
+                        ),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -157,7 +166,14 @@ fun TelegramDestinationScreen(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
+                            .liquidGlassOverlay(
+                                shape = MaterialTheme.shapes.large,
+                                accent = MaterialTheme.colorScheme.primary
+                            )
+                            .glowSignalRim(MaterialTheme.shapes.large)
                             .testTag("selected_destination_banner")
+                        ,
+                        shape = MaterialTheme.shapes.large
                     ) {
                         Row(
                             modifier = Modifier
@@ -253,6 +269,10 @@ fun TelegramDestinationScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
+                        .glowSignalRim(
+                            shape = MaterialTheme.shapes.extraLarge,
+                            enabled = selectedDestination != null
+                        )
                         .testTag("confirm_destination_button"),
                     enabled = selectedDestination != null
                 ) {
@@ -289,7 +309,17 @@ fun DestinationRow(
         ),
         modifier = Modifier
             .fillMaxWidth()
+            .liquidGlassOverlay(
+                shape = MaterialTheme.shapes.medium,
+                accent = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+            )
+            .glowSignalRim(
+                shape = MaterialTheme.shapes.medium,
+                enabled = isSelected
+            )
             .testTag("destination_item_${destination.id}")
+        ,
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(
             modifier = Modifier

@@ -32,6 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.telegramdrive.uploader.core.ui.components.glowSignalRim
+import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
@@ -128,7 +130,13 @@ fun TelegramAuthScreen(
                                     colors = CardDefaults.cardColors(
                                         containerColor = MaterialTheme.colorScheme.errorContainer
                                     ),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .liquidGlassOverlay(
+                                            shape = MaterialTheme.shapes.large,
+                                            accent = MaterialTheme.colorScheme.error
+                                        ),
+                                    shape = MaterialTheme.shapes.large
                                 ) {
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.R.string.telegram_api_not_configured),
@@ -144,6 +152,7 @@ fun TelegramAuthScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(50.dp)
+                                    .glowSignalRim(MaterialTheme.shapes.extraLarge)
                                     .testTag("connect_telegram_button"),
                                 enabled = !isProcessing
                             ) {
@@ -209,6 +218,7 @@ fun TelegramAuthScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(50.dp)
+                                    .glowSignalRim(MaterialTheme.shapes.extraLarge)
                                     .testTag("phone_continue_button"),
                                 enabled = phoneNumber.isNotBlank() && !isProcessing
                             ) {
@@ -270,6 +280,7 @@ fun TelegramAuthScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(50.dp)
+                                    .glowSignalRim(MaterialTheme.shapes.extraLarge)
                                     .testTag("code_continue_button"),
                                 enabled = code.isNotBlank() && !isProcessing
                             ) {
@@ -303,7 +314,13 @@ fun TelegramAuthScreen(
                                     colors = CardDefaults.cardColors(
                                         containerColor = MaterialTheme.colorScheme.secondaryContainer
                                     ),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .liquidGlassOverlay(
+                                            shape = MaterialTheme.shapes.large,
+                                            accent = MaterialTheme.colorScheme.secondary
+                                        ),
+                                    shape = MaterialTheme.shapes.large
                                 ) {
                                     Text(
                                         text = link,
@@ -315,7 +332,10 @@ fun TelegramAuthScreen(
                                 }
                                 Button(
                                     onClick = { clipboardManager.setText(AnnotatedString(link)) },
-                                    modifier = Modifier.fillMaxWidth().testTag("copy_qr_link_button")
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .glowSignalRim(MaterialTheme.shapes.extraLarge)
+                                        .testTag("copy_qr_link_button")
                                 ) {
                                     Text(stringResource(com.telegramdrive.uploader.R.string.copy_qr))
                                 }
@@ -340,7 +360,13 @@ fun TelegramAuthScreen(
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                                 ),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .liquidGlassOverlay(
+                                        shape = MaterialTheme.shapes.large,
+                                        accent = MaterialTheme.colorScheme.secondary
+                                    ),
+                                shape = MaterialTheme.shapes.large
                             ) {
                                 Text(
                                     text = stringResource(com.telegramdrive.uploader.R.string.enter_two_step_password),
@@ -383,6 +409,7 @@ fun TelegramAuthScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(50.dp)
+                                    .glowSignalRim(MaterialTheme.shapes.extraLarge)
                                     .testTag("password_continue_button"),
                                 enabled = password.isNotBlank() && !isProcessing
                             ) {

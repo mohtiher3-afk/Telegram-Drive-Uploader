@@ -1,6 +1,7 @@
 package com.telegramdrive.uploader.core.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,12 +32,17 @@ fun VideoItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .liquidGlassOverlay(
+                shape = MaterialTheme.shapes.medium,
+                accent = MaterialTheme.colorScheme.primary
+            )
             .testTag("video_item_${video.id}"),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ),
         shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.72f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
@@ -119,7 +125,7 @@ private fun MetadataPill(text: String) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        shape = MaterialTheme.shapes.extraSmall
+        shape = MaterialTheme.shapes.small
     ) {
         Text(
             text = text,

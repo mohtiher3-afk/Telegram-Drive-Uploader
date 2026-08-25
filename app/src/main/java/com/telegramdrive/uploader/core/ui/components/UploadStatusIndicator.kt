@@ -1,18 +1,24 @@
 package com.telegramdrive.uploader.core.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
@@ -58,7 +64,44 @@ fun UploadStatusIndicator(
         label = "upload_progress"
     )
     val progressPercent = uploadProgressPercent(video.progress)
+    val activeUpload = video.status == UploadStatus.UPLOADING && progressFraction < 1f
+    val progressSignalPulse = if (motionEnabled && activeUpload) {
+        rememberInfiniteTransition(label = "upload_progress_signal")
+            .animateFloat(
+                initialValue = 0.55f,
+                targetValue = 1f,
+                animationSpec = AppMotion.uploadSignalPulse(),
+                label = "upload_progress_signal_alpha"
+            )
+            .value
+    } else {
+        0f
+    }
     val statusLabel = stringResource(uploadStatusLabelRes(video.status))
+    val targetStatusColor = when (video.status) {
+        UploadStatus.FAILED -> MaterialTheme.colorScheme.error
+        UploadStatus.UPLOADING -> MaterialTheme.colorScheme.primary
+        UploadStatus.PREPARING -> MaterialTheme.colorScheme.secondary
+        UploadStatus.PAUSED -> MaterialTheme.colorScheme.outline
+        UploadStatus.COMPLETED -> MaterialTheme.colorScheme.tertiary
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    val animatedStatusColor by animateColorAsState(
+        targetValue = targetStatusColor,
+        animationSpec = AppMotion.shortTween(motionEnabled),
+        label = "upload_status_color"
+    )
+    val targetContainerColor = when (video.status) {
+        UploadStatus.UPLOADING, UploadStatus.PREPARING -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.20f)
+        UploadStatus.FAILED -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.20f)
+        UploadStatus.COMPLETED -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.18f)
+        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.30f)
+    }
+    val animatedContainerColor by animateColorAsState(
+        targetValue = targetContainerColor,
+        animationSpec = AppMotion.shortTween(motionEnabled),
+        label = "upload_status_container"
+    )
     val progressDescription = stringResource(
         com.telegramdrive.uploader.R.string.upload_progress_accessibility,
         progressPercent
@@ -69,7 +112,7 @@ fun UploadStatusIndicator(
             .fillMaxWidth()
             .animateContentSize(animationSpec = AppMotion.shortTween(motionEnabled)),
         shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        color = animatedContainerColor
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(
@@ -77,20 +120,20 @@ fun UploadStatusIndicator(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(
-                        com.telegramdrive.uploader.R.string.upload_status,
-                        statusLabel
-                    ),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = when (video.status) {
-                        UploadStatus.FAILED -> MaterialTheme.colorScheme.error
-                        UploadStatus.UPLOADING -> MaterialTheme.colorScheme.primary
-                        UploadStatus.PAUSED -> MaterialTheme.colorScheme.outline
-                        UploadStatus.COMPLETED -> MaterialTheme.colorScheme.tertiary
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                )
+                Crossfade(
+                    targetState = statusLabel,
+                    animationSpec = AppMotion.shortTween(motionEnabled),
+                    label = "upload_status_label"
+                ) { visibleStatusLabel ->
+                    Text(
+                        text = stringResource(
+                            com.telegramdrive.uploader.R.string.upload_status,
+                            visibleStatusLabel
+                        ),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = animatedStatusColor
+                    )
+                }
 
                 if (video.progress > 0 && video.status != UploadStatus.COMPLETED) {
                     Text(
@@ -106,19 +149,47 @@ fun UploadStatusIndicator(
                 exit = if (motionEnabled) fadeOut(animationSpec = AppMotion.shortTween()) else ExitTransition.None
             ) {
                 Spacer(modifier = Modifier.height(4.dp))
-                LinearProgressIndicator(
-                    progress = { animatedProgressFraction },
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .semantics {
-                            progressBarRangeInfo = ProgressBarRangeInfo(
-                                current = progressFraction,
-                                range = 0f..1f,
-                                steps = 0
+                        .height(10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LinearProgressIndicator(
+                        progress = { animatedProgressFraction },
+                        color = animatedStatusColor,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .semantics {
+                                progressBarRangeInfo = ProgressBarRangeInfo(
+                                    current = progressFraction,
+                                    range = 0f..1f,
+                                    steps = 0
+                                )
+                                contentDescription = progressDescription
+                            }
+                    )
+                    if (motionEnabled && activeUpload) {
+                        Canvas(modifier = Modifier.matchParentSize()) {
+                            val signalCenter = Offset(
+                                x = size.width * animatedProgressFraction,
+                                y = size.height / 2f
                             )
-                            contentDescription = progressDescription
+                            drawCircle(
+                                color = animatedStatusColor.copy(alpha = 0.12f * progressSignalPulse),
+                                radius = size.height * (0.58f + (0.20f * progressSignalPulse)),
+                                center = signalCenter
+                            )
+                            drawCircle(
+                                color = animatedStatusColor.copy(alpha = 0.52f + (0.30f * progressSignalPulse)),
+                                radius = size.height * 0.18f,
+                                center = signalCenter
+                            )
                         }
-                )
+                    }
+                }
                 if (video.status == UploadStatus.UPLOADING) {
                     Spacer(modifier = Modifier.height(6.dp))
                     Row(
