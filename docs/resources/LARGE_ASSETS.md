@@ -4,9 +4,9 @@ The threshold for this review is practical rather than destructive: assets are r
 
 | File | Type | Size | Decision | Reason |
 |---|---|---:|---|---|
-| `res/drawable/ic_tg_drive_uploader_1786926729865.jpg` | JPEG application image | 577,141 bytes | REVIEW / KEEP | Largest production image; purpose and source reference require confirmation before optimization |
-| `res/drawable-nodpi/ic_launcher_foreground_image.png` | PNG launcher foreground | 145,923 bytes | KEEP | Indirectly referenced by adaptive launcher foreground; quality and transparent bounds matter |
+| `res/drawable-nodpi/mission_control_logo.png` | PNG Mission Control logo | 3,020,017 bytes | KEEP | Current launcher, onboarding, and splash branding asset |
+| `res/drawable-nodpi/ic_launcher_foreground_image.png` | Legacy PNG launcher foreground | 145,923 bytes | REMOVED | Replaced by `mission_control_logo.png` |
 | `res/values/strings.xml` | XML resources | 8,334 bytes | KEEP | Not a bitmap asset; contains localized application contract |
 | `res/values-ar/strings.xml` | XML resources | 10,439 bytes | KEEP | Not a bitmap asset; Arabic locale contract |
 
-The density-specific launcher WebP files are all small (944–4,736 bytes each) and remain unchanged. No large asset was automatically reduced because the supplied instructions explicitly prohibit blind recompression and branding changes.
+The density-specific launcher WebP files were regenerated from the current Mission Control logo and remain small. The legacy JPG and launcher foreground PNG were deleted after the source-reference audit; no unrelated assets were recompressed.
