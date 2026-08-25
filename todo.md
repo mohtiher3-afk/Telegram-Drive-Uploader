@@ -882,4 +882,4 @@
 - [x] Design an animated splash icon and theme configuration consistent with Mission Control.
 - [x] Implement official Splash Screen API integration and animated vector resources.
 - [x] Build and test startup behavior across supported API levels without affecting TDLib initialization.
-- [ ] Commit and push the verified splash-screen implementation.
+- [x] Commit and push the verified splash-screen implementation.
