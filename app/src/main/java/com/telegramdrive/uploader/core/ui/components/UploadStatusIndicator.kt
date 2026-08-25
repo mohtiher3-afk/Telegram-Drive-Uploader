@@ -1,8 +1,16 @@
 package com.telegramdrive.uploader.core.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -13,6 +21,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
+import com.telegramdrive.uploader.core.ui.theme.AppMotion
+import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 internal fun uploadProgressFraction(percentage: Float): Float =
     (percentage / 100f).coerceIn(0f, 1f)
@@ -40,7 +50,13 @@ fun UploadStatusIndicator(
     onRetryClick: (() -> Unit)? = null,
     onCancelClick: (() -> Unit)? = null
 ) {
+    val motionEnabled = rememberSystemMotionEnabled()
     val progressFraction = uploadProgressFraction(video.progress)
+    val animatedProgressFraction by animateFloatAsState(
+        targetValue = progressFraction,
+        animationSpec = AppMotion.shortTween(motionEnabled),
+        label = "upload_progress"
+    )
     val progressPercent = uploadProgressPercent(video.progress)
     val statusLabel = stringResource(uploadStatusLabelRes(video.status))
     val progressDescription = stringResource(
@@ -49,7 +65,9 @@ fun UploadStatusIndicator(
     )
 
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .animateContentSize(animationSpec = AppMotion.shortTween(motionEnabled)),
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
     ) {
@@ -82,10 +100,14 @@ fun UploadStatusIndicator(
                 }
             }
 
-            if (video.status == UploadStatus.UPLOADING || video.status == UploadStatus.PREPARING) {
+            AnimatedVisibility(
+                visible = video.status == UploadStatus.UPLOADING || video.status == UploadStatus.PREPARING,
+                enter = if (motionEnabled) fadeIn(animationSpec = AppMotion.shortTween()) else EnterTransition.None,
+                exit = if (motionEnabled) fadeOut(animationSpec = AppMotion.shortTween()) else ExitTransition.None
+            ) {
                 Spacer(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(
-                    progress = { progressFraction },
+                    progress = { animatedProgressFraction },
                     modifier = Modifier
                         .fillMaxWidth()
                         .semantics {
