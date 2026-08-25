@@ -706,6 +706,11 @@
 - [x] إنشاء GitHub Release وإرفاق ملفات APK المحدثة للمعماريات الثلاث.
 - [x] التحقق من الرابط والأصول المنشورة وتوثيقها.
 
+## Final repository upload verification
+
+- [x] فحص الفرع والمرجع البعيد وحالة مساحة العمل.
+- [x] دفع أي فرق محلي إن وُجد والتحقق من تطابق المرجع النهائي.
+
 ## User-requested application completeness pass
 
 - [x] Audit missing or incomplete app behavior, build configuration, onboarding, runtime permissions, UI state consistency, and release verification against the current repository.
