@@ -156,7 +156,7 @@ fun OnboardingScreen(
                 Box(contentAlignment = Alignment.Center) {
                     if (page == 0) {
                         androidx.compose.foundation.Image(
-                            painter = painterResource(R.drawable.ic_launcher_foreground_image),
+                            painter = painterResource(R.drawable.mission_control_logo),
                             contentDescription = stringResource(com.telegramdrive.uploader.R.string.telegram_drive),
                             modifier = Modifier
                                 .size(128.dp)

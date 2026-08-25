@@ -21,6 +21,7 @@ class SettingsDataStore @Inject constructor(
 ) {
     private val THEME_KEY = stringPreferencesKey("theme_preference")
     private val ONBOARDING_COMPLETED_KEY = stringPreferencesKey("onboarding_completed")
+    private val OPENING_COMPLETED_KEY = stringPreferencesKey("opening_completed")
     private val TELEGRAM_STATE_KEY = stringPreferencesKey("telegram_connection_state")
     private val TELEGRAM_USER_ID_KEY = stringPreferencesKey("telegram_user_id")
     private val TELEGRAM_USER_FIRST_NAME_KEY = stringPreferencesKey("telegram_user_first_name")
@@ -31,6 +32,10 @@ class SettingsDataStore @Inject constructor(
 
     val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[ONBOARDING_COMPLETED_KEY] == "true"
+    }
+
+    val openingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[OPENING_COMPLETED_KEY] == "true"
     }
 
     val themePreference: Flow<String> = context.dataStore.data.map { preferences ->
@@ -57,6 +62,12 @@ class SettingsDataStore @Inject constructor(
     suspend fun setOnboardingCompleted(completed: Boolean = true) {
         context.dataStore.edit { preferences ->
             preferences[ONBOARDING_COMPLETED_KEY] = completed.toString()
+        }
+    }
+
+    suspend fun setOpeningCompleted(completed: Boolean = true) {
+        context.dataStore.edit { preferences ->
+            preferences[OPENING_COMPLETED_KEY] = completed.toString()
         }
     }
 
