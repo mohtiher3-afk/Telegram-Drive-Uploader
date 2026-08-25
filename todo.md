@@ -883,3 +883,13 @@
 - [x] Implement official Splash Screen API integration and animated vector resources.
 - [x] Build and test startup behavior across supported API levels without affecting TDLib initialization.
 - [x] Commit and push the verified splash-screen implementation.
+
+
+## Mission Control logo and first-launch opening experience
+
+- [x] Audit current launcher assets, first-run persistence, onboarding, and existing splash behavior.
+- [x] Create a distinctive Mission Control logo asset set for launcher, splash, and onboarding use.
+- [x] Implement a first-launch-only cinematic opening screen with expressive animation.
+- [x] Persist completion safely so the opening screen is shown once per installation, without changing TDLib or upload behavior.
+- [x] Verify English/Arabic parity, RTL layout, reduced motion, accessibility semantics, and adaptive sizing.
+- [x] Build, test, inspect APK resources, and push the finished branding update.

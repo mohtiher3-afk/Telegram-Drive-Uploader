@@ -18,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
@@ -40,10 +41,12 @@ import com.telegramdrive.uploader.feature.onboarding.OnboardingViewModel
 import com.telegramdrive.uploader.feature.settings.SettingsScreen
 import com.telegramdrive.uploader.feature.upload.UploadScreen
 import com.telegramdrive.uploader.feature.upload.UploadViewModel
+import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.feature.telegram.TelegramAuthScreen
 import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
 import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
 import com.telegramdrive.uploader.R
+import kotlinx.coroutines.launch
 
 sealed class Screen(
     val route: String,
@@ -66,10 +69,13 @@ val bottomNavItems = listOf(
 
 @Composable
 fun AppNavigation(
+    settingsDataStore: SettingsDataStore,
     navController: NavHostController = rememberNavController()
 ) {
     val onboardingViewModel: OnboardingViewModel = hiltViewModel()
     val onboardingCompleted by onboardingViewModel.completed.collectAsStateWithLifecycle()
+    val openingCompleted by settingsDataStore.openingCompleted.collectAsStateWithLifecycle(initialValue = false)
+    val scope = rememberCoroutineScope()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -152,7 +158,7 @@ fun AppNavigation(
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = AppRoutes.SPLASH,
+                    startDestination = if (openingCompleted) Screen.Home.route else AppRoutes.SPLASH,
                     modifier = Modifier
                         .fillMaxSize()
                         .widthIn(max = AppContentWidth.max)
@@ -161,8 +167,11 @@ fun AppNavigation(
                 composable(AppRoutes.SPLASH) {
                     SplashScreen(
                         onFinished = {
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                            scope.launch {
+                                settingsDataStore.setOpeningCompleted()
+                                navController.navigate(Screen.Home.route) {
+                                    popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                                }
                             }
                         }
                     )

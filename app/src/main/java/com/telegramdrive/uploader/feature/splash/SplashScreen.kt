@@ -4,9 +4,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
-import androidx.compose.animation.graphics.vector.AnimatedImageVector
-import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +22,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.animation.graphics.res.animatedVectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -34,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.R
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalAnimationGraphicsApi::class)
 @Composable
 fun SplashScreen(onFinished: () -> Unit) {
     val context = LocalContext.current
@@ -43,7 +39,6 @@ fun SplashScreen(onFinished: () -> Unit) {
         android.provider.Settings.Global.ANIMATOR_DURATION_SCALE,
         1f
     ) == 0f
-    val animatedIcon = AnimatedImageVector.animatedVectorResource(R.drawable.avd_splash_mission_control)
     val pulse by rememberInfiniteTransition(label = "splash-pulse").animateFloat(
         initialValue = 0.92f,
         targetValue = 1.04f,
@@ -80,7 +75,7 @@ fun SplashScreen(onFinished: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Image(
-                painter = rememberAnimatedVectorPainter(animatedIcon, atEnd = true),
+                painter = painterResource(R.drawable.mission_control_logo),
                 contentDescription = stringResource(R.string.splash_logo_description),
                 modifier = Modifier
                     .size(132.dp)
@@ -88,6 +83,7 @@ fun SplashScreen(onFinished: () -> Unit) {
                         val scale = if (reducedMotion) 1f else pulse
                         scaleX = scale
                         scaleY = scale
+                        rotationZ = if (reducedMotion) 0f else (pulse - 1f) * 18f
                     }
             )
             Text(
