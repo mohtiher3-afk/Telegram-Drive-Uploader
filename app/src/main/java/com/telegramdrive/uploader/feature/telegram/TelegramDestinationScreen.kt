@@ -197,7 +197,7 @@ fun TelegramDestinationScreen(
                                     Text(
                                         text = "@$it",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                 }
                             }
@@ -330,6 +330,7 @@ fun DestinationRow(
             Row(
                 modifier = Modifier
                     .weight(1f)
+                    .heightIn(min = 48.dp)
                     .selectable(
                         selected = isSelected,
                         onClick = onClick,

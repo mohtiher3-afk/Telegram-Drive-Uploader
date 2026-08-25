@@ -38,7 +38,6 @@ fun Modifier.liquidGlassOverlay(
             shape = shape
         )
         .drawWithContent {
-        drawContent()
         drawRect(
             brush = Brush.linearGradient(
                 colors = listOf(
@@ -59,6 +58,7 @@ fun Modifier.liquidGlassOverlay(
             radius = size.minDimension * 0.70f,
             center = Offset(size.width * 0.92f, size.height * 0.92f)
         )
+        drawContent()
     }
 }
 

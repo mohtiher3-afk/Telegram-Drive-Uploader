@@ -35,13 +35,14 @@ enum class GlowColorPreset(
     CUSTOM(storageValue = "Custom", dark = null, light = null);
 
     fun applyTo(base: ColorScheme, darkTheme: Boolean, customHex: String = GlowColorCodec.DEFAULT_HEX): ColorScheme {
-        val colors = if (this == CUSTOM) {
+        val rawColors = if (this == CUSTOM) {
             GlowColorCodec.primaryColorsFor(GlowColorCodec.colorFromHex(customHex), darkTheme)
         } else if (darkTheme) {
             requireNotNull(dark)
         } else {
             requireNotNull(light)
         }
+        val colors = GlowColorCodec.ensureEnhancedTextContrast(rawColors)
         return base.copy(
             primary = colors.primary,
             onPrimary = colors.onPrimary,
@@ -126,7 +127,11 @@ object GlowColorCodec {
             )
         } else {
             val initialPrimary = if (source.luminance() > 0.42f) source.mix(Color.Black, 0.54f) else source
-            val primary = initialPrimary.ensureContrastWith(Color.White)
+            val primary = initialPrimary.ensureContrastWith(
+                foreground = Color.White,
+                minimumRatio = 7f,
+                adjustmentTarget = Color.Black
+            )
             GlowPrimaryColors(
                 primary = primary,
                 onPrimary = Color.White,
@@ -134,6 +139,36 @@ object GlowColorCodec {
                 onPrimaryContainer = Color(0xFF10141D)
             )
         }
+    }
+
+    /**
+     * Keeps custom and curated action colors recognizable while making text-bearing
+     * primary pairs measurable against opaque backgrounds. The 7:1 target is an
+     * enhanced-text engineering target; device-level compositing still requires review.
+     */
+    internal fun ensureEnhancedTextContrast(colors: GlowPrimaryColors): GlowPrimaryColors {
+        val opaquePrimary = colors.primary.copy(alpha = 1f)
+        val primaryForeground = opaquePrimary.bestForeground()
+        val accessiblePrimary = opaquePrimary.ensureContrastWith(
+            foreground = primaryForeground,
+            minimumRatio = 7f,
+            adjustmentTarget = if (primaryForeground.luminance() > 0.5f) Color.Black else Color.White
+        )
+
+        val containerForeground = colors.onPrimaryContainer.copy(alpha = 1f)
+        val opaqueContainer = colors.primaryContainer.copy(alpha = 1f)
+        val accessibleContainer = opaqueContainer.ensureContrastWith(
+            foreground = containerForeground,
+            minimumRatio = 7f,
+            adjustmentTarget = if (containerForeground.luminance() > 0.5f) Color.Black else Color.White
+        )
+
+        return colors.copy(
+            primary = accessiblePrimary,
+            onPrimary = primaryForeground,
+            primaryContainer = accessibleContainer,
+            onPrimaryContainer = containerForeground
+        )
     }
 
     private fun Color.mix(other: Color, amount: Float): Color {
@@ -146,11 +181,15 @@ object GlowColorCodec {
         )
     }
 
-    private fun Color.ensureContrastWith(foreground: Color): Color {
+    private fun Color.ensureContrastWith(
+        foreground: Color,
+        minimumRatio: Float,
+        adjustmentTarget: Color
+    ): Color {
         var candidate = this
-        repeat(20) {
-            if (candidate.contrastRatio(foreground) >= 4.5f) return candidate
-            candidate = candidate.mix(Color.Black, 0.08f)
+        repeat(24) {
+            if (candidate.contrastRatio(foreground) >= minimumRatio) return candidate
+            candidate = candidate.mix(adjustmentTarget, 0.08f)
         }
         return candidate
     }

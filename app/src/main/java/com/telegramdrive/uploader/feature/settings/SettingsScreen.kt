@@ -133,6 +133,7 @@ fun SettingsScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .heightIn(min = 48.dp)
                             .selectable(
                                 selected = uiState.theme == themeKey,
                                 onClick = { viewModel.setTheme(themeKey) },
@@ -174,6 +175,7 @@ fun SettingsScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .heightIn(min = 48.dp)
                             .selectable(
                                 selected = selected,
                                 onClick = { viewModel.setGlowColor(preset) },
