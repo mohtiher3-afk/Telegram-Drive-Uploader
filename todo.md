@@ -914,3 +914,18 @@
 - [x] Audit the README branding and preview sections.
 - [x] Document Mission Control colors, logo usage, accessibility, and RTL guidance in README.md.
 - [x] Review, commit, and push the README documentation update.
+
+
+## README organization
+
+- [ ] Audit README structure, links, duplication, and audience flow.
+- [ ] Reorganize README.md into a clear user/developer guide without losing technical or security details.
+- [ ] Validate formatting and links, then commit and push the README organization update.
+
+
+## Upload latest application update
+
+- [x] Audit current Git status, version metadata, and release workflow.
+- [x] Build and validate the latest application update with the project’s required JDK and ABI gates.
+- [ ] Commit and push the latest source update and trigger the protected release workflow where version and secrets allow.
+- [ ] Record the final upload status, artifact location, and runtime-evidence limits.
