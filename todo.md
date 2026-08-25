@@ -907,3 +907,10 @@
 - [x] Inventory every remaining tracked image, mockup, screenshot, launcher fallback, and README/documentation reference.
 - [x] Replace all confirmed outdated visual assets with the current Mission Control branding or remove obsolete assets where no longer needed.
 - [x] Verify every image reference, rebuild the Android package, and push the complete correction.
+
+
+## README visual identity documentation
+
+- [x] Audit the README branding and preview sections.
+- [x] Document Mission Control colors, logo usage, accessibility, and RTL guidance in README.md.
+- [ ] Review, commit, and push the README documentation update.
