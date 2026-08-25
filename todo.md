@@ -730,3 +730,122 @@
 - [x] Align app `versionName` and `versionCode` with v1.0.17 using metadata-only changes.
 - [x] Rebuild and verify the corrected signed multi-ABI APKs.
 - [x] Update release documentation to distinguish v1.0.16 metadata mismatch from the corrected v1.0.17 release.
+
+
+## Reusable skill extension
+
+- [x] Inspect the existing `telegram-tdlib-controlled-maintenance` skill and extract reusable patterns from the completed validation and release work.
+- [x] Plan concise skill structure, references, scripts, and safety guardrails.
+- [x] Implement the skill update without embedding secrets or repository-specific assumptions.
+- [x] Run skill validation and verify bundled resources are safe and useful.
+- [x] Deliver the updated skill and summarize its coverage.
+
+
+## Material 3 I/O 2026 adoption analysis
+
+- [x] Read the official I/O 2026 Material 3 article and updated maintenance guardrails.
+- [x] Map announced capabilities to the app’s current Compose and Android versions.
+- [x] Classify adoption options by safety, compatibility risk, effort, and user value.
+- [x] Document prioritized recommendations without changing application code.
+- [x] Report safe, conditional, and deferred adoption paths.
+
+
+## Material 3 visual mockup set
+
+- [x] Review image-generation guidance and current app visual references.
+- [x] Define shared composition and accurate content for light phone, dark phone, tablet, and Arabic RTL states.
+- [x] Generate four cohesive visual mockups without presenting them as live APK screenshots.
+- [x] Review readability, state accuracy, RTL direction, and visual consistency.
+- [x] Deliver mockups and explain their prototype status.
+
+
+## Material 3 redesign mockup and motion concept
+
+- [ ] Establish the redesign frame from official Material 3 guidance.
+- [ ] Define the new adaptive hierarchy, semantic tokens, and purposeful motion language.
+- [ ] Generate the redesigned app mockup and motion-state visual companion.
+- [ ] Review hierarchy, readability, Material 3 alignment, and animation intent.
+- [ ] Deliver the redesign mockups with rationale and implementation boundaries.
+- [ ] Generate a short animated prototype preview showing idle, selected, uploading, and completed states with reduced-motion intent.
+
+
+## Upload Workspace Compose UI code
+
+- [x] Review Android Compose and controlled-maintenance constraints for the visual redesign.
+- [x] Inspect the current UI structure, state models, resources, and reusable Material 3 components.
+- [x] Draft the Upload Workspace Compose code without changing TDLib, WorkManager, authentication, or upload semantics.
+- [x] Validate the code against current architecture, English/Arabic resource parity, and reduced-motion boundaries.
+- [x] Deliver the Compose code example and integration guidance.
+
+
+## Pinterest visual inspiration review
+
+- [x] Open and inspect the supplied Pinterest reference.
+- [x] Translate the reference into app-specific Material 3 layout, color, component, and motion ideas.
+- [x] Report inspiration findings and an implementation-safe recommendation.
+
+
+## Original visual direction from Pinterest reference
+
+- [ ] Open and inspect the new Pinterest reference.
+- [ ] Identify transferable visual principles and distinctive product opportunities.
+- [ ] Propose an original Telegram Drive Uploader art direction and interaction language.
+- [ ] Report the concept, safe Material 3 mapping, and next mockup recommendation.
+
+
+## Read-only durable Queue integration assessment
+
+- [x] Refresh the selected GitHub repository and inventory Android upload architecture.
+- [x] Trace upload state, WorkManager, networking, storage, and English/Arabic resource contracts.
+- [x] Map the durable Queue integration boundary, risks, and prerequisites without modifying code.
+- [x] Deliver the read-only repository assessment and recommended next steps.
+
+
+## Material 3 Pinterest-inspired interface image
+
+- [ ] Establish an original Material 3 visual direction from the supplied Pinterest reference.
+- [ ] Generate one standalone application interface mockup image with clear upload hierarchy.
+- [ ] Review the mockup for readability, state clarity, accessibility intent, and obvious visual defects.
+- [ ] Deliver the mockup with rationale and implementation boundaries.
+
+
+## Material 3 reference-color mockup
+
+- [ ] Define the reference-derived palette and Material 3 semantic roles.
+- [ ] Compose the original Telegram Drive upload interface around the palette.
+- [ ] Generate and lightweight-review the color-direction mockup.
+- [ ] Deliver the palette mockup with token mapping and accessibility boundaries.
+
+
+## Pinterest extension for Mission Control
+
+- [ ] Inspect the supplied Pinterest reference and identify transferable visual principles.
+- [ ] Define original additions to the approved Mission Control layout, palette, components, and motion.
+- [ ] Generate a revised interface mockup using the approved design for continuity.
+- [ ] Review and deliver the revised Material 3 mapping without copying protected artwork.
+
+
+## Expressive animated Material 3 concept
+
+- [ ] Define an expressive visual and motion direction grounded in Material 3 principles.
+- [ ] Design the animated state narrative and interface composition.
+- [ ] Generate a high-impact mockup communicating the motion-ready design.
+- [ ] Review hierarchy and deliver implementation-safe animation guidance.
+
+
+## Pinterest animation reference review
+
+- [ ] Open and inspect the supplied Pinterest animation reference.
+- [ ] Extract transferable motion patterns and identify animation risks.
+- [ ] Map the patterns to Material 3 components and real upload states.
+- [x] Deliver motion recommendations before design implementation.
+
+
+## Living Mission Control Android implementation
+
+- [x] Inspect current Android UI, state contracts, motion tokens, and tests.
+- [x] Define state-to-motion mapping and Material 3-safe interaction boundaries.
+- [x] Implement UI-only motion, glow, progress, and completion transitions.
+- [x] Update English/Arabic resources and regression tests for motion behavior.
+- [x] Build, lint, test, and visually verify the Android UI changes.
+- [x] Commit and push the verified UI implementation with evidence.
