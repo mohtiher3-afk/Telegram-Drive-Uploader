@@ -16,6 +16,7 @@ import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import dagger.hilt.android.AndroidEntryPoint
 import com.telegramdrive.uploader.core.navigation.AppNavigation
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
+import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,6 +31,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val themePreference by settingsDataStore.themePreference.collectAsStateWithLifecycle(initialValue = "System")
+            val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Cobalt")
+            val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "B8C4FF")
             val darkTheme = when (themePreference) {
                 "Dark" -> true
                 "Light" -> false
@@ -38,7 +41,9 @@ class MainActivity : ComponentActivity() {
 
             TelegramDriveTheme(
                 darkTheme = darkTheme,
-                dynamicColor = false
+                dynamicColor = false,
+                glowColorPreset = GlowColorPreset.fromStorage(glowColorPreference),
+                customGlowHex = customGlowHex
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

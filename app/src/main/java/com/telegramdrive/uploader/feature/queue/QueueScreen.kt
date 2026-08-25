@@ -1,6 +1,7 @@
 package com.telegramdrive.uploader.feature.queue
 
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
+import com.telegramdrive.uploader.core.ui.components.glowSignalRim
+import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +103,12 @@ fun QueueScreen(
                                     selected = uiState.selectedFilter == filter,
                                     onClick = { viewModel.selectFilter(filter) },
                                     label = { Text(filterLabel(filter)) },
-                                    modifier = Modifier.testTag("queue_filter_${filter.name.lowercase()}")
+                                    modifier = Modifier
+                                        .glowSignalRim(
+                                            shape = MaterialTheme.shapes.small,
+                                            enabled = uiState.selectedFilter == filter
+                                        )
+                                        .testTag("queue_filter_${filter.name.lowercase()}")
                                 )
                             }
                         }
@@ -108,10 +116,21 @@ fun QueueScreen(
                     item {
                         if (uiState.failedCount > 0 || uiState.activeCount > 0) {
                             Card(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .liquidGlassOverlay(
+                                        shape = MaterialTheme.shapes.large,
+                                        accent = MaterialTheme.colorScheme.secondary
+                                    ),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                                )
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                                ),
+                                shape = MaterialTheme.shapes.large,
+                                border = BorderStroke(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.42f)
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -123,12 +142,13 @@ fun QueueScreen(
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
                                             text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_title),
-                                            style = MaterialTheme.typography.titleSmall
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = MaterialTheme.colorScheme.secondary
                                         )
                                         Text(
                                             text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_supporting),
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                     if (uiState.failedCount > 0) {

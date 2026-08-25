@@ -20,6 +20,8 @@ class SettingsDataStore @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val THEME_KEY = stringPreferencesKey("theme_preference")
+    private val GLOW_COLOR_KEY = stringPreferencesKey("glow_color_preference")
+    private val CUSTOM_GLOW_HEX_KEY = stringPreferencesKey("custom_glow_hex")
     private val ONBOARDING_COMPLETED_KEY = stringPreferencesKey("onboarding_completed")
     private val OPENING_COMPLETED_KEY = stringPreferencesKey("opening_completed")
     private val TELEGRAM_STATE_KEY = stringPreferencesKey("telegram_connection_state")
@@ -40,6 +42,14 @@ class SettingsDataStore @Inject constructor(
 
     val themePreference: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[THEME_KEY] ?: "System"
+    }
+
+    val glowColorPreference: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[GLOW_COLOR_KEY] ?: "Cobalt"
+    }
+
+    val customGlowHex: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[CUSTOM_GLOW_HEX_KEY] ?: "B8C4FF"
     }
 
     val telegramConnectionState: Flow<String> = context.dataStore.data.map { preferences ->
@@ -82,6 +92,32 @@ class SettingsDataStore @Inject constructor(
     suspend fun setThemePreference(theme: String) {
         context.dataStore.edit { preferences ->
             preferences[THEME_KEY] = theme
+        }
+    }
+
+    suspend fun setGlowColorPreference(glowColor: String) {
+        context.dataStore.edit { preferences ->
+            preferences[GLOW_COLOR_KEY] = glowColor
+        }
+    }
+
+    suspend fun setCustomGlowHex(hex: String) {
+        context.dataStore.edit { preferences ->
+            preferences[CUSTOM_GLOW_HEX_KEY] = hex
+        }
+    }
+
+    suspend fun saveCustomGlowColorPreferences(hex: String) {
+        context.dataStore.edit { preferences ->
+            preferences[CUSTOM_GLOW_HEX_KEY] = hex
+            preferences[GLOW_COLOR_KEY] = "Custom"
+        }
+    }
+
+    suspend fun resetGlowColorPreferences() {
+        context.dataStore.edit { preferences ->
+            preferences[GLOW_COLOR_KEY] = "Cobalt"
+            preferences[CUSTOM_GLOW_HEX_KEY] = "B8C4FF"
         }
     }
 

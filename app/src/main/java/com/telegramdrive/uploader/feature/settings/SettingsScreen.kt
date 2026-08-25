@@ -1,5 +1,12 @@
 package com.telegramdrive.uploader.feature.settings
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.telegramdrive.uploader.BuildConfig
 
 import androidx.compose.foundation.selection.selectable
@@ -13,6 +20,7 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,7 +48,11 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
+import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +62,14 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
     var showLogoutConfirmation by remember { mutableStateOf(false) }
+    var notificationsEnabled by remember { mutableStateOf(canPostUploadNotifications(context)) }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        notificationsEnabled = granted && NotificationManagerCompat.from(context).areNotificationsEnabled()
+    }
 
     // Trigger update of cache size when screen is opened
     LaunchedEffect(Unit) {
@@ -133,6 +152,69 @@ fun SettingsScreen(
                             selected = uiState.theme == themeKey,
                             onClick = null
                         )
+                    }
+                }
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(com.telegramdrive.uploader.R.string.glow_colors),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = stringResource(com.telegramdrive.uploader.R.string.glow_colors_summary),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                GlowColorPreset.entries.forEach { preset ->
+                    val selected = uiState.glowColor == preset.storageValue
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = selected,
+                                onClick = { viewModel.setGlowColor(preset) },
+                                role = Role.RadioButton
+                            )
+                            .padding(vertical = 10.dp)
+                            .testTag("settings_glow_${preset.storageValue.lowercase()}"),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(20.dp),
+                                shape = MaterialTheme.shapes.extraSmall,
+                                color = preset.swatchColor(uiState.customGlowHex)
+                            ) {}
+                            Text(
+                                text = stringResource(glowColorLabelRes(preset)),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        RadioButton(selected = selected, onClick = null)
+                    }
+                }
+                if (uiState.glowColor == GlowColorPreset.CUSTOM.storageValue) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    GlowColorEditor(
+                        savedHex = uiState.customGlowHex,
+                        onSave = viewModel::saveCustomGlowColor,
+                        onReset = viewModel::resetGlowColors
+                    )
+                } else {
+                    TextButton(
+                        onClick = viewModel::resetGlowColors,
+                        modifier = Modifier.testTag("reset_glow_colors_button")
+                    ) {
+                        Text(stringResource(com.telegramdrive.uploader.R.string.reset_glow_colors))
                     }
                 }
             }
@@ -232,6 +314,66 @@ fun SettingsScreen(
                 }
             }
 
+            SettingsSection(
+                icon = Icons.Default.Notifications,
+                title = stringResource(com.telegramdrive.uploader.R.string.upload_notifications)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(com.telegramdrive.uploader.R.string.upload_notifications_summary),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = stringResource(
+                            if (notificationsEnabled) {
+                                com.telegramdrive.uploader.R.string.upload_notifications_enabled
+                            } else {
+                                com.telegramdrive.uploader.R.string.upload_notifications_disabled
+                            }
+                        ),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = if (notificationsEnabled) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        }
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.POST_NOTIFICATIONS
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            Button(
+                                onClick = {
+                                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                },
+                                modifier = Modifier.testTag("enable_upload_notifications_button")
+                            ) {
+                                Text(stringResource(com.telegramdrive.uploader.R.string.allow_upload_notifications))
+                            }
+                        }
+                        TextButton(
+                            onClick = {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                    }
+                                )
+                            },
+                            modifier = Modifier.testTag("open_notification_settings_button")
+                        ) {
+                            Text(stringResource(com.telegramdrive.uploader.R.string.open_notification_settings))
+                        }
+                    }
+                }
+            }
+
             // 4. Telegram Account Integration
             SettingsSection(
                 icon = Icons.AutoMirrored.Filled.Send,
@@ -327,7 +469,6 @@ fun SettingsScreen(
             var showDiagnosticLogs by remember { mutableStateOf(false) }
             val diagnosticEvents by DiagnosticsManager.events.collectAsStateWithLifecycle()
             val clipboardManager = LocalClipboardManager.current
-            val context = LocalContext.current
 
             SettingsSection(
                 icon = Icons.Default.BugReport,
@@ -514,6 +655,23 @@ fun SettingsScreen(
     }
 }
 
+private fun canPostUploadNotifications(context: android.content.Context): Boolean {
+    val runtimePermissionGranted = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+    return runtimePermissionGranted && NotificationManagerCompat.from(context).areNotificationsEnabled()
+}
+
+private fun glowColorLabelRes(preset: GlowColorPreset): Int = when (preset) {
+    GlowColorPreset.COBALT -> com.telegramdrive.uploader.R.string.glow_color_cobalt
+    GlowColorPreset.LIME -> com.telegramdrive.uploader.R.string.glow_color_lime
+    GlowColorPreset.CYAN -> com.telegramdrive.uploader.R.string.glow_color_cyan
+    GlowColorPreset.VIOLET -> com.telegramdrive.uploader.R.string.glow_color_violet
+    GlowColorPreset.CUSTOM -> com.telegramdrive.uploader.R.string.glow_color_custom
+}
+
 @Composable
 fun SettingsSection(
     icon: ImageVector,
@@ -522,10 +680,18 @@ fun SettingsSection(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .liquidGlassOverlay(
+                shape = MaterialTheme.shapes.large,
+                accent = MaterialTheme.colorScheme.secondary
+            ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        )
+        ),
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.72f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp).fillMaxWidth()
@@ -553,4 +719,3 @@ fun SettingsSection(
         }
     }
 }
-

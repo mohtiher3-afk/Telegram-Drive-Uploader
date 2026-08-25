@@ -13,6 +13,8 @@ import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadCompletionPolicy
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
+import com.telegramdrive.uploader.domain.upload.UploadEventNotifier
+import com.telegramdrive.uploader.domain.upload.UploadEventNotificationPolicy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.collect
@@ -22,7 +24,8 @@ class UploadWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val repository: UploadRepository,
-    private val uploadEngine: TelegramUploadEngine
+    private val uploadEngine: TelegramUploadEngine,
+    private val uploadEventNotifier: UploadEventNotifier
 ) : CoroutineWorker(context, params) {
 
     companion object {
@@ -92,6 +95,7 @@ class UploadWorker @AssistedInject constructor(
                         terminalEventReceived = true
                         repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
                         repository.updateStatus(uploadId, UploadStatus.COMPLETED)
+                        notifyTerminalStatus(uploadId, UploadStatus.COMPLETED)
                         result = Result.success()
                         val duration = System.currentTimeMillis() - startTime
                         DiagnosticsManager.log(
@@ -119,6 +123,7 @@ class UploadWorker @AssistedInject constructor(
                             )
                             Result.retry()
                         } else {
+                            notifyTerminalStatus(uploadId, UploadStatus.FAILED)
                             DiagnosticsManager.log(
                                 category = DiagnosticCategory.UPLOAD_FAILED,
                                 severity = DiagnosticSeverity.ERROR,
@@ -133,6 +138,7 @@ class UploadWorker @AssistedInject constructor(
             }
             if (UploadCompletionPolicy.decide(terminalEventReceived) == UploadCompletionPolicy.Decision.UNCONFIRMED) {
                 repository.updateStatus(uploadId, UploadStatus.FAILED)
+                notifyTerminalStatus(uploadId, UploadStatus.FAILED)
                 DiagnosticsManager.log(
                     category = DiagnosticCategory.UPLOAD_FAILED,
                     severity = DiagnosticSeverity.ERROR,
@@ -148,6 +154,7 @@ class UploadWorker @AssistedInject constructor(
                 uploadId,
                 if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
             )
+            if (!canRetry) notifyTerminalStatus(uploadId, UploadStatus.FAILED)
             result = if (canRetry) Result.retry() else Result.failure()
             val mappedCategory = DiagnosticsManager.mapException(e)
             val mappedCode = DiagnosticsManager.mapExceptionToCode(e)
@@ -169,5 +176,11 @@ class UploadWorker @AssistedInject constructor(
         )
 
         return result
+    }
+
+    private fun notifyTerminalStatus(uploadId: String, status: UploadStatus) {
+        UploadEventNotificationPolicy.eventFor(status)?.let { event ->
+            uploadEventNotifier.notify(event, uploadId)
+        }
     }
 }

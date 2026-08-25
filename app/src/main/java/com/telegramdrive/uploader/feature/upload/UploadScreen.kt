@@ -29,6 +29,8 @@ import com.telegramdrive.uploader.core.ui.components.EmptyState
 import com.telegramdrive.uploader.core.ui.components.ErrorState
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
+import com.telegramdrive.uploader.core.ui.components.glowSignalRim
+import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,6 +127,14 @@ fun UploadScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 12.dp)
+                                    .liquidGlassOverlay(
+                                        shape = MaterialTheme.shapes.large,
+                                        accent = if (selectedDestination != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                                    )
+                                    .glowSignalRim(
+                                        shape = MaterialTheme.shapes.large,
+                                        enabled = selectedDestination != null
+                                    )
                                     .testTag("select_destination_card"),
                                 colors = CardDefaults.cardColors(
                                     containerColor = if (selectedDestination != null)
@@ -162,7 +172,11 @@ fun UploadScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 12.dp),
+                                    .padding(bottom = 12.dp)
+                                    .liquidGlassOverlay(
+                                        shape = MaterialTheme.shapes.medium,
+                                        accent = MaterialTheme.colorScheme.secondary
+                                    ),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                                 ),
@@ -223,7 +237,11 @@ fun UploadScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 12.dp),
+                                    .padding(bottom = 12.dp)
+                                    .liquidGlassOverlay(
+                                        shape = MaterialTheme.shapes.large,
+                                        accent = MaterialTheme.colorScheme.tertiary
+                                    ),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.tertiaryContainer
                                 ),
@@ -263,7 +281,11 @@ fun UploadScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 16.dp),
+                                    .padding(bottom = 16.dp)
+                                    .liquidGlassOverlay(
+                                        shape = MaterialTheme.shapes.extraLarge,
+                                        accent = MaterialTheme.colorScheme.primary
+                                    ),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer
                                 ),
@@ -312,6 +334,10 @@ fun UploadScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(min = 56.dp)
+                                    .glowSignalRim(
+                                        shape = MaterialTheme.shapes.extraLarge,
+                                        enabled = selectedDestination != null
+                                    )
                                     .testTag("add_to_queue_button"),
                                 enabled = selectedDestination != null,
                                 shape = MaterialTheme.shapes.extraLarge,
