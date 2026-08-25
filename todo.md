@@ -900,3 +900,10 @@
 - [x] Audit repository images and all references to identify the obsolete asset.
 - [x] Remove the obsolete image and install the updated Mission Control logo in its intended locations.
 - [x] Verify references, commit, and push the image replacement.
+
+
+## Complete remaining-image replacement
+
+- [x] Inventory every remaining tracked image, mockup, screenshot, launcher fallback, and README/documentation reference.
+- [x] Replace all confirmed outdated visual assets with the current Mission Control branding or remove obsolete assets where no longer needed.
+- [x] Verify every image reference, rebuild the Android package, and push the complete correction.
