@@ -19,11 +19,23 @@ The repository contains the real TDLib Java bindings and native libraries, a loc
 
 > **Evidence boundary:** A successful build proves compilation and packaging only. Telegram authentication, destination permissions, native runtime behavior, and real file delivery require testing on a compatible physical device or emulator. The current repository status should not be interpreted as unrestricted production certification without that runtime evidence.
 
+## Downloads
+
+Source code is stored in this repository; installable APK files are published under [GitHub Releases](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases), not committed to the source tree.
+
+| Channel | Use | Download |
+|---|---|---|
+| Stable | The latest non-prerelease project release. | [Latest Release](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases/latest) |
+| Accessibility Debug Build 1 | Debug-signed verification build for the current accessibility work. It is not a production-signed distribution. | [v1.0.18-a11y.1](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases/tag/v1.0.18-a11y.1) |
+
+Choose the asset that matches the device: `arm64-v8a` for most current phones, `armeabi-v7a` for older 32-bit devices, and `x86_64` for compatible emulators. A Debug-signed APK can fail to update an installation signed with a different certificate.
+
 ## Contents
 
 - [Application preview](#application-preview)
 - [Mission Control visual identity](#mission-control-visual-identity)
 - [Features](#features)
+- [Downloads](#downloads)
 - [Requirements](#requirements)
 - [Quick start](#quick-start)
 - [Telegram API configuration](#telegram-api-configuration)
@@ -194,6 +206,8 @@ For native dependency preparation and runtime loading, see [`docs/TDLIB_NATIVE_D
 Release signing must use a keystore configured for the local environment or the repository’s protected CI secrets. Signing material must never be committed. ABI-specific release APKs are produced by the project’s CI workflow; select the artifact matching the target device architecture.
 
 Before creating a release, verify the version metadata, run the release verification mode, confirm all supported ABI jobs pass, and inspect the generated checksums and signatures. A signed APK proves packaging and signing, not Telegram authentication or real upload delivery.
+
+The `Android Signed Multi-ABI Release` workflow runs when a new `vMAJOR.MINOR.PATCH` tag is pushed, or can be started manually with an existing tag. It validates the tag against `versionName`, builds signed Release APKs for every supported ABI, verifies TDLib packaging, signatures, and SHA-256 checksums, then creates a GitHub Release only when every ABI job succeeds. Required GitHub Actions secrets and the first-release procedure are documented in [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
 
 ## Troubleshooting
 

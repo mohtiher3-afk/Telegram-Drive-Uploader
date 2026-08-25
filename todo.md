@@ -711,6 +711,25 @@
 - [x] فحص الفرع والمرجع البعيد وحالة مساحة العمل.
 - [x] دفع أي فرق محلي إن وُجد والتحقق من تطابق المرجع النهائي.
 
+## Repository visibility diagnosis
+
+- [x] فحص محتوى `main` والإصدار المنشور وموضع ملفات APK.
+- [x] تحديد سبب عدم ظهور التطبيق وتوضيح مسار الوصول الصحيح.
+
+## Signed APK GitHub Actions release automation
+
+- [x] تدقيق سير العمل الحالي وإعدادات التوقيع ونسخة التطبيق ونقطة إطلاق الإصدار.
+- [x] إضافة سير عمل آمن يبني APK Release لكل ABI عند وسم إصدار مؤهل.
+- [x] إضافة فحوص التوقيع والمحتوى والتجزئة ورفع الأصول إلى GitHub Release.
+- [x] توثيق GitHub Secrets وخطوات تفعيل أول إصدار، مع حدود التحقق البعيد؛ فحص الأسماء عن بُعد محجوب حاليًا بصلاحيات التكامل.
+
+## Repository visibility and automation publication
+
+- [ ] تحديث وصف المستودع وREADME بمرجع الإصدار ومسار APK الصحيحين.
+- [ ] تضمين سير إصدار GitHub Actions ووثائقه المدققة ضمن الالتزام.
+- [ ] التحقق من الفروق والأمان ثم دفع التحديثات إلى `main`.
+- [ ] مراجعة ظهور الوصف وREADME وسير العمل على GitHub.
+
 ## User-requested application completeness pass
 
 - [x] Audit missing or incomplete app behavior, build configuration, onboarding, runtime permissions, UI state consistency, and release verification against the current repository.

@@ -1,10 +1,13 @@
-name: Android Multi-ABI Release
+name: Android Signed Multi-ABI Release
 
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag, for example v1.0.2'
+        description: "Existing Git tag to publish, for example v1.0.19"
         required: true
         type: string
 
@@ -12,12 +15,64 @@ permissions:
   contents: write
 
 concurrency:
-  group: android-release-${{ github.ref }}
+  group: android-release-${{ github.workflow }}-${{ github.ref || inputs.tag }}
   cancel-in-progress: false
 
 jobs:
+  validate-release:
+    name: Validate release tag and source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      tag: ${{ steps.release-tag.outputs.tag }}
+      source_ref: ${{ steps.release-tag.outputs.source_ref }}
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'push' && github.ref || inputs.tag }}
+          fetch-depth: 0
+
+      - name: Validate release tag and version
+        id: release-tag
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_TAG: ${{ github.ref_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${EVENT_TAG}"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            TAG="${INPUT_TAG}"
+          fi
+
+          case "$TAG" in
+            v[0-9]*.[0-9]*.[0-9]*|v[0-9]*.[0-9]*.[0-9]*-*) ;;
+            *)
+              echo "Release tag must use vMAJOR.MINOR.PATCH or a prerelease suffix: $TAG"
+              exit 1
+              ;;
+          esac
+
+          git rev-parse --verify "refs/tags/$TAG" > /dev/null
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          if [ "$TAG" != "v$VERSION_NAME" ] && ! [[ "$TAG" == "v$VERSION_NAME-"* ]]; then
+            echo "Tag $TAG does not match app versionName $VERSION_NAME"
+            exit 1
+          fi
+
+          if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/$TAG" > /dev/null 2>&1; then
+            echo "A GitHub Release already exists for $TAG; refuse to overwrite published assets."
+            exit 1
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "source_ref=$TAG" >> "$GITHUB_OUTPUT"
+
   release:
     name: Build signed ${{ matrix.abi }} APK
+    needs: validate-release
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -26,14 +81,16 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Check out source
+      - name: Check out tagged source
         uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.validate-release.outputs.source_ref }}
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
@@ -41,23 +98,27 @@ jobs:
       - name: Install Android SDK packages
         run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;26.3.11579264"
 
-      - name: Prepare official OpenSSL runtime dependencies
-        env:
-          TARGET_ABIS: ${{ matrix.abi }}
-        run: ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/26.3.11579264" ./scripts/build-openssl-android.sh
-
       - name: Set up Gradle 8.9
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '8.9'
+          gradle-version: "8.9"
 
-      - name: Prepare Telegram configuration
+      - name: Prepare required Telegram configuration
         env:
           TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
           TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
         run: |
-          printf 'TELEGRAM_API_ID=%s\n' "${TELEGRAM_API_ID:-0}" > .env
-          printf 'TELEGRAM_API_HASH=%s\n' "${TELEGRAM_API_HASH:-placeholder_hash}" >> .env
+          set -euo pipefail
+          test -n "$TELEGRAM_API_ID"
+          test -n "$TELEGRAM_API_HASH"
+          printf 'TELEGRAM_API_ID=%s\n' "$TELEGRAM_API_ID" > .env
+          printf 'TELEGRAM_API_HASH=%s\n' "$TELEGRAM_API_HASH" >> .env
+          chmod 600 .env
+
+      - name: Prepare official OpenSSL runtime dependencies
+        env:
+          TARGET_ABIS: ${{ matrix.abi }}
+        run: ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/26.3.11579264" ./scripts/build-openssl-android.sh
 
       - name: Prepare Release signing
         env:
@@ -66,6 +127,7 @@ jobs:
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
+          set -euo pipefail
           test -n "$RELEASE_KEYSTORE_BASE64"
           test -n "$RELEASE_STORE_PASSWORD"
           test -n "$RELEASE_KEY_ALIAS"
@@ -77,16 +139,16 @@ jobs:
             -storepass "$RELEASE_STORE_PASSWORD" \
             -alias "$RELEASE_KEY_ALIAS" > /dev/null
 
-      - name: Verify official TDLib artifacts
+      - name: Run release gates
         env:
           TDLIB_CHECK_ABI: ${{ matrix.abi }}
-        run: ./scripts/check-tdlib-artifacts.sh
-
-      - name: Run JVM unit tests
-        run: gradle --no-daemon --max-workers=2 :app:testDebugUnitTest
-
-      - name: Run release lint
-        run: gradle --no-daemon --max-workers=2 :app:lintVitalRelease
+        run: |
+          set -euo pipefail
+          ./scripts/check-repository-security.sh
+          ./scripts/check-resource-integrity.sh
+          ./scripts/check-workmanager-manifest.sh
+          ./scripts/check-tdlib-artifacts.sh
+          gradle --no-daemon --max-workers=2 :app:testDebugUnitTest :app:lintVitalRelease
 
       - name: Build signed Release APK for selected ABI
         env:
@@ -100,9 +162,11 @@ jobs:
             -PtargetAbi=${{ matrix.abi }} \
             :app:assembleRelease
 
-      - name: Verify APK and create checksum
+      - name: Verify signed APK and create checksum
+        env:
+          ABI: ${{ matrix.abi }}
         run: |
-          ABI="${{ matrix.abi }}"
+          set -euo pipefail
           APK="app/build/outputs/apk/release/app-${ABI}-release.apk"
           test -f "$APK"
           unzip -l "$APK" | grep -q "lib/${ABI}/libtdjni.so"
@@ -110,19 +174,16 @@ jobs:
             echo "Unexpected additional ABI library found in $ABI APK"
             exit 1
           fi
-          sha256sum "$APK" | tee "apk-${ABI}-sha256.txt"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK"
+          sha256sum "$APK" | tee "app-${ABI}-release.apk.sha256"
 
-      - name: Verify APK signature
-        run: |
-          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "app/build/outputs/apk/release/app-${{ matrix.abi }}-release.apk"
-
-      - name: Upload signed ABI release artifact
+      - name: Upload verified ABI artifact
         uses: actions/upload-artifact@v7
         with:
           name: telegram-drive-uploader-${{ matrix.abi }}-release
           path: |
             app/build/outputs/apk/release/app-${{ matrix.abi }}-release.apk
-            apk-${{ matrix.abi }}-sha256.txt
+            app-${{ matrix.abi }}-release.apk.sha256
           if-no-files-found: error
           retention-days: 30
 
@@ -131,26 +192,34 @@ jobs:
         run: rm -f .env release.keystore local.properties
 
   publish:
-    name: Publish multi-ABI GitHub Release
-    needs: release
+    name: Publish verified multi-ABI GitHub Release
+    needs: [validate-release, release]
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - name: Download all signed ABI artifacts
+      - name: Download verified release assets
         uses: actions/download-artifact@v8
         with:
           pattern: telegram-drive-uploader-*-release
           path: release-assets
           merge-multiple: true
 
-      - name: Flatten release assets
+      - name: Verify release asset set
         run: |
-          mkdir -p release-assets-flat
-          find release-assets -type f -exec cp {} release-assets-flat/ \;
+          set -euo pipefail
+          for ABI in arm64-v8a armeabi-v7a x86_64; do
+            test -f "release-assets/app-${ABI}-release.apk"
+            test -f "release-assets/app-${ABI}-release.apk.sha256"
+            (cd release-assets && sha256sum --check "app-${ABI}-release.apk.sha256")
+          done
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: "${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.tag }}"
-          name: "Telegram Drive Uploader ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.tag }}"
+          tag_name: ${{ needs.validate-release.outputs.tag }}
+          name: Telegram Drive Uploader ${{ needs.validate-release.outputs.tag }}
+          target_commitish: ${{ needs.validate-release.outputs.source_ref }}
           generate_release_notes: true
-          files: release-assets-flat/*
+          files: |
+            release-assets/*.apk
+            release-assets/*.sha256
