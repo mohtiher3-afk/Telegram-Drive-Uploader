@@ -22,6 +22,37 @@ The following visuals show the current Material 3 Expressive direction and the m
   <img src="design/app_icon_concept.png" alt="Telegram Drive Uploader application icon concept" width="260" />
 </p>
 
+## Mission Control visual identity
+
+Telegram Drive Uploader uses a **Mission Control** visual language: a calm dark control-room surface, luminous orbital accents, and a high-visibility upload action. The identity is designed to make the upload state immediately recognizable while keeping the underlying Material 3 hierarchy, semantic color roles, and adaptive Compose layouts intact.
+
+### Color system
+
+The palette below is the source of truth for the custom non-dynamic theme in `core/ui/theme/Theme.kt`. Each color has a functional role; it should not be used as decoration without a corresponding state or hierarchy purpose.
+
+| Token | Hex value | Role |
+|---|---|---|
+| **Plum** | `#17131D` | Primary dark background and base surface for the Mission Control canvas. |
+| **Violet** | `#D7B9FF` / `#512A73` | Secondary navigation, orbit/glow accents, selected controls, and destination emphasis. |
+| **Lime** | `#D8F56A` | Primary upload action, active progress emphasis, and high-priority positive interaction. |
+| **Mint** | `#9FFFD2` | Success, completion, telemetry, and supporting upload-state feedback. |
+| **Soft text** | `#F2EAF5` | Primary text on dark surfaces. |
+| **Muted text** | `#D6C6DC` | Supporting text, metadata, and secondary descriptions. |
+
+The light theme keeps the same semantic roles while adapting the surface and foreground values for contrast. On Android 12 and later, the app may use system dynamic color when enabled; the semantic roles remain the authority even when the platform derives the final tones.
+
+### Logo and imagery
+
+The current mark is the **Mission Control orbital upload logo**: a lime upward arrow and tray enclosed by a violet orbital form with mint highlights. The canonical asset is [`app/src/main/res/drawable-nodpi/mission_control_logo.png`](app/src/main/res/drawable-nodpi/mission_control_logo.png). It is used by the launcher foreground, the first-run onboarding hero, the opening animation, and the repository preview at [`design/app_icon_concept.png`](design/app_icon_concept.png).
+
+Use the mark without added text, stretching, recoloring, or extra badges. Keep sufficient clear space around the symbol, preserve its square aspect ratio, and place it on a Plum or similarly dark surface when the luminous violet, Lime, and Mint details are expected to remain legible. The multi-device design reference is available at [`design/multi_device_ui_preview.png`](design/multi_device_ui_preview.png).
+
+### Motion and accessibility
+
+Mission Control motion communicates readiness and upload progress rather than serving as continuous decoration. The opening sequence uses a short logo reveal and restrained pulse; reduced-motion settings disable the non-essential pulse and shorten the transition. Screen-reader labels are localized, and the visual system must never use color or animation as the only indication of upload state.
+
+Arabic and English are treated as equal first-class locales. Compose layout direction follows the active locale, so controls, labels, and supporting content must remain usable in RTL without mirroring the logo itself. Any future visual asset or screen should preserve readable contrast, adaptive sizing, semantic labels, and the Material 3 accessibility guidance ([5]).
+
 ## Features
 
 | Feature | Description |
