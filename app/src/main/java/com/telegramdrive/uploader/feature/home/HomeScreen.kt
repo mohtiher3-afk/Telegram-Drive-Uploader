@@ -462,7 +462,7 @@ private fun ConnectionCard(
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (authorized) {
-                        animatedContentColor.copy(alpha = 0.78f)
+                        animatedContentColor
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },
@@ -474,7 +474,7 @@ private fun ConnectionCard(
                         Text(
                             text = "@$it",
                             style = MaterialTheme.typography.labelSmall,
-                            color = animatedContentColor.copy(alpha = 0.70f)
+                            color = animatedContentColor
                         )
                     }
                 }

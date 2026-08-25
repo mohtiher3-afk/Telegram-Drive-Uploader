@@ -264,7 +264,7 @@ fun UploadScreen(
                                         Text(
                                             text = stringResource(com.telegramdrive.uploader.R.string.smart_file_assistant_description),
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.82f)
+                                            color = MaterialTheme.colorScheme.onTertiaryContainer
                                         )
                                     }
                                     FilledTonalButton(
@@ -301,10 +301,10 @@ fun UploadScreen(
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = stringResource(com.telegramdrive.uploader.R.string.total_size_summary, formatFileSize(totalSize)),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                        Text(
+                                            text = stringResource(com.telegramdrive.uploader.R.string.total_size_summary, formatFileSize(totalSize)),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                 }
                             }

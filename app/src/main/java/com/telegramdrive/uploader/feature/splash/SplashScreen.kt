@@ -39,17 +39,22 @@ fun SplashScreen(onFinished: () -> Unit) {
         android.provider.Settings.Global.ANIMATOR_DURATION_SCALE,
         1f
     ) == 0f
-    val pulse by rememberInfiniteTransition(label = "splash-pulse").animateFloat(
-        initialValue = 0.92f,
-        targetValue = 1.04f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 900,
-                easing = androidx.compose.animation.core.FastOutSlowInEasing
-            )
-        ),
-        label = "splash-pulse-scale"
-    )
+    val pulse = if (reducedMotion) {
+        1f
+    } else {
+        val animatedPulse by rememberInfiniteTransition(label = "splash-pulse").animateFloat(
+            initialValue = 0.92f,
+            targetValue = 1.04f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 900,
+                    easing = androidx.compose.animation.core.FastOutSlowInEasing
+                )
+            ),
+            label = "splash-pulse-scale"
+        )
+        animatedPulse
+    }
 
     LaunchedEffect(reducedMotion) {
         delay(if (reducedMotion) 350L else 950L)

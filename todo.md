@@ -676,6 +676,29 @@
 - [x] إنشاء التزام واضح لتغييرات Glow المدققة.
 - [x] دفع الالتزام إلى المستودع المرتبط والتحقق من مرجعه.
 
+## Accessibility audit before APK release
+
+- [x] تحديد شاشات التطبيق والمسارات التفاعلية ذات الأولوية للتدقيق.
+- [x] تدقيق الدلالات وTalkBack والتركيز والأهداف البديلة للحركة والسحب؛ يبقى تشغيل TalkBack الفعلي على الجهاز.
+- [x] تدقيق تباين النصوص وعناصر التحكم في السمتين الفاتحة والداكنة ضمن الأدلة البرمجية المتاحة.
+- [x] مراجعة RTL والموارد والخط الكبير وتقليل الحركة مع فصل حدود الجهاز الفعلي.
+- [x] إصلاح العيوب البرمجية ذات الأولوية وإعادة تشغيل التحقق.
+- [x] إعداد تقرير وصول واتخاذ قرار جاهزية واضح قبل أي APK أو Release.
+
+## Automated accessibility follow-up before device testing
+
+- [x] تجميع Android instrumentation tests، بما فيها اختبار استمرار إعدادات Glow.
+- [x] تدقيق ثابت لأسماء عناصر الإدخال وأدوارها ووصف الأزرار التفاعلية.
+- [x] تدقيق ثابت للأبعاد الدنيا لعناصر الوصول وتسجيل ما يتطلب قياسًا حيًا.
+- [x] توثيق أي إصلاح إضافي وحدود الفحص دون جهاز أو محاكي.
+
+## Authorized APK build and repository upload
+
+- [x] فحص حالة الفرع والوجهة قبل البناء والالتزام.
+- [x] بناء APK تشغيلي والتحقق من وجوده وحجمه.
+- [ ] مراجعة التغييرات ونتائج التحقق ثم إنشاء التزام واضح.
+- [ ] دفع الالتزام إلى المستودع المرتبط والتحقق من مرجعه.
+
 ## User-requested application completeness pass
 
 - [x] Audit missing or incomplete app behavior, build configuration, onboarding, runtime permissions, UI state consistency, and release verification against the current repository.
