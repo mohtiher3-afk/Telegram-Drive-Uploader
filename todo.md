@@ -927,5 +927,5 @@
 
 - [x] Audit current Git status, version metadata, and release workflow.
 - [x] Build and validate the latest application update with the project’s required JDK and ABI gates.
-- [ ] Commit and push the latest source update and trigger the protected release workflow where version and secrets allow.
-- [ ] Record the final upload status, artifact location, and runtime-evidence limits.
+- [x] Commit and push the latest source update and trigger the protected release workflow where version and secrets allow.
+- [x] Record the final upload status, artifact location, and runtime-evidence limits.
