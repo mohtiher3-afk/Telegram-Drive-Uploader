@@ -1097,3 +1097,13 @@
 
 - [ ] مراجعة فرق تحديث KSP ورأس `main` البعيد، ثم إنشاء الالتزام ودفعه دون أي Tag أو Release.
 - [ ] متابعة Android Multi-ABI CI الناتج وفحص عدم تكرار ملاحظة ApplicationManager في سجلات KSP.
+
+## Android Multi-ABI CI performance evidence — 69fc26f
+
+- [x] استخراج أزمنة مهام CI لكل ABI وتحديد إن كانت السجلات تنشر قياسات ذاكرة فعلية.
+- [x] توثيق مقارنة الأداء وحدود غياب telemetry الذاكرة الفعلية؛ لا تنشر سجلات هذا التشغيل Peak RSS أو JVM/Kotlin heap usage.
+
+## Android Multi-ABI CI memory telemetry
+
+- [ ] إضافة تقرير Peak RSS وGradle JVM heap محدود الخصوصية لكل ABI، ثم رفعه كـartifact تشخيصي مستقل.
+- [ ] مراجعة صياغة workflow ودفع التغيير ومتابعة CI الجديدة للتحقق من التقرير دون إظهار متغيرات بيئة أو أسرار.

@@ -89,13 +89,19 @@ jobs:
         run: ./scripts/check-resource-integrity.sh
 
       - name: Run JVM unit tests
-        run: gradle --no-daemon --max-workers=2 :app:testDebugUnitTest
+        env:
+          MEMORY_TELEMETRY_DIR: ${{ runner.temp }}/ci-memory/${{ matrix.abi }}
+        run: ./scripts/measure-gradle-memory.sh jvm-unit-tests gradle --no-daemon --max-workers=2 :app:testDebugUnitTest
 
       - name: Run release lint
-        run: gradle --no-daemon --max-workers=2 :app:lintVitalRelease
+        env:
+          MEMORY_TELEMETRY_DIR: ${{ runner.temp }}/ci-memory/${{ matrix.abi }}
+        run: ./scripts/measure-gradle-memory.sh release-lint gradle --no-daemon --max-workers=2 :app:lintVitalRelease
 
       - name: Build debug APK for selected ABI
-        run: gradle --no-daemon --max-workers=1 -PtargetAbi=${{ matrix.abi }} :app:assembleDebug
+        env:
+          MEMORY_TELEMETRY_DIR: ${{ runner.temp }}/ci-memory/${{ matrix.abi }}
+        run: ./scripts/measure-gradle-memory.sh debug-apk gradle --no-daemon --max-workers=1 -PtargetAbi=${{ matrix.abi }} :app:assembleDebug
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v7
@@ -103,6 +109,15 @@ jobs:
           name: telegram-drive-uploader-${{ matrix.abi }}-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload memory telemetry
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: telegram-drive-uploader-${{ matrix.abi }}-memory-telemetry
+          path: ${{ runner.temp }}/ci-memory/${{ matrix.abi }}/*.txt
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Remove local CI files
