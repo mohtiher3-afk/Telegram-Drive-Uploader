@@ -135,9 +135,11 @@ fun HistoryScreen(
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Text(
                                     text = stringResource(
@@ -148,7 +150,10 @@ fun HistoryScreen(
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.primary
                                 )
-                                Row {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
                                     TextButton(onClick = { viewModel.setSort(HistorySort.NEWEST) }) { Text(stringResource(com.telegramdrive.uploader.R.string.newest)) }
                                     TextButton(onClick = { viewModel.setSort(HistorySort.LARGEST) }) { Text(stringResource(com.telegramdrive.uploader.R.string.largest)) }
                                 }

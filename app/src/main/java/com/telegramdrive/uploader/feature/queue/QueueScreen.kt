@@ -129,29 +129,32 @@ fun QueueScreen(
                                 ),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
-                                Row(
+                                Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_title),
-                                            style = MaterialTheme.typography.titleSmall,
-                                            color = MaterialTheme.colorScheme.secondary
-                                        )
-                                        Text(
-                                            text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_supporting),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
+                                    Text(
+                                        text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_title),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                    Text(
+                                        text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_supporting),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
                                     if (uiState.failedCount > 0) {
                                         Button(
                                             onClick = viewModel::retryAllFailed,
-                                            modifier = Modifier.testTag("retry_all_failed")
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .testTag("retry_all_failed")
                                         ) {
                                             Icon(Icons.Default.Refresh, contentDescription = null)
                                             Spacer(modifier = Modifier.padding(horizontal = 2.dp))
@@ -161,12 +164,15 @@ fun QueueScreen(
                                     if (uiState.activeCount > 0) {
                                         Button(
                                             onClick = viewModel::pauseAllActive,
-                                            modifier = Modifier.testTag("pause_all_active")
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .testTag("pause_all_active")
                                         ) {
                                             Icon(Icons.Default.PauseCircleOutline, contentDescription = null)
                                             Spacer(modifier = Modifier.padding(horizontal = 2.dp))
                                             Text(stringResource(com.telegramdrive.uploader.R.string.pause))
                                         }
+                                    }
                                     }
                                 }
                             }

@@ -29,7 +29,7 @@ interface UploadDao {
     @Query("UPDATE uploads SET status = :status WHERE id = :id")
     suspend fun updateStatus(id: String, status: String)
 
-    @Query("UPDATE uploads SET uploadedBytes = :uploadedBytes, totalBytes = :totalBytes, progress = :progress, speed = :speed, averageSpeed = :averageSpeed, eta = :eta, status = 'UPLOADING' WHERE id = :id")
+    @Query("UPDATE uploads SET uploadedBytes = :uploadedBytes, totalBytes = :totalBytes, progress = :progress, speed = :speed, averageSpeed = :averageSpeed, eta = :eta, status = 'UPLOADING' WHERE id = :id AND status IN ('PREPARING', 'UPLOADING')")
     suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long)
 
     @Query("UPDATE uploads SET uploadDurationMs = :durationMs WHERE id = :id")
