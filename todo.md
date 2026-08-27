@@ -669,67 +669,6 @@
 - [x] تطبيقه على عناصر محرر Glow القابلة للتشغيل والتحقق من تباينه في السمتين.
 - [x] تشغيل البناء والاختبارات وتوثيق حدود اختبار لوحة المفاتيح وTalkBack على الجهاز؛ لا يزال اختبار الجهاز غير متاح هنا.
 
-## Authorized Glow UI repository upload
-
-- [x] فحص الفرع والوجهة وحالة التغييرات قبل الالتزام.
-- [x] مراجعة الملفات المضمنة ونتائج التحقق قبل إنشاء الالتزام.
-- [x] إنشاء التزام واضح لتغييرات Glow المدققة.
-- [x] دفع الالتزام إلى المستودع المرتبط والتحقق من مرجعه.
-
-## Accessibility audit before APK release
-
-- [x] تحديد شاشات التطبيق والمسارات التفاعلية ذات الأولوية للتدقيق.
-- [x] تدقيق الدلالات وTalkBack والتركيز والأهداف البديلة للحركة والسحب؛ يبقى تشغيل TalkBack الفعلي على الجهاز.
-- [x] تدقيق تباين النصوص وعناصر التحكم في السمتين الفاتحة والداكنة ضمن الأدلة البرمجية المتاحة.
-- [x] مراجعة RTL والموارد والخط الكبير وتقليل الحركة مع فصل حدود الجهاز الفعلي.
-- [x] إصلاح العيوب البرمجية ذات الأولوية وإعادة تشغيل التحقق.
-- [x] إعداد تقرير وصول واتخاذ قرار جاهزية واضح قبل أي APK أو Release.
-
-## Automated accessibility follow-up before device testing
-
-- [x] تجميع Android instrumentation tests، بما فيها اختبار استمرار إعدادات Glow.
-- [x] تدقيق ثابت لأسماء عناصر الإدخال وأدوارها ووصف الأزرار التفاعلية.
-- [x] تدقيق ثابت للأبعاد الدنيا لعناصر الوصول وتسجيل ما يتطلب قياسًا حيًا.
-- [x] توثيق أي إصلاح إضافي وحدود الفحص دون جهاز أو محاكي.
-
-## Authorized APK build and repository upload
-
-- [x] فحص حالة الفرع والوجهة قبل البناء والالتزام.
-- [x] بناء APK تشغيلي والتحقق من وجوده وحجمه.
-- [x] مراجعة التغييرات ونتائج التحقق ثم إنشاء التزام واضح.
-- [x] دفع الالتزام إلى المستودع المرتبط والتحقق من مرجعه.
-
-## Authorized GitHub Debug APK release
-
-- [x] فحص الوسوم والإصدارات الحالية واختيار وسم إصدار جديد.
-- [x] إعداد ملاحظات إصدار توضح أن الأصول موقعة بتوقيع Debug وحدود التحقق.
-- [x] إنشاء GitHub Release وإرفاق ملفات APK المحدثة للمعماريات الثلاث.
-- [x] التحقق من الرابط والأصول المنشورة وتوثيقها.
-
-## Final repository upload verification
-
-- [x] فحص الفرع والمرجع البعيد وحالة مساحة العمل.
-- [x] دفع أي فرق محلي إن وُجد والتحقق من تطابق المرجع النهائي.
-
-## Repository visibility diagnosis
-
-- [x] فحص محتوى `main` والإصدار المنشور وموضع ملفات APK.
-- [x] تحديد سبب عدم ظهور التطبيق وتوضيح مسار الوصول الصحيح.
-
-## Signed APK GitHub Actions release automation
-
-- [x] تدقيق سير العمل الحالي وإعدادات التوقيع ونسخة التطبيق ونقطة إطلاق الإصدار.
-- [x] إضافة سير عمل آمن يبني APK Release لكل ABI عند وسم إصدار مؤهل.
-- [x] إضافة فحوص التوقيع والمحتوى والتجزئة ورفع الأصول إلى GitHub Release.
-- [x] توثيق GitHub Secrets وخطوات تفعيل أول إصدار، مع حدود التحقق البعيد؛ فحص الأسماء عن بُعد محجوب حاليًا بصلاحيات التكامل.
-
-## Repository visibility and automation publication
-
-- [ ] تحديث وصف المستودع وREADME بمرجع الإصدار ومسار APK الصحيحين.
-- [ ] تضمين سير إصدار GitHub Actions ووثائقه المدققة ضمن الالتزام.
-- [ ] التحقق من الفروق والأمان ثم دفع التحديثات إلى `main`.
-- [ ] مراجعة ظهور الوصف وREADME وسير العمل على GitHub.
-
 ## User-requested application completeness pass
 
 - [x] Audit missing or incomplete app behavior, build configuration, onboarding, runtime permissions, UI state consistency, and release verification against the current repository.
@@ -1108,3 +1047,24 @@
 - [x] Build and validate the latest application update with the project’s required JDK and ABI gates.
 - [x] Commit and push the latest source update and trigger the protected release workflow where version and secrets allow.
 - [x] Record the final upload status, artifact location, and runtime-evidence limits.
+
+## Telegram API credentials device-error diagnosis
+
+- [ ] تتبع رسالة Authentication Error من واجهة الاتصال إلى مصدر إعداد Telegram API.
+- [ ] تحديد سياق APK المثبت وطريقة تمرير الاعتماد من دون كشف API ID أو API hash.
+- [ ] إصلاح أو توثيق أقل مسار إعداد آمن، مع الحفاظ على مصادقة TDLib الحقيقية.
+- [ ] توثيق خطوات إعادة البناء والاختبار اليدوي على الجهاز وحدود الدليل المتاح.
+
+## Mobile-first Mission Control redesign
+
+- [x] تدقيق العقود البصرية والوظيفية لشاشات Home وQueue وHistory وTelegramAuth والتنقل والحالات المشتركة.
+- [x] توحيد compact spacing والتنقل السفلي والحالات الفارغة/الخطأ للهاتف من دون تغيير المسارات أو callbacks.
+- [x] إعادة تكوين Home وQueue وHistory وTelegramAuth حول تسلسل هرمي مناسب للشاشة الصغيرة.
+- [x] تحديث التحقق البرمجي وتشغيل build/unit tests؛ لا تتوفر معاينة جهاز أو محاكي جديدة.
+- [x] توثيق الأدلة وحدود اختبار الجهاز، ثم تسليم التصميم من دون إصدار أو رفع غير مفوض.
+
+## Authorized mobile redesign build and upload
+
+- [x] توثيق التعديلات الدقيقة في Compose وموارد XML والتأكد من عدم تغيّر نص اعتماد Telegram أو منطق المصادقة.
+- [x] بناء APK Debug من إعادة تصميم الهاتف والتحقق من مخرجاته.
+- [x] مراجعة الفروق وإنشاء التزام واضح ثم دفعه إلى `main`.

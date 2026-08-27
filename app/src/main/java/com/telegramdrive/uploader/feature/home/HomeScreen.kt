@@ -36,7 +36,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,10 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -101,7 +96,6 @@ fun HomeScreen(
     }.orEmpty()
     val topGlow = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.20f)
     val bottomGlow = MaterialTheme.colorScheme.secondary.copy(alpha = 0.16f)
-    val darkGlass = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
     val pickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
@@ -121,7 +115,7 @@ fun HomeScreen(
                         } else {
                             stringResource(R.string.telegram_drive)
                         },
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -176,8 +170,8 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = AppSpacing.lg),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
+                    .padding(horizontal = AppSpacing.phoneEdge),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
             ) {
                 item {
                     ConnectionCard(
@@ -263,7 +257,7 @@ fun HomeScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.active_uploads),
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -276,35 +270,21 @@ fun HomeScreen(
 
                 if (uiState.activeUploads.isEmpty()) {
                     item {
-                        val glassHover = rememberGlassCardHover(darkGlass, "empty_uploads_glass_hover")
                         Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .then(glassHover.modifier),
-                            shape = MaterialTheme.shapes.large,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
                             colors = CardDefaults.cardColors(
-                                containerColor = if (darkGlass) {
-                                    MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.80f)
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceContainer
-                                }
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                             ),
-                            border = if (darkGlass) {
-                                BorderStroke(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = glassHover.borderAlpha)
-                                )
-                            } else {
-                                null
-                            }
+                            border = null
                         ) {
                             Row(
-                                modifier = Modifier.padding(AppSpacing.lg),
+                                modifier = Modifier.padding(AppSpacing.md),
                                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Surface(
-                                    modifier = Modifier.size(44.dp),
+                                    modifier = Modifier.size(40.dp),
                                     shape = CircleShape,
                                     color = MaterialTheme.colorScheme.secondaryContainer,
                                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -366,8 +346,6 @@ private fun ConnectionCard(
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    val darkGlass = MaterialTheme.colorScheme.surface.luminance() < 0.5f
-    val glassHover = rememberGlassCardHover(darkGlass, "connection_glass_hover")
     val animatedStatusColor by animateColorAsState(
         targetValue = targetStatusColor,
         animationSpec = AppMotion.shortTween(motionEnabled),
@@ -387,31 +365,26 @@ private fun ConnectionCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .then(glassHover.modifier)
             .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.large,
+                shape = MaterialTheme.shapes.medium,
                 accent = MaterialTheme.colorScheme.primary
             )
             .animateContentSize(animationSpec = AppMotion.shortTween(motionEnabled)),
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = if (darkGlass) animatedContainerColor.copy(alpha = 0.82f) else animatedContainerColor
+            containerColor = animatedContainerColor
         ),
-        border = if (darkGlass) {
-            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = glassHover.borderAlpha))
-        } else {
-            null
-        }
+        border = null
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(AppSpacing.md),
+                .padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
             Surface(
-                modifier = Modifier.size(44.dp),
+                modifier = Modifier.size(40.dp),
                 shape = CircleShape,
                 color = animatedStatusColor,
                 contentColor = if (authorized) {
@@ -462,7 +435,7 @@ private fun ConnectionCard(
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (authorized) {
-                        animatedContentColor
+                        animatedContentColor.copy(alpha = 0.78f)
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },
@@ -474,7 +447,7 @@ private fun ConnectionCard(
                         Text(
                             text = "@$it",
                             style = MaterialTheme.typography.labelSmall,
-                            color = animatedContentColor
+                            color = animatedContentColor.copy(alpha = 0.70f)
                         )
                     }
                 }
@@ -494,8 +467,6 @@ private fun UploadFeatureCard(
     modifier: Modifier = Modifier
 ) {
     val motionEnabled = rememberSystemMotionEnabled()
-    val darkGlass = MaterialTheme.colorScheme.surface.luminance() < 0.5f
-    val glassHover = rememberGlassCardHover(darkGlass, "upload_hero_glass_hover")
     val auroraPulse = if (motionEnabled) {
         rememberInfiniteTransition(label = "aurora_breath")
             .animateFloat(
@@ -508,104 +479,36 @@ private fun UploadFeatureCard(
     } else {
         1f
     }
-    val cardBase = if (darkGlass) {
-        MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.74f)
-    } else {
-        MaterialTheme.colorScheme.surfaceContainer
-    }
-    val supportGlow = MaterialTheme.colorScheme.secondary.copy(alpha = 0.36f)
-    val cobaltGlow = AuroraCobalt.copy(alpha = 0.44f)
-    val tealGlow = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.18f)
-    val highlightGlow = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-    val ribbonSignal = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
+    val cardBase = MaterialTheme.colorScheme.surfaceContainer
+    val ambientGlow = AuroraCobalt.copy(alpha = 0.18f)
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .then(glassHover.modifier)
             .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.extraLarge,
+                shape = MaterialTheme.shapes.large,
                 accent = AuroraCobalt
             ),
-        shape = MaterialTheme.shapes.extraLarge,
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = if (darkGlass) {
-            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = glassHover.borderAlpha))
-        } else {
-            null
-        }
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.48f))
     ) {
         Box(
             modifier = Modifier
-                .background(cardBase, MaterialTheme.shapes.extraLarge)
+                .background(cardBase, MaterialTheme.shapes.large)
                 .drawBehind {
-                    val signalRibbon = Path().apply {
-                        moveTo(size.width * -0.22f, size.height * 0.86f)
-                        cubicTo(
-                            size.width * 0.18f,
-                            size.height * 0.56f,
-                            size.width * 0.52f,
-                            size.height * 1.12f,
-                            size.width * 0.92f,
-                            size.height * 0.72f
-                        )
-                        cubicTo(
-                            size.width * 1.04f,
-                            size.height * 0.60f,
-                            size.width * 1.08f,
-                            size.height * 0.56f,
-                            size.width * 1.16f,
-                            size.height * 0.54f
-                        )
-                    }
-                    drawPath(
-                        path = signalRibbon,
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                AuroraCobalt.copy(alpha = 0.10f),
-                                ribbonSignal,
-                                Color.Transparent
-                            )
-                        ),
-                        style = Stroke(
-                            width = size.minDimension * 0.075f,
-                            cap = StrokeCap.Round
-                        )
-                    )
                     drawCircle(
                         brush = Brush.radialGradient(
-                            colors = listOf(supportGlow.copy(alpha = supportGlow.alpha * auroraPulse), Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.82f, size.height * 0.90f),
-                            radius = size.minDimension * 0.78f * auroraPulse
-                        )
-                    )
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(cobaltGlow.copy(alpha = cobaltGlow.alpha * auroraPulse), Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.60f, size.height * 1.08f),
-                            radius = size.minDimension * 0.64f * auroraPulse
-                        )
-                    )
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(tealGlow.copy(alpha = tealGlow.alpha * auroraPulse), Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 1.02f, size.height * 0.58f),
-                            radius = size.minDimension * 0.62f * auroraPulse
-                        )
-                    )
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(highlightGlow.copy(alpha = highlightGlow.alpha * auroraPulse), Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.74f, size.height * 0.76f),
-                            radius = size.minDimension * 0.24f * auroraPulse
+                            colors = listOf(ambientGlow.copy(alpha = ambientGlow.alpha * auroraPulse), Color.Transparent),
+                            center = androidx.compose.ui.geometry.Offset(size.width * 0.86f, size.height * 0.16f),
+                            radius = size.minDimension * 0.70f * auroraPulse
                         )
                     )
                 }
         ) {
             Column(
-                modifier = Modifier.padding(AppSpacing.large),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
+                modifier = Modifier.padding(AppSpacing.phoneSection),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -634,7 +537,7 @@ private fun UploadFeatureCard(
                         )
                     }
                     Surface(
-                        modifier = Modifier.size(58.dp),
+                        modifier = Modifier.size(48.dp),
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -643,7 +546,7 @@ private fun UploadFeatureCard(
                             Icon(
                                 imageVector = Icons.Default.CloudUpload,
                                 contentDescription = null,
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
@@ -696,40 +599,18 @@ private fun StatCard(
     icon: ImageVector,
     modifier: Modifier = Modifier
 ) {
-    val darkGlass = MaterialTheme.colorScheme.surface.luminance() < 0.5f
-    val glassHover = rememberGlassCardHover(darkGlass, "stat_glass_hover")
-    ElevatedCard(
-        modifier = modifier
-            .border(
-            width = 1.dp,
-            color = if (darkGlass) {
-                MaterialTheme.colorScheme.outlineVariant.copy(alpha = glassHover.borderAlpha)
-            } else {
-                Color.Transparent
-            },
-            shape = MaterialTheme.shapes.medium
-            )
-            .then(glassHover.modifier)
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.medium,
-                accent = MaterialTheme.colorScheme.secondary
-            ),
+    Card(
+        modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = if (darkGlass) {
-                MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.78f)
-            } else {
-                MaterialTheme.colorScheme.surfaceContainerHigh
-            }
-        ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
-            modifier = Modifier.padding(AppSpacing.md),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+            modifier = Modifier.padding(AppSpacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
         ) {
             Surface(
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(28.dp),
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -738,7 +619,7 @@ private fun StatCard(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
@@ -751,7 +632,7 @@ private fun StatCard(
             )
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,

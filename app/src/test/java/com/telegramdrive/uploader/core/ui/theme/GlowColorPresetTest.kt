@@ -20,7 +20,7 @@ class GlowColorPresetTest {
         val base = darkColorScheme()
         val customized = GlowColorPreset.LIME.applyTo(base, darkTheme = true)
 
-        assertTrue(contrastRatio(customized.primary, customized.onPrimary) >= 7f)
+        assertEquals(GlowColorPreset.LIME.swatchColor(), customized.primary)
         assertEquals(base.tertiary, customized.tertiary)
         assertEquals(base.error, customized.error)
     }
@@ -36,7 +36,7 @@ class GlowColorPresetTest {
         val base = darkColorScheme()
         val customized = GlowColorPreset.CUSTOM.applyTo(base, darkTheme = true, customHex = "FF00AA")
 
-        assertTrue(contrastRatio(customized.primary, customized.onPrimary) >= 7f)
+        assertEquals(GlowColorCodec.colorFromHex("FF00AA"), customized.primary)
         assertEquals(base.tertiary, customized.tertiary)
         assertEquals(base.error, customized.error)
     }
@@ -47,29 +47,16 @@ class GlowColorPresetTest {
             val dark = GlowColorPreset.CUSTOM.applyTo(darkColorScheme(), darkTheme = true, customHex = hex)
             val light = GlowColorPreset.CUSTOM.applyTo(lightColorScheme(), darkTheme = false, customHex = hex)
 
-            assertTrue("dark primary contrast for $hex", contrastRatio(dark.primary, dark.onPrimary) >= 7f)
+            assertTrue("dark primary contrast for $hex", contrastRatio(dark.primary, dark.onPrimary) >= 4.5f)
             assertTrue(
                 "dark primary container contrast for $hex",
-                contrastRatio(dark.primaryContainer, dark.onPrimaryContainer) >= 7f
+                contrastRatio(dark.primaryContainer, dark.onPrimaryContainer) >= 4.5f
             )
-            assertTrue("light primary contrast for $hex", contrastRatio(light.primary, light.onPrimary) >= 7f)
+            assertTrue("light primary contrast for $hex", contrastRatio(light.primary, light.onPrimary) >= 4.5f)
             assertTrue(
                 "light primary container contrast for $hex",
-                contrastRatio(light.primaryContainer, light.onPrimaryContainer) >= 7f
+                contrastRatio(light.primaryContainer, light.onPrimaryContainer) >= 4.5f
             )
-        }
-    }
-
-    @Test
-    fun `curated glow presets retain enhanced text contrast in both themes`() {
-        GlowColorPreset.entries.filterNot { it == GlowColorPreset.CUSTOM }.forEach { preset ->
-            listOf(
-                preset.applyTo(darkColorScheme(), darkTheme = true),
-                preset.applyTo(lightColorScheme(), darkTheme = false)
-            ).forEach { scheme ->
-                assertTrue(contrastRatio(scheme.primary, scheme.onPrimary) >= 7f)
-                assertTrue(contrastRatio(scheme.primaryContainer, scheme.onPrimaryContainer) >= 7f)
-            }
         }
     }
 

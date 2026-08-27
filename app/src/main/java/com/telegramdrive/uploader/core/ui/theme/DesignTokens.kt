@@ -5,6 +5,11 @@ import androidx.compose.ui.unit.dp
 
 /** Shared layout tokens used to keep screen density and large-screen width consistent. */
 object AppSpacing {
+    // Mobile-first layout rhythm. Keep interaction targets independent from visual density.
+    val phoneEdge: Dp = 16.dp
+    val phoneSection: Dp = 20.dp
+    val phoneNavInset: Dp = 4.dp
+
     // Descriptive aliases retained from the original design-token contract.
     val compact = 8.dp
     val small = 12.dp

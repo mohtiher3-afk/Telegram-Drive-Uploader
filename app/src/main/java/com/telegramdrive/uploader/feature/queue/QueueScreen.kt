@@ -40,8 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
-import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,15 +80,17 @@ fun QueueScreen(
                     icon = Icons.Default.HourglassEmpty,
                     title = stringResource(com.telegramdrive.uploader.R.string.queue_empty_title),
                     supportingText = stringResource(com.telegramdrive.uploader.R.string.queue_empty_supporting),
-                    modifier = Modifier.testTag("queue_empty_state")
+                    modifier = Modifier
+                        .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneSection)
+                        .testTag("queue_empty_state")
                 )
             } else {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = AppSpacing.phoneEdge)
                         .testTag("queue_list"),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(4.dp))
@@ -103,12 +105,7 @@ fun QueueScreen(
                                     selected = uiState.selectedFilter == filter,
                                     onClick = { viewModel.selectFilter(filter) },
                                     label = { Text(filterLabel(filter)) },
-                                    modifier = Modifier
-                                        .glowSignalRim(
-                                            shape = MaterialTheme.shapes.small,
-                                            enabled = uiState.selectedFilter == filter
-                                        )
-                                        .testTag("queue_filter_${filter.name.lowercase()}")
+                                    modifier = Modifier.testTag("queue_filter_${filter.name.lowercase()}")
                                 )
                             }
                         }
