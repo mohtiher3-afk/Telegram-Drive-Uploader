@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -36,6 +37,7 @@ import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramError
 
@@ -92,8 +94,8 @@ fun TelegramAuthScreen(
                 .padding(innerPadding)
                 .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneSection),
+            contentAlignment = Alignment.TopCenter
         ) {
             // Main content based on state
             AnimatedContent(
@@ -107,7 +109,7 @@ fun TelegramAuthScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
                 ) {
                     when (state) {
                         TelegramConnectionState.DISCONNECTED -> {
@@ -430,19 +432,43 @@ fun TelegramAuthScreen(
                                 CircularProgressIndicator(modifier = Modifier.size(48.dp))
                                 Text(stringResource(com.telegramdrive.uploader.R.string.logging_out))
                             } else {
-                                Text(
-                                    text = stringResource(com.telegramdrive.uploader.R.string.authentication_error),
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                                Text(
-                                    text = error?.let { stringResource(it.messageResId()) } ?: "",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.testTag("error_text")
-                                )
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .liquidGlassOverlay(
+                                            shape = MaterialTheme.shapes.medium,
+                                            accent = MaterialTheme.colorScheme.error
+                                        ),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer
+                                    ),
+                                    shape = MaterialTheme.shapes.medium
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(AppSpacing.phoneSection),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.ErrorOutline,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.error
+                                        )
+                                        Text(
+                                            text = stringResource(com.telegramdrive.uploader.R.string.authentication_error),
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onErrorContainer
+                                        )
+                                        Text(
+                                            text = error?.let { stringResource(it.messageResId()) } ?: "",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onErrorContainer,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.testTag("error_text")
+                                        )
+                                    }
+                                }
 
                                 if (error is TelegramError.AppUpdateRequired) {
                                     OutlinedButton(
@@ -460,7 +486,7 @@ fun TelegramAuthScreen(
                                     onClick = { viewModel.connect() },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(50.dp)
+                                        .height(AppSpacing.touchTarget)
                                         .testTag("retry_connect_button")
                                 ) {
                                     Text(stringResource(com.telegramdrive.uploader.R.string.retry_connection))
@@ -499,7 +525,7 @@ fun TelegramLogo() {
     Surface(
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.primaryContainer,
-        modifier = Modifier.size(100.dp)
+        modifier = Modifier.size(72.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -509,7 +535,7 @@ fun TelegramLogo() {
                 imageVector = Icons.AutoMirrored.Filled.Send,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier.size(40.dp)
             )
         }
     }

@@ -42,8 +42,8 @@ import com.telegramdrive.uploader.core.ui.components.EmptyState
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
-import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,15 +80,17 @@ fun HistoryScreen(
                     icon = Icons.Default.History,
                     title = stringResource(com.telegramdrive.uploader.R.string.history_no_uploads),
                     supportingText = stringResource(com.telegramdrive.uploader.R.string.history_no_uploads_supporting),
-                    modifier = Modifier.testTag("history_empty_state")
+                    modifier = Modifier
+                        .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneSection)
+                        .testTag("history_empty_state")
                 )
             } else {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = AppSpacing.phoneEdge)
                         .testTag("history_list"),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(4.dp))
@@ -115,12 +117,7 @@ fun HistoryScreen(
                                     selected = uiState.period == option,
                                     onClick = { viewModel.setPeriod(option) },
                                     label = { Text(periodLabel(option)) },
-                                    modifier = Modifier
-                                        .glowSignalRim(
-                                            shape = MaterialTheme.shapes.small,
-                                            enabled = uiState.period == option
-                                        )
-                                        .testTag("history_period_${option.name.lowercase()}")
+                                    modifier = Modifier.testTag("history_period_${option.name.lowercase()}")
                                 )
                             }
                         }

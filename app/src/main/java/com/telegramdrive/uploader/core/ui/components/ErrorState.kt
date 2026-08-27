@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 
 @Composable
 fun ErrorState(
@@ -35,18 +36,18 @@ fun ErrorState(
         modifier = modifier
             .fillMaxWidth()
             .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.large,
+                shape = MaterialTheme.shapes.medium,
                 accent = MaterialTheme.colorScheme.error
             ),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.48f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
+                .padding(AppSpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -54,19 +55,19 @@ fun ErrorState(
                 imageVector = Icons.Default.ErrorOutline,
                 contentDescription = stringResource(com.telegramdrive.uploader.R.string.error_icon),
                 tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(40.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
 
             Text(
                 text = stringResource(com.telegramdrive.uploader.R.string.error_occurred),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppSpacing.xs))
 
             Text(
                 text = message,
@@ -76,7 +77,7 @@ fun ErrorState(
             )
 
             if (onRetryClick != null) {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(AppSpacing.md))
                 Button(
                     onClick = onRetryClick,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)

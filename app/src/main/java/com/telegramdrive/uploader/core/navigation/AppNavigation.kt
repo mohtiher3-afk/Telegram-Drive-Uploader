@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
@@ -50,7 +51,6 @@ import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
 import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.components.MissionControlPage
-import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.R
 import kotlinx.coroutines.launch
@@ -119,12 +119,7 @@ fun AppNavigation(
                             )
                         },
                         label = { Text(stringResource(screen.titleRes)) },
-                        modifier = Modifier
-                            .glowSignalRim(
-                                shape = MaterialTheme.shapes.small,
-                                enabled = isSelected
-                            )
-                            .testTag("nav_tab_${screen.route}")
+                        modifier = Modifier.testTag("nav_tab_${screen.route}")
                     )
                 }
             }
@@ -137,7 +132,7 @@ fun AppNavigation(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = AppSpacing.sm)
+                            .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
                     ) {
                         Surface(
                             modifier = Modifier
@@ -152,6 +147,7 @@ fun AppNavigation(
                             shadowElevation = 8.dp
                         ) {
                             NavigationBar(
+                                modifier = Modifier.height(72.dp),
                                 containerColor = Color.Transparent,
                                 tonalElevation = 0.dp,
                                 windowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0)
@@ -185,12 +181,7 @@ fun AppNavigation(
                                             unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                             unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                                         ),
-                                        modifier = Modifier
-                                            .glowSignalRim(
-                                                shape = MaterialTheme.shapes.small,
-                                                enabled = isSelected
-                                            )
-                                            .testTag("nav_tab_${screen.route}")
+                                        modifier = Modifier.testTag("nav_tab_${screen.route}")
                                     )
                                 }
                             }
