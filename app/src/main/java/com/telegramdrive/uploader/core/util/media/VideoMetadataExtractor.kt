@@ -5,6 +5,10 @@ import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
+import com.telegramdrive.uploader.core.diagnostics.ErrorCode
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import kotlinx.coroutines.Dispatchers
@@ -47,8 +51,14 @@ object VideoMetadataExtractor {
                     }
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_PREPARING,
+                severity = DiagnosticSeverity.WARN,
+                message = "Video provider metadata is unavailable; continuing with safe defaults.",
+                uploadId = id,
+                errorCode = ErrorCode.SOURCE_FILE_UNAVAILABLE
+            )
         }
 
         // 3. Resolve MIME type from the provider first, then fall back to the real filename extension.
@@ -70,8 +80,14 @@ object VideoMetadataExtractor {
             duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
             width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
             height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_PREPARING,
+                severity = DiagnosticSeverity.WARN,
+                message = "Video media metadata is unavailable; continuing with safe defaults.",
+                uploadId = id,
+                errorCode = ErrorCode.SOURCE_FILE_UNAVAILABLE
+            )
         } finally {
             try {
                 retriever.release()
