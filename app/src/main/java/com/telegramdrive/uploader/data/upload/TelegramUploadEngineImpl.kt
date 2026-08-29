@@ -107,5 +107,12 @@ class TelegramUploadEngineImpl @Inject constructor(
         name.replace(Regex("[^A-Za-z0-9._-]"), "_").take(80).ifBlank { "file" }
 
     private fun isRetryable(error: Throwable): Boolean =
-        error is java.io.IOException || error is java.net.SocketException
+        when (error) {
+            is java.io.FileNotFoundException -> false
+            is java.io.IOException -> true
+            is java.net.SocketException -> true
+            is java.net.UnknownHostException -> true
+            is java.util.concurrent.TimeoutException -> true
+            else -> false
+        }
 }

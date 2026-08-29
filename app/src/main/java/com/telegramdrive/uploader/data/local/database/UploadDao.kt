@@ -11,6 +11,9 @@ interface UploadDao {
     @Query("SELECT * FROM uploads ORDER BY createdAt DESC")
     fun getAllUploads(): Flow<List<UploadEntity>>
 
+    @Query("SELECT * FROM uploads WHERE status IN ('PREPARING', 'UPLOADING')")
+    suspend fun getInterruptedUploads(): List<UploadEntity>
+
     @Query("SELECT * FROM uploads WHERE status IN ('QUEUED', 'PREPARING', 'UPLOADING', 'RETRYING') ORDER BY createdAt ASC")
     fun getActiveUploads(): Flow<List<UploadEntity>>
 
@@ -26,11 +29,14 @@ interface UploadDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUploads(uploads: List<UploadEntity>)
 
-    @Query("UPDATE uploads SET status = :status WHERE id = :id")
-    suspend fun updateStatus(id: String, status: String)
+    @Query("UPDATE uploads SET status = :status WHERE id = :id AND status IN (:allowedStatuses)")
+    suspend fun updateStatusIf(id: String, status: String, allowedStatuses: List<String>): Int
+
+    @Query("UPDATE uploads SET status = :status WHERE id = :id AND status NOT IN ('COMPLETED', 'FAILED', 'CANCELLED')")
+    suspend fun updateStatus(id: String, status: String): Int
 
     @Query("UPDATE uploads SET uploadedBytes = :uploadedBytes, totalBytes = :totalBytes, progress = :progress, speed = :speed, averageSpeed = :averageSpeed, eta = :eta, status = 'UPLOADING' WHERE id = :id AND status IN ('PREPARING', 'UPLOADING')")
-    suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long)
+    suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long): Int
 
     @Query("UPDATE uploads SET uploadDurationMs = :durationMs WHERE id = :id")
     suspend fun updateUploadDuration(id: String, durationMs: Long)

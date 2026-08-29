@@ -1,5 +1,10 @@
 package com.telegramdrive.uploader.feature.queue
 
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -146,33 +151,53 @@ fun QueueScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 4.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
-                                    if (uiState.failedCount > 0) {
-                                        Button(
-                                            onClick = viewModel::retryAllFailed,
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .testTag("retry_all_failed")
-                                        ) {
-                                            Icon(Icons.Default.Refresh, contentDescription = null)
-                                            Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                                            Text(stringResource(com.telegramdrive.uploader.R.string.retry))
+                                        if (uiState.failedCount > 0) {
+                                            FilledTonalButton(
+                                                onClick = viewModel::retryAllFailed,
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .heightIn(min = 48.dp)
+                                                    .testTag("retry_all_failed"),
+                                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
+                                            ) {
+                                                Icon(
+                                                    Icons.Default.Refresh,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    text = stringResource(com.telegramdrive.uploader.R.string.retry),
+                                                    style = MaterialTheme.typography.labelLarge
+                                                )
+                                            }
                                         }
-                                    }
-                                    if (uiState.activeCount > 0) {
-                                        Button(
-                                            onClick = viewModel::pauseAllActive,
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .testTag("pause_all_active")
-                                        ) {
-                                            Icon(Icons.Default.PauseCircleOutline, contentDescription = null)
-                                            Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                                            Text(stringResource(com.telegramdrive.uploader.R.string.pause))
+                                        if (uiState.activeCount > 0) {
+                                            FilledTonalButton(
+                                                onClick = viewModel::pauseAllActive,
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .heightIn(min = 48.dp)
+                                                    .testTag("pause_all_active"),
+                                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
+                                            ) {
+                                                Icon(
+                                                    Icons.Default.PauseCircleOutline,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    text = stringResource(com.telegramdrive.uploader.R.string.pause),
+                                                    style = MaterialTheme.typography.labelLarge
+                                                )
+                                            }
                                         }
-                                    }
                                     }
                                 }
                             }

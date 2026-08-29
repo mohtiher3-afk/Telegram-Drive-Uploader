@@ -30,7 +30,7 @@ object VideoMetadataExtractor {
                     uriString,
                     android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Ignore or log permission failure
             }
         }

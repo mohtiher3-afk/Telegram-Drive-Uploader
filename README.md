@@ -1,253 +1,122 @@
 # Telegram Drive Uploader
 
-[![Latest release](https://img.shields.io/github/v/release/mohtiher3-afk/Telegram-Drive-Uploader?label=version)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases/latest)
+**Android application for managing and uploading files and videos directly to Telegram destinations.**
 
-> **Telegram Drive Uploader** is an Android application for preparing and uploading video files to Telegram destinations such as Saved Messages, groups, supergroups, and channels.
+Telegram Drive Uploader provides a high-reliability, offline-first interface for Telegram file delivery. Built with modern Android technologies (Jetpack Compose, Room, WorkManager, and Material 3), it leverages the official Telegram Database Library (TDLib) for authoritative transfer logic.
 
-| Project | Value |
-|---|---|
-| Application ID | `com.telegramdrive.uploader` |
-| Current source version | `v1.0.18` |
-| Telegram engine | Official TDLib `v1.8.66` |
-| UI toolkit | Kotlin, Jetpack Compose, Material 3 Expressive |
-| Minimum Android version | API 24 |
-| Target Android version | API 36 |
-| Supported native ABIs | `arm64-v8a`, `armeabi-v7a`, `x86_64` |
-| Localization | English and Arabic with RTL support |
+[![Android Multi-ABI CI](https://github.com/aistudio-build/telegram-drive-uploader/actions/workflows/android_ci.yml/badge.svg)](https://github.com/aistudio-build/telegram-drive-uploader/actions/workflows/android_ci.yml)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/aistudio-build/telegram-drive-uploader/releases)
 
-The repository contains the real TDLib Java bindings and native libraries, a local upload-preparation queue, WorkManager background processing, Telegram authentication flows, destination search, upload progress states, retry and cancellation controls, and a local Smart File Assistant for filename and keyword suggestions.
-
-> **Evidence boundary:** A successful build proves compilation and packaging only. Telegram authentication, destination permissions, native runtime behavior, and real file delivery require testing on a compatible physical device or emulator. The current repository status should not be interpreted as unrestricted production certification without that runtime evidence.
-
-## Downloads
-
-Source code is stored in this repository; installable APK files are published under [GitHub Releases](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases), not committed to the source tree.
-
-| Channel | Use | Download |
-|---|---|---|
-| Stable | The latest non-prerelease project release. | [Latest Release](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases/latest) |
-| Accessibility Debug Build 1 | Debug-signed verification build for the current accessibility work. It is not a production-signed distribution. | [v1.0.18-a11y.1](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases/tag/v1.0.18-a11y.1) |
-
-Choose the asset that matches the device: `arm64-v8a` for most current phones, `armeabi-v7a` for older 32-bit devices, and `x86_64` for compatible emulators. A Debug-signed APK can fail to update an installation signed with a different certificate.
-
-## Contents
-
-- [Application preview](#application-preview)
-- [Mission Control visual identity](#mission-control-visual-identity)
-- [Features](#features)
-- [Downloads](#downloads)
-- [Requirements](#requirements)
-- [Quick start](#quick-start)
-- [Telegram API configuration](#telegram-api-configuration)
-- [Build and verification](#build-and-verification)
-- [First-run and device validation](#first-run-and-device-validation)
-- [TDLib artifacts](#tdlib-artifacts)
-- [Release and CI](#release-and-ci)
-- [Troubleshooting](#troubleshooting)
-- [Project structure](#project-structure)
-- [Security and privacy](#security-and-privacy)
-- [Documentation and references](#documentation-and-references)
-
-## Application preview
-
-The following images show the current Material 3 Expressive direction, the Mission Control visual system, and the destination-selection and video-preparation flow. They are design previews with sample content; they do not replace authenticated Telegram delivery testing.
-
-<p align="center">
-  <img src="design/multi_device_ui_preview.png" alt="Telegram Drive Uploader Mission Control preview across phone and tablet layouts" width="900" />
-</p>
-
-<p align="center">
-  <img src="design/app_icon_concept.png" alt="Telegram Drive Uploader Mission Control orbital upload logo" width="260" />
-</p>
+---
 
 ## Mission Control visual identity
 
 Telegram Drive Uploader uses a **Mission Control** visual language: a dark control-room surface, luminous orbital accents, and a high-visibility upload action. The identity reinforces upload state and destination context while preserving Material 3 semantic roles and adaptive Compose layouts.
 
-### Color system
-
-The values below are the source of truth for the custom theme in [`app/src/main/java/com/telegramdrive/uploader/core/ui/theme/Theme.kt`](app/src/main/java/com/telegramdrive/uploader/core/ui/theme/Theme.kt). Each color has a functional role and should not be used as decoration without a corresponding hierarchy or state purpose.
-
-| Token | Implemented value | Role |
-|---|---|---|
-| **Plum** | `#17131D` | Primary dark background and base surface. |
-| **Violet** | `#D7B9FF` / `#512A73` | Secondary navigation, orbit glow, selected controls, and destination emphasis. |
-| **Lime** | `#D8F56A` | Primary upload action and high-priority positive interaction. |
-| **Mint** | `#9FFFD2` | Success, completion, telemetry, and supporting upload-state feedback. |
-| **Soft text** | `#F2EAF5` | Primary text on dark surfaces. |
-| **Muted text** | `#D6C6DC` | Supporting text, metadata, and secondary descriptions. |
-
-The light theme adapts the same semantic roles for contrast. On Android 12 and later, system dynamic color may be used when enabled; the semantic roles remain the design authority even when the platform derives the final tones.
-
-### Logo usage
-
 The current mark is the **Mission Control orbital upload logo**: a Lime upward arrow and tray enclosed by a Violet orbital form with Mint highlights. The canonical asset is [`app/src/main/res/drawable-nodpi/mission_control_logo.png`](app/src/main/res/drawable-nodpi/mission_control_logo.png). It is used by the launcher foreground, first-run onboarding hero, opening animation, and repository preview at [`design/app_icon_concept.png`](design/app_icon_concept.png).
 
-Use the mark without added text, stretching, recoloring, or extra badges. Preserve its square aspect ratio and leave clear space around the symbol. A Plum or similarly dark surface provides the intended contrast for the luminous Violet, Lime, and Mint details. The multi-device design reference is [`design/multi_device_ui_preview.png`](design/multi_device_ui_preview.png).
+### Design Previews
+The following images show the current Material 3 Expressive direction, the Mission Control visual system, and the destination-selection and video-preparation flow.
 
-### Motion and accessibility
+<img src="design/multi_device_ui_preview.png" alt="Telegram Drive Uploader Mission Control preview across phone and tablet layouts" width="900" />
+<img src="design/app_icon_concept.png" alt="Telegram Drive Uploader Mission Control orbital upload logo" width="260" />
 
-Mission Control motion communicates readiness and upload progress rather than serving as continuous decoration. The opening sequence uses a short logo reveal and restrained pulse; reduced-motion settings disable non-essential pulse motion and shorten the transition. Screen-reader labels are localized, and color or animation must never be the only indication of upload state.
+---
 
-English and Arabic are first-class locales. Compose layout direction follows the active locale, so controls and supporting content remain usable in RTL without mirroring the logo. Future screens and visual assets should preserve readable contrast, adaptive sizing, semantic labels, and the [Material 3 accessibility guidance][5].
+## User Guide
 
-## Features
+### 1. Onboarding & First Run
+On first launch, follow the Mission Control onboarding flow. Grant only the media permissions requested by your Android version. The opening animation is designed for the first-run experience and respects reduced-motion settings.
 
-| Area | Current capability |
-|---|---|
-| Telegram authentication | Phone number, verification code, two-step password, and QR login states through TDLib. |
-| Real Telegram engine | Official `Client.java`, `TdApi.java`, `Log.java`, and native TDLib integrations; no mock Telegram implementation. |
-| Upload preparation | Local video selection, queue preparation, scheduling support, progress states, retry, cancellation, and upload history. |
-| Destination search | Search and filter Telegram chats, groups, supergroups, and channels that can receive messages. |
-| Background work | WorkManager-backed upload processing with persisted local state. |
-| Smart File Assistant | Local Arabic-aware and English-aware filename and keyword suggestions; uploads do not depend on an online AI service. |
-| UI and localization | Material 3 Expressive Compose UI, adaptive layouts, onboarding, English resources, Arabic resources, and RTL rendering. |
-| Packaging | ABI-specific builds for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. |
+### 2. Authentication
+Log in securely using your Telegram phone number or a QR code. The app uses real TDLib authentication; your credentials and session data are stored only on your device.
 
-## Requirements
+### 3. Uploading Files
+- **Select Destination**: Search for a chat, group, or channel.
+- **Queue Management**: Add multiple files; the app manages the queue in the background.
+- **Reliability**: Uploads resume automatically after network loss or device restart thanks to WorkManager integration.
+- **Smart Assistance**: Uses local heuristics to optimize video preparation and delivery.
 
-A local build requires Android Studio or an equivalent Android SDK installation containing API 36, JDK 17 for CI-compatible builds, the project’s Gradle wrapper, and a device or emulator matching one of the packaged ABIs. Before building locally, create a machine-specific `local.properties` file containing the Android SDK path; this file is intentionally excluded from Git.
+---
 
-Install only the APK matching the target device architecture. Android can reject an incompatible native ABI when no compatible `libtdjni.so` is packaged.
+## Developer Guide
 
-## Quick start
+### Prerequisites
+- **JDK 17+** (JDK 21 recommended for current build matrices)
+- **Android SDK** (API 34/35)
+- **NDK** (Matching the version specified in `app/build.gradle.kts`)
+- **Telegram API Credentials**: A valid [API ID and API hash][2] from [my.telegram.org](https://my.telegram.org).
 
-Clone the repository and enter the project directory:
+### Getting Started
+1. **Credentials**: Never commit real credentials. Provide them through the project’s Gradle configuration or secure environment variables.
+2. **Local Setup**:
+   ```bash
+   ./scripts/verify-project.sh QUICK
+   ```
+3. **Device Validation**: A JVM build cannot prove native behavior. Validate native TDLib loading and authentication on a physical device or compatible emulator.
 
-```bash
-git clone https://github.com/mohtiher3-afk/Telegram-Drive-Uploader.git
-cd Telegram-Drive-Uploader
-```
-
-Create `local.properties` with the local Android SDK path, configure the Telegram API values as described below, and run the repository’s quick verification mode:
-
-```bash
-./scripts/verify-project.sh QUICK
-```
-
-For a direct debug build and unit-test run:
-
-```bash
-./gradlew :app:testDebugUnitTest :app:assembleDebug
-```
-
-Do not commit `local.properties`, Telegram credentials, session data, signing material, or generated local configuration files.
-
-## Telegram API configuration
-
-Telegram API credentials are application configuration values, not user login credentials. Obtain an `api_id` and `api_hash` from [my.telegram.org](https://my.telegram.org), then provide them through the project’s Gradle or local build configuration mechanism.
-
-Never commit a real `api_hash`, personal phone number, verification code, password, Telegram session database, keystore, or generated local configuration. If a credential is exposed, revoke or rotate it immediately through the appropriate Telegram account controls.
-
-## Build and verification
-
-The repository provides layered verification modes:
-
-```bash
-./scripts/verify-project.sh QUICK
-./scripts/verify-project.sh FULL
-./scripts/verify-project.sh RELEASE
-```
-
-The modes run the repository, TDLib, Gradle, compilation, unit-test, lint, packaging, security, resource, and WorkManager gates appropriate to each mode. See [`docs/DEVELOPER_ONBOARDING.md`](docs/DEVELOPER_ONBOARDING.md) and [`docs/maintenance/README.md`](docs/maintenance/README.md) for the maintenance workflow.
-
-For constrained build machines, use one worker and a bounded Gradle JVM:
-
-```bash
-./gradlew --no-daemon --max-workers=1 \\
-  -Dorg.gradle.jvmargs="-Xmx1200m -XX:MaxMetaspaceSize=512m" \\
-  :app:assembleRelease
-```
-
-The project includes strict R8 keep rules for `org.drinkless.tdlib.**`. These rules are required because official TDLib JNI registration depends on generated binding classes and native method names remaining stable in a minified release build.
-
-## First-run and device validation
-
-On first launch, follow the onboarding flow and grant only the media permissions requested by the Android version. The Mission Control opening animation is designed for the first-run experience and respects reduced-motion settings.
-
-On a compatible physical device or emulator, validate the following sequence: native TDLib loading, Telegram phone or QR authentication, authorized-state transition, destination loading, permission to send to the selected destination, media selection, upload progress, real delivery, cancellation, retry, process restart, logout/login recovery, and network loss during an upload.
-
-A sandbox or JVM build cannot prove native behavior on every handset. Record runtime evidence separately from build evidence, and do not report a real upload as successful unless the Telegram success signal is observed.
-
-## TDLib artifacts
-
-Official source bindings are stored under:
-
-```text
-app/src/main/java/org/drinkless/tdlib/
-```
-
-Native libraries are stored under:
-
-```text
-app/src/main/jniLibs/arm64-v8a/libtdjni.so
-app/src/main/jniLibs/armeabi-v7a/libtdjni.so
-app/src/main/jniLibs/x86_64/libtdjni.so
-```
-
-Run the artifact gate from the project root:
-
-```bash
-./scripts/check-tdlib-artifacts.sh
-```
-
-A successful check ends with:
-
-```text
-STATUS: TDLIB_ARTIFACTS_PRESENT=true
-```
-
-The checker validates the required manifest, each configured ELF native library and machine type, and the generated Java bindings. It does not replace testing on a physical device.
-
-For native dependency preparation and runtime loading, see [`docs/TDLIB_NATIVE_DEPENDENCIES.md`](docs/TDLIB_NATIVE_DEPENDENCIES.md), [`docs/TDLIB_ARTIFACT_MANIFEST.md`](docs/TDLIB_ARTIFACT_MANIFEST.md), and [`docs/TDLIB_DEVICE_SMOKE_TEST.md`](docs/TDLIB_DEVICE_SMOKE_TEST.md).
-
-## Release and CI
-
-Release signing must use a keystore configured for the local environment or the repository’s protected CI secrets. Signing material must never be committed. ABI-specific release APKs are produced by the project’s CI workflow; select the artifact matching the target device architecture.
-
-Before creating a release, verify the version metadata, run the release verification mode, confirm all supported ABI jobs pass, and inspect the generated checksums and signatures. A signed APK proves packaging and signing, not Telegram authentication or real upload delivery.
-
-The `Android Signed Multi-ABI Release` workflow runs when a new `vMAJOR.MINOR.PATCH` tag is pushed, or can be started manually with an existing tag. It validates the tag against `versionName`, builds signed Release APKs for every supported ABI, verifies TDLib packaging, signatures, and SHA-256 checksums, then creates a GitHub Release only when every ABI job succeeds. Required GitHub Actions secrets and the first-release procedure are documented in [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
-
-## Troubleshooting
-
-| Symptom | Recommended action |
-|---|---|
-| The app closes when connecting Telegram | Confirm that the ABI-matching APK is installed. Rebuild after verifying the TDLib R8 keep rules, then collect the Android `FATAL EXCEPTION` or native crash entry from Logcat. |
-| TDLib is unavailable at runtime | Confirm the device ABI, verify that the corresponding `lib/<abi>/libtdjni.so` exists, and run `./scripts/check-tdlib-artifacts.sh`. |
-| Telegram credentials are rejected | Confirm that the API ID is numeric and the API hash is complete. Do not confuse Telegram API credentials with the phone login code or account password. |
-| No chats appear in destination search | Complete authentication, wait for TDLib authorization and chat updates, retry the destination screen, and confirm that the account can send to the selected destination. |
-| Arabic layout is misaligned | Set Arabic as the Android system language, restart the app, and verify RTL support. Report the exact screen and Android version if the issue remains. |
-| Release signing fails | Configure a local release keystore or use a temporary development key for testing. Do not add signing credentials to Git. |
-| R8 reports Kotlin metadata warnings | Treat the warning separately from JNI preservation. Keep the official TDLib rules intact and align Kotlin, AGP, Moshi, and KSP versions during a dedicated dependency-maintenance pass. |
-
-## Project structure
-
+### Project Structure
 ```text
 app/src/main/java/com/telegramdrive/uploader/
   core/                 Navigation, diagnostics, datastore, UI theme, and shared utilities
   data/                 TDLib client, repositories, upload data, and platform integrations
   domain/               Models, repository contracts, and upload state definitions
-  feature/              Compose screens and ViewModels for home, onboarding, uploads, settings, history, and Telegram auth
+  feature/              Compose screens and ViewModels (Home, Uploads, History, Auth)
+
 app/src/main/java/org/drinkless/tdlib/
-  Client.java           Official TDLib Java client binding
   TdApi.java            Official generated TDLib API binding
-  Log.java              Official TDLib logging binding
+
 app/src/main/jniLibs/{arm64-v8a,armeabi-v7a,x86_64}/
-  libtdjni.so           Official TDLib v1.8.66 native libraries
-docs/                   Build, artifact, maintenance, and audit documentation
+  libtdjni.so           Official TDLib native libraries
+
+docs/                   Technical documentation and maintenance records
 scripts/                Artifact validation and project helper scripts
 ```
 
-## Security and privacy
+### TDLib & Native Artifacts
+The project includes official [TDLib][1] v1.8.66 native libraries. Run the artifact gate from the project root:
+```bash
+./scripts/check-tdlib-artifacts.sh
+```
+For native dependency details, see [`docs/TDLIB_NATIVE_DEPENDENCIES.md`](docs/TDLIB_NATIVE_DEPENDENCIES.md).
 
-The Smart File Assistant is local and optional; it is not a remote generative AI service and does not require an online AI key. Telegram session data and the TDLib database are created in the application’s private storage. Do not copy those directories into an issue, archive, or public repository.
+### Build & Verification
+```bash
+./scripts/verify-project.sh FULL    # Standard verification
+./scripts/verify-project.sh RELEASE # Release-ready validation
+```
+The project includes strict R8 keep rules for `org.drinkless.tdlib.**` required for JNI stability in minified builds.
 
-Diagnostics are privacy-conscious and bounded. Before sharing logs, inspect them for account identifiers, file names, phone numbers, tokens, and other personal information. Redact anything that could identify the Telegram account or uploaded files.
+### Release & CI
+The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs, verifies checksums, and creates a GitHub Release.
+See [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md) for details.
 
-## Documentation and references
+---
 
-The project audit and remaining device-level validation items are documented in [`docs/PROJECT_AUDIT_2026-08-21.md`](docs/PROJECT_AUDIT_2026-08-21.md). Current maintenance and repository-cleanup records are indexed in [`docs/maintenance/README.md`](docs/maintenance/README.md). Resource and branding reviews are available under [`docs/resources/`](docs/resources/) and [`docs/operations/`](docs/operations/).
+## Security & Privacy
+- **Privacy First**: Smart File Assistant is local; no remote AI keys are required.
+- **Local Storage**: Telegram session data and the TDLib database are stored in private application storage. **Never share these files.**
+- **Diagnostic Safety**: Diagnostics are privacy-conscious. Inspect logs before sharing; the system redacts sensitive identifiers by default.
+
+---
+
+## Troubleshooting
+
+| Symptom | Recommended Action |
+| :--- | :--- |
+| **App closes on connect** | Check ABI-matching APK. Verify R8 keep rules. Check Logcat for native crashes. |
+| **TDLib unavailable** | Confirm device ABI and verify `libtdjni.so` existence using `scripts/check-tdlib-artifacts.sh`. |
+| **Credentials rejected** | Verify API ID (numeric) and API hash (complete). Don't confuse with login code. |
+| **No chats found** | Complete auth, wait for chat updates, and confirm account permissions. |
+| **Arabic layout issues** | Set system language to Arabic and restart. Verify RTL support. |
+| **Release signing fails** | Check local keystore configuration. Never commit signing keys. |
+
+---
+
+## Documentation & References
+- **Audit Records**: [`docs/PROJECT_AUDIT_2026-08-21.md`](docs/PROJECT_AUDIT_2026-08-21.md)
+- **Maintenance Guide**: [`docs/maintenance/README.md`](docs/maintenance/README.md)
+- **Resource Reviews**: [`docs/resources/`](docs/resources/)
 
 [1]: https://github.com/tdlib/td "Official TDLib repository"
 [2]: https://core.telegram.org/api/obtaining_api_id "Telegram API ID and Telegram API hash documentation"

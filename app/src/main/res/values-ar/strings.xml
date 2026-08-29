@@ -107,7 +107,7 @@
     <string name="schedule_change">تغيير</string>
     <string name="videos_selected_summary">تم اختيار %1$d من الفيديوهات</string>
     <string name="total_size_summary">الحجم الإجمالي: %1$s</string>
-    <string name="add_to_queue">إضافة إلى القائمة</string>
+    <string name="add_to_queue">بدء الرفع إلى Google Drive</string>
     <string name="no_videos_selected">لم يتم اختيار فيديوهات</string>
     <string name="select_videos_from_home">اختر فيديوهات من تبويب الصفحة الرئيسية لبدء التجهيز.</string>
     <string name="extracting_video_metadata">جارٍ استخراج بيانات الفيديو…</string>

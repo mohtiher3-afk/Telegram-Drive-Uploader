@@ -175,4 +175,5 @@ class SettingsDataStore @Inject constructor(
             preferences[TELEGRAM_STATE_KEY] = "DISCONNECTED"
         }
     }
+
 }
