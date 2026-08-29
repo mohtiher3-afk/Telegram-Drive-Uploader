@@ -551,12 +551,37 @@ class TelegramClientImpl @Inject constructor(
     private fun ensureNativeRuntime() {
         if (nativeLoaded.compareAndSet(false, true)) {
             try {
-                // Load dependencies first
-                System.loadLibrary("crypto")
-                System.loadLibrary("ssl")
-                System.loadLibrary("tdjni")
+                // Determine absolute library path for robustness
+                val libDir = context.applicationInfo.nativeLibraryDir
+                android.util.Log.i("TelegramClient", "Loading native libraries from: $libDir")
+
+                // Attempt loading bundled dependencies with absolute paths first
+                val cryptoPath = "$libDir/libcrypto.so"
+                val sslPath = "$libDir/libssl.so"
+                val tdnjiPath = "$libDir/libtdjni.so"
+
+                if (java.io.File(cryptoPath).exists()) {
+                    runCatching { System.load(cryptoPath) }
+                } else {
+                    runCatching { System.loadLibrary("crypto") }
+                }
+
+                if (java.io.File(sslPath).exists()) {
+                    runCatching { System.load(sslPath) }
+                } else {
+                    runCatching { System.loadLibrary("ssl") }
+                }
+
+                if (java.io.File(tdnjiPath).exists()) {
+                    System.load(tdnjiPath)
+                } else {
+                    System.loadLibrary("tdjni")
+                }
+
+                android.util.Log.i("TelegramClient", "All TDLib native libraries loaded successfully")
             } catch (failure: Throwable) {
                 nativeLoaded.set(false)
+                android.util.Log.e("TelegramClient", "Native library load failure: ${failure.message}", failure)
                 throw failure
             }
         }

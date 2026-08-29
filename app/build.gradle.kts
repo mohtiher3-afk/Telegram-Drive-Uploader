@@ -16,19 +16,27 @@ plugins {
 
 android {
   namespace = "com.telegramdrive.uploader"
-  compileSdk = 36
+  compileSdk = 35
 
   defaultConfig {
     applicationId = "com.aistudio.telegramdrive.prmuq"
     minSdk = 24
-    targetSdk = 36
+    targetSdk = 35
     versionCode = 18
     versionName = "1.0.18"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+    // Removed ABI restrictions to support x86_64 emulator via native bridge stub
     ndk {
-      abiFilters.add("armeabi-v7a")
+      abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86_64"))
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path = file("src/main/cpp/CMakeLists.txt")
+      version = "3.22.1"
     }
   }
 
@@ -80,7 +88,7 @@ android {
       val requestedAbi = providers.gradleProperty("targetAbi").orNull
       isEnable = requestedAbi != null
       reset()
-      val supportedAbis = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+      val supportedAbis = listOf("armeabi-v7a")
       val selectedAbis = requestedAbi?.let { listOf(it) } ?: supportedAbis
       require(selectedAbis.all { it in supportedAbis }) {
         "targetAbi must be one of: ${supportedAbis.joinToString()}; got $requestedAbi"
