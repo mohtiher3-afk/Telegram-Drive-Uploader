@@ -74,7 +74,11 @@ scripts/                Artifact validation and project helper scripts
 ```
 
 ### TDLib & Native Artifacts
-The project includes official [TDLib][1] v1.8.66 native libraries. Run the artifact gate from the project root:
+The project includes official [TDLib][1] v1.8.66 native libraries. 
+
+> **ABI Compatibility**: The project is currently configured to package only the `armeabi-v7a` binary to ensure universal compatibility across ARM devices (including ARM64) while only requiring a single checked-in native library.
+
+Run the artifact gate from the project root:
 ```bash
 ./scripts/check-tdlib-artifacts.sh
 ```
