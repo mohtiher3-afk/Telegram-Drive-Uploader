@@ -204,6 +204,13 @@ class UploadViewModel @Inject constructor(
         _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination, _isSubmitting)
     }
 
+    fun removePreparedVideos(videos: List<UploadTask>) {
+        val ids = videos.map { it.id }.toSet()
+        _preparedList.removeAll { it.id in ids }
+        _smartSuggestions.value = _smartSuggestions.value.filterKeys { it !in ids }
+        _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination, _isSubmitting)
+    }
+
     fun addToQueue(onComplete: () -> Unit) {
         val destination = _selectedDestination ?: return
         if (_isSubmitting || _preparedList.isEmpty()) return

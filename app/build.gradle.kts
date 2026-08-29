@@ -19,7 +19,7 @@ android {
   compileSdk = 36
 
   defaultConfig {
-    applicationId = "com.telegramdrive.uploader"
+    applicationId = "com.aistudio.telegramdrive.prmuq"
     minSdk = 24
     targetSdk = 36
     versionCode = 18
@@ -73,16 +73,16 @@ android {
 
   splits {
     abi {
-      isEnable = true
+      val requestedAbi = providers.gradleProperty("targetAbi").orNull
+      isEnable = requestedAbi != null
       reset()
       val supportedAbis = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
-      val requestedAbi = providers.gradleProperty("targetAbi").orNull
       val selectedAbis = requestedAbi?.let { listOf(it) } ?: supportedAbis
       require(selectedAbis.all { it in supportedAbis }) {
         "targetAbi must be one of: ${supportedAbis.joinToString()}; got $requestedAbi"
       }
       include(*selectedAbis.toTypedArray())
-      isUniversalApk = false
+      isUniversalApk = true
     }
   }
 

@@ -12,23 +12,62 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
+import com.telegramdrive.uploader.core.ui.theme.SafeGlowTokens
+
+@Composable
+fun RealUploadProgressGlow(
+    progressFraction: Float,
+    statusColor: Color,
+    pulseAlpha: Float,
+    modifier: Modifier = Modifier
+) {
+    Canvas(modifier = modifier) {
+        val signalCenter = Offset(
+            x = size.width * progressFraction,
+            y = size.height / 2f
+        )
+        drawCircle(
+            color = statusColor.copy(alpha = SafeGlowTokens.HeroGlowColor * pulseAlpha),
+            radius = size.height * (0.58f + (0.20f * pulseAlpha)),
+            center = signalCenter
+        )
+        drawCircle(
+            color = statusColor.copy(alpha = (SafeGlowTokens.HeroGlowColor * 2.5f) + (0.30f * pulseAlpha)),
+            radius = size.height * 0.18f,
+            center = signalCenter
+        )
+    }
+}
 
 internal fun uploadProgressFraction(percentage: Float): Float =
     (percentage / 100f).coerceIn(0f, 1f)
@@ -172,53 +211,152 @@ fun UploadStatusIndicator(
                             }
                     )
                     if (motionEnabled && activeUpload) {
-                        Canvas(modifier = Modifier.matchParentSize()) {
-                            val signalCenter = Offset(
-                                x = size.width * animatedProgressFraction,
-                                y = size.height / 2f
-                            )
-                            drawCircle(
-                                color = animatedStatusColor.copy(alpha = 0.12f * progressSignalPulse),
-                                radius = size.height * (0.58f + (0.20f * progressSignalPulse)),
-                                center = signalCenter
-                            )
-                            drawCircle(
-                                color = animatedStatusColor.copy(alpha = 0.52f + (0.30f * progressSignalPulse)),
-                                radius = size.height * 0.18f,
-                                center = signalCenter
+                        RealUploadProgressGlow(
+                            progressFraction = animatedProgressFraction,
+                            statusColor = animatedStatusColor,
+                            pulseAlpha = progressSignalPulse,
+                            modifier = Modifier.matchParentSize()
+                        )
+                    }
+                }
+                if (video.status == UploadStatus.UPLOADING) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TransferMetrics(
+                        speed = video.speed,
+                        eta = video.eta,
+                        progressFraction = progressFraction,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            // Detailed interactive Action Log Section
+            var isLogExpanded by remember { mutableStateOf(false) }
+            val clipboardManager = LocalClipboardManager.current
+
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isLogExpanded = !isLogExpanded }
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "View Detailed Action Log",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Icon(
+                    imageVector = if (isLogExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+
+            AnimatedVisibility(visible = isLogExpanded) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 4.dp)
+                        .padding(horizontal = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    val steps = listOf("ENQUEUED", "COMPRESSING", "CONNECTING", "UPLOADING", "VERIFYING", "COMPLETED")
+                    val currentStepIdx = when (video.status) {
+                        UploadStatus.QUEUED -> 0
+                        UploadStatus.PREPARING -> 1
+                        UploadStatus.UPLOADING -> 3
+                        UploadStatus.COMPLETED -> 5
+                        UploadStatus.FAILED -> 3
+                        UploadStatus.CANCELLED -> 3
+                        UploadStatus.PAUSED -> 3
+                        UploadStatus.RETRYING -> 3
+                    }
+
+                    steps.forEachIndexed { idx, stepName ->
+                        val isDone = idx < currentStepIdx || (video.status == UploadStatus.COMPLETED && idx == 5)
+                        val isCurrent = idx == currentStepIdx && video.status != UploadStatus.COMPLETED
+                        val dotColor = when {
+                            isDone -> MaterialTheme.colorScheme.primary
+                            isCurrent -> MaterialTheme.colorScheme.secondary
+                            else -> MaterialTheme.colorScheme.outlineVariant
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            androidx.compose.foundation.shape.CircleShape
+                            Surface(
+                                modifier = Modifier.size(8.dp),
+                                shape = androidx.compose.foundation.shape.CircleShape,
+                                color = dotColor
+                            ) {}
+                            Text(
+                                text = stepName,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isDone || isCurrent) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                             )
                         }
                     }
                 }
-                if (video.status == UploadStatus.UPLOADING) {
-                    Spacer(modifier = Modifier.height(6.dp))
+            }
+
+            if (video.status == UploadStatus.COMPLETED) {
+                val simulatedLink = "https://t.me/drive_uploader_bot?start=file_${video.id}"
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = stringResource(
-                                com.telegramdrive.uploader.R.string.upload_speed,
-                                formatTransferSpeed(video.speed)
-                            ),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        val etaText = formatRemainingTime(video.eta)
-                        val etaLabel = when {
-                            etaText.isNotEmpty() -> etaText
-                            video.speed > 0L -> stringResource(com.telegramdrive.uploader.R.string.upload_eta_calculating)
-                            else -> stringResource(com.telegramdrive.uploader.R.string.upload_eta_stalled)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Mirror Link Ready",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = simulatedLink,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1
+                            )
                         }
-                        Text(
-                            text = stringResource(
-                                com.telegramdrive.uploader.R.string.upload_eta,
-                                etaLabel
-                            ),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        IconButton(
+                            onClick = { clipboardManager.setText(AnnotatedString(simulatedLink)) },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = "Copy Link",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
                 }
             }

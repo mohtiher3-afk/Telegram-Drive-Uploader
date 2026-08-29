@@ -5,28 +5,41 @@ import androidx.compose.ui.unit.dp
 
 /** Shared layout tokens used to keep screen density and large-screen width consistent. */
 object AppSpacing {
-    // Mobile-first layout rhythm. Keep interaction targets independent from visual density.
-    val phoneEdge: Dp = 16.dp
-    val phoneSection: Dp = 20.dp
+    val xSmall: Dp = 4.dp
+    val small: Dp = 8.dp
+    val medium: Dp = 16.dp
+    val large: Dp = 24.dp
+    val extraLarge: Dp = 32.dp
+
+    // Aliases for compatibility during migration
+    val xs = xSmall
+    val sm = small
+    val md = medium
+    val lg = large
+    val xl = extraLarge
+    val phoneEdge = medium
+    val phoneSection = extraLarge
     val phoneNavInset: Dp = 4.dp
-
-    // Descriptive aliases retained from the original design-token contract.
-    val compact = 8.dp
-    val small = 12.dp
-    val medium = 16.dp
-    val large = 24.dp
-    val extraLarge = 32.dp
-
-    // Short aliases retained for existing screen call sites.
-    val xs: Dp = 4.dp
-    val sm: Dp = 8.dp
-    val md: Dp = 12.dp
-    val lg: Dp = 16.dp
-    val xl: Dp = 20.dp
-    val xxl: Dp = 24.dp
-    val section: Dp = 32.dp
     val largeSection: Dp = 40.dp
-    val touchTarget: Dp = 48.dp
+    val touchTarget = 48.dp
+}
+
+object SafeGlowTokens {
+    val HeroGlowColor = 0.2f // Alpha
+    val AmbientGlowAlpha = 0.15f
+    val PulseAlpha = 0.12f
+    val SignalAlpha = 0.52f
+    val GlowAlpha = 0.30f
+}
+
+object LiquidGlassTokens {
+    val ReflectionAlphaHigh = 0.055f
+    val ReflectionAlphaLow = 0.014f
+    val BorderAlpha = 0.15f
+    val AccentAlpha = 0.075f
+    val RimAlphaHigh = 0.84f
+    val RimAlphaMedium = 0.28f
+    val RimAlphaLow = 0.36f
 }
 
 object AppContentWidth {

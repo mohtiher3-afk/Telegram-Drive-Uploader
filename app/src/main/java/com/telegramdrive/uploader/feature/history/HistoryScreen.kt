@@ -1,5 +1,8 @@
 package com.telegramdrive.uploader.feature.history
 
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.AssistChip
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -151,11 +154,39 @@ fun HistoryScreen(
                                     color = MaterialTheme.colorScheme.primary
                                 )
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    TextButton(onClick = { viewModel.setSort(HistorySort.NEWEST) }) { Text(stringResource(com.telegramdrive.uploader.R.string.newest)) }
-                                    TextButton(onClick = { viewModel.setSort(HistorySort.LARGEST) }) { Text(stringResource(com.telegramdrive.uploader.R.string.largest)) }
+                                    AssistChip(
+                                        onClick = { viewModel.setSort(HistorySort.NEWEST) },
+                                        label = { Text(stringResource(com.telegramdrive.uploader.R.string.newest)) },
+                                        leadingIcon = {
+                                            if (uiState.sort == HistorySort.NEWEST) {
+                                                Icon(
+                                                    Icons.Default.Check,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                            }
+                                        },
+                                        modifier = Modifier.testTag("sort_newest")
+                                    )
+                                    AssistChip(
+                                        onClick = { viewModel.setSort(HistorySort.LARGEST) },
+                                        label = { Text(stringResource(com.telegramdrive.uploader.R.string.largest)) },
+                                        leadingIcon = {
+                                            if (uiState.sort == HistorySort.LARGEST) {
+                                                Icon(
+                                                    Icons.Default.Check,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                            }
+                                        },
+                                        modifier = Modifier.testTag("sort_largest")
+                                    )
                                 }
                             }
                         }

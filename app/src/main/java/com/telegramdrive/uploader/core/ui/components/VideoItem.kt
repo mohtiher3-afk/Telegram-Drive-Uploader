@@ -23,10 +23,13 @@ import coil.compose.AsyncImage
 import com.telegramdrive.uploader.domain.model.UploadTask
 import java.io.File
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun VideoItem(
     video: UploadTask,
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
+    onSelectedChange: ((Boolean) -> Unit)? = null,
     onRemoveClick: (() -> Unit)? = null
 ) {
     Card(
@@ -34,14 +37,21 @@ fun VideoItem(
             .fillMaxWidth()
             .liquidGlassOverlay(
                 shape = MaterialTheme.shapes.medium,
-                accent = MaterialTheme.colorScheme.primary
+                accent = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
             )
             .testTag("video_item_${video.id}"),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+            } else {
+                MaterialTheme.colorScheme.surfaceContainerHigh
+            }
         ),
         shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.72f)),
+        border = BorderStroke(
+            if (isSelected) 2.dp else 1.dp,
+            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.72f)
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
@@ -50,6 +60,16 @@ fun VideoItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (onSelectedChange != null) {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = onSelectedChange,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .testTag("video_item_checkbox_${video.id}")
+                )
+            }
+
             // Thumbnail / Icon
             Box(
                 modifier = Modifier

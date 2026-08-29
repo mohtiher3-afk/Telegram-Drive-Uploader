@@ -73,13 +73,27 @@ class UploadWorker @AssistedInject constructor(
             return Result.success()
         }
 
-        repository.updateStatus(uploadId, UploadStatus.PREPARING)
-        DiagnosticsManager.log(
-            category = DiagnosticCategory.UPLOAD_PREPARING,
-            severity = DiagnosticSeverity.INFO,
-            message = "Upload task entered preflight; waiting for TDLib handoff.",
-            uploadId = uploadId
-        )
+        val wasAlreadyUploading = uploadTask.status == UploadStatus.UPLOADING
+        if (!wasAlreadyUploading) {
+            repository.updateStatusIf(
+                id = uploadId,
+                status = UploadStatus.PREPARING,
+                allowedStatuses = listOf(UploadStatus.QUEUED, UploadStatus.RETRYING)
+            )
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_PREPARING,
+                severity = DiagnosticSeverity.INFO,
+                message = "Upload task entered preflight; waiting for TDLib handoff.",
+                uploadId = uploadId
+            )
+        } else {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_PREPARING,
+                severity = DiagnosticSeverity.INFO,
+                message = "Upload task resuming from UPLOADING state.",
+                uploadId = uploadId
+            )
+        }
 
         var result: Result = Result.failure()
         var terminalEventReceived = false
@@ -88,6 +102,12 @@ class UploadWorker @AssistedInject constructor(
         try {
             uploadEngine.uploadFile(uploadTask).collect { engineResult ->
                 if (isStopped) {
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.WORKER_STOPPED,
+                        severity = DiagnosticSeverity.INFO,
+                        message = "Upload worker stopping: cancellation or pause signal received.",
+                        uploadId = uploadId
+                    )
                     return@collect
                 }
                 when (engineResult) {

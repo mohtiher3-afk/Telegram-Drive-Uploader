@@ -2,6 +2,7 @@ package com.telegramdrive.uploader.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramUser
 import com.telegramdrive.uploader.domain.model.UploadTask
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class HomeUiState(
@@ -29,7 +31,8 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val uploadRepository: UploadRepository,
-    private val telegramRepository: TelegramRepository
+    private val telegramRepository: TelegramRepository,
+    private val settingsDataStore: SettingsDataStore
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = combine(
@@ -68,5 +71,6 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeUiState()
     )
+
 }
 

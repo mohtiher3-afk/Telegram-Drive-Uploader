@@ -13,8 +13,39 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 
+import com.telegramdrive.uploader.core.ui.theme.LiquidGlassTokens
+
 /**
  * Decorative dark-theme-only reflection layer for bounded M3 surfaces.
+ * It does not add semantics, interaction, state, or continuous motion.
+ */
+@Composable
+fun Modifier.liquidGlassReflection(
+    shape: Shape,
+    accent: Color = MaterialTheme.colorScheme.primary
+): Modifier {
+    val darkGlass = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    if (!darkGlass) return this
+
+    return clip(shape)
+        .drawWithContent {
+            drawContent()
+            drawRect(
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = LiquidGlassTokens.ReflectionAlphaHigh),
+                        Color.White.copy(alpha = LiquidGlassTokens.ReflectionAlphaLow),
+                        Color.Transparent
+                    ),
+                    start = Offset(size.width * 0.12f, 0f),
+                    end = Offset(size.width * 0.82f, size.height * 0.56f)
+                )
+            )
+        }
+}
+
+/**
+ * Decorative dark-theme-only overlay for bounded M3 surfaces.
  * It does not add semantics, interaction, state, or continuous motion.
  */
 @Composable
@@ -42,8 +73,8 @@ fun Modifier.liquidGlassOverlay(
         drawRect(
             brush = Brush.linearGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.055f),
-                    Color.White.copy(alpha = 0.014f),
+                    Color.White.copy(alpha = LiquidGlassTokens.ReflectionAlphaHigh),
+                    Color.White.copy(alpha = LiquidGlassTokens.ReflectionAlphaLow),
                     Color.Transparent
                 ),
                 start = Offset(size.width * 0.12f, 0f),
@@ -52,7 +83,7 @@ fun Modifier.liquidGlassOverlay(
         )
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(accent.copy(alpha = 0.075f), Color.Transparent),
+                colors = listOf(accent.copy(alpha = LiquidGlassTokens.AccentAlpha), Color.Transparent),
                 center = Offset(size.width * 0.92f, size.height * 0.92f),
                 radius = size.minDimension * 0.70f
             ),
@@ -76,9 +107,9 @@ fun Modifier.glowSignalRim(
         width = 1.dp,
         brush = Brush.linearGradient(
             colors = listOf(
-                accent.copy(alpha = 0.84f),
-                Color.White.copy(alpha = 0.28f),
-                accent.copy(alpha = 0.36f)
+                accent.copy(alpha = LiquidGlassTokens.RimAlphaHigh),
+                Color.White.copy(alpha = LiquidGlassTokens.RimAlphaMedium),
+                accent.copy(alpha = LiquidGlassTokens.RimAlphaLow)
             )
         ),
         shape = shape

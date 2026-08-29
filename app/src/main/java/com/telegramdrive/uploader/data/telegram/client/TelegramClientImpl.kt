@@ -197,7 +197,7 @@ class TelegramClientImpl @Inject constructor(
         // SearchPublicChat resolves an exact public username; SearchChatsOnServer handles names and partial matches.
         client.send(TdApi.SearchPublicChat(searchText), { result -> handleDestinationSearchResult(result) }, null)
         client.send(
-            TdApi.SearchChatsOnServer(searchText, TdApi.SearchChatTypeFilterChannel(), 50),
+            TdApi.SearchChatsOnServer(searchText, null, 100),
             { result -> handleDestinationSearchResult(result) },
             null
         )
@@ -241,6 +241,13 @@ class TelegramClientImpl @Inject constructor(
                     )
                     trySend(TelegramUploadEvent.Progress(result.remote.uploadedSize, result.size.coerceAtLeast(task.fileSize)))
                     val content = buildUploadMessageContent(task, fileId)
+                    val contentType = if (content is TdApi.InputMessageVideo) "video" else "document"
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.UPLOAD_STARTED,
+                        severity = DiagnosticSeverity.INFO,
+                        message = "Handing off $contentType message to Telegram TDLib client for delivery.",
+                        uploadId = task.id
+                    )
                     client.send(
                         TdApi.SendMessage(task.destinationId, null, null, null, null, content),
                         { sent ->
@@ -405,7 +412,7 @@ class TelegramClientImpl @Inject constructor(
         if (_connectionState.value != TelegramConnectionState.AUTHORIZED) return
         if (!chatsRequested.compareAndSet(false, true)) return
         client.send(
-            TdApi.GetChats(TdApi.ChatListMain(), 100),
+            TdApi.GetChats(TdApi.ChatListMain(), 500),
             { result -> handleTdLibObject(result) },
             null
         )
@@ -544,6 +551,9 @@ class TelegramClientImpl @Inject constructor(
     private fun ensureNativeRuntime() {
         if (nativeLoaded.compareAndSet(false, true)) {
             try {
+                // Load dependencies first
+                System.loadLibrary("crypto")
+                System.loadLibrary("ssl")
                 System.loadLibrary("tdjni")
             } catch (failure: Throwable) {
                 nativeLoaded.set(false)
@@ -589,7 +599,10 @@ internal fun buildUploadMessageContent(
     fileId: Int
 ): TdApi.InputMessageContent {
     val caption = TdApi.FormattedText(task.fileName, emptyArray())
-    if (!task.mimeType.startsWith("video/", ignoreCase = true)) {
+    val isVideoMime = task.mimeType.startsWith("video/", ignoreCase = true)
+    val hasValidMetadata = task.width > 0 && task.height > 0
+    
+    if (!isVideoMime || !hasValidMetadata) {
         return TdApi.InputMessageDocument(
             TdApi.InputDocument(TdApi.InputFileId(fileId), null, false),
             caption
@@ -604,8 +617,8 @@ internal fun buildUploadMessageContent(
             0,
             intArrayOf(),
             durationSeconds,
-            task.width.coerceAtLeast(0),
-            task.height.coerceAtLeast(0),
+            task.width,
+            task.height,
             true
         ),
         caption,

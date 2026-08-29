@@ -11,9 +11,11 @@ interface UploadRepository {
     fun observeUploadById(id: String): Flow<UploadTask?>
     suspend fun insertUpload(upload: UploadTask)
     suspend fun updateStatus(id: String, status: UploadStatus)
+    suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>)
     suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long)
     suspend fun updateUploadDuration(id: String, durationMs: Long)
     suspend fun reconcileInterruptedUploads(): Int
+    suspend fun getInterruptedUploads(): List<UploadTask>
     suspend fun deleteUploadById(id: String)
     suspend fun deleteCompletedUploads()
     suspend fun clearAllUploads()

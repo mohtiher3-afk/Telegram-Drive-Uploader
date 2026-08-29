@@ -107,7 +107,7 @@
     <string name="schedule_change">Change</string>
     <string name="videos_selected_summary">%1$d videos selected</string>
     <string name="total_size_summary">Total size: %1$s</string>
-    <string name="add_to_queue">Add to Queue</string>
+    <string name="add_to_queue">Queue Upload to Google Drive</string>
     <string name="no_videos_selected">No videos selected</string>
     <string name="select_videos_from_home">Please select videos from the Home tab to begin preparation.</string>
     <string name="extracting_video_metadata">Extracting video metadata…</string>

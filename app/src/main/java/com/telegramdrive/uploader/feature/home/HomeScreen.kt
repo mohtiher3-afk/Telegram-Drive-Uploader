@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storage
@@ -37,6 +38,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -64,7 +66,7 @@ import com.telegramdrive.uploader.R
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.components.liquidGlassReflection
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.AuroraCobalt
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
@@ -173,12 +175,12 @@ fun HomeScreen(
                     .padding(horizontal = AppSpacing.phoneEdge),
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
             ) {
-                item {
-                    ConnectionCard(
-                        state = uiState.telegramConnectionState,
-                        userName = displayName.ifBlank { null },
-                        username = uiState.telegramUser?.username,
-                        onConnectClick = onConnectClick,
+        item {
+                    TelegramConnectionCard(
+                        telegramState = uiState.telegramConnectionState,
+                        telegramUserName = displayName.ifBlank { null },
+                        telegramUserHandle = uiState.telegramUser?.username,
+                        onTelegramConnectClick = onConnectClick,
                         modifier = Modifier
                             .padding(top = AppSpacing.xs)
                             .testTag("telegram_status_card")
@@ -326,136 +328,77 @@ fun HomeScreen(
 }
 
 @Composable
-private fun ConnectionCard(
-    state: TelegramConnectionState,
-    userName: String?,
-    username: String?,
-    onConnectClick: () -> Unit,
+private fun TelegramConnectionCard(
+    telegramState: TelegramConnectionState,
+    telegramUserName: String?,
+    telegramUserHandle: String?,
+    onTelegramConnectClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val motionEnabled = rememberSystemMotionEnabled()
-    val authorized = state == TelegramConnectionState.AUTHORIZED
-    val targetStatusColor = if (authorized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val targetContainerColor = if (authorized) {
-        MaterialTheme.colorScheme.secondaryContainer
-    } else {
-        MaterialTheme.colorScheme.surfaceContainerHigh
-    }
-    val targetContentColor = if (authorized) {
-        MaterialTheme.colorScheme.onSecondaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-    val animatedStatusColor by animateColorAsState(
-        targetValue = targetStatusColor,
-        animationSpec = AppMotion.shortTween(motionEnabled),
-        label = "telegram_connection_status_color"
-    )
-    val animatedContainerColor by animateColorAsState(
-        targetValue = targetContainerColor,
-        animationSpec = AppMotion.shortTween(motionEnabled),
-        label = "telegram_connection_container"
-    )
-    val animatedContentColor by animateColorAsState(
-        targetValue = targetContentColor,
-        animationSpec = AppMotion.shortTween(motionEnabled),
-        label = "telegram_connection_content"
-    )
-    val avatarInitial = if (authorized && !userName.isNullOrBlank()) userName.take(1).uppercase() else null
+    val tgAuthorized = telegramState == TelegramConnectionState.AUTHORIZED
+
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.medium,
-                accent = MaterialTheme.colorScheme.primary
-            )
-            .animateContentSize(animationSpec = AppMotion.shortTween(motionEnabled)),
-        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = animatedContainerColor
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
-        border = null
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm),
+                .padding(AppSpacing.md),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
             Surface(
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.size(48.dp),
                 shape = CircleShape,
-                color = animatedStatusColor,
-                contentColor = if (authorized) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
+                color = if (tgAuthorized) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (tgAuthorized) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Crossfade(
-                        targetState = avatarInitial,
-                        animationSpec = AppMotion.shortTween(motionEnabled),
-                        label = "telegram_connection_avatar"
-                    ) { visibleInitial ->
-                        if (visibleInitial != null) {
-                            Text(
-                                text = visibleInitial,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.CloudQueue,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                }
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Crossfade(
-                    targetState = authorized,
-                    animationSpec = AppMotion.shortTween(motionEnabled),
-                    label = "telegram_connection_label"
-                ) { isAuthorized ->
-                    Text(
-                        text = stringResource(if (isAuthorized) R.string.telegram_connected else R.string.telegram_not_connected),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = animatedContentColor
+                    Icon(
+                        imageVector = Icons.Default.CloudQueue,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
-                Text(
-                    text = if (authorized) {
-                        userName ?: stringResource(R.string.user)
-                    } else {
-                        stringResource(R.string.connect_account)
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (authorized) {
-                        animatedContentColor.copy(alpha = 0.78f)
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    maxLines = if (authorized) 1 else 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (authorized) {
-                    username?.let {
-                        Text(
-                            text = "@$it",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = animatedContentColor.copy(alpha = 0.70f)
-                        )
-                    }
-                }
             }
-            if (!authorized) {
-                FilledTonalButton(onClick = onConnectClick) {
-                    Text(stringResource(R.string.connect))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Telegram",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = if (tgAuthorized) {
+                        telegramUserName ?: "Connected"
+                    } else {
+                        "Not Connected"
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            if (!tgAuthorized) {
+                FilledTonalButton(
+                    onClick = onTelegramConnectClick,
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text("Connect")
                 }
+            } else {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     }
@@ -466,108 +409,40 @@ private fun UploadFeatureCard(
     onSelectVideos: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val motionEnabled = rememberSystemMotionEnabled()
-    val auroraPulse = if (motionEnabled) {
-        rememberInfiniteTransition(label = "aurora_breath")
-            .animateFloat(
-                initialValue = 0.90f,
-                targetValue = 1.08f,
-                animationSpec = AppMotion.auroraBreath(),
-                label = "aurora_breath_scale"
-            )
-            .value
-    } else {
-        1f
-    }
-    val cardBase = MaterialTheme.colorScheme.surfaceContainer
-    val ambientGlow = AuroraCobalt.copy(alpha = 0.18f)
-
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.large,
-                accent = AuroraCobalt
-            ),
+            .liquidGlassReflection(shape = MaterialTheme.shapes.large),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.48f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Box(
+        Row(
             modifier = Modifier
-                .background(cardBase, MaterialTheme.shapes.large)
-                .drawBehind {
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(ambientGlow.copy(alpha = ambientGlow.alpha * auroraPulse), Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.86f, size.height * 0.16f),
-                            radius = size.minDimension * 0.70f * auroraPulse
-                        )
-                    )
-                }
+                .padding(AppSpacing.medium)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.padding(AppSpacing.phoneSection),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "New Upload",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = "Select files from Telegram",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            FilledTonalButton(
+                onClick = onSelectVideos,
+                shape = MaterialTheme.shapes.medium
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.telegram_drive),
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(AppSpacing.xs))
-                        Text(
-                            text = stringResource(R.string.upload_videos),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(AppSpacing.xs))
-                        Text(
-                            text = stringResource(R.string.select_videos_description),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Surface(
-                        modifier = Modifier.size(48.dp),
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Default.CloudUpload,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                }
-                Button(
-                    onClick = onSelectVideos,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("select_videos_button"),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CloudUpload,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(stringResource(R.string.select_videos))
-                }
+                Text("Select")
             }
         }
     }
@@ -601,40 +476,32 @@ private fun StatCard(
 ) {
     Card(
         modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
-            modifier = Modifier.padding(AppSpacing.sm),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
+            modifier = Modifier.padding(AppSpacing.medium),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.small)
         ) {
-            Surface(
-                modifier = Modifier.size(28.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
             Text(
-                text = title,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                text = title,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

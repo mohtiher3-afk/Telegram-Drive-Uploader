@@ -42,6 +42,10 @@ class UploadRepositoryImpl @Inject constructor(
         uploadDao.updateStatus(id, status.name)
     }
 
+    override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>) {
+        uploadDao.updateStatusIf(id, status.name, allowedStatuses.map { it.name })
+    }
+
     override suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long) {
         uploadDao.updateProgress(id, uploadedBytes, totalBytes, progress, speed, averageSpeed, eta)
     }
@@ -52,6 +56,10 @@ class UploadRepositoryImpl @Inject constructor(
 
     override suspend fun reconcileInterruptedUploads(): Int {
         return uploadDao.reconcileInterruptedUploads()
+    }
+
+    override suspend fun getInterruptedUploads(): List<UploadTask> {
+        return uploadDao.getInterruptedUploads().map { it.toDomain() }
     }
 
     override suspend fun deleteUploadById(id: String) {

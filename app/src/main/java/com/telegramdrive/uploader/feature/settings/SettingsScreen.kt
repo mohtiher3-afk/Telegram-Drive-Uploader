@@ -53,6 +53,7 @@ import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -679,43 +680,42 @@ fun SettingsSection(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Card(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.large,
-                accent = MaterialTheme.colorScheme.secondary
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        ),
-        shape = MaterialTheme.shapes.large,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.72f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            .padding(vertical = AppSpacing.sm)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp).fillMaxWidth()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = AppSpacing.sm)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 12.dp)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(AppSpacing.sm))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            ),
+            shape = MaterialTheme.shapes.large,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(AppSpacing.md)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.primary
-                )
+                content()
             }
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            Spacer(modifier = Modifier.height(8.dp))
-            content()
         }
     }
 }

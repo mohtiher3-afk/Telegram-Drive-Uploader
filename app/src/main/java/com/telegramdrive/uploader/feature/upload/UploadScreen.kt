@@ -7,14 +7,19 @@ import java.util.Calendar
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,22 +51,81 @@ fun UploadScreen(
     val smartSuggestions by viewModel.smartSuggestions.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    var selectedVideoIds by remember { mutableStateOf(setOf<String>()) }
+    val isSelectionMode = selectedVideoIds.isNotEmpty()
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(com.telegramdrive.uploader.R.string.prepare_videos)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier.testTag("upload_back_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(com.telegramdrive.uploader.R.string.back)
+            if (isSelectionMode && uiState is UploadUiState.Success) {
+                val successState = uiState as UploadUiState.Success
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(com.telegramdrive.uploader.R.string.selected) + " ${selectedVideoIds.size}",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { selectedVideoIds = emptySet() },
+                            modifier = Modifier.testTag("selection_clear_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Clear selection"
+                            )
+                        }
+                    },
+                    actions = {
+                        TextButton(
+                            onClick = {
+                                selectedVideoIds = successState.preparedVideos.map { it.id }.toSet()
+                            },
+                            modifier = Modifier.testTag("selection_select_all_button")
+                        ) {
+                            Text(
+                                "Select All",
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                val videosToRemove = successState.preparedVideos.filter { it.id in selectedVideoIds }
+                                viewModel.removePreparedVideos(videosToRemove)
+                                selectedVideoIds = emptySet()
+                            },
+                            modifier = Modifier.testTag("selection_delete_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Remove selected",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            } else {
+                TopAppBar(
+                    title = { Text(stringResource(com.telegramdrive.uploader.R.string.prepare_videos)) },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier.testTag("upload_back_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(com.telegramdrive.uploader.R.string.back)
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     ) { innerPadding ->
         Box(
@@ -126,16 +190,7 @@ fun UploadScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 12.dp)
-                                    .liquidGlassOverlay(
-                                        shape = MaterialTheme.shapes.large,
-                                        accent = if (selectedDestination != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                                    )
-                                    .glowSignalRim(
-                                        shape = MaterialTheme.shapes.large,
-                                        enabled = selectedDestination != null
-                                    )
-                                    .testTag("select_destination_card"),
+                                    .padding(bottom = 12.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = if (selectedDestination != null)
                                         MaterialTheme.colorScheme.secondaryContainer
@@ -143,7 +198,7 @@ fun UploadScreen(
                                         MaterialTheme.colorScheme.surfaceVariant
                                 ),
                                 shape = MaterialTheme.shapes.large,
-                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                                 border = if (selectedDestination == null) {
                                     BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                                 } else null
@@ -172,16 +227,12 @@ fun UploadScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 12.dp)
-                                    .liquidGlassOverlay(
-                                        shape = MaterialTheme.shapes.medium,
-                                        accent = MaterialTheme.colorScheme.secondary
-                                    ),
+                                    .padding(bottom = 12.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                                 ),
                                 shape = MaterialTheme.shapes.medium,
-                                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(16.dp),
@@ -237,11 +288,7 @@ fun UploadScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 12.dp)
-                                    .liquidGlassOverlay(
-                                        shape = MaterialTheme.shapes.large,
-                                        accent = MaterialTheme.colorScheme.tertiary
-                                    ),
+                                    .padding(bottom = 12.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.tertiaryContainer
                                 ),
@@ -302,16 +349,12 @@ fun UploadScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 16.dp)
-                                    .liquidGlassOverlay(
-                                        shape = MaterialTheme.shapes.extraLarge,
-                                        accent = MaterialTheme.colorScheme.primary
-                                    ),
+                                    .padding(bottom = 16.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer
                                 ),
                                 shape = MaterialTheme.shapes.extraLarge,
-                                elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
                                 Column(
                                     modifier = Modifier.padding(16.dp)
@@ -338,9 +381,25 @@ fun UploadScreen(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 items(state.preparedVideos, key = { it.id }) { video ->
+                                    val isSelected = video.id in selectedVideoIds
                                     VideoItem(
                                         video = video,
-                                        onRemoveClick = { viewModel.removePreparedVideo(video) }
+                                        isSelected = isSelected,
+                                        onSelectedChange = { checked ->
+                                            selectedVideoIds = if (checked) {
+                                                selectedVideoIds + video.id
+                                            } else {
+                                                selectedVideoIds - video.id
+                                            }
+                                        },
+                                        onRemoveClick = { viewModel.removePreparedVideo(video) },
+                                        modifier = Modifier.clickable {
+                                            selectedVideoIds = if (isSelected) {
+                                                selectedVideoIds - video.id
+                                            } else {
+                                                selectedVideoIds + video.id
+                                            }
+                                        }
                                     )
                                 }
                             }
