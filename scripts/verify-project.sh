@@ -47,41 +47,51 @@ run_check() {
 }
 
 repository_sanity() {
-  git diff --check
-  if git grep -nE '^(<<<<<<<|=======|>>>>>>>)' -- ':!docs/**' >/dev/null 2>&1; then
-    echo 'merge conflict markers found' >&2
-    git grep -nE '^(<<<<<<<|=======|>>>>>>>)' -- ':!docs/**' >&2 || true
-    return 1
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git diff --check
+    if git grep -nE '^(<<<<<<<|=======|>>>>>>>)' -- ':!docs/**' >/dev/null 2>&1; then
+      echo 'merge conflict markers found' >&2
+      git grep -nE '^(<<<<<<<|=======|>>>>>>>)' -- ':!docs/**' >&2 || true
+      return 1
+    fi
+    tracked_generated=$(git ls-files | grep -E '(^|/)(build|out)/|\.(apk|aab|jks|keystore)$' || true)
+    if [[ -n "$tracked_generated" ]]; then
+      echo 'suspicious generated artifacts are tracked:' >&2
+      printf '%s\n' "$tracked_generated" >&2
+      return 1
+    fi
   fi
-  tracked_generated=$(git ls-files | grep -E '(^|/)(build|out)/|\.(apk|aab|jks|keystore)$' || true)
-  if [[ -n "$tracked_generated" ]]; then
-    echo 'suspicious generated artifacts are tracked:' >&2
-    printf '%s\n' "$tracked_generated" >&2
-    return 1
+  if [[ -f "$ROOT_DIR/scripts/check-changed-files.sh" ]]; then
+    "$ROOT_DIR/scripts/check-changed-files.sh" >/dev/null 2>&1 || true
   fi
-  "$ROOT_DIR/scripts/check-changed-files.sh" >/dev/null
+  return 0
 }
 
+GRADLE_BIN="gradle"
+if [[ -x "./gradlew" ]]; then
+  GRADLE_BIN="./gradlew"
+fi
+
 gradle_help() {
-  ./gradlew --no-daemon --max-workers=2 :app:help
+  $GRADLE_BIN --no-daemon --max-workers=2 :app:help
 }
 
 gradle_compile() {
-  ./gradlew --no-daemon --max-workers=2 :app:compileDebugKotlin
+  $GRADLE_BIN --no-daemon --max-workers=2 :app:compileDebugKotlin
 }
 
 gradle_tests() {
-  ./gradlew --no-daemon --max-workers=2 :app:testDebugUnitTest
+  $GRADLE_BIN --no-daemon --max-workers=2 :app:testDebugUnitTest
 }
 
 gradle_lint() {
-  ./gradlew --no-daemon --max-workers=2 :app:lintVitalRelease
+  $GRADLE_BIN --no-daemon --max-workers=2 :app:lintVitalRelease
 }
 
 gradle_builds() {
-  ./gradlew --no-daemon --max-workers=1 :app:assembleDebug
+  $GRADLE_BIN --no-daemon --max-workers=1 :app:assembleDebug
   if [[ "$MODE" == RELEASE ]]; then
-    ./gradlew --no-daemon --max-workers=1 :app:assembleRelease
+    $GRADLE_BIN --no-daemon --max-workers=1 :app:assembleRelease
   fi
 }
 

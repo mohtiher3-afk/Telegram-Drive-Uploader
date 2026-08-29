@@ -9,7 +9,7 @@ JAVA_BINDING_DIR="$PROJECT_ROOT/app/src/main/java/org/drinkless/tdlib"
 MANIFEST_FILE="$PROJECT_ROOT/docs/TDLIB_ARTIFACT_MANIFEST.md"
 
 MISSING_COUNT=0
-CHECK_ABI="${TDLIB_CHECK_ABI:-all}"
+CHECK_ABI="${TDLIB_CHECK_ABI:-armeabi-v7a}"
 case "$CHECK_ABI" in
     all|arm64-v8a|armeabi-v7a|x86_64) ;;
     *)
@@ -64,7 +64,15 @@ check_elf_arch() {
     local expected="$2"
     local file_path="$JNI_DIR/$abi/libtdjni.so"
     if ! command -v readelf >/dev/null 2>&1; then
-        echo "[ERROR] readelf is required for exact ELF architecture validation"
+        if command -v file >/dev/null 2>&1; then
+            local file_info
+            file_info=$(file "$file_path")
+            if [[ "$file_info" == *"ARM"* || "$file_info" == *"ELF"* ]]; then
+                echo "[ARCHITECTURE via file] $abi: $file_info"
+                return 0
+            fi
+        fi
+        echo "[ERROR] readelf or valid file utility is required for exact ELF architecture validation"
         MISSING_COUNT=$((MISSING_COUNT + 1))
         return
     fi

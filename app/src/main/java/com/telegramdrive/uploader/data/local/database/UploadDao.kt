@@ -32,7 +32,7 @@ interface UploadDao {
     @Query("UPDATE uploads SET status = :status WHERE id = :id AND status IN (:allowedStatuses)")
     suspend fun updateStatusIf(id: String, status: String, allowedStatuses: List<String>): Int
 
-    @Query("UPDATE uploads SET status = :status WHERE id = :id AND status NOT IN ('COMPLETED', 'FAILED', 'CANCELLED')")
+    @Query("UPDATE uploads SET status = :status WHERE id = :id")
     suspend fun updateStatus(id: String, status: String): Int
 
     @Query("UPDATE uploads SET uploadedBytes = :uploadedBytes, totalBytes = :totalBytes, progress = :progress, speed = :speed, averageSpeed = :averageSpeed, eta = :eta, status = 'UPLOADING' WHERE id = :id AND status IN ('PREPARING', 'UPLOADING')")
