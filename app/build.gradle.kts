@@ -26,6 +26,10 @@ android {
     versionName = "1.0.18"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    ndk {
+      abiFilters.add("armeabi-v7a")
+    }
   }
 
   var releaseSigningConfigured = false
