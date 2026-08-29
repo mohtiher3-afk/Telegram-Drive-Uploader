@@ -63,6 +63,16 @@ class UploadWorker @AssistedInject constructor(
             return Result.success()
         }
 
+        if (uploadTask.status == UploadStatus.CANCELLED || uploadTask.status == UploadStatus.PAUSED) {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.WORKER_STOPPED,
+                severity = DiagnosticSeverity.INFO,
+                message = "Background upload worker skipped execution: upload task is ${uploadTask.status.name.lowercase()}.",
+                uploadId = uploadId
+            )
+            return Result.success()
+        }
+
         repository.updateStatus(uploadId, UploadStatus.PREPARING)
         DiagnosticsManager.log(
             category = DiagnosticCategory.UPLOAD_PREPARING,
@@ -77,6 +87,9 @@ class UploadWorker @AssistedInject constructor(
 
         try {
             uploadEngine.uploadFile(uploadTask).collect { engineResult ->
+                if (isStopped) {
+                    return@collect
+                }
                 when (engineResult) {
                     is UploadEngineResult.Progress -> {
                         val p = engineResult.progress
@@ -93,79 +106,108 @@ class UploadWorker @AssistedInject constructor(
                     }
                     is UploadEngineResult.Success -> {
                         terminalEventReceived = true
-                        repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
-                        repository.updateStatus(uploadId, UploadStatus.COMPLETED)
-                        notifyTerminalStatus(uploadId, UploadStatus.COMPLETED)
-                        result = Result.success()
-                        val duration = System.currentTimeMillis() - startTime
-                        DiagnosticsManager.log(
-                            category = DiagnosticCategory.UPLOAD_COMPLETED,
-                            severity = DiagnosticSeverity.INFO,
-                            message = "Upload task completed successfully.",
-                            uploadId = uploadId,
-                            durationMs = duration
-                        )
+                        val latestTask = repository.getUploadById(uploadId)
+                        if (latestTask?.status != UploadStatus.CANCELLED && latestTask?.status != UploadStatus.PAUSED) {
+                            repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
+                            repository.updateStatus(uploadId, UploadStatus.COMPLETED)
+                            notifyTerminalStatus(uploadId, UploadStatus.COMPLETED)
+                            result = Result.success()
+                            val duration = System.currentTimeMillis() - startTime
+                            DiagnosticsManager.log(
+                                category = DiagnosticCategory.UPLOAD_COMPLETED,
+                                severity = DiagnosticSeverity.INFO,
+                                message = "Upload task completed successfully.",
+                                uploadId = uploadId,
+                                durationMs = duration
+                            )
+                        } else {
+                            result = Result.success()
+                        }
                     }
                     is UploadEngineResult.Error -> {
                         terminalEventReceived = true
-                        val canRetry = engineResult.isRetryable && runAttemptCount < MAX_RETRY_ATTEMPTS
-                        repository.updateStatus(
-                            uploadId,
-                            if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
-                        )
-                        result = if (canRetry) {
-                            DiagnosticsManager.log(
-                                category = DiagnosticCategory.UPLOAD_RETRY,
-                                severity = DiagnosticSeverity.WARN,
-                                message = "Upload task failed transiently (${runAttemptCount + 1}/$MAX_RETRY_ATTEMPTS). WorkManager will retry it.",
-                                uploadId = uploadId,
-                                errorCode = ErrorCode.UPLOAD_FAILED
-                            )
-                            Result.retry()
+                        val latestTask = repository.getUploadById(uploadId)
+                        if (latestTask?.status == UploadStatus.CANCELLED || latestTask?.status == UploadStatus.PAUSED) {
+                            result = Result.success()
                         } else {
-                            notifyTerminalStatus(uploadId, UploadStatus.FAILED)
-                            DiagnosticsManager.log(
-                                category = DiagnosticCategory.UPLOAD_FAILED,
-                                severity = DiagnosticSeverity.ERROR,
-                                message = "Upload task failed permanently after ${runAttemptCount + 1} attempts: ${engineResult.message}.",
-                                uploadId = uploadId,
-                                errorCode = ErrorCode.UPLOAD_FAILED
+                            val canRetry = engineResult.isRetryable && runAttemptCount < MAX_RETRY_ATTEMPTS
+                            repository.updateStatus(
+                                uploadId,
+                                if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
                             )
-                            Result.failure()
+                            result = if (canRetry) {
+                                DiagnosticsManager.log(
+                                    category = DiagnosticCategory.UPLOAD_RETRY,
+                                    severity = DiagnosticSeverity.WARN,
+                                    message = "Upload task failed transiently (${runAttemptCount + 1}/$MAX_RETRY_ATTEMPTS). WorkManager will retry it.",
+                                    uploadId = uploadId,
+                                    errorCode = ErrorCode.UPLOAD_FAILED
+                                )
+                                Result.retry()
+                            } else {
+                                notifyTerminalStatus(uploadId, UploadStatus.FAILED)
+                                DiagnosticsManager.log(
+                                    category = DiagnosticCategory.UPLOAD_FAILED,
+                                    severity = DiagnosticSeverity.ERROR,
+                                    message = "Upload task failed permanently after ${runAttemptCount + 1} attempts: ${engineResult.message}.",
+                                    uploadId = uploadId,
+                                    errorCode = ErrorCode.UPLOAD_FAILED
+                                )
+                                Result.failure()
+                            }
                         }
                     }
                 }
             }
+            if (isStopped) {
+                val latestTask = repository.getUploadById(uploadId)
+                return if (latestTask?.status == UploadStatus.CANCELLED || latestTask?.status == UploadStatus.PAUSED) {
+                    Result.success()
+                } else {
+                    repository.updateStatus(uploadId, UploadStatus.RETRYING)
+                    Result.retry()
+                }
+            }
             if (UploadCompletionPolicy.decide(terminalEventReceived) == UploadCompletionPolicy.Decision.UNCONFIRMED) {
-                repository.updateStatus(uploadId, UploadStatus.FAILED)
-                notifyTerminalStatus(uploadId, UploadStatus.FAILED)
+                val latestTask = repository.getUploadById(uploadId)
+                if (latestTask?.status != UploadStatus.CANCELLED && latestTask?.status != UploadStatus.PAUSED) {
+                    repository.updateStatus(uploadId, UploadStatus.FAILED)
+                    notifyTerminalStatus(uploadId, UploadStatus.FAILED)
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.UPLOAD_FAILED,
+                        severity = DiagnosticSeverity.ERROR,
+                        message = "TDLib upload stream ended without confirmed Telegram delivery.",
+                        uploadId = uploadId,
+                        errorCode = ErrorCode.UPLOAD_FAILED
+                    )
+                    result = Result.failure()
+                } else {
+                    result = Result.success()
+                }
+            }
+        } catch (e: Exception) {
+            val latestTask = repository.getUploadById(uploadId)
+            if (latestTask?.status == UploadStatus.CANCELLED || latestTask?.status == UploadStatus.PAUSED || isStopped) {
+                result = Result.success()
+            } else {
+                val canRetry = runAttemptCount < MAX_RETRY_ATTEMPTS
+                repository.updateStatus(
+                    uploadId,
+                    if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
+                )
+                if (!canRetry) notifyTerminalStatus(uploadId, UploadStatus.FAILED)
+                result = if (canRetry) Result.retry() else Result.failure()
+                val mappedCategory = DiagnosticsManager.mapException(e)
+                val mappedCode = DiagnosticsManager.mapExceptionToCode(e)
                 DiagnosticsManager.log(
                     category = DiagnosticCategory.UPLOAD_FAILED,
                     severity = DiagnosticSeverity.ERROR,
-                    message = "TDLib upload stream ended without confirmed Telegram delivery.",
+                    message = "Upload worker crashed due to an unhandled exception.",
                     uploadId = uploadId,
-                    errorCode = ErrorCode.UPLOAD_FAILED
+                    errorCode = mappedCode,
+                    exception = e
                 )
-                result = Result.failure()
             }
-        } catch (e: Exception) {
-            val canRetry = runAttemptCount < MAX_RETRY_ATTEMPTS
-            repository.updateStatus(
-                uploadId,
-                if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
-            )
-            if (!canRetry) notifyTerminalStatus(uploadId, UploadStatus.FAILED)
-            result = if (canRetry) Result.retry() else Result.failure()
-            val mappedCategory = DiagnosticsManager.mapException(e)
-            val mappedCode = DiagnosticsManager.mapExceptionToCode(e)
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.UPLOAD_FAILED,
-                severity = DiagnosticSeverity.ERROR,
-                message = "Upload worker crashed due to an unhandled exception.",
-                uploadId = uploadId,
-                errorCode = mappedCode,
-                exception = e
-            )
         }
 
         DiagnosticsManager.log(

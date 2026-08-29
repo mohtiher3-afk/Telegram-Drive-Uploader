@@ -31,6 +31,7 @@ class TelegramDriveApp : Application(), Configuration.Provider {
         )
     }
 
+    @Suppress("DEPRECATION")
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         // Properly handle memory trim levels according to Android design guidelines

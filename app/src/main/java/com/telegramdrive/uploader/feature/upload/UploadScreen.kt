@@ -277,6 +277,27 @@ fun UploadScreen(
                                     }
                                 }
                             }
+                            // Warning Banner if invalid files were skipped
+                            state.invalidFilesWarning?.let { warning ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 12.dp)
+                                        .testTag("invalid_files_warning_card"),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer
+                                    ),
+                                    shape = MaterialTheme.shapes.medium
+                                ) {
+                                    Text(
+                                        text = warning,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                            }
+
                             // Summary Header
                             Card(
                                 modifier = Modifier
@@ -336,20 +357,28 @@ fun UploadScreen(
                                     .heightIn(min = 56.dp)
                                     .glowSignalRim(
                                         shape = MaterialTheme.shapes.extraLarge,
-                                        enabled = selectedDestination != null
+                                        enabled = selectedDestination != null && !state.isSubmitting
                                     )
                                     .testTag("add_to_queue_button"),
-                                enabled = selectedDestination != null,
+                                enabled = selectedDestination != null && !state.isSubmitting,
                                 shape = MaterialTheme.shapes.extraLarge,
                                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
-                                Text(
-                                    text = stringResource(com.telegramdrive.uploader.R.string.add_to_queue),
-                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                                )
+                                if (state.isSubmitting) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        strokeWidth = 2.5.dp
+                                    )
+                                } else {
+                                    Text(
+                                        text = stringResource(com.telegramdrive.uploader.R.string.add_to_queue),
+                                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                                    )
+                                }
                             }
                         }
                     }

@@ -55,6 +55,9 @@ class TelegramDestinationViewModel @Inject constructor(
 
     fun selectDestination(destination: TelegramDestination) {
         _selectedDestination.value = destination
+        viewModelScope.launch {
+            settingsDataStore.setSelectedDestination(destination.id, destination.title)
+        }
     }
 
     fun setDestinationPinned(destinationId: Long, pinned: Boolean) {

@@ -8,7 +8,10 @@ import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.UploadManager
 import com.telegramdrive.uploader.feature.upload.worker.UploadWorker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,6 +20,12 @@ class UploadManagerImpl @Inject constructor(
     private val repository: UploadRepository,
     private val workManager: WorkManager
 ) : UploadManager {
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            reconcileInterruptedUploads()
+        }
+    }
     override fun enqueueUpload(task: UploadTask) {
         enqueueUpload(task, 0L, UploadWorkPolicy.existingWorkPolicy(false))
     }
@@ -97,6 +106,18 @@ class UploadManagerImpl @Inject constructor(
 
     override fun retryUpload(task: UploadTask) {
         enqueueUpload(task, 0L, UploadWorkPolicy.existingWorkPolicy(true))
+    }
+
+    override suspend fun reconcileInterruptedUploads(): Int {
+        val count = repository.reconcileInterruptedUploads()
+        if (count > 0) {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.APP_START,
+                severity = DiagnosticSeverity.INFO,
+                message = "Reconciled $count interrupted upload tasks back to queued state."
+            )
+        }
+        return count
     }
 
     override fun observeUpload(id: String): Flow<UploadTask?> {

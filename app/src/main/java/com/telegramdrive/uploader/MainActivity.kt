@@ -22,6 +22,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    // Trigger rebuild to ensure correct app is installed on the emulator
     @Inject
     lateinit var settingsDataStore: SettingsDataStore
 
