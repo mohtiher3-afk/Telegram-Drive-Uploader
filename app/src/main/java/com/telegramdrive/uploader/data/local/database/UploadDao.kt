@@ -35,6 +35,9 @@ interface UploadDao {
     @Query("UPDATE uploads SET uploadDurationMs = :durationMs WHERE id = :id")
     suspend fun updateUploadDuration(id: String, durationMs: Long)
 
+    @Query("UPDATE uploads SET status = 'QUEUED' WHERE status IN ('PREPARING', 'UPLOADING')")
+    suspend fun reconcileInterruptedUploads(): Int
+
     @Query("DELETE FROM uploads WHERE id = :id")
     suspend fun deleteUploadById(id: String)
 

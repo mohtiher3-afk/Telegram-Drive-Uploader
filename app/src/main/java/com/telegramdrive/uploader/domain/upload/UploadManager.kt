@@ -12,6 +12,9 @@ interface UploadManager {
     fun resumeUpload(task: UploadTask)
     fun cancelUpload(id: String)
     fun retryUpload(task: UploadTask)
+    suspend fun reconcileInterruptedUploads(): Int {
+        return 0
+    }
     fun observeUpload(id: String): Flow<UploadTask?>
     fun observeUploads(): Flow<List<UploadTask>>
 }

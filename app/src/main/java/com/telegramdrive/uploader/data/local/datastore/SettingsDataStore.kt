@@ -31,6 +31,8 @@ class SettingsDataStore @Inject constructor(
     private val TELEGRAM_USER_USERNAME_KEY = stringPreferencesKey("telegram_user_username")
     private val TELEGRAM_USER_PHONE_KEY = stringPreferencesKey("telegram_user_phone")
     private val PINNED_DESTINATION_IDS_KEY = stringPreferencesKey("pinned_destination_ids")
+    private val SELECTED_DESTINATION_ID_KEY = androidx.datastore.preferences.core.longPreferencesKey("selected_destination_id")
+    private val SELECTED_DESTINATION_TITLE_KEY = stringPreferencesKey("selected_destination_title")
 
     val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[ONBOARDING_COMPLETED_KEY] == "true"
@@ -60,6 +62,14 @@ class SettingsDataStore @Inject constructor(
         PinnedDestinationIds.parse(preferences[PINNED_DESTINATION_IDS_KEY])
     }
 
+    val selectedDestinationId: Flow<Long?> = context.dataStore.data.map { preferences ->
+        preferences[SELECTED_DESTINATION_ID_KEY]
+    }
+
+    val selectedDestinationTitle: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[SELECTED_DESTINATION_TITLE_KEY]
+    }
+
     val telegramUser: Flow<String?> = context.dataStore.data.map { preferences ->
         val id = preferences[TELEGRAM_USER_ID_KEY] ?: return@map null
         val firstName = preferences[TELEGRAM_USER_FIRST_NAME_KEY] ?: ""
@@ -86,6 +96,13 @@ class SettingsDataStore @Inject constructor(
             val current = PinnedDestinationIds.parse(preferences[PINNED_DESTINATION_IDS_KEY])
             val updated = if (pinned) current + destinationId else current - destinationId
             preferences[PINNED_DESTINATION_IDS_KEY] = PinnedDestinationIds.encode(updated)
+        }
+    }
+
+    suspend fun setSelectedDestination(destinationId: Long, title: String) {
+        context.dataStore.edit { preferences ->
+            preferences[SELECTED_DESTINATION_ID_KEY] = destinationId
+            preferences[SELECTED_DESTINATION_TITLE_KEY] = title
         }
     }
 
@@ -144,6 +161,18 @@ class SettingsDataStore @Inject constructor(
             preferences.remove(TELEGRAM_USER_LAST_NAME_KEY)
             preferences.remove(TELEGRAM_USER_USERNAME_KEY)
             preferences.remove(TELEGRAM_USER_PHONE_KEY)
+        }
+    }
+
+    suspend fun clearTelegramSession() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(TELEGRAM_USER_ID_KEY)
+            preferences.remove(TELEGRAM_USER_FIRST_NAME_KEY)
+            preferences.remove(TELEGRAM_USER_LAST_NAME_KEY)
+            preferences.remove(TELEGRAM_USER_USERNAME_KEY)
+            preferences.remove(TELEGRAM_USER_PHONE_KEY)
+            preferences.remove(PINNED_DESTINATION_IDS_KEY)
+            preferences[TELEGRAM_STATE_KEY] = "DISCONNECTED"
         }
     }
 }

@@ -50,6 +50,10 @@ class UploadRepositoryImpl @Inject constructor(
         uploadDao.updateUploadDuration(id, durationMs.coerceAtLeast(0L))
     }
 
+    override suspend fun reconcileInterruptedUploads(): Int {
+        return uploadDao.reconcileInterruptedUploads()
+    }
+
     override suspend fun deleteUploadById(id: String) {
         uploadDao.deleteUploadById(id)
     }

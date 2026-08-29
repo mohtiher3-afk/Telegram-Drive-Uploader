@@ -168,8 +168,7 @@ class TelegramClientImpl @Inject constructor(
             _chatDestinations.value = emptyList()
             chatsRequested.set(false)
             _connectionState.value = TelegramConnectionState.DISCONNECTED
-            settingsDataStore.clearTelegramUser()
-            settingsDataStore.setTelegramConnectionState(TelegramConnectionState.DISCONNECTED.name)
+            settingsDataStore.clearTelegramSession()
         }
     }
 
