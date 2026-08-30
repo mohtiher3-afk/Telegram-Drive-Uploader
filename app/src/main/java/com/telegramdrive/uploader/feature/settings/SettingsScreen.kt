@@ -666,6 +666,7 @@ private fun canPostUploadNotifications(context: android.content.Context): Boolea
 }
 
 private fun glowColorLabelRes(preset: GlowColorPreset): Int = when (preset) {
+    GlowColorPreset.SEAFOAM -> com.telegramdrive.uploader.R.string.glow_color_seafoam
     GlowColorPreset.COBALT -> com.telegramdrive.uploader.R.string.glow_color_cobalt
     GlowColorPreset.LIME -> com.telegramdrive.uploader.R.string.glow_color_lime
     GlowColorPreset.CYAN -> com.telegramdrive.uploader.R.string.glow_color_cyan

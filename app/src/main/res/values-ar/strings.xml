@@ -156,6 +156,7 @@
     <string name="theme_dark">داكن</string>
     <string name="glow_colors">ألوان التوهج</string>
     <string name="glow_colors_summary">اختر توهج الإجراء وعناصر التحكم المحددة. تبقى ألوان الإكمال والخطأ كما هي.</string>
+    <string name="glow_color_seafoam">إشارة زبد البحر</string>
     <string name="glow_color_cobalt">إشارة كوبالت</string>
     <string name="glow_color_lime">إشارة ليمونية</string>
     <string name="glow_color_cyan">إشارة سماوية</string>

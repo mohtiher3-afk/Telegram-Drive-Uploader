@@ -11,8 +11,8 @@ import org.junit.Test
 class GlowColorPresetTest {
 
     @Test
-    fun `unknown stored color falls back to cobalt`() {
-        assertEquals(GlowColorPreset.COBALT, GlowColorPreset.fromStorage("Unknown"))
+    fun `unknown stored color falls back to seafoam`() {
+        assertEquals(GlowColorPreset.SEAFOAM, GlowColorPreset.fromStorage("Unknown"))
     }
 
     @Test

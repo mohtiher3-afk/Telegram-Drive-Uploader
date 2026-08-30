@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 data class SettingsUiState(
     val theme: String = "System",
-    val glowColor: String = GlowColorPreset.COBALT.storageValue,
+    val glowColor: String = GlowColorPreset.SEAFOAM.storageValue,
     val customGlowHex: String = GlowColorCodec.DEFAULT_HEX,
     val cacheSize: String = "0 B",
     val telegramConnectionState: TelegramConnectionState = TelegramConnectionState.DISCONNECTED,
@@ -115,7 +115,7 @@ class SettingsViewModel @Inject constructor(
             DiagnosticsManager.log(
                 category = DiagnosticCategory.SETTINGS_CHANGED,
                 severity = DiagnosticSeverity.INFO,
-                message = "Glow colors reset to default Cobalt."
+                message = "Glow colors reset to default Seafoam."
             )
         }
     }

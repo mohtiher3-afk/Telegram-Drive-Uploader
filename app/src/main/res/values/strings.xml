@@ -156,6 +156,7 @@
     <string name="theme_dark">Dark</string>
     <string name="glow_colors">Glow colors</string>
     <string name="glow_colors_summary">Choose the primary glow for actions and selected controls. Completion and error colors stay unchanged.</string>
+    <string name="glow_color_seafoam">Seafoam signal</string>
     <string name="glow_color_cobalt">Cobalt signal</string>
     <string name="glow_color_lime">Lime signal</string>
     <string name="glow_color_cyan">Cyan signal</string>

@@ -68,8 +68,9 @@ import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
 import com.telegramdrive.uploader.core.ui.components.liquidGlassReflection
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
-import com.telegramdrive.uploader.core.ui.theme.AuroraCobalt
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.TideCoral
+import com.telegramdrive.uploader.core.ui.theme.TideSeafoam
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 
@@ -409,18 +410,55 @@ private fun UploadFeatureCard(
     onSelectVideos: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val motionEnabled = rememberSystemMotionEnabled()
+    val auroraPulse = if (motionEnabled) {
+        rememberInfiniteTransition(label = "aurora_breath")
+            .animateFloat(
+                initialValue = 0.90f,
+                targetValue = 1.08f,
+                animationSpec = AppMotion.auroraBreath(),
+                label = "aurora_breath_scale"
+            )
+            .value
+    } else {
+        1f
+    }
+    val cardBase = MaterialTheme.colorScheme.surfaceContainerHigh
+    val ambientGlow = TideCoral.copy(alpha = 0.28f)
+    val signalGlow = TideSeafoam.copy(alpha = 0.16f)
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .liquidGlassReflection(shape = MaterialTheme.shapes.large),
+            .liquidGlassOverlay(
+                shape = MaterialTheme.shapes.large,
+                accent = TideSeafoam,
+                emphasis = LiquidGlassEmphasis.FeatureLens
+            ),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = BorderStroke(1.dp, TideSeafoam.copy(alpha = 0.56f))
     ) {
         Row(
             modifier = Modifier
                 .padding(AppSpacing.medium)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .background(cardBase, MaterialTheme.shapes.large)
+                .drawBehind {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(ambientGlow.copy(alpha = ambientGlow.alpha * auroraPulse), Color.Transparent),
+                            center = androidx.compose.ui.geometry.Offset(size.width * 0.86f, size.height * 0.16f),
+                            radius = size.minDimension * 0.70f * auroraPulse
+                        )
+                    )
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(signalGlow, Color.Transparent),
+                            center = androidx.compose.ui.geometry.Offset(size.width * 0.10f, size.height * 0.86f),
+                            radius = size.minDimension * 0.48f
+                        )
+                    )
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -12,6 +12,11 @@ enum class GlowColorPreset(
     private val dark: GlowPrimaryColors?,
     private val light: GlowPrimaryColors?
 ) {
+    SEAFOAM(
+        storageValue = "Seafoam",
+        dark = GlowPrimaryColors(Color(0xFFA5F6D2), Color(0xFF073827), Color(0xFF00533B), Color(0xFFC2FFE0)),
+        light = GlowPrimaryColors(Color(0xFF006C4D), Color.White, Color(0xFF8DF9C9), Color(0xFF002114))
+    ),
     COBALT(
         storageValue = "Cobalt",
         dark = GlowPrimaryColors(Color(0xFFB8C4FF), Color(0xFF102255), Color(0xE6364F9D), Color(0xFFDCE5FF)),
@@ -55,13 +60,13 @@ enum class GlowColorPreset(
 
     companion object {
         fun fromStorage(value: String?): GlowColorPreset =
-            entries.firstOrNull { it.storageValue == value } ?: COBALT
+            entries.firstOrNull { it.storageValue == value } ?: SEAFOAM
     }
 }
 
 /** Storage-safe hex parsing and primary-role derivation for a user-supplied Glow color. */
 object GlowColorCodec {
-    const val DEFAULT_HEX = "B8C4FF"
+    const val DEFAULT_HEX = "69D6B5"
 
     fun normalizeHex(value: String?): String {
         val normalized = value.orEmpty().trim().removePrefix("#")
@@ -117,11 +122,16 @@ object GlowColorCodec {
 
     internal fun primaryColorsFor(source: Color, darkTheme: Boolean): GlowPrimaryColors {
         return if (darkTheme) {
-            val primary = if (source.luminance() < 0.22f) source.mix(Color.White, 0.42f) else source
+            val initialPrimary = if (source.luminance() < 0.22f) source.mix(Color.White, 0.42f) else source
+            val primary = if (initialPrimary.contrastRatio(TideHarborInk) >= 4.5f) {
+                initialPrimary
+            } else {
+                initialPrimary.ensureContrastWith(Color.White)
+            }
             GlowPrimaryColors(
                 primary = primary,
                 onPrimary = primary.bestForeground(),
-                primaryContainer = source.mix(Color(0xFF0B101B), 0.60f),
+                primaryContainer = source.mix(TideHarborInk, 0.70f),
                 onPrimaryContainer = Color(0xFFF3F6FF)
             )
         } else {
@@ -156,7 +166,7 @@ object GlowColorCodec {
     }
 
     private fun Color.bestForeground(): Color {
-        val darkForeground = Color(0xFF0B101B)
+        val darkForeground = TideHarborInk
         return if (contrastRatio(darkForeground) >= contrastRatio(Color.White)) darkForeground else Color.White
     }
 
