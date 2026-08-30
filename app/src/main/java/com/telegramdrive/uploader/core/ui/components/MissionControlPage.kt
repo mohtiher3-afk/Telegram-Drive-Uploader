@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
+import com.telegramdrive.uploader.core.ui.theme.TideCoral
+import com.telegramdrive.uploader.core.ui.theme.TideHorizon
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 /** Shared dark-field depth and one finite entry transition for each app destination. */
@@ -44,8 +46,8 @@ fun MissionControlPage(
         animationSpec = AppMotion.pageTween(motionEnabled),
         label = "mission_control_page_translation"
     )
-    val topGlow = MaterialTheme.colorScheme.tertiary.copy(alpha = if (darkSurface) 0.10f else 0f)
-    val bottomGlow = MaterialTheme.colorScheme.secondary.copy(alpha = if (darkSurface) 0.09f else 0f)
+    val topGlow = TideCoral.copy(alpha = if (darkSurface) 0.18f else 0f)
+    val bottomGlow = TideHorizon.copy(alpha = if (darkSurface) 0.14f else 0f)
 
     Box(
         modifier = modifier

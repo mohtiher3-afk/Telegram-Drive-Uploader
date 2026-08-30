@@ -15,6 +15,16 @@ import androidx.compose.ui.unit.dp
 
 import com.telegramdrive.uploader.core.ui.theme.LiquidGlassTokens
 
+/** Visual intensity for bounded glass surfaces; it never carries product state. */
+enum class LiquidGlassEmphasis(
+    val borderAlpha: Float,
+    val reflectionAlpha: Float,
+    val ambientAlpha: Float
+) {
+    Operational(borderAlpha = 0.34f, reflectionAlpha = 0.032f, ambientAlpha = 0.045f),
+    FeatureLens(borderAlpha = 0.66f, reflectionAlpha = 0.075f, ambientAlpha = 0.105f)
+}
+
 /**
  * Decorative dark-theme-only reflection layer for bounded M3 surfaces.
  * It does not add semantics, interaction, state, or continuous motion.
@@ -51,7 +61,8 @@ fun Modifier.liquidGlassReflection(
 @Composable
 fun Modifier.liquidGlassOverlay(
     shape: Shape,
-    accent: Color = MaterialTheme.colorScheme.primary
+    accent: Color = MaterialTheme.colorScheme.primary,
+    emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational
 ): Modifier {
     val darkGlass = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     if (!darkGlass) return this
@@ -62,7 +73,7 @@ fun Modifier.liquidGlassOverlay(
             brush = Brush.linearGradient(
                 colors = listOf(
                     Color.White.copy(alpha = 0.20f),
-                    accent.copy(alpha = 0.52f),
+                    accent.copy(alpha = emphasis.borderAlpha),
                     Color.White.copy(alpha = 0.06f)
                 )
             ),
@@ -73,8 +84,8 @@ fun Modifier.liquidGlassOverlay(
         drawRect(
             brush = Brush.linearGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = LiquidGlassTokens.ReflectionAlphaHigh),
-                    Color.White.copy(alpha = LiquidGlassTokens.ReflectionAlphaLow),
+                    Color.White.copy(alpha = emphasis.reflectionAlpha),
+                    Color.White.copy(alpha = emphasis.reflectionAlpha * 0.26f),
                     Color.Transparent
                 ),
                 start = Offset(size.width * 0.12f, 0f),
@@ -83,7 +94,7 @@ fun Modifier.liquidGlassOverlay(
         )
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(accent.copy(alpha = LiquidGlassTokens.AccentAlpha), Color.Transparent),
+                colors = listOf(accent.copy(alpha = emphasis.ambientAlpha), Color.Transparent),
                 center = Offset(size.width * 0.92f, size.height * 0.92f),
                 radius = size.minDimension * 0.70f
             ),

@@ -1119,3 +1119,44 @@
 - [x] المرحلة 7: CI وlint والاعتمادات والإصدار الموقّع (فحص workflows، بوابة GO/NO-GO).
 - [x] المرحلة 8: التحقق متعدد الطبقات، التوثيق والتسليم.
 
+## User-reported visual redesign gap — active Android source
+
+- [x] Re-establish the exact APK/device build the user is viewing; GitHub HEAD contained the older Cobalt/Prismatic source, then the active checkout was updated.
+- [x] Compare phone-sized Home and Upload renders against the active Compose theme.
+- [x] Apply and verify a conspicuous Tideglass refinement without changing Telegram/TDLib callbacks, states, persistence, destinations, or WorkManager.
+- [x] Re-run compile, unit tests, lint, and `git diff --check` when the Android SDK is available.
+- [x] Do not commit, push, publish, or share an APK without new explicit authorization; explicit authorization is now recorded below for source push only.
+
+The earlier visual work was not present in the GitHub HEAD inspected after the sandbox reset; build success from another session was not evidence that this checkout was installed on the user's phone.
+
+## Source-code export request
+
+- [x] فحص الملفات الحساسة وملفات البناء المؤقتة قبل التصدير.
+- [x] إنشاء ZIP من مصدر Android الحالي دون `debug.keystore` أو APK أو mapping أو بيانات المستخدم أو الأسرار.
+- [x] فحص الحزمة الناتجة بحثًا عن مفاتيح API أو أرقام هاتف أو session strings أو مفاتيح خاصة.
+- [x] تسليم الحزمة للمستخدم دون commit أو push أو Release.
+
+## Release upload preparation request
+
+- [x] مراجعة إعدادات Release وABI وR8 وCI والتوقيع.
+- [x] فحص عدم وجود أسرار أو keystore إنتاجي أو APK/AAB غير مقصود ضمن مسار الرفع.
+- [x] بناء Release فقط إذا توفرت متطلبات التوقيع الآمنة؛ تم توثيق أن أسرار توقيع الإنتاج غير متاحة محليًا.
+- [x] تجهيز تقرير ومخرجات الرفع دون تنفيذ push أو GitHub Release أو نشر خارجي.
+
+## Authorized GitHub push
+
+- [x] مراجعة الملفات المعدلة وفحص الأسرار وملفات البناء قبل الالتزام.
+- [x] تشغيل بوابات التحقق المناسبة وتسجيل النتائج.
+- [ ] إنشاء commit للتغييرات المصرح بها ورفع الفرع إلى مستودع GitHub؛ commit محلي موجود، وpush ينتظر إنهاء rebase الحالي.
+- [ ] التحقق من remote commit وتقديم الرابط للمستخدم.
+- [x] عدم رفع APK أو keystore أو mapping أو `.env` أو بيانات المستخدم.
+
+
+
+## Resume authorized repository upload
+
+- [ ] فحص حالة rebase والتعارضات المتبقية.
+- [ ] حل تعارضات LiquidGlassSurface وHome وtodo مع الحفاظ على التغييرات البعيدة.
+- [ ] إعادة تشغيل الفحوص المناسبة ثم إكمال commit/push.
+- [ ] التحقق من remote commit وعدم رفع APK أو keystore أو أسرار.
+

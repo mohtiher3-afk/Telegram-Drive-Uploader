@@ -32,8 +32,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val themePreference by settingsDataStore.themePreference.collectAsStateWithLifecycle(initialValue = "System")
-            val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Cobalt")
-            val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "B8C4FF")
+            val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Seafoam")
+            val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "69D6B5")
             val darkTheme = when (themePreference) {
                 "Dark" -> true
                 "Light" -> false

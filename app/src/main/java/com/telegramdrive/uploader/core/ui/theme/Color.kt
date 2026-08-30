@@ -14,8 +14,15 @@ val BentoCardBg = Color(0xFFFFFFFF)
 val BentoCardBorder = Color(0xFFE1E2EC)
 val BentoIconBg = Color(0xFFF2F0F4)
 
-// Mission Control decorative accent aligned with the Pinterest cobalt signal.
-val AuroraCobalt = Color(0xFF6F8BFF)
+// Tideglass Relay semantic primitives: Seafoam is action, Horizon is context, Coral is decorative only.
+val TideSeafoam = Color(0xFF69D6B5)
+val TideHorizon = Color(0xFF6F8CFF)
+val TideCoral = Color(0xFFFF9A7B)
+val TideHarborInk = Color(0xFF102128)
+val TideSaltPaper = Color(0xFFF6F7F2)
+
+// Compatibility alias retained for existing decorative call sites.
+val AuroraCobalt = TideHorizon
 
 // Status & progress colors. Green is reserved for confirmed completion semantics.
 val UploadPausedAmber = Color(0xFFB25E00)
@@ -23,7 +30,7 @@ val UploadErrorRed = Color(0xFFBA1A1A)
 val UploadCompletedGreen = Color(0xFF006B59)
 
 // Legacy dark primitives retained for compatibility with older previews.
-val DarkBg = Color(0xFF111318)
+val DarkBg = TideHarborInk
 val DarkSurface = Color(0xFF1A1C22)
 val DarkSurfaceVariant = Color(0xFF2A2D36)
 val DarkSurfaceContainer = Color(0xFF21242C)
