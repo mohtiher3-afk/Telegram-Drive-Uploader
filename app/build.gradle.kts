@@ -27,16 +27,9 @@ android {
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-    // Removed ABI restrictions to support x86_64 emulator via native bridge stub
+    // Package the verified TDLib v1.8.66 native artifacts for the supported ABIs.
     ndk {
       abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86_64"))
-    }
-  }
-
-  externalNativeBuild {
-    cmake {
-      path = file("src/main/cpp/CMakeLists.txt")
-      version = "3.22.1"
     }
   }
 
@@ -88,7 +81,7 @@ android {
       val requestedAbi = providers.gradleProperty("targetAbi").orNull
       isEnable = requestedAbi != null
       reset()
-      val supportedAbis = listOf("armeabi-v7a")
+      val supportedAbis = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
       val selectedAbis = requestedAbi?.let { listOf(it) } ?: supportedAbis
       require(selectedAbis.all { it in supportedAbis }) {
         "targetAbi must be one of: ${supportedAbis.joinToString()}; got $requestedAbi"
