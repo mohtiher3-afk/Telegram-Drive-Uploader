@@ -1160,3 +1160,13 @@ The earlier visual work was not present in the GitHub HEAD inspected after the s
 - [ ] إعادة تشغيل الفحوص المناسبة ثم إكمال commit/push.
 - [ ] التحقق من remote commit وعدم رفع APK أو keystore أو أسرار.
 
+
+
+## CI failure follow-up — exit 126 and missing memory artifacts
+
+- [ ] فحص سجل GitHub Actions والـworkflow لتحديد الأمر الذي يفشل بصلاحية التنفيذ.
+- [ ] التحقق من executable bits ومسارات سكربتات البوابات وتقارير الذاكرة.
+- [ ] إصلاح CI بأقل تغيير دون تعديل TDLib أو ABI أو منطق الرفع.
+- [ ] تشغيل تحقق محلي ورفع commit إصلاح CI بعد مراجعة الفروقات.
+- [ ] متابعة التشغيل البعيد وتوثيق نتيجة البوابات وartifacts.
+
