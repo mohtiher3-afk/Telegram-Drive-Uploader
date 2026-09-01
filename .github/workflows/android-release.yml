@@ -204,6 +204,19 @@ jobs:
           path: release-assets
           merge-multiple: true
 
+      - name: Flatten verified release assets
+        run: |
+          set -euo pipefail
+          for ABI in arm64-v8a armeabi-v7a x86_64; do
+            APK="$(find release-assets -type f -name "app-${ABI}-release.apk" -print -quit)"
+            SHA="$(find release-assets -type f -name "app-${ABI}-release.apk.sha256" -print -quit)"
+            test -n "$APK"
+            test -n "$SHA"
+            test "$APK" != "release-assets/app-${ABI}-release.apk"
+            cp "$APK" "release-assets/app-${ABI}-release.apk"
+            sha256sum "release-assets/app-${ABI}-release.apk" > "release-assets/app-${ABI}-release.apk.sha256"
+          done
+
       - name: Verify release asset set
         run: |
           set -euo pipefail
