@@ -214,7 +214,7 @@ jobs:
             test -n "$SHA"
             test "$APK" != "release-assets/app-${ABI}-release.apk"
             cp "$APK" "release-assets/app-${ABI}-release.apk"
-            sha256sum "release-assets/app-${ABI}-release.apk" > "release-assets/app-${ABI}-release.apk.sha256"
+            (cd release-assets && sha256sum "app-${ABI}-release.apk" > "app-${ABI}-release.apk.sha256")
           done
 
       - name: Verify release asset set
