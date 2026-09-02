@@ -47,6 +47,7 @@ class UploadManagerImpl @Inject constructor(
     ) {
         val inputData = Data.Builder()
             .putString("upload_id", task.id)
+            .putString("upload_file_name", task.fileName)
             .build()
 
         val constraints = UploadWorkPolicy.constraints()

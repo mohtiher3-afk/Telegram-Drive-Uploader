@@ -1,8 +1,13 @@
 package com.telegramdrive.uploader.feature.upload.worker
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.ServiceInfo
+import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
@@ -18,6 +23,7 @@ import com.telegramdrive.uploader.domain.upload.UploadEventNotificationPolicy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.collect
+import kotlin.math.roundToInt
 
 @HiltWorker
 class UploadWorker @AssistedInject constructor(
@@ -30,6 +36,7 @@ class UploadWorker @AssistedInject constructor(
 
     companion object {
         private const val MAX_RETRY_ATTEMPTS = 5
+        private const val UPLOAD_CHANNEL_ID = "upload_progress"
     }
 
     override suspend fun doWork(): Result {
@@ -72,6 +79,8 @@ class UploadWorker @AssistedInject constructor(
             )
             return Result.success()
         }
+
+        setForeground(createForegroundInfo(uploadTask.fileName, 0))
 
         val wasAlreadyUploading = uploadTask.status == UploadStatus.UPLOADING
         if (!wasAlreadyUploading) {
@@ -122,6 +131,7 @@ class UploadWorker @AssistedInject constructor(
                             averageSpeed = p.averageSpeedBytesPerSecond,
                             eta = p.etaSeconds
                         )
+                        setForeground(createForegroundInfo(uploadTask.fileName, p.percentage.roundToInt()))
                         // Do not log every progress event at high frequency in production to preserve resource usage.
                     }
                     is UploadEngineResult.Success -> {
@@ -239,6 +249,50 @@ class UploadWorker @AssistedInject constructor(
 
         return result
     }
+
+    override suspend fun getForegroundInfo(): ForegroundInfo =
+        createForegroundInfo(
+            fileName = inputData.getString("upload_file_name") ?: applicationContext.getString(com.telegramdrive.uploader.R.string.upload_notification_progress_title),
+            percentage = 0
+        )
+
+    private fun createForegroundInfo(fileName: String, percentage: Int): ForegroundInfo {
+        val manager = applicationContext.getSystemService(NotificationManager::class.java)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            manager.createNotificationChannel(
+                NotificationChannel(
+                    UPLOAD_CHANNEL_ID,
+                    applicationContext.getString(com.telegramdrive.uploader.R.string.upload_notification_channel_name),
+                    NotificationManager.IMPORTANCE_LOW
+                ).apply {
+                    description = applicationContext.getString(com.telegramdrive.uploader.R.string.upload_notification_channel_description)
+                }
+            )
+        }
+        val safePercentage = percentage.coerceIn(0, 100)
+        val notification = NotificationCompat.Builder(applicationContext, UPLOAD_CHANNEL_ID)
+            .setSmallIcon(com.telegramdrive.uploader.R.drawable.ic_upload_notification)
+            .setContentTitle(applicationContext.getString(com.telegramdrive.uploader.R.string.upload_notification_progress_title))
+            .setContentText(applicationContext.getString(com.telegramdrive.uploader.R.string.upload_notification_progress_text, fileName, safePercentage))
+            .setProgress(100, safePercentage, false)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .build()
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            ForegroundInfo(
+                uploadIdNotificationId(),
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            )
+        } else {
+            ForegroundInfo(uploadIdNotificationId(), notification)
+        }
+    }
+
+    private fun uploadIdNotificationId(): Int =
+        (inputData.getString("upload_id") ?: "background_upload").hashCode()
 
     private fun notifyTerminalStatus(uploadId: String, status: UploadStatus) {
         UploadEventNotificationPolicy.eventFor(status)?.let { event ->

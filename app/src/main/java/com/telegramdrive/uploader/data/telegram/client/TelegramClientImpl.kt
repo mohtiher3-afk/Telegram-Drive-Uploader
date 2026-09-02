@@ -493,7 +493,7 @@ class TelegramClientImpl @Inject constructor(
                         (supergroup.status as TdApi.ChatMemberStatusAdministrator).rights?.canPostMessages == true
                     supergroup?.status is TdApi.ChatMemberStatusRestricted ->
                         (supergroup.status as TdApi.ChatMemberStatusRestricted).permissions?.canSendBasicMessages == true
-                    else -> chat.permissions?.canSendBasicMessages == true || supergroup == null
+                    else -> chat.permissions?.canSendBasicMessages == true
                 }
                 if (!canSend) return@mapNotNull null
                 TelegramDestination(
