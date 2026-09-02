@@ -217,7 +217,9 @@
     <string name="status_failed">Failed</string>
     <string name="status_cancelled">Cancelled</string>
     <string name="upload_notification_channel_name">Upload status</string>
-    <string name="upload_notification_channel_description">Confirmed upload completion and permanent failure updates.</string>
+    <string name="upload_notification_channel_description">Upload progress, confirmed completion, and permanent failure updates.</string>
+    <string name="upload_notification_progress_title">Uploading to Telegram</string>
+    <string name="upload_notification_progress_text">%1$s — %2$d%% complete</string>
     <string name="upload_notification_completed_title">Upload completed</string>
     <string name="upload_notification_completed_text">A file was delivered to your selected Telegram destination.</string>
     <string name="upload_notification_failed_title">Upload failed</string>
