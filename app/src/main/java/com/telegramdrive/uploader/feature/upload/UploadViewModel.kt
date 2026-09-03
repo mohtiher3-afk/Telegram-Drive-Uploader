@@ -145,7 +145,7 @@ class UploadViewModel @Inject constructor(
                             if (index >= 0) {
                                 _preparedList[index] = _preparedList[index].copy(
                                     sourceUri = compressedUri.toString(),
-                                    fileSize = 0L // Will be re-queried on upload
+                                    fileSize = resolveFileSize(compressedUri)
                                 )
                                 _compressedIds.value = _compressedIds.value + task.id
                             }
@@ -172,6 +172,18 @@ class UploadViewModel @Inject constructor(
                 _isCompressing.value = false
                 updateState()
             }
+        }
+    }
+
+    private fun resolveFileSize(uri: Uri): Long {
+        return try {
+            if (uri.scheme == "file") {
+                uri.path?.let { java.io.File(it).length() } ?: 0L
+            } else {
+                context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: 0L
+            }
+        } catch (_: Exception) {
+            0L
         }
     }
 

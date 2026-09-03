@@ -61,6 +61,22 @@ object VideoMetadataExtractor {
             )
         }
 
+        // Some content providers (SAF, Telegram-scoped providers, etc.) do not expose
+        // OpenableColumns.SIZE. A zero fileSize makes progress/ETA meaningless and the
+        // queued total size wrong, so fall back to measuring the actual byte length.
+        if (fileSize <= 0L) {
+            fileSize = measureFileSize(resolver, uriString)
+            if (fileSize <= 0L) {
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.UPLOAD_PREPARING,
+                    severity = DiagnosticSeverity.WARN,
+                    message = "Video file size could not be determined; the uploaded total size may be inaccurate.",
+                    uploadId = id,
+                    errorCode = ErrorCode.SOURCE_FILE_UNAVAILABLE
+                )
+            }
+        }
+
         // 3. Resolve MIME type from the provider first, then fall back to the real filename extension.
         val mimeType = VideoFormatSupport.normalizeMimeType(resolver.getType(uriString), fileName)
         require(VideoFormatSupport.isSupportedVideo(mimeType, fileName)) {
@@ -120,5 +136,39 @@ object VideoMetadataExtractor {
             width = width,
             height = height
         )
+    }
+
+    /**
+     * Determines the real byte size of the file behind [uri] when the provider does
+     * not expose it via OpenableColumns. Uses the declared length when available, then
+     * falls back to copying the stream and counting bytes. Returns 0 if it cannot be
+     * determined.
+     */
+    private fun measureFileSize(resolver: android.content.ContentResolver, uri: android.net.Uri): Long {
+        if (uri.scheme == "file") {
+            return uri.path?.let { File(it).length() } ?: 0L
+        }
+        try {
+            resolver.openAssetFileDescriptor(uri, "r")?.use { descriptor ->
+                val length = descriptor.length
+                if (length > 0L) return length
+            }
+        } catch (_: Exception) {
+            // Fall through to counting the stream.
+        }
+        return try {
+            resolver.openInputStream(uri)?.use { stream ->
+                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                var total = 0L
+                while (true) {
+                    val read = stream.read(buffer)
+                    if (read < 0) break
+                    total += read
+                }
+                total
+            } ?: 0L
+        } catch (_: Exception) {
+            0L
+        }
     }
 }

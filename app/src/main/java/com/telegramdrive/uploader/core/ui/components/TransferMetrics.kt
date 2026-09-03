@@ -71,7 +71,7 @@ fun TransferMetrics(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Speed,
-                        contentDescription = "Upload Speed",
+                        contentDescription = stringResource(R.string.upload_speed_desc),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
@@ -111,7 +111,7 @@ fun TransferMetrics(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Schedule,
-                        contentDescription = "Time Remaining",
+                        contentDescription = stringResource(R.string.time_remaining_desc),
                         tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(16.dp)
                     )

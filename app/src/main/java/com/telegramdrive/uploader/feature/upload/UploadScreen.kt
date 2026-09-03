@@ -75,7 +75,7 @@ fun UploadScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Clear selection"
+                                contentDescription = stringResource(com.telegramdrive.uploader.R.string.clear_selection)
                             )
                         }
                     },
@@ -87,7 +87,7 @@ fun UploadScreen(
                             modifier = Modifier.testTag("selection_select_all_button")
                         ) {
                             Text(
-                                "Select All",
+                                stringResource(com.telegramdrive.uploader.R.string.select_all),
                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                             )
                         }
@@ -101,7 +101,7 @@ fun UploadScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Remove selected",
+                                contentDescription = stringResource(com.telegramdrive.uploader.R.string.remove_selected),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }

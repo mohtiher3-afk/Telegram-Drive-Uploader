@@ -25,5 +25,6 @@ data class UploadTask(
     val width: Int = 0,
     val height: Int = 0,
     val scheduledAt: Long? = null,
-    val uploadDurationMs: Long = 0L
+    val uploadDurationMs: Long = 0L,
+    val messageLink: String? = null
 )

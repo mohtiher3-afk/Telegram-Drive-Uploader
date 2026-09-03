@@ -3,11 +3,15 @@ package com.telegramdrive.uploader.feature.settings
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import com.telegramdrive.uploader.BuildConfig
+import java.io.File
+import java.io.FileOutputStream
 
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.*
@@ -539,6 +543,19 @@ fun SettingsScreen(
                             ) {
                                 Text(stringResource(com.telegramdrive.uploader.R.string.clear_logs))
                             }
+
+                            Button(
+                                onClick = {
+                                    shareDiagnosticsLog(context)
+                                },
+                                modifier = Modifier.weight(1f).testTag("share_logs_button"),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            ) {
+                                Text(stringResource(com.telegramdrive.uploader.R.string.share_logs))
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -718,5 +735,53 @@ fun SettingsSection(
                 content()
             }
         }
+    }
+}
+
+/**
+ * Writes the sanitized diagnostics log to a cache file and launches the system share
+ * sheet so the user can send it to a support channel, cloud drive, etc.
+ */
+private fun shareDiagnosticsLog(context: android.content.Context) {
+    try {
+        val dir = File(context.cacheDir, "diagnostics")
+        if (!dir.exists()) dir.mkdirs()
+        val logFile = File(dir, "logs.txt")
+        logFile.writeText(
+            DiagnosticsManager.exportDiagnostics(),
+            Charsets.UTF_8
+        )
+        val contentUri: Uri? = try {
+            FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                logFile
+            )
+        } catch (e: Exception) {
+            null
+        }
+        if (contentUri == null) {
+            android.widget.Toast.makeText(
+                context,
+                com.telegramdrive.uploader.R.string.logs_share_failed,
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_STREAM, contentUri)
+            clipData = android.content.ClipData.newRawUri(null, contentUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(
+            Intent.createChooser(shareIntent, context.getString(com.telegramdrive.uploader.R.string.share_logs))
+        )
+    } catch (e: Exception) {
+        android.widget.Toast.makeText(
+            context,
+            com.telegramdrive.uploader.R.string.logs_share_failed,
+            android.widget.Toast.LENGTH_SHORT
+        ).show()
     }
 }

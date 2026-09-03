@@ -2,6 +2,8 @@ import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesS
 import java.util.Base64
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+buildDir = file("C:/Users/acer/AppData/Local/Temp/tdg-build/app/build")
+
 plugins {
   
   alias(libs.plugins.android.application)

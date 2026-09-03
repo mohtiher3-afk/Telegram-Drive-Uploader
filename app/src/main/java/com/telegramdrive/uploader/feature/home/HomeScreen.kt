@@ -379,9 +379,9 @@ private fun TelegramConnectionCard(
                 )
                 Text(
                     text = if (tgAuthorized) {
-                        telegramUserName ?: "Connected"
+                        telegramUserName ?: stringResource(R.string.telegram_connected)
                     } else {
-                        "Not Connected"
+                        stringResource(R.string.telegram_not_connected)
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -393,7 +393,7 @@ private fun TelegramConnectionCard(
                     onClick = onTelegramConnectClick,
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Text("Connect")
+                    Text(stringResource(R.string.connect))
                 }
             } else {
                 Icon(
@@ -466,13 +466,13 @@ private fun UploadFeatureCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "New Upload",
+                    text = stringResource(R.string.new_upload),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
-                    text = "Select files from Telegram",
+                    text = stringResource(R.string.select_files_from_telegram),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -482,7 +482,7 @@ private fun UploadFeatureCard(
                 onClick = onSelectVideos,
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("Select")
+                Text(stringResource(R.string.select))
             }
         }
     }

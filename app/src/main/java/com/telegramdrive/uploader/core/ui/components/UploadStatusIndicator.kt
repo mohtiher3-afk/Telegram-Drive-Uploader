@@ -254,7 +254,7 @@ fun UploadStatusIndicator(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "View Detailed Action Log",
+                        text = stringResource(com.telegramdrive.uploader.R.string.view_detailed_log),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -318,44 +318,46 @@ fun UploadStatusIndicator(
             }
 
             if (video.status == UploadStatus.COMPLETED) {
-                val simulatedLink = "https://t.me/drive_uploader_bot?start=file_${video.id}"
-                Spacer(modifier = Modifier.height(8.dp))
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                val mirrorLink = video.messageLink
+                if (mirrorLink != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Mirror Link Ready",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = simulatedLink,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1
-                            )
-                        }
-                        IconButton(
-                            onClick = { clipboardManager.setText(AnnotatedString(simulatedLink)) },
-                            modifier = Modifier.size(24.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.ContentCopy,
-                                contentDescription = "Copy Link",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
-                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(com.telegramdrive.uploader.R.string.mirror_link_title),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = mirrorLink,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1
+                                )
+                            }
+                            IconButton(
+                                onClick = { clipboardManager.setText(AnnotatedString(mirrorLink)) },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ContentCopy,
+                                    contentDescription = stringResource(com.telegramdrive.uploader.R.string.copy_link),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
                         }
                     }
                 }

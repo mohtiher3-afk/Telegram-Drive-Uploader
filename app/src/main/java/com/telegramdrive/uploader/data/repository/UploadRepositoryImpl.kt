@@ -54,6 +54,10 @@ class UploadRepositoryImpl @Inject constructor(
         uploadDao.updateUploadDuration(id, durationMs.coerceAtLeast(0L))
     }
 
+    override suspend fun updateMessageLink(id: String, messageLink: String) {
+        uploadDao.updateMessageLink(id, messageLink)
+    }
+
     override suspend fun reconcileInterruptedUploads(): Int {
         return uploadDao.reconcileInterruptedUploads()
     }
@@ -99,7 +103,8 @@ class UploadRepositoryImpl @Inject constructor(
                         width = width,
             height = height,
             scheduledAt = scheduledAt,
-            uploadDurationMs = uploadDurationMs
+            uploadDurationMs = uploadDurationMs,
+            messageLink = messageLink
         )
     }
     private fun UploadTask.toEntity(): UploadEntity {
@@ -127,7 +132,8 @@ class UploadRepositoryImpl @Inject constructor(
             width = width,
             height = height,
             scheduledAt = scheduledAt,
-            uploadDurationMs = uploadDurationMs
+            uploadDurationMs = uploadDurationMs,
+            messageLink = messageLink
         )
     }
 }

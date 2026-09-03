@@ -28,5 +28,6 @@ data class UploadEntity(
     val width: Int,
     val height: Int,
     val scheduledAt: Long? = null,
-    val uploadDurationMs: Long = 0L
+    val uploadDurationMs: Long = 0L,
+    val messageLink: String? = null
 )

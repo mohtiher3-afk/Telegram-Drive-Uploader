@@ -20,16 +20,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.PauseCircleOutline
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -80,7 +84,7 @@ fun QueueScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (uiState.queueItems.isEmpty() && uiState.selectedFilter == QueueFilter.ALL) {
+            if (uiState.queueItems.isEmpty() && uiState.selectedFilter == QueueFilter.ALL && uiState.query.isBlank()) {
                 EmptyState(
                     icon = Icons.Default.HourglassEmpty,
                     title = stringResource(com.telegramdrive.uploader.R.string.queue_empty_title),
@@ -97,6 +101,29 @@ fun QueueScreen(
                         .testTag("queue_list"),
                     verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
                 ) {
+                    item {
+                        OutlinedTextField(
+                            value = uiState.query,
+                            onValueChange = viewModel::onQueryChanged,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("queue_search_field"),
+                            singleLine = true,
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                            trailingIcon = {
+                                if (uiState.query.isNotEmpty()) {
+                                    IconButton(onClick = { viewModel.onQueryChanged("") }) {
+                                        Icon(
+                                            Icons.Default.Clear,
+                                            contentDescription = stringResource(com.telegramdrive.uploader.R.string.clear_search)
+                                        )
+                                    }
+                                }
+                            },
+                            label = { Text(stringResource(com.telegramdrive.uploader.R.string.search_queue_files)) },
+                            placeholder = { Text(stringResource(com.telegramdrive.uploader.R.string.filter_active_queue)) }
+                        )
+                    }
                     item {
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(
@@ -232,6 +259,19 @@ fun QueueScreen(
                                     onCancelClick = { viewModel.cancelUpload(video.id) }
                                 )
                             }
+                        }
+                    }
+                    if (uiState.queueItems.isEmpty() && uiState.query.isNotBlank()) {
+                        item {
+                            Text(
+                                text = stringResource(com.telegramdrive.uploader.R.string.queue_no_matching_title),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = AppSpacing.md)
+                                    .testTag("queue_no_results"),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                     item { Spacer(modifier = Modifier.height(12.dp)) }

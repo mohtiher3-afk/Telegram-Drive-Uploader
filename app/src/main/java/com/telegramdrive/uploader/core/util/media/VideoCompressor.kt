@@ -76,6 +76,12 @@ class VideoCompressor(private val context: Context) {
 
         try {
             compressVideoFile(descriptor, outputFile, preset, onProgress)
+            // Guard against a silent no-op compression that either produced nothing or
+            // failed to write the muxer output; otherwise we would hand the uploader a
+            // broken/empty file disguised as a successful compression.
+            if (!outputFile.exists() || outputFile.length() <= 0L) {
+                throw IllegalStateException("Compression produced an empty or missing output file")
+            }
             val outputUri = Uri.fromFile(outputFile)
             onProgress?.onProgress(1.0f)
             DiagnosticsManager.log(

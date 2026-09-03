@@ -223,8 +223,15 @@ class TelegramClientImpl @Inject constructor(
         val client = tdClient ?: return
         val searchText = normalized.removePrefix("@").trim()
         if (searchText.isBlank()) return
-        // SearchPublicChat resolves an exact public username; SearchChatsOnServer handles names and partial matches.
+        // SearchPublicChat resolves an exact public username; SearchPublicChats discovers
+        // public channels/groups by name even when they are not yet joined; SearchChatsOnServer
+        // handles partial matches within chats already known to the server.
         client.send(TdApi.SearchPublicChat(searchText), { result -> handleDestinationSearchResult(result) }, null)
+        client.send(
+            TdApi.SearchPublicChats(searchText, null),
+            { result -> handleDestinationSearchResult(result) },
+            null
+        )
         client.send(
             TdApi.SearchChatsOnServer(searchText, null, 100),
             { result -> handleDestinationSearchResult(result) },
@@ -361,8 +368,24 @@ class TelegramClientImpl @Inject constructor(
         }
         val pending = pendingUploads.remove(match.key) ?: return
         pending.channel.trySend(TelegramUploadEvent.Progress(pending.totalBytes, pending.totalBytes))
-        pending.channel.trySend(TelegramUploadEvent.Completed)
+        pending.channel.trySend(TelegramUploadEvent.Completed(buildMessageLink(update.message.chatId, update.message.id)))
         pending.channel.close()
+    }
+
+    /**
+     * Builds a deep-link to the delivered Telegram message. For channels and
+     * supergroups this is the documented t.me/c/<peerId>/<messageId> format
+     * where peerId is the bare id (TDLib prefixes those chats with -100).
+     */
+    private fun buildMessageLink(chatId: Long, messageId: Long): String? {
+        if (chatId == 0L || messageId == 0L) return null
+        val peerId = if (chatId < -1000000000000L) {
+            // Strip the -100 prefix used by TDLib for channels / supergroups.
+            -chatId - 1000000000000L
+        } else {
+            -chatId
+        }
+        return "https://t.me/c/$peerId/$messageId"
     }
 
     private fun handleMessageSendFailed(update: TdApi.UpdateMessageSendFailed) {
@@ -441,11 +464,23 @@ class TelegramClientImpl @Inject constructor(
         val client = tdClient ?: return
         if (_connectionState.value != TelegramConnectionState.AUTHORIZED) return
         if (!chatsRequested.compareAndSet(false, true)) return
+        // This TDLib build exposes no offset pagination on GetChats (no offsetChatId /
+        // offsetOrder parameters), so fetch only the first batch here and let the
+        // updateNewChat / updateChatLastMessage events populate the rest of the chat
+        // list incrementally over time.
         client.send(
-            TdApi.GetChats(TdApi.ChatListMain(), 500),
-            { result -> handleTdLibObject(result) },
+            TdApi.GetChats(TdApi.ChatListMain(), CHAT_PAGE_SIZE),
+            { result -> handleChatsResult(result) },
             null
         )
+    }
+
+    private fun handleChatsResult(result: TdApi.Object) {
+        when (result) {
+            is TdApi.Chats -> result.chatIds.forEach(::requestChat)
+            // An exhausted/empty chat list is normal; it is not an auth or connection failure.
+            is TdApi.Error -> Unit
+        }
     }
 
     private fun requestChat(chatId: Long) {
@@ -650,6 +685,7 @@ class TelegramClientImpl @Inject constructor(
 
     companion object {
         private val nativeLoaded = AtomicBoolean(false)
+        private const val CHAT_PAGE_SIZE = 100
     }
 }
 

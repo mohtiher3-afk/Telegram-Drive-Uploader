@@ -1,8 +1,10 @@
 package com.telegramdrive.uploader.feature.upload.worker
 
 import android.content.Context
+import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
@@ -30,6 +32,8 @@ class UploadWorker @AssistedInject constructor(
 
     companion object {
         private const val MAX_RETRY_ATTEMPTS = 5
+        private const val FOREGROUND_SERVICE_TYPE_DATA_SYNC =
+            android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
     }
 
     override suspend fun doWork(): Result {
@@ -100,6 +104,20 @@ class UploadWorker @AssistedInject constructor(
         val startTime = System.currentTimeMillis()
 
         try {
+            // Run this worker as a foreground service so that uploads survive the app
+            // being backgrounded on Android 12+. The notification is also used for
+            // subsequent progress updates without recreating the foreground service.
+            runCatching {
+                setForeground(buildForegroundInfo(uploadId, uploadTask.fileName, 0, 0L, uploadTask.fileSize))
+            }.onFailure { failure ->
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.WORKER_STARTED,
+                    severity = DiagnosticSeverity.WARN,
+                    message = "Failed to start foreground service: ${failure.message ?: "unknown error"}.",
+                    uploadId = uploadId
+                )
+            }
+
             uploadEngine.uploadFile(uploadTask).collect { engineResult ->
                 if (isStopped) {
                     DiagnosticsManager.log(
@@ -130,6 +148,9 @@ class UploadWorker @AssistedInject constructor(
                             uploadedBytes = p.uploadedBytes,
                             totalBytes = p.totalBytes
                         )
+                        runCatching {
+                            setForeground(buildForegroundInfo(uploadId, uploadTask.fileName, p.percentage.toInt(), p.uploadedBytes, p.totalBytes))
+                        }
                         // Do not log every progress event at high frequency in production to preserve resource usage.
                     }
                     is UploadEngineResult.Success -> {
@@ -137,6 +158,7 @@ class UploadWorker @AssistedInject constructor(
                         val latestTask = repository.getUploadById(uploadId)
                         if (latestTask?.status != UploadStatus.CANCELLED && latestTask?.status != UploadStatus.PAUSED) {
                             repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
+                            engineResult.messageLink?.let { repository.updateMessageLink(uploadId, it) }
                             repository.updateStatus(uploadId, UploadStatus.COMPLETED)
                             notifyTerminalStatus(uploadId, UploadStatus.COMPLETED)
                             result = Result.success()
@@ -254,5 +276,16 @@ class UploadWorker @AssistedInject constructor(
         }
         // Remove the transient progress notification now that we have a terminal state
         uploadEventNotifier.dismissProgressNotification(uploadId)
+    }
+
+    private fun buildForegroundInfo(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): ForegroundInfo {
+        val notification = uploadEventNotifier.buildForegroundNotification(
+            uploadId = uploadId,
+            fileName = fileName,
+            progress = progress,
+            uploadedBytes = uploadedBytes,
+            totalBytes = totalBytes
+        )
+        return ForegroundInfo(id.hashCode(), notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
     }
 }
