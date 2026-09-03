@@ -2,7 +2,12 @@ import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesS
 import java.util.Base64
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-buildDir = file("C:/Users/acer/AppData/Local/Temp/tdg-build/app/build")
+// Windows-only workaround for the OneDrive reparse-point issue: keep Gradle
+// build output outside the OneDrive-synced project directory. On Linux/macOS CI
+// the default project-relative build dir is used.
+if (System.getProperty("os.name").lowercase().contains("win")) {
+  buildDir = file("${System.getProperty("java.io.tmpdir")}/tdg-build/app/build")
+}
 
 plugins {
   
