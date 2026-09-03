@@ -2,6 +2,7 @@ package com.telegramdrive.uploader.feature.telegram
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramError
 import com.telegramdrive.uploader.domain.model.TelegramUser
@@ -23,6 +24,8 @@ class TelegramAuthViewModel @Inject constructor(
     val currentUser: StateFlow<TelegramUser?> = telegramRepository.currentUser
     val error: StateFlow<TelegramError?> = telegramRepository.error
     val qrLoginLink: StateFlow<String?> = telegramRepository.qrLoginLink
+    val accounts: StateFlow<List<TelegramAccountEntry>> = telegramRepository.accounts
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val isConfigured: Boolean = telegramRepository.isConfigured
 
@@ -91,5 +94,16 @@ class TelegramAuthViewModel @Inject constructor(
 
     fun clearError() {
         telegramRepository.clearError()
+    }
+
+    fun switchAccount(accountKey: String) {
+        viewModelScope.launch {
+            _isProcessing.value = true
+            telegramRepository.switchAccount(accountKey)
+            phoneNumberInput.value = ""
+            codeInput.value = ""
+            passwordInput.value = ""
+            _isProcessing.value = false
+        }
     }
 }

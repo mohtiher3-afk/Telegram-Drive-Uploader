@@ -122,6 +122,14 @@ class UploadWorker @AssistedInject constructor(
                             averageSpeed = p.averageSpeedBytesPerSecond,
                             eta = p.etaSeconds
                         )
+                        // Update the progress notification with real-time percentage
+                        uploadEventNotifier.showProgressNotification(
+                            uploadId = uploadId,
+                            fileName = uploadTask.fileName,
+                            progress = p.percentage.toInt(),
+                            uploadedBytes = p.uploadedBytes,
+                            totalBytes = p.totalBytes
+                        )
                         // Do not log every progress event at high frequency in production to preserve resource usage.
                     }
                     is UploadEngineResult.Success -> {
@@ -244,5 +252,7 @@ class UploadWorker @AssistedInject constructor(
         UploadEventNotificationPolicy.eventFor(status)?.let { event ->
             uploadEventNotifier.notify(event, uploadId)
         }
+        // Remove the transient progress notification now that we have a terminal state
+        uploadEventNotifier.dismissProgressNotification(uploadId)
     }
 }

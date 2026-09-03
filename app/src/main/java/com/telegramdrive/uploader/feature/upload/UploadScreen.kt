@@ -6,6 +6,8 @@ import java.text.DateFormat
 import java.util.Calendar
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,6 +38,7 @@ import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
 import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.util.media.VideoQualityPreset
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -342,6 +345,73 @@ fun UploadScreen(
                                         color = MaterialTheme.colorScheme.onErrorContainer,
                                         modifier = Modifier.padding(12.dp)
                                     )
+                                }
+                            }
+
+                            // Compression Quality Selector
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 12.dp)
+                                    .testTag("compression_selector_card"),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                                ),
+                                shape = MaterialTheme.shapes.large,
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(14.dp),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = stringResource(com.telegramdrive.uploader.R.string.compression_title),
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Text(
+                                                text = stringResource(com.telegramdrive.uploader.R.string.compression_subtitle),
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        if (state.isCompressing) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(20.dp),
+                                                strokeWidth = 2.dp
+                                            )
+                                        }
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .horizontalScroll(rememberScrollState()),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        VideoQualityPreset.values().forEach { preset ->
+                                            FilterChip(
+                                                selected = state.compressionPreset == preset,
+                                                onClick = { viewModel.setCompressionPreset(preset) },
+                                                enabled = !state.isCompressing,
+                                                label = {
+                                                    Text(
+                                                        text = when (preset) {
+                                                            VideoQualityPreset.LOW -> stringResource(com.telegramdrive.uploader.R.string.compression_low)
+                                                            VideoQualityPreset.MEDIUM -> stringResource(com.telegramdrive.uploader.R.string.compression_medium)
+                                                            VideoQualityPreset.HIGH -> stringResource(com.telegramdrive.uploader.R.string.compression_high)
+                                                            VideoQualityPreset.ORIGINAL -> stringResource(com.telegramdrive.uploader.R.string.compression_original)
+                                                        }
+                                                    )
+                                                },
+                                                modifier = Modifier.testTag("compression_${preset.name.lowercase()}")
+                                            )
+                                        }
+                                    }
                                 }
                             }
 

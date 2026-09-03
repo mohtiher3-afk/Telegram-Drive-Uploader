@@ -1,5 +1,6 @@
 package com.telegramdrive.uploader.data.telegram.repository
 
+import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
 import com.telegramdrive.uploader.data.telegram.client.TelegramClient
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
@@ -20,6 +21,7 @@ class TelegramRepositoryImpl @Inject constructor(
     override val currentUser: StateFlow<TelegramUser?> = telegramClient.currentUser
     override val error: StateFlow<TelegramError?> = telegramClient.error
     override val qrLoginLink: StateFlow<String?> = telegramClient.qrLoginLink
+    override val accounts: Flow<List<TelegramAccountEntry>> = telegramClient.accounts
     
     override val isConfigured: Boolean
         get() = telegramClient.isConfigured
@@ -30,6 +32,7 @@ class TelegramRepositoryImpl @Inject constructor(
     override suspend fun sendPassword(password: String) = telegramClient.sendPassword(password)
     override suspend fun requestQrCodeLogin() = telegramClient.requestQrCodeLogin()
     override suspend fun logout() = telegramClient.logout()
+    override suspend fun switchAccount(accountKey: String) = telegramClient.switchAccount(accountKey)
     override fun clearError() = telegramClient.clearError()
     
     override fun getDestinations(query: String): Flow<List<TelegramDestination>> = telegramClient.getDestinations(query)

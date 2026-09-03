@@ -1,5 +1,6 @@
 package com.telegramdrive.uploader.data.telegram.client
 
+import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramError
@@ -13,6 +14,7 @@ interface TelegramClient {
     val currentUser: StateFlow<TelegramUser?>
     val error: StateFlow<TelegramError?>
     val qrLoginLink: StateFlow<String?>
+    val accounts: Flow<List<TelegramAccountEntry>>
 
     val isConfigured: Boolean
 
@@ -22,6 +24,7 @@ interface TelegramClient {
     suspend fun sendPassword(password: String)
     suspend fun requestQrCodeLogin()
     suspend fun logout()
+    suspend fun switchAccount(accountKey: String)
     fun clearError()
 
     fun getDestinations(query: String = ""): Flow<List<TelegramDestination>>
