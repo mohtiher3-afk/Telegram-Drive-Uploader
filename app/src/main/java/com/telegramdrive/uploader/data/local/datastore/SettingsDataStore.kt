@@ -118,7 +118,12 @@ class SettingsDataStore @Inject constructor(
             preferences[ACCOUNTS_KEY] = encodeAccounts(updated)
             val active = preferences[ACTIVE_ACCOUNT_KEY]
             if (active == key) {
-                preferences[ACTIVE_ACCOUNT_KEY] = updated.firstOrNull()?.key
+                val newActive = updated.firstOrNull()?.key
+                if (newActive != null) {
+                    preferences[ACTIVE_ACCOUNT_KEY] = newActive
+                } else {
+                    preferences.remove(ACTIVE_ACCOUNT_KEY)
+                }
             }
         }
     }
