@@ -41,6 +41,9 @@ interface UploadDao {
     @Query("UPDATE uploads SET uploadDurationMs = :durationMs WHERE id = :id")
     suspend fun updateUploadDuration(id: String, durationMs: Long)
 
+    @Query("UPDATE uploads SET messageLink = :messageLink WHERE id = :id")
+    suspend fun updateMessageLink(id: String, messageLink: String)
+
     @Query("UPDATE uploads SET status = 'QUEUED' WHERE status IN ('PREPARING', 'UPLOADING')")
     suspend fun reconcileInterruptedUploads(): Int
 

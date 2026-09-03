@@ -1,6 +1,7 @@
 package com.telegramdrive.uploader.core.notifications
 
 import android.Manifest
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -80,6 +81,19 @@ class AndroidUploadEventNotifier @Inject constructor(
         if (!manager.areNotificationsEnabled()) return
 
         val notificationId = uploadId.hashCode()
+        try {
+            manager.notify(notificationId, buildProgressNotification(uploadId, fileName, progress, uploadedBytes, totalBytes))
+        } catch (_: SecurityException) {
+            // The permission can change between the check and notify call; the upload state remains authoritative.
+        }
+    }
+
+    override fun buildForegroundNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): Notification =
+        buildProgressNotification(uploadId, fileName, progress, uploadedBytes, totalBytes)
+
+    private fun buildProgressNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): Notification {
+        createChannelIfNeeded()
+        val notificationId = uploadId.hashCode()
         val pendingIntent = PendingIntent.getActivity(
             context,
             notificationId,
@@ -92,7 +106,7 @@ class AndroidUploadEventNotifier @Inject constructor(
         val percent = progress.coerceIn(0, 100)
         val text = "$fileName — $percent%"
 
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_upload_notification)
             .setContentTitle(context.getString(R.string.upload_notification_in_progress_title))
             .setContentText(text)
@@ -104,12 +118,6 @@ class AndroidUploadEventNotifier @Inject constructor(
             .setProgress(100, percent, false)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .build()
-
-        try {
-            manager.notify(notificationId, notification)
-        } catch (_: SecurityException) {
-            // The permission can change between the check and notify call; the upload state remains authoritative.
-        }
     }
 
     override fun dismissProgressNotification(uploadId: String) {

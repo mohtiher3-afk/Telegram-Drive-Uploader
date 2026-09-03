@@ -64,9 +64,10 @@ class TelegramUploadEngineImpl @Inject constructor(
                         val uploaded = event.uploadedBytes.coerceIn(0L, totalBytes)
                         emit(progress(uploaded, totalBytes, speedCalculator))
                     }
-                    TelegramUploadEvent.Completed -> emit(
+                    is TelegramUploadEvent.Completed -> emit(
                         UploadEngineResult.Success(
-                            uploadDurationMs = (SystemClock.elapsedRealtime() - uploadStartedAt).coerceAtLeast(0L)
+                            uploadDurationMs = (SystemClock.elapsedRealtime() - uploadStartedAt).coerceAtLeast(0L),
+                            messageLink = event.messageLink
                         )
                     )
                     is TelegramUploadEvent.Failed -> emit(

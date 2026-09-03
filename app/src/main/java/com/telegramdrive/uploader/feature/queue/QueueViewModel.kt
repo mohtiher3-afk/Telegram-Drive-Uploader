@@ -26,6 +26,8 @@ enum class QueueFilter {
 data class QueueUiState(
     val queueItems: List<UploadTask> = emptyList(),
     val selectedFilter: QueueFilter = QueueFilter.ALL,
+    val query: String = "",
+    val totalMatches: Int = 0,
     val failedCount: Int = 0,
     val pausedCount: Int = 0,
     val activeCount: Int = 0
@@ -38,11 +40,13 @@ class QueueViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val selectedFilter = MutableStateFlow(QueueFilter.ALL)
+    private val query = MutableStateFlow("")
 
     val uiState: StateFlow<QueueUiState> = combine(
         uploadRepository.getAllUploads(),
-        selectedFilter
-    ) { uploads, filter ->
+        selectedFilter,
+        query
+    ) { uploads, filter, queryText ->
         val pending = uploads.filter {
             it.status != UploadStatus.COMPLETED && it.status != UploadStatus.CANCELLED
         }
@@ -57,9 +61,19 @@ class QueueViewModel @Inject constructor(
             QueueFilter.PAUSED -> pending.filter { it.status == UploadStatus.PAUSED }
             QueueFilter.FAILED -> pending.filter { it.status == UploadStatus.FAILED }
         }
+        val normalized = queryText.trim().lowercase()
+        val matched = if (normalized.isBlank()) {
+            filtered
+        } else {
+            filtered.filter {
+                it.fileName.lowercase().contains(normalized) || it.status.name.lowercase().contains(normalized)
+            }
+        }
         QueueUiState(
-            queueItems = filtered,
+            queueItems = matched,
             selectedFilter = filter,
+            query = queryText,
+            totalMatches = matched.size,
             failedCount = pending.count { it.status == UploadStatus.FAILED },
             pausedCount = pending.count { it.status == UploadStatus.PAUSED },
             activeCount = pending.count {
@@ -77,6 +91,10 @@ class QueueViewModel @Inject constructor(
 
     fun selectFilter(filter: QueueFilter) {
         selectedFilter.value = filter
+    }
+
+    fun onQueryChanged(value: String) {
+        query.value = value
     }
 
     fun pauseUpload(id: String) {

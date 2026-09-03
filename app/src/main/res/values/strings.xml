@@ -73,6 +73,8 @@
     <string name="log_out">Log Out</string>
     <string name="copy_logs">Copy Logs</string>
     <string name="clear_logs">Clear Logs</string>
+    <string name="share_logs">Share Logs</string>
+    <string name="logs_share_failed">Could not share logs.</string>
     <string name="clear_history">Clear history</string>
     <string name="upload_history">Upload History</string>
     <string name="upload_time">Upload time: %1$s</string>
@@ -82,6 +84,8 @@
     <string name="upload_eta_stalled">Waiting for transfer data…</string>
     <string name="search_file_names">Search file names</string>
     <string name="filter_completed_uploads">Type to filter completed uploads</string>
+    <string name="search_queue_files">Search queue files</string>
+    <string name="filter_active_queue">Type to filter the active queue</string>
     <string name="newest">Newest</string>
     <string name="largest">Largest</string>
     <string name="upload_queue">Upload queue</string>
@@ -107,7 +111,7 @@
     <string name="schedule_change">Change</string>
     <string name="videos_selected_summary">%1$d videos selected</string>
     <string name="total_size_summary">Total size: %1$s</string>
-    <string name="add_to_queue">Queue Upload to Google Drive</string>
+    <string name="add_to_queue">Add to Upload Queue (Telegram)</string>
     <string name="no_videos_selected">No videos selected</string>
     <string name="select_videos_from_home">Please select videos from the Home tab to begin preparation.</string>
     <string name="extracting_video_metadata">Extracting video metadata…</string>
@@ -238,4 +242,15 @@
     <string name="switch_account">Switch account</string>
     <string name="active">Active</string>
     <string name="switch_now">Switch</string>
+    <string name="mirror_link_title">Telegram Message Link</string>
+    <string name="copy_link">Copy Link</string>
+    <string name="view_detailed_log">View Detailed Action Log</string>
+    <string name="clear_selection">Clear selection</string>
+    <string name="remove_selected">Remove selected</string>
+    <string name="new_upload">New Upload</string>
+    <string name="select_files_from_telegram">Select files from Telegram</string>
+    <string name="select">Select</string>
+    <string name="upload_speed_desc">Upload Speed</string>
+    <string name="time_remaining_desc">Time Remaining</string>
+    <string name="select_all">Select All</string>
 </resources>

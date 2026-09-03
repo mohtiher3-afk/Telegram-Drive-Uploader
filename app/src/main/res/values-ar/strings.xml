@@ -73,6 +73,8 @@
     <string name="log_out">تسجيل الخروج</string>
     <string name="copy_logs">نسخ السجلات</string>
     <string name="clear_logs">مسح السجلات</string>
+    <string name="share_logs">مشاركة السجلات</string>
+    <string name="logs_share_failed">تعذّرت مشاركة السجلات.</string>
     <string name="clear_history">مسح السجل</string>
     <string name="upload_history">سجل الرفع</string>
     <string name="upload_time">وقت الرفع: %1$s</string>
@@ -82,6 +84,8 @@
     <string name="upload_eta_stalled">بانتظار بيانات النقل…</string>
     <string name="search_file_names">البحث في أسماء الملفات</string>
     <string name="filter_completed_uploads">اكتب لتصفية عمليات الرفع المكتملة</string>
+    <string name="search_queue_files">البحث في ملفات قائمة الانتظار</string>
+    <string name="filter_active_queue">اكتب لتصفية قائمة الانتظار النشطة</string>
     <string name="newest">الأحدث</string>
     <string name="largest">الأكبر حجمًا</string>
     <string name="upload_queue">قائمة الرفع</string>
@@ -107,7 +111,7 @@
     <string name="schedule_change">تغيير</string>
     <string name="videos_selected_summary">تم اختيار %1$d من الفيديوهات</string>
     <string name="total_size_summary">الحجم الإجمالي: %1$s</string>
-    <string name="add_to_queue">بدء الرفع إلى Google Drive</string>
+    <string name="add_to_queue">إضافة إلى قائمة الرفع إلى تيليجرام</string>
     <string name="no_videos_selected">لم يتم اختيار فيديوهات</string>
     <string name="select_videos_from_home">اختر فيديوهات من تبويب الصفحة الرئيسية لبدء التجهيز.</string>
     <string name="extracting_video_metadata">جارٍ استخراج بيانات الفيديو…</string>
@@ -238,4 +242,15 @@
     <string name="switch_account">تبديل الحساب</string>
     <string name="active">نشط</string>
     <string name="switch_now">تبديل</string>
+    <string name="mirror_link_title">رابط رسالة تيليجرام</string>
+    <string name="copy_link">نسخ الرابط</string>
+    <string name="view_detailed_log">عرض سجل التفاصيل</string>
+    <string name="clear_selection">مسح التحديد</string>
+    <string name="remove_selected">إزالة المحدد</string>
+    <string name="new_upload">رفع جديد</string>
+    <string name="select_files_from_telegram">اختر ملفات من تيليجرام</string>
+    <string name="select">تحديد</string>
+    <string name="upload_speed_desc">سرعة الرفع</string>
+    <string name="time_remaining_desc">الوقت المتبقي</string>
+    <string name="select_all">تحديد الكل</string>
 </resources>

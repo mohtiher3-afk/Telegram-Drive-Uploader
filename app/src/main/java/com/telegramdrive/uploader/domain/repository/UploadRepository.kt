@@ -14,6 +14,7 @@ interface UploadRepository {
     suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>)
     suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long)
     suspend fun updateUploadDuration(id: String, durationMs: Long)
+    suspend fun updateMessageLink(id: String, messageLink: String)
     suspend fun reconcileInterruptedUploads(): Int
     suspend fun getInterruptedUploads(): List<UploadTask>
     suspend fun deleteUploadById(id: String)

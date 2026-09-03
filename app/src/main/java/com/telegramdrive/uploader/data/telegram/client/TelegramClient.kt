@@ -33,6 +33,6 @@ interface TelegramClient {
 
 sealed class TelegramUploadEvent {
     data class Progress(val uploadedBytes: Long, val totalBytes: Long) : TelegramUploadEvent()
-    data object Completed : TelegramUploadEvent()
+    data class Completed(val messageLink: String?) : TelegramUploadEvent()
     data class Failed(val message: String, val retryable: Boolean) : TelegramUploadEvent()
 }
