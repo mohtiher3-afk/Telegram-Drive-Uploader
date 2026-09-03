@@ -14,21 +14,22 @@ val BentoCardBg = Color(0xFFFFFFFF)
 val BentoCardBorder = Color(0xFFE1E2EC)
 val BentoIconBg = Color(0xFFF2F0F4)
 
-// Tideglass Relay semantic primitives (Nebula revision):
-// Primrose (magenta-pink) is action, Ultraviolet is context, AmberGlow is hero/decorative only.
-val TideSeafoam = Color(0xFFE1458C)   // action accent: vivid magenta-pink (kept name for call-site compatibility)
-val TideHorizon = Color(0xFF8B5CF6)   // context accent: rich ultraviolet (kept name for call-site compatibility)
-val TideCoral = Color(0xFFFFB84D)     // decorative hero glow: warm amber (kept name for call-site compatibility)
-val TideHarborInk = Color(0xFF120A1E) // deep violet-near-black foundation
-val TideSaltPaper = Color(0xFFFBF6FF) // warm off-white foundation
+// Tideglass Relay semantic primitives (Calm Material revision):
+// A calm, modern blue is action, a muted indigo is context, and a soft slate is decorative.
+// Names retained for call-site compatibility.
+val TideSeafoam = Color(0xFF4D6BFE)   // action accent: calm indigo-blue (kept name for call-site compatibility)
+val TideHorizon = Color(0xFF7A5AF8)   // context accent: muted violet (kept name for call-site compatibility)
+val TideCoral = Color(0xFF5B8DEF)     // decorative hero glow: soft blue (kept name for call-site compatibility)
+val TideHarborInk = Color(0xFF0F1115) // calm near-black foundation
+val TideSaltPaper = Color(0xFFFDFBFF) // clean off-white foundation
 
-// Nebula primary brand seeds (modern, bold, pink/violet-forward).
-val NebulaRosa = Color(0xFFE1458C)      // action: vivid magenta-pink
-val NebulaViolet = Color(0xFF8B5CF6)    // context: rich ultraviolet
-val NebulaOrchid = Color(0xFFC44DFF)    // hero: glowing orchid
-val NebulaAmber = Color(0xFFFFB84D)     // hero-light: warm amber accent
-val NebulaInk = Color(0xFF120A1E)
-val NebulaMist = Color(0xFFFBF6FF)
+// Calm modern brand seeds (blue/indigo forward, low saturation).
+val NebulaRosa = Color(0xFF4D6BFE)      // action: calm indigo-blue
+val NebulaViolet = Color(0xFF7A5AF8)    // context: muted violet
+val NebulaOrchid = Color(0xFF8E9BFF)    // hero: soft periwinkle
+val NebulaAmber = Color(0xFFF5A623)     // hero-light: warm accent
+val NebulaInk = Color(0xFF0F1115)
+val NebulaMist = Color(0xFFFDFBFF)
 
 // Compatibility alias retained for existing decorative call sites.
 val AuroraCobalt = TideHorizon
