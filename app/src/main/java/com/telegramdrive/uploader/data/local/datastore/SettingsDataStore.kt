@@ -33,6 +33,8 @@ class SettingsDataStore @Inject constructor(
     private val PINNED_DESTINATION_IDS_KEY = stringPreferencesKey("pinned_destination_ids")
     private val SELECTED_DESTINATION_ID_KEY = androidx.datastore.preferences.core.longPreferencesKey("selected_destination_id")
     private val SELECTED_DESTINATION_TITLE_KEY = stringPreferencesKey("selected_destination_title")
+    private val ACCOUNTS_KEY = stringPreferencesKey("telegram_accounts")
+    private val ACTIVE_ACCOUNT_KEY = stringPreferencesKey("active_telegram_account")
 
     val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[ONBOARDING_COMPLETED_KEY] == "true"
@@ -77,6 +79,54 @@ class SettingsDataStore @Inject constructor(
         val username = preferences[TELEGRAM_USER_USERNAME_KEY] ?: ""
         val phone = preferences[TELEGRAM_USER_PHONE_KEY] ?: ""
         "$id|$firstName|$lastName|$username|$phone"
+    }
+
+    val accounts: Flow<List<TelegramAccountEntry>> = context.dataStore.data.map { preferences ->
+        val accounts = preferences[ACCOUNTS_KEY].orEmpty()
+        val active = preferences[ACTIVE_ACCOUNT_KEY]
+        decodeAccounts(accounts, active)
+    }
+
+    suspend fun addAccount(phone: String, displayName: String) {
+        context.dataStore.edit { preferences ->
+            val current = decodeAccounts(preferences[ACCOUNTS_KEY], null)
+            val key = normalizeAccountKey(phone)
+            val existing = current.any { it.key == key }
+            if (!existing) {
+                val updated = current + TelegramAccountEntry(key, phone, displayName)
+                preferences[ACCOUNTS_KEY] = encodeAccounts(updated)
+                if (preferences[ACTIVE_ACCOUNT_KEY] == null) {
+                    preferences[ACTIVE_ACCOUNT_KEY] = key
+                }
+            }
+        }
+    }
+
+    suspend fun setActiveAccount(key: String) {
+        context.dataStore.edit { preferences ->
+            val current = decodeAccounts(preferences[ACCOUNTS_KEY], null)
+            if (current.any { it.key == key }) {
+                preferences[ACTIVE_ACCOUNT_KEY] = key
+            }
+        }
+    }
+
+    suspend fun removeAccount(key: String) {
+        context.dataStore.edit { preferences ->
+            val current = decodeAccounts(preferences[ACCOUNTS_KEY], null)
+            val updated = current.filterNot { it.key == key }
+            preferences[ACCOUNTS_KEY] = encodeAccounts(updated)
+            val active = preferences[ACTIVE_ACCOUNT_KEY]
+            if (active == key) {
+                preferences[ACTIVE_ACCOUNT_KEY] = updated.firstOrNull()?.key
+            }
+        }
+    }
+
+    suspend fun clearActiveAccount() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(ACTIVE_ACCOUNT_KEY)
+        }
     }
 
     suspend fun setOnboardingCompleted(completed: Boolean = true) {
@@ -176,4 +226,27 @@ class SettingsDataStore @Inject constructor(
         }
     }
 
+    companion object {
+        fun normalizeAccountKey(value: String): String = value.trim().replace("+", "").replace(" ", "")
+
+        private fun encodeAccounts(accounts: List<TelegramAccountEntry>): String =
+            accounts.joinToString("|") { "${it.key}~${it.phone}~${it.displayName}" }
+
+        private fun decodeAccounts(raw: String?, activeKey: String?): List<TelegramAccountEntry> {
+            if (raw.isNullOrBlank()) return emptyList()
+            return raw.split("|").mapNotNull { row ->
+                val parts = row.split("~")
+                if (parts.size < 3) return@mapNotNull null
+                TelegramAccountEntry(parts[0], parts[1], parts[2], activeKey == parts[0])
+            }
+        }
+    }
+
 }
+
+data class TelegramAccountEntry(
+    val key: String,
+    val phone: String,
+    val displayName: String,
+    val isActive: Boolean = false
+)

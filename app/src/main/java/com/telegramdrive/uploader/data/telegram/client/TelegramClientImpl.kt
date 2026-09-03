@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import com.telegramdrive.uploader.BuildConfig
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
+import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,11 +66,13 @@ class TelegramClientImpl @Inject constructor(
     private val pendingMessageSuccesses = ConcurrentHashMap<Long, TdApi.UpdateMessageSendSucceeded>()
     private val pendingMessageFailures = ConcurrentHashMap<Long, TdApi.UpdateMessageSendFailed>()
     private var tdClient: Client? = null
+    private var activeAccountKey: String? = null
 
     override val connectionState: StateFlow<TelegramConnectionState> = _connectionState.asStateFlow()
     override val currentUser: StateFlow<TelegramUser?> = _currentUser.asStateFlow()
     override val error: StateFlow<TelegramError?> = _error.asStateFlow()
     override val qrLoginLink: StateFlow<String?> = _qrLoginLink.asStateFlow()
+    override val accounts: Flow<List<TelegramAccountEntry>> = settingsDataStore.accounts
 
     override val isConfigured: Boolean
         get() = BuildConfig.TELEGRAM_API_ID.toIntOrNull()?.let { it > 0 } == true &&
@@ -87,6 +91,8 @@ class TelegramClientImpl @Inject constructor(
         _connectionState.value = TelegramConnectionState.CONNECTING
         _error.value = null
         _qrLoginLink.value = null
+        val accountList = settingsDataStore.accounts.firstOrNull() ?: emptyList()
+        activeAccountKey = accountList.firstOrNull { it.isActive }?.key ?: accountList.firstOrNull()?.key
         try {
             ensureNativeRuntime()
             synchronized(clientLock) {
@@ -157,19 +163,42 @@ class TelegramClientImpl @Inject constructor(
         } catch (failure: Throwable) {
             reportCallbackFailure(failure)
         } finally {
-            synchronized(clientLock) { tdClient = null }
-            _currentUser.value = null
-            _error.value = null
-            _qrLoginLink.value = null
-            synchronized(chatLock) {
-                chats.clear()
-                supergroups.clear()
-            }
-            _chatDestinations.value = emptyList()
-            chatsRequested.set(false)
+            closeClient()
             _connectionState.value = TelegramConnectionState.DISCONNECTED
             settingsDataStore.clearTelegramSession()
         }
+    }
+
+    override suspend fun switchAccount(accountKey: String) {
+        val accountList = settingsDataStore.accounts.firstOrNull() ?: emptyList()
+        val exists = accountList.any { it.key == accountKey }
+        if (!exists) return
+        settingsDataStore.setActiveAccount(accountKey)
+        closeClient()
+        activeAccountKey = accountKey
+        _connectionState.value = TelegramConnectionState.DISCONNECTED
+        connect()
+    }
+
+    private fun closeClient() {
+        synchronized(clientLock) {
+            tdClient?.let { client ->
+                runCatching { client.send(TdApi.Close(), { _ -> }, null) }
+            }
+            tdClient = null
+        }
+        _currentUser.value = null
+        _error.value = null
+        _qrLoginLink.value = null
+        synchronized(chatLock) {
+            chats.clear()
+            supergroups.clear()
+        }
+        _chatDestinations.value = emptyList()
+        chatsRequested.set(false)
+        pendingUploads.clear()
+        pendingMessageSuccesses.clear()
+        pendingMessageFailures.clear()
     }
 
     override fun clearError() {
@@ -386,8 +415,9 @@ class TelegramClientImpl @Inject constructor(
             fail(TelegramError.InvalidCredentials, "Telegram API credentials are invalid.")
             return
         }
-        val databaseDirectory = File(context.filesDir, "tdlib-database").apply { mkdirs() }
-        val filesDirectory = File(context.filesDir, "tdlib-files").apply { mkdirs() }
+        val accountKey = activeAccountKey ?: "default"
+        val databaseDirectory = File(context.filesDir, "tdlib-database-$accountKey").apply { mkdirs() }
+        val filesDirectory = File(context.filesDir, "tdlib-files-$accountKey").apply { mkdirs() }
         val parameters = TdApi.SetTdlibParameters(
             false,
             databaseDirectory.absolutePath,
@@ -521,6 +551,11 @@ class TelegramClientImpl @Inject constructor(
         )
         _currentUser.value = model
         clientScope.launch {
+            val displayName = buildString {
+                append(user.firstName)
+                if (!user.lastName.isNullOrBlank()) append(" ").append(user.lastName)
+            }.ifBlank { user.phoneNumber }
+            settingsDataStore.addAccount(user.phoneNumber, displayName)
             settingsDataStore.saveTelegramUser(
                 user.id,
                 user.firstName,

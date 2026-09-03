@@ -218,6 +218,7 @@
     <string name="status_cancelled">أُلغي</string>
     <string name="upload_notification_channel_name">حالة الرفع</string>
     <string name="upload_notification_channel_description">تنبيهات الرفع المؤكد أو الفشل النهائي فقط.</string>
+    <string name="upload_notification_in_progress_title">جارٍ الرفع</string>
     <string name="upload_notification_completed_title">اكتمل الرفع</string>
     <string name="upload_notification_completed_text">تم تسليم ملف إلى وجهة تيليجرام المحددة.</string>
     <string name="upload_notification_failed_title">فشل الرفع</string>
@@ -228,4 +229,13 @@
     <string name="upload_notifications_disabled">إشعارات الرفع متوقفة</string>
     <string name="allow_upload_notifications">السماح بالإشعارات</string>
     <string name="open_notification_settings">فتح إعدادات الإشعارات</string>
+    <string name="compression_title">الضغط</string>
+    <string name="compression_subtitle">تقليل حجم الملف قبل الرفع. ضغط أعلى يعني جودة أقل.</string>
+    <string name="compression_low">منخفض</string>
+    <string name="compression_medium">متوسط</string>
+    <string name="compression_high">عالي</string>
+    <string name="compression_original">أصلي</string>
+    <string name="switch_account">تبديل الحساب</string>
+    <string name="active">نشط</string>
+    <string name="switch_now">تبديل</string>
 </resources>

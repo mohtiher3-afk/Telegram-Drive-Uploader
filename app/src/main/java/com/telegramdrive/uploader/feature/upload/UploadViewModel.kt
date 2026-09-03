@@ -11,6 +11,8 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.ErrorCode
 import com.telegramdrive.uploader.core.util.media.VideoMetadataExtractor
+import com.telegramdrive.uploader.core.util.media.VideoCompressor
+import com.telegramdrive.uploader.core.util.media.VideoQualityPreset
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.domain.model.TelegramDestinationType
 import com.telegramdrive.uploader.domain.model.UploadTask
@@ -38,7 +40,10 @@ sealed interface UploadUiState {
         val preparedVideos: List<UploadTask>,
         val selectedDestination: TelegramDestination? = null,
         val isSubmitting: Boolean = false,
-        val invalidFilesWarning: String? = null
+        val invalidFilesWarning: String? = null,
+        val compressionPreset: VideoQualityPreset = VideoQualityPreset.ORIGINAL,
+        val isCompressing: Boolean = false,
+        val compressedIds: Set<String> = emptySet()
     ) : UploadUiState
     data class Error(val message: String) : UploadUiState
 }
@@ -94,6 +99,91 @@ class UploadViewModel @Inject constructor(
 
     fun setScheduledAt(timestamp: Long?) {
         _scheduledAt.value = timestamp
+    }
+
+    private val _compressionPreset = MutableStateFlow(VideoQualityPreset.ORIGINAL)
+    val compressionPreset: StateFlow<VideoQualityPreset> = _compressionPreset.asStateFlow()
+    private val _isCompressing = MutableStateFlow(false)
+    val isCompressing: StateFlow<Boolean> = _isCompressing.asStateFlow()
+    private val _compressedIds = MutableStateFlow<Set<String>>(emptySet())
+    val compressedIds: StateFlow<Set<String>> = _compressedIds.asStateFlow()
+    private val compressor = VideoCompressor(context)
+
+    fun setCompressionPreset(preset: VideoQualityPreset) {
+        _compressionPreset.value = preset
+        if (preset != VideoQualityPreset.ORIGINAL) {
+            compressAllVideos()
+        } else {
+            // Reset all to their original state
+            _compressedIds.value = emptySet()
+            _preparedList.replaceAll { original ->
+                // Restore original source from storage if available
+                val originalTask = _preparedList.firstOrNull { it.id == original.id }
+                originalTask ?: original
+            }
+            updateState()
+        }
+    }
+
+    private fun compressAllVideos() {
+        val preset = _compressionPreset.value
+        if (preset == VideoQualityPreset.ORIGINAL || _preparedList.isEmpty()) return
+        if (_isCompressing.value) return
+
+        _isCompressing.value = true
+        updateState()
+
+        viewModelScope.launch {
+            try {
+                val tasksToCompress = _preparedList.filter { it.id !in _compressedIds.value }
+                tasksToCompress.forEach { task ->
+                    try {
+                        val sourceUri = android.net.Uri.parse(task.sourceUri)
+                        val compressedUri = compressor.compress(sourceUri, preset)
+                        if (compressedUri != null) {
+                            val index = _preparedList.indexOfFirst { it.id == task.id }
+                            if (index >= 0) {
+                                _preparedList[index] = _preparedList[index].copy(
+                                    sourceUri = compressedUri.toString(),
+                                    fileSize = 0L // Will be re-queried on upload
+                                )
+                                _compressedIds.value = _compressedIds.value + task.id
+                            }
+                        }
+                    } catch (e: Exception) {
+                        DiagnosticsManager.log(
+                            category = DiagnosticCategory.UPLOAD_FAILED,
+                            severity = DiagnosticSeverity.WARN,
+                            message = "Compression failed for ${task.fileName}: ${e.message}",
+                            errorCode = ErrorCode.UPLOAD_FAILED,
+                            exception = e
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.UPLOAD_FAILED,
+                    severity = DiagnosticSeverity.ERROR,
+                    message = "Batch compression failed: ${e.message}",
+                    errorCode = ErrorCode.UPLOAD_FAILED,
+                    exception = e
+                )
+            } finally {
+                _isCompressing.value = false
+                updateState()
+            }
+        }
+    }
+
+    private fun updateState() {
+        _uiState.value = UploadUiState.Success(
+            preparedVideos = _preparedList.toList(),
+            selectedDestination = _selectedDestination,
+            isSubmitting = _isSubmitting,
+            compressionPreset = _compressionPreset.value,
+            isCompressing = _isCompressing.value,
+            compressedIds = _compressedIds.value
+        )
     }
 
     fun setPrepareUris(uris: List<Uri>) {
@@ -155,7 +245,10 @@ class UploadViewModel @Inject constructor(
                     preparedVideos = _preparedList.toList(),
                     selectedDestination = _selectedDestination,
                     isSubmitting = false,
-                    invalidFilesWarning = warning
+                    invalidFilesWarning = warning,
+                    compressionPreset = _compressionPreset.value,
+                    isCompressing = _isCompressing.value,
+                    compressedIds = _compressedIds.value
                 )
             } catch (e: Exception) {
                 _uiState.value = UploadUiState.Error(e.message ?: "Failed to extract metadata")
@@ -175,7 +268,7 @@ class UploadViewModel @Inject constructor(
         val index = _preparedList.indexOfFirst { it.id == taskId }
         if (index < 0) return
         _preparedList[index] = _preparedList[index].copy(fileName = suggestion.suggestedName)
-        _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination, _isSubmitting)
+        updateState()
     }
 
     fun applyAllSmartSuggestions() {
@@ -184,7 +277,7 @@ class UploadViewModel @Inject constructor(
                 _preparedList[index] = _preparedList[index].copy(fileName = suggestion.suggestedName)
             }
         }
-        _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination, _isSubmitting)
+        updateState()
     }
 
     fun selectDestination(destination: TelegramDestination) {
@@ -201,14 +294,16 @@ class UploadViewModel @Inject constructor(
     fun removePreparedVideo(video: UploadTask) {
         _preparedList.removeAll { it.id == video.id }
         _smartSuggestions.value = _smartSuggestions.value - video.id
-        _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination, _isSubmitting)
+        _compressedIds.value = _compressedIds.value - video.id
+        updateState()
     }
 
     fun removePreparedVideos(videos: List<UploadTask>) {
         val ids = videos.map { it.id }.toSet()
         _preparedList.removeAll { it.id in ids }
         _smartSuggestions.value = _smartSuggestions.value.filterKeys { it !in ids }
-        _uiState.value = UploadUiState.Success(_preparedList.toList(), _selectedDestination, _isSubmitting)
+        _compressedIds.value = _compressedIds.value - ids
+        updateState()
     }
 
     fun addToQueue(onComplete: () -> Unit) {
@@ -244,6 +339,8 @@ class UploadViewModel @Inject constructor(
                 _preparedList.clear()
                 _smartSuggestions.value = emptyMap()
                 _scheduledAt.value = null
+                _compressionPreset.value = VideoQualityPreset.ORIGINAL
+                _compressedIds.value = emptySet()
                 _isSubmitting = false
                 _uiState.value = UploadUiState.Idle
                 onComplete()

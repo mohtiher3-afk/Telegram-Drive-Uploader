@@ -218,6 +218,7 @@
     <string name="status_cancelled">Cancelled</string>
     <string name="upload_notification_channel_name">Upload status</string>
     <string name="upload_notification_channel_description">Confirmed upload completion and permanent failure updates.</string>
+    <string name="upload_notification_in_progress_title">Uploading</string>
     <string name="upload_notification_completed_title">Upload completed</string>
     <string name="upload_notification_completed_text">A file was delivered to your selected Telegram destination.</string>
     <string name="upload_notification_failed_title">Upload failed</string>
@@ -228,4 +229,13 @@
     <string name="upload_notifications_disabled">Upload notifications are off</string>
     <string name="allow_upload_notifications">Allow notifications</string>
     <string name="open_notification_settings">Open notification settings</string>
+    <string name="compression_title">Compression</string>
+    <string name="compression_subtitle">Reduce file size before upload. Higher compression means lower quality.</string>
+    <string name="compression_low">Low</string>
+    <string name="compression_medium">Medium</string>
+    <string name="compression_high">High</string>
+    <string name="compression_original">Original</string>
+    <string name="switch_account">Switch account</string>
+    <string name="active">Active</string>
+    <string name="switch_now">Switch</string>
 </resources>

@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
@@ -53,6 +54,7 @@ fun TelegramAuthScreen(
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     val qrLoginLink by viewModel.qrLoginLink.collectAsStateWithLifecycle()
+    val accounts by viewModel.accounts.collectAsStateWithLifecycle()
     val clipboardManager = LocalClipboardManager.current
 
     val phoneNumber by viewModel.phoneNumberInput.collectAsStateWithLifecycle()
@@ -148,6 +150,13 @@ fun TelegramAuthScreen(
                                         textAlign = TextAlign.Center
                                     )
                                 }
+                            }
+                            if (accounts.isNotEmpty()) {
+                                AccountSwitcher(
+                                    accounts = accounts,
+                                    onSwitch = { viewModel.switchAccount(it) },
+                                    isProcessing = isProcessing
+                                )
                             }
                             Button(
                                 onClick = { viewModel.connect() },
@@ -537,6 +546,84 @@ fun TelegramLogo() {
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(40.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun AccountSwitcher(
+    accounts: List<TelegramAccountEntry>,
+    onSwitch: (String) -> Unit,
+    isProcessing: Boolean
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("account_switcher"),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = stringResource(com.telegramdrive.uploader.R.string.switch_account),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            accounts.forEach { account ->
+                Surface(
+                    onClick = { if (!isProcessing) onSwitch(account.key) },
+                    enabled = !account.isActive && !isProcessing,
+                    shape = MaterialTheme.shapes.medium,
+                    color = if (account.isActive) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.secondaryContainer
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("account_${account.key}")
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = account.displayName,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = if (account.isActive) FontWeight.Bold else FontWeight.Normal
+                            )
+                            Text(
+                                text = account.phone,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        if (account.isActive) {
+                            Text(
+                                text = stringResource(com.telegramdrive.uploader.R.string.active),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(com.telegramdrive.uploader.R.string.switch_now),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

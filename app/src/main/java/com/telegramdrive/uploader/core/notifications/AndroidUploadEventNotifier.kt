@@ -47,7 +47,7 @@ class AndroidUploadEventNotifier @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_upload_notification)
             .setContentTitle(context.getString(titleRes))
             .setContentText(context.getString(textRes))
@@ -57,6 +57,52 @@ class AndroidUploadEventNotifier @Inject constructor(
             .setOnlyAlertOnce(true)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+
+        // Set progress to 100 for completion, indeterminate for failure
+        if (event == UploadEventNotificationEvent.COMPLETED) {
+            builder.setProgress(100, 100, false)
+        } else {
+            builder.setProgress(0, 0, true)
+        }
+
+        try {
+            manager.notify(notificationId, builder.build())
+        } catch (_: SecurityException) {
+            // The permission can change between the check and notify call; the upload state remains authoritative.
+        }
+    }
+
+    override fun showProgressNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long) {
+        if (!canPostNotifications()) return
+
+        createChannelIfNeeded()
+        val manager = NotificationManagerCompat.from(context)
+        if (!manager.areNotificationsEnabled()) return
+
+        val notificationId = uploadId.hashCode()
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            notificationId,
+            Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val percent = progress.coerceIn(0, 100)
+        val text = "$fileName — $percent%"
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_upload_notification)
+            .setContentTitle(context.getString(R.string.upload_notification_in_progress_title))
+            .setContentText(text)
+            .setContentIntent(pendingIntent)
+            .setOnlyAlertOnce(true)
+            .setOngoing(progress < 100)
+            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setProgress(100, percent, false)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .build()
 
         try {
@@ -64,6 +110,10 @@ class AndroidUploadEventNotifier @Inject constructor(
         } catch (_: SecurityException) {
             // The permission can change between the check and notify call; the upload state remains authoritative.
         }
+    }
+
+    override fun dismissProgressNotification(uploadId: String) {
+        NotificationManagerCompat.from(context).cancel(uploadId.hashCode())
     }
 
     private fun canPostNotifications(): Boolean =
