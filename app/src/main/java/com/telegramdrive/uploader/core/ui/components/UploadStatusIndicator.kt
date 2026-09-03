@@ -8,10 +8,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -28,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -42,7 +38,6 @@ import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
-import com.telegramdrive.uploader.core.ui.theme.SafeGlowTokens
 
 @Composable
 fun RealUploadProgressGlow(
@@ -51,22 +46,9 @@ fun RealUploadProgressGlow(
     pulseAlpha: Float,
     modifier: Modifier = Modifier
 ) {
-    Canvas(modifier = modifier) {
-        val signalCenter = Offset(
-            x = size.width * progressFraction,
-            y = size.height / 2f
-        )
-        drawCircle(
-            color = statusColor.copy(alpha = SafeGlowTokens.HeroGlowColor * pulseAlpha),
-            radius = size.height * (0.58f + (0.20f * pulseAlpha)),
-            center = signalCenter
-        )
-        drawCircle(
-            color = statusColor.copy(alpha = (SafeGlowTokens.HeroGlowColor * 2.5f) + (0.30f * pulseAlpha)),
-            radius = size.height * 0.18f,
-            center = signalCenter
-        )
-    }
+    // Deprecated decorative layer. Kept as a no-op so existing call sites
+    // compile unchanged; the Calm Material design removes glow circles.
+    return
 }
 
 internal fun uploadProgressFraction(percentage: Float): Float =
@@ -103,19 +85,6 @@ fun UploadStatusIndicator(
         label = "upload_progress"
     )
     val progressPercent = uploadProgressPercent(video.progress)
-    val activeUpload = video.status == UploadStatus.UPLOADING && progressFraction < 1f
-    val progressSignalPulse = if (motionEnabled && activeUpload) {
-        rememberInfiniteTransition(label = "upload_progress_signal")
-            .animateFloat(
-                initialValue = 0.55f,
-                targetValue = 1f,
-                animationSpec = AppMotion.uploadSignalPulse(),
-                label = "upload_progress_signal_alpha"
-            )
-            .value
-    } else {
-        0f
-    }
     val statusLabel = stringResource(uploadStatusLabelRes(video.status))
     val targetStatusColor = when (video.status) {
         UploadStatus.FAILED -> MaterialTheme.colorScheme.error
@@ -210,14 +179,6 @@ fun UploadStatusIndicator(
                                 contentDescription = progressDescription
                             }
                     )
-                    if (motionEnabled && activeUpload) {
-                        RealUploadProgressGlow(
-                            progressFraction = animatedProgressFraction,
-                            statusColor = animatedStatusColor,
-                            pulseAlpha = progressSignalPulse,
-                            modifier = Modifier.matchParentSize()
-                        )
-                    }
                 }
                 if (video.status == UploadStatus.UPLOADING) {
                     Spacer(modifier = Modifier.height(8.dp))

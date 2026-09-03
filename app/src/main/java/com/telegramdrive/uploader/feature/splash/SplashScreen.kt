@@ -1,9 +1,5 @@
 package com.telegramdrive.uploader.feature.splash
 
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,12 +11,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,45 +32,16 @@ fun SplashScreen(onFinished: () -> Unit) {
         android.provider.Settings.Global.ANIMATOR_DURATION_SCALE,
         1f
     ) == 0f
-    val pulse = if (reducedMotion) {
-        1f
-    } else {
-        val animatedPulse by rememberInfiniteTransition(label = "splash-pulse").animateFloat(
-            initialValue = 0.92f,
-            targetValue = 1.04f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = 900,
-                    easing = androidx.compose.animation.core.FastOutSlowInEasing
-                )
-            ),
-            label = "splash-pulse-scale"
-        )
-        animatedPulse
-    }
 
     LaunchedEffect(reducedMotion) {
-        delay(if (reducedMotion) 350L else 950L)
+        delay(if (reducedMotion) 350L else 700L)
         onFinished()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.radialGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.30f),
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.22f),
-                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f),
-                        MaterialTheme.colorScheme.background
-                    ),
-                    center = androidx.compose.ui.geometry.Offset(
-                        x = 0.5f, y = 0.38f
-                    ),
-                    radius = 1.2f
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
             .semantics { liveRegion = LiveRegionMode.Polite },
         contentAlignment = Alignment.Center
     ) {
@@ -88,14 +52,7 @@ fun SplashScreen(onFinished: () -> Unit) {
             Image(
                 painter = painterResource(R.drawable.mission_control_logo),
                 contentDescription = stringResource(R.string.splash_logo_description),
-                modifier = Modifier
-                    .size(132.dp)
-                    .graphicsLayer {
-                        val scale = if (reducedMotion) 1f else pulse
-                        scaleX = scale
-                        scaleY = scale
-                        rotationZ = if (reducedMotion) 0f else (pulse - 1f) * 18f
-                    }
+                modifier = Modifier.size(120.dp)
             )
             Text(
                 text = stringResource(R.string.app_name),
@@ -106,7 +63,7 @@ fun SplashScreen(onFinished: () -> Unit) {
                 text = stringResource(R.string.splash_starting),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.alpha(if (reducedMotion) 1f else 0.86f)
+                modifier = Modifier.alpha(0.86f)
             )
         }
     }

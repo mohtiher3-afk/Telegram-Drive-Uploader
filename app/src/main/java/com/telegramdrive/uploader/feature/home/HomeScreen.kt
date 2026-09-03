@@ -4,10 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storage
@@ -39,7 +35,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,8 +47,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -64,16 +57,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.R
-import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
-import com.telegramdrive.uploader.core.ui.components.liquidGlassReflection
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
-import com.telegramdrive.uploader.core.ui.theme.TideCoral
-import com.telegramdrive.uploader.core.ui.theme.TideSeafoam
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 
@@ -100,8 +88,6 @@ fun HomeScreen(
     val displayName = uiState.telegramUser?.let { user ->
         "${user.firstName} ${user.lastName ?: ""}".trim()
     }.orEmpty()
-    val topGlow = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.20f)
-    val bottomGlow = MaterialTheme.colorScheme.secondary.copy(alpha = 0.16f)
 
     val pickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
@@ -149,28 +135,6 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .drawBehind {
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                topGlow,
-                                Color.Transparent
-                            ),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.48f, 0f),
-                            radius = size.minDimension * 0.72f
-                        )
-                    )
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                bottomGlow,
-                                Color.Transparent
-                            ),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.04f, size.height * 0.90f),
-                            radius = size.minDimension * 0.58f
-                        )
-                    )
-                }
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -413,63 +377,18 @@ private fun UploadFeatureCard(
     onSelectVideos: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val motionEnabled = rememberSystemMotionEnabled()
-    val auroraPulse = if (motionEnabled) {
-        rememberInfiniteTransition(label = "aurora_breath")
-            .animateFloat(
-                initialValue = 0.92f,
-                targetValue = 1.08f,
-                animationSpec = AppMotion.auroraBreath(),
-                label = "aurora_breath_scale"
-            )
-            .value
-    } else {
-        1f
-    }
-    val cardBase = MaterialTheme.colorScheme.surfaceContainerHigh
-    val ambientGlow = TideCoral.copy(alpha = 0.30f)
-    val signalGlow = TideSeafoam.copy(alpha = 0.20f)
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.large,
-                accent = TideSeafoam,
-                emphasis = LiquidGlassEmphasis.FeatureLens
-            ),
+        modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.dp, TideSeafoam.copy(alpha = 0.60f))
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .padding(AppSpacing.medium)
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.96f),
-                            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.92f)
-                        )
-                    ),
-                    shape = MaterialTheme.shapes.large
-                )
-                .drawBehind {
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(ambientGlow.copy(alpha = ambientGlow.alpha * auroraPulse), Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.86f, size.height * 0.14f),
-                            radius = size.minDimension * 0.72f * auroraPulse
-                        )
-                    )
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(signalGlow, Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.08f, size.height * 0.88f),
-                            radius = size.minDimension * 0.50f
-                        )
-                    )
-                },
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
