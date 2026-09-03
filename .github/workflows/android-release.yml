@@ -139,6 +139,9 @@ jobs:
             -storepass "$RELEASE_STORE_PASSWORD" \
             -alias "$RELEASE_KEY_ALIAS" > /dev/null
 
+      # Note: app/build.gradle.kts scopes its custom buildDir override to
+      # Windows only (OneDrive workaround). Linux CI must keep the default
+      # project-relative build dir or every :app:* task fails.
       - name: Run release gates
         env:
           TDLIB_CHECK_ABI: ${{ matrix.abi }}
