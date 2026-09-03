@@ -12,6 +12,10 @@ build/
 *.apk
 *.aab
 
+# Distributable release binaries (kept in the repo)
+!releases/
+!releases/*.apk
+
 # IDE metadata
 .idea/
 *.iml
