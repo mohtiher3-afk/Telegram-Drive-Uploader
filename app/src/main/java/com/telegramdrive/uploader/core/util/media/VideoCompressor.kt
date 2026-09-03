@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.AssetFileDescriptor
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
+import android.media.MediaCodecList
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.media.MediaMuxer
@@ -145,8 +146,17 @@ class VideoCompressor(private val context: Context) {
 
             // Prepare the codec
             val codecName = "video/avc"
-            val isEncoderSupported = MediaCodecInfo.isSoftwareEncoderSupported(codecName) ||
-                MediaCodecInfo.isHardwareAcceleratedCodecSupported(codecName)
+            val encoderFormat = MediaFormat.createVideoFormat(codecName, scaledWidth, scaledHeight)
+            encoderFormat.setInteger(
+                MediaFormat.KEY_COLOR_FORMAT,
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+            )
+            encoderFormat.setInteger(MediaFormat.KEY_BIT_RATE, targetBitrate)
+            encoderFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 30)
+            encoderFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 2)
+
+            val isEncoderSupported = MediaCodecList(MediaCodecList.REGULAR_CODECS)
+                .findEncoderForFormat(encoderFormat) != null
 
             if (isEncoderSupported) {
                 // Use the hardware/software encoder for accurate re-encoding
@@ -163,15 +173,6 @@ class VideoCompressor(private val context: Context) {
                 }
 
                 extractor.selectTrack(videoExtractorIndex)
-
-                val encoderFormat = MediaFormat.createVideoFormat(codecName, scaledWidth, scaledHeight)
-                encoderFormat.setInteger(
-                    MediaFormat.KEY_COLOR_FORMAT,
-                    MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
-                )
-                encoderFormat.setInteger(MediaFormat.KEY_BIT_RATE, targetBitrate)
-                encoderFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 30)
-                encoderFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 2)
 
                 try {
                     encoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
