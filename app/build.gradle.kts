@@ -24,8 +24,8 @@ android {
     applicationId = "com.aistudio.telegramdrive.prmuq"
     minSdk = 24
     targetSdk = 35
-    versionCode = 19
-    versionName = "1.0.19"
+    versionCode = 20
+    versionName = "1.0.20"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
