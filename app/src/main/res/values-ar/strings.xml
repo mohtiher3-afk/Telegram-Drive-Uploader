@@ -165,6 +165,7 @@
     <string name="glow_color_lime">إشارة ليمونية</string>
     <string name="glow_color_cyan">إشارة سماوية</string>
     <string name="glow_color_violet">إشارة بنفسجية</string>
+    <string name="glow_color_orchid">إشارة أوركيد</string>
     <string name="glow_color_custom">إشارة مخصصة</string>
     <string name="custom_glow_editor">محرر التوهج المخصص</string>
     <string name="custom_glow_editor_summary">اختر لونًا من العجلة أو اضبط درجة اللون والتشبع والسطوع. لا يتغير التطبيق إلا بعد الحفظ.</string>

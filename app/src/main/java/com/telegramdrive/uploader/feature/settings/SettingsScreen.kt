@@ -688,6 +688,7 @@ private fun glowColorLabelRes(preset: GlowColorPreset): Int = when (preset) {
     GlowColorPreset.LIME -> com.telegramdrive.uploader.R.string.glow_color_lime
     GlowColorPreset.CYAN -> com.telegramdrive.uploader.R.string.glow_color_cyan
     GlowColorPreset.VIOLET -> com.telegramdrive.uploader.R.string.glow_color_violet
+    GlowColorPreset.ORCHID -> com.telegramdrive.uploader.R.string.glow_color_orchid
     GlowColorPreset.CUSTOM -> com.telegramdrive.uploader.R.string.glow_color_custom
 }
 

@@ -14,8 +14,13 @@ enum class GlowColorPreset(
 ) {
     SEAFOAM(
         storageValue = "Seafoam",
-        dark = GlowPrimaryColors(Color(0xFFA5F6D2), Color(0xFF073827), Color(0xFF00533B), Color(0xFFC2FFE0)),
-        light = GlowPrimaryColors(Color(0xFF006C4D), Color.White, Color(0xFF8DF9C9), Color(0xFF002114))
+        dark = GlowPrimaryColors(Color(0xFFFFB1D2), Color(0xFF5D0031), Color(0xFF821A4D), Color(0xFFFFD9E7)),
+        light = GlowPrimaryColors(Color(0xFFB02772), Color.White, Color(0xFFFFD9E7), Color(0xFF3E0024))
+    ),
+    ORCHID(
+        storageValue = "Orchid",
+        dark = GlowPrimaryColors(Color(0xFFEBB2FF), Color(0xFF51006F), Color(0xE58C27B6), Color(0xFFF7D8FF)),
+        light = GlowPrimaryColors(Color(0xFF8E34B8), Color.White, Color(0xFFF7D8FF), Color(0xFF2F003F))
     ),
     COBALT(
         storageValue = "Cobalt",
@@ -66,7 +71,7 @@ enum class GlowColorPreset(
 
 /** Storage-safe hex parsing and primary-role derivation for a user-supplied Glow color. */
 object GlowColorCodec {
-    const val DEFAULT_HEX = "69D6B5"
+    const val DEFAULT_HEX = "E1458C"
 
     fun normalizeHex(value: String?): String {
         val normalized = value.orEmpty().trim().removePrefix("#")
