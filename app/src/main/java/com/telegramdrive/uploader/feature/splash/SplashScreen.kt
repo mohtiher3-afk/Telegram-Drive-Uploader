@@ -67,9 +67,15 @@ fun SplashScreen(onFinished: () -> Unit) {
             .background(
                 Brush.radialGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.24f),
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.30f),
+                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.22f),
+                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f),
                         MaterialTheme.colorScheme.background
-                    )
+                    ),
+                    center = androidx.compose.ui.geometry.Offset(
+                        x = 0.5f, y = 0.38f
+                    ),
+                    radius = 1.2f
                 )
             )
             .semantics { liveRegion = LiveRegionMode.Polite },
