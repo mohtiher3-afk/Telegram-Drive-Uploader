@@ -1170,3 +1170,11 @@ The earlier visual work was not present in the GitHub HEAD inspected after the s
 - [ ] تشغيل تحقق محلي ورفع commit إصلاح CI بعد مراجعة الفروقات.
 - [ ] متابعة التشغيل البعيد وتوثيق نتيجة البوابات وartifacts.
 
+
+## CI/CD automation
+
+- [x] Add Android CI workflow for pull requests and pushes to main. (Existing `android-ci.yml` already provides this.)
+- [x] Validate workflow YAML, permissions, secrets boundaries, ABI/build commands, and artifact paths. (Structural checks and prior successful GitHub run verified.)
+- [x] Run available local repository checks and confirm the release workflow remains unchanged. (Security, resources, WorkManager, and TDLib gates passed.)
+- [ ] Commit and push the CI/CD workflow to GitHub.
+- [ ] Verify the remote workflow is visible and record the first run status or its expected trigger.

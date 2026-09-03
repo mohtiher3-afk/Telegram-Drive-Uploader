@@ -4,8 +4,8 @@
 
 Telegram Drive Uploader provides a high-reliability, offline-first interface for Telegram file delivery. Built with modern Android technologies (Jetpack Compose, Room, WorkManager, and Material 3), it leverages the official Telegram Database Library (TDLib) for authoritative transfer logic.
 
-[![Android Multi-ABI CI](https://github.com/aistudio-build/telegram-drive-uploader/actions/workflows/android_ci.yml/badge.svg)](https://github.com/aistudio-build/telegram-drive-uploader/actions/workflows/android_ci.yml)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/aistudio-build/telegram-drive-uploader/releases)
+[![Android Multi-ABI CI](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml/badge.svg)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml)
+[![Version](https://img.shields.io/badge/version-1.0.18-blue)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases)
 
 ---
 
@@ -92,8 +92,9 @@ For native dependency details, see [`docs/TDLIB_NATIVE_DEPENDENCIES.md`](docs/TD
 The project includes strict R8 keep rules for `org.drinkless.tdlib.**` required for JNI stability in minified builds.
 
 ### Release & CI
-The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs, verifies checksums, and creates a GitHub Release.
-See [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md) for details.
+The `Android Multi-ABI CI` workflow runs on Pull Requests and pushes to `main`. It executes repository security and artifact gates, JVM unit tests, release lint, and a Debug APK build for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, then stores each APK as a temporary artifact.
+
+The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs, verifies signatures and SHA-256 checksums, and creates a GitHub Release. The complete setup, required secrets, tag flow, and troubleshooting steps are documented in [`docs/github-actions-android-ci-cd-ar.md`](docs/github-actions-android-ci-cd-ar.md) and [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
 
 ---
 
