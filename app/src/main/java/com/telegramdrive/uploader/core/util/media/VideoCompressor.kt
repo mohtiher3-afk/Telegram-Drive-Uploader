@@ -217,8 +217,6 @@ class VideoCompressor(private val context: Context) {
     ) {
         // Simplified re-encode path: read source frames and feed the encoder
         val bufferInfo = MediaCodec.BufferInfo()
-        val inputBuffers = encoder.inputBuffers
-        val outputBuffers = encoder.outputBuffers
 
         // Track durations for progress
         val totalDurationUs = estimateDurationUs(extractor)
@@ -235,25 +233,27 @@ class VideoCompressor(private val context: Context) {
             if (!sawInputEOS) {
                 val inputIndex = encoder.dequeueInputBuffer(10_000)
                 if (inputIndex >= 0) {
-                    val inputBuffer = inputBuffers[inputIndex]
-                    val sampleSize = extractor.readSampleData(inputBuffer, 0)
-                    if (sampleSize < 0) {
-                        encoder.queueInputBuffer(
-                            inputIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM
-                        )
-                        sawInputEOS = true
-                    } else {
-                        val presentationTimeUs = extractor.sampleTime
-                        encoder.queueInputBuffer(
-                            inputIndex, 0, sampleSize, presentationTimeUs, 0
-                        )
-                        processedDurationUs = presentationTimeUs
-                        extractor.advance()
-                        onProgress?.onProgress(
-                            if (totalDurationUs > 0)
-                                (processedDurationUs.toFloat() / totalDurationUs.toFloat()).coerceIn(0f, 1f)
-                            else 0f
-                        )
+                    val inputBuffer = encoder.getInputBuffer(inputIndex)
+                    if (inputBuffer != null) {
+                        val sampleSize = extractor.readSampleData(inputBuffer, 0)
+                        if (sampleSize < 0) {
+                            encoder.queueInputBuffer(
+                                inputIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM
+                            )
+                            sawInputEOS = true
+                        } else {
+                            val presentationTimeUs = extractor.sampleTime
+                            encoder.queueInputBuffer(
+                                inputIndex, 0, sampleSize, presentationTimeUs, 0
+                            )
+                            processedDurationUs = presentationTimeUs
+                            extractor.advance()
+                            onProgress?.onProgress(
+                                if (totalDurationUs > 0)
+                                    (processedDurationUs.toFloat() / totalDurationUs.toFloat()).coerceIn(0f, 1f)
+                                else 0f
+                            )
+                        }
                     }
                 }
             }
@@ -272,17 +272,19 @@ class VideoCompressor(private val context: Context) {
                     }
                 } else if (outputIndex >= 0) {
                     if (outputFormatKnown) {
-                        val outputBuffer = outputBuffers[outputIndex]
-                        if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
-                            bufferInfo.size = 0
-                        }
-                        if (bufferInfo.size > 0) {
-                            outputBuffer.position(bufferInfo.offset)
-                            outputBuffer.limit(bufferInfo.offset + bufferInfo.size)
-                            muxer.writeSampleData(muxerVideoTrackIndex, outputBuffer, bufferInfo)
-                        }
-                        if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
-                            sawOutputEOS = true
+                        val outputBuffer = encoder.getOutputBuffer(outputIndex)
+                        if (outputBuffer != null) {
+                            if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
+                                bufferInfo.size = 0
+                            }
+                            if (bufferInfo.size > 0) {
+                                outputBuffer.position(bufferInfo.offset)
+                                outputBuffer.limit(bufferInfo.offset + bufferInfo.size)
+                                muxer.writeSampleData(muxerVideoTrackIndex, outputBuffer, bufferInfo)
+                            }
+                            if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
+                                sawOutputEOS = true
+                            }
                         }
                     }
                     encoder.releaseOutputBuffer(outputIndex, false)
