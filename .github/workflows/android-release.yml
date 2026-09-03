@@ -144,10 +144,15 @@ jobs:
           TDLIB_CHECK_ABI: ${{ matrix.abi }}
         run: |
           set -euo pipefail
+          echo "==GATE:check-repository-security=="
           ./scripts/check-repository-security.sh
+          echo "==GATE:check-resource-integrity=="
           ./scripts/check-resource-integrity.sh
+          echo "==GATE:check-workmanager-manifest=="
           ./scripts/check-workmanager-manifest.sh
+          echo "==GATE:check-tdlib-artifacts=="
           ./scripts/check-tdlib-artifacts.sh
+          echo "==GATE:gradle-tests-and-lint=="
           gradle --no-daemon --max-workers=2 :app:testDebugUnitTest :app:lintVitalRelease
 
       - name: Build signed Release APK for selected ABI
