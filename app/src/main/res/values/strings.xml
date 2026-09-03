@@ -165,6 +165,7 @@
     <string name="glow_color_lime">Lime signal</string>
     <string name="glow_color_cyan">Cyan signal</string>
     <string name="glow_color_violet">Violet signal</string>
+    <string name="glow_color_orchid">Orchid signal</string>
     <string name="glow_color_custom">Custom signal</string>
     <string name="custom_glow_editor">Custom glow editor</string>
     <string name="custom_glow_editor_summary">Choose a color on the wheel or adjust hue, saturation, and brightness. The app changes only after you save.</string>

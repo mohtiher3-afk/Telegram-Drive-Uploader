@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -416,7 +417,7 @@ private fun UploadFeatureCard(
     val auroraPulse = if (motionEnabled) {
         rememberInfiniteTransition(label = "aurora_breath")
             .animateFloat(
-                initialValue = 0.90f,
+                initialValue = 0.92f,
                 targetValue = 1.08f,
                 animationSpec = AppMotion.auroraBreath(),
                 label = "aurora_breath_scale"
@@ -426,8 +427,8 @@ private fun UploadFeatureCard(
         1f
     }
     val cardBase = MaterialTheme.colorScheme.surfaceContainerHigh
-    val ambientGlow = TideCoral.copy(alpha = 0.28f)
-    val signalGlow = TideSeafoam.copy(alpha = 0.16f)
+    val ambientGlow = TideCoral.copy(alpha = 0.30f)
+    val signalGlow = TideSeafoam.copy(alpha = 0.20f)
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -438,26 +439,34 @@ private fun UploadFeatureCard(
             ),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.dp, TideSeafoam.copy(alpha = 0.56f))
+        border = BorderStroke(1.dp, TideSeafoam.copy(alpha = 0.60f))
     ) {
         Row(
             modifier = Modifier
                 .padding(AppSpacing.medium)
                 .fillMaxWidth()
-                .background(cardBase, MaterialTheme.shapes.large)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.96f),
+                            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.92f)
+                        )
+                    ),
+                    shape = MaterialTheme.shapes.large
+                )
                 .drawBehind {
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(ambientGlow.copy(alpha = ambientGlow.alpha * auroraPulse), Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.86f, size.height * 0.16f),
-                            radius = size.minDimension * 0.70f * auroraPulse
+                            center = androidx.compose.ui.geometry.Offset(size.width * 0.86f, size.height * 0.14f),
+                            radius = size.minDimension * 0.72f * auroraPulse
                         )
                     )
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(signalGlow, Color.Transparent),
-                            center = androidx.compose.ui.geometry.Offset(size.width * 0.10f, size.height * 0.86f),
-                            radius = size.minDimension * 0.48f
+                            center = androidx.compose.ui.geometry.Offset(size.width * 0.08f, size.height * 0.88f),
+                            radius = size.minDimension * 0.50f
                         )
                     )
                 },
@@ -480,8 +489,18 @@ private fun UploadFeatureCard(
             }
             FilledTonalButton(
                 onClick = onSelectVideos,
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
+                Icon(
+                    imageVector = Icons.Default.CloudUpload,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(AppSpacing.xs))
                 Text(stringResource(R.string.select))
             }
         }
@@ -524,12 +543,20 @@ private fun StatCard(
             modifier = Modifier.padding(AppSpacing.medium),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.small)
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
+            Surface(
+                modifier = Modifier.size(40.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleLarge,
