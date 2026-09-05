@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
+import com.telegramdrive.uploader.domain.model.TelegramDestinationPolicy
 import com.telegramdrive.uploader.domain.repository.TelegramRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,6 +55,7 @@ class TelegramDestinationViewModel @Inject constructor(
     }
 
     fun selectDestination(destination: TelegramDestination) {
+        if (!TelegramDestinationPolicy.isSelectable(destination)) return
         _selectedDestination.value = destination
         viewModelScope.launch {
             settingsDataStore.setSelectedDestination(destination.id, destination.title)
