@@ -18,6 +18,7 @@ import com.telegramdrive.uploader.domain.model.TelegramDestinationType
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.TelegramDestination
+import com.telegramdrive.uploader.domain.model.TelegramDestinationPolicy
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.repository.TelegramRepository
 import com.telegramdrive.uploader.domain.upload.UploadManager
@@ -293,6 +294,7 @@ class UploadViewModel @Inject constructor(
     }
 
     fun selectDestination(destination: TelegramDestination) {
+        if (!TelegramDestinationPolicy.isSelectable(destination)) return
         _selectedDestination = destination
         viewModelScope.launch {
             settingsDataStore.setSelectedDestination(destination.id, destination.title)
@@ -320,6 +322,7 @@ class UploadViewModel @Inject constructor(
 
     fun addToQueue(onComplete: () -> Unit) {
         val destination = _selectedDestination ?: return
+        if (!TelegramDestinationPolicy.isSelectable(destination)) return
         if (_isSubmitting || _preparedList.isEmpty()) return
         
         _isSubmitting = true

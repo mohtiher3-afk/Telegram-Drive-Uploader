@@ -227,6 +227,8 @@ class SettingsDataStore @Inject constructor(
             preferences.remove(TELEGRAM_USER_USERNAME_KEY)
             preferences.remove(TELEGRAM_USER_PHONE_KEY)
             preferences.remove(PINNED_DESTINATION_IDS_KEY)
+            preferences.remove(SELECTED_DESTINATION_ID_KEY)
+            preferences.remove(SELECTED_DESTINATION_TITLE_KEY)
             preferences[TELEGRAM_STATE_KEY] = "DISCONNECTED"
         }
     }
