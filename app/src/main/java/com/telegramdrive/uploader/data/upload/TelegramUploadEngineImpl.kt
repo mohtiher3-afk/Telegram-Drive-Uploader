@@ -42,15 +42,36 @@ class TelegramUploadEngineImpl @Inject constructor(
         }
 
         val source = Uri.parse(task.sourceUri)
-        val stagedFile = File.createTempFile("tdlib-upload-", "-${safeName(task.fileName)}")
         val speedCalculator = SpeedCalculator()
+        var stagedFile: File? = null
         try {
-            // copyToFile is a blocking full-file read/write; keep it off the worker's
-            // compute dispatcher so the upload coroutine does not tie up a shared thread.
-            val copiedBytes = withContext(Dispatchers.IO) {
-                streamingFileReader.copyToFile(source, stagedFile)
+            // Fast path: a readable file:// source is handed straight to TDLib, skipping a
+            // full read+write staging copy (roughly halves time-to-first-byte for on-disk
+            // files). content:// sources and file:// paths the process cannot read fall back
+            // to staging, so scoped-storage grants keep working via the content resolver.
+            val directPath: String? = if (source.scheme == "file") {
+                source.path?.let { p -> File(p).takeIf { it.isFile && it.canRead() }?.absolutePath }
+            } else {
+                null
             }
-            val totalBytes = copiedBytes.takeIf { it > 0L } ?: task.fileSize
+
+            val localPath: String
+            val totalBytes: Long
+            if (directPath != null) {
+                localPath = directPath
+                totalBytes = File(directPath).length().takeIf { it > 0L } ?: task.fileSize
+            } else {
+                val tmp = File.createTempFile("tdlib-upload-", "-${safeName(task.fileName)}")
+                stagedFile = tmp
+                // copyToFile is a blocking full-file read/write; keep it off the worker's
+                // compute dispatcher so the upload coroutine does not tie up a shared thread.
+                val copiedBytes = withContext(Dispatchers.IO) {
+                    streamingFileReader.copyToFile(source, tmp)
+                }
+                localPath = tmp.absolutePath
+                totalBytes = copiedBytes.takeIf { it > 0L } ?: task.fileSize
+            }
+
             if (totalBytes <= 0L) {
                 emit(UploadEngineResult.Error("Unable to determine source file size", false))
                 return@flow
@@ -61,10 +82,14 @@ class TelegramUploadEngineImpl @Inject constructor(
             DiagnosticsManager.log(
                 category = DiagnosticCategory.UPLOAD_STARTED,
                 severity = DiagnosticSeverity.INFO,
-                message = "Staged source is ready; handing off to TDLib upload.",
+                message = if (directPath != null) {
+                    "Readable file source handed off to TDLib without staging."
+                } else {
+                    "Staged source is ready; handing off to TDLib upload."
+                },
                 uploadId = task.id
             )
-            telegramClient.uploadLocalDocument(task, stagedFile.absolutePath).collect { event ->
+            telegramClient.uploadLocalDocument(task, localPath).collect { event ->
                 when (event) {
                     is TelegramUploadEvent.Progress -> {
                         val uploaded = event.uploadedBytes.coerceIn(0L, totalBytes)
@@ -84,7 +109,7 @@ class TelegramUploadEngineImpl @Inject constructor(
         } catch (error: Throwable) {
             emit(UploadEngineResult.Error(error.message ?: "TDLib upload failed", isRetryable(error)))
         } finally {
-            stagedFile.delete()
+            stagedFile?.delete()
         }
     }
 
