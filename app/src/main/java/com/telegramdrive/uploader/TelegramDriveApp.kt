@@ -55,7 +55,6 @@ class TelegramDriveApp : Application(), Configuration.Provider {
         // Under high pressure, clear transient logs or cached graphic contexts gracefully
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL) {
             DiagnosticsManager.clearDiagnostics()
-            System.gc()
         }
     }
 
@@ -64,10 +63,9 @@ class TelegramDriveApp : Application(), Configuration.Provider {
         DiagnosticsManager.log(
             category = DiagnosticCategory.SETTINGS_CHANGED,
             severity = DiagnosticSeverity.ERROR,
-            message = "Critical low memory warning received. Performing deep resource reclamation."
+            message = "Critical low memory warning received. Releasing transient diagnostics cache."
         )
         DiagnosticsManager.clearDiagnostics()
-        System.gc()
     }
 }
 
