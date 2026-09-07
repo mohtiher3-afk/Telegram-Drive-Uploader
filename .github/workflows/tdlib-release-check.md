@@ -16,7 +16,7 @@ tools:
       - repos
       - issues
       - pull_requests
-    github-token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+    github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
     read-only: true
   bash: ["*"]
 network:
@@ -38,7 +38,7 @@ You are a scheduled maintenance workflow for the Telegram-Drive-Uploader reposit
 ## Steps
 
 1. **Read the pinned version.** Read `app/build.gradle.kts` from this repository and find the pinned TDLib version (search for the `tdlib` dependency and its `version`/`native` version identifier). Record the pinned version exactly.
-2. **Check upstream releases.** Using the GitHub toolsets (`repos` toolset, `list_releases` on `tdlib/td`), fetch the newest published releases. Always pass an explicit `perPage` (e.g. `perPage: 10`) — MCP responses have a 25,000 token limit. The workflow's GitHub token is a personal access token (`GITHUB_PERSONAL_ACCESS_TOKEN`) scoped for read access to `tdlib/td`, so you can read upstream releases.
+2. **Check upstream releases.** Using the GitHub toolsets (`repos` toolset, `list_releases` on `tdlib/td`), fetch the newest published releases. Always pass an explicit `perPage` (e.g. `perPage: 10`) — MCP responses have a 25,000 token limit. The workflow's GitHub token is a personal access token (`GH_PERSONAL_ACCESS_TOKEN`) scoped for read access to `tdlib/td`, so you can read upstream releases.
 3. **Compare versions.** Compare the latest upstream release tag against the pinned version using semantic-version ordering. Consider a release "newer" only if its version sorts above the pinned version. Ignore pre-release/alpha releases unless the pinned version itself is a pre-release.
 4. **Act on the result.**
    - If a newer release exists, call the safe output `create_issue` with a title like `New TDLib release vX.Y.Z available` and a body (at least 20 characters) containing: the newest tag, its release URL, publish date, and the pinned version being updated from.
