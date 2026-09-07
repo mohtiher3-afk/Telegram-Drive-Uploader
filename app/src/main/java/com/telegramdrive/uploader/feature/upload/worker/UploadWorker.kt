@@ -102,6 +102,7 @@ class UploadWorker @AssistedInject constructor(
         var result: Result = Result.failure()
         var terminalEventReceived = false
         val startTime = System.currentTimeMillis()
+        var lastProgressUpdateAt = 0L
 
         try {
             // Run this worker as a foreground service so that uploads survive the app
@@ -131,27 +132,35 @@ class UploadWorker @AssistedInject constructor(
                 when (engineResult) {
                     is UploadEngineResult.Progress -> {
                         val p = engineResult.progress
-                        repository.updateProgress(
-                            id = uploadId,
-                            uploadedBytes = p.uploadedBytes,
-                            totalBytes = p.totalBytes,
-                            progress = p.percentage,
-                            speed = p.speedBytesPerSecond,
-                            averageSpeed = p.averageSpeedBytesPerSecond,
-                            eta = p.etaSeconds
-                        )
-                        // Update the progress notification with real-time percentage
-                        uploadEventNotifier.showProgressNotification(
-                            uploadId = uploadId,
-                            fileName = uploadTask.fileName,
-                            progress = p.percentage.toInt(),
-                            uploadedBytes = p.uploadedBytes,
-                            totalBytes = p.totalBytes
-                        )
-                        runCatching {
-                            setForeground(buildForegroundInfo(uploadId, uploadTask.fileName, p.percentage.toInt(), p.uploadedBytes, p.totalBytes))
+                        // TDLib emits progress many times per second. Persisting to Room,
+                        // posting a notification, and calling setForeground on every tick
+                        // causes DB contention and Android notification throttling, which can
+                        // stall the upload loop and jeopardise the foreground service. Coalesce
+                        // to ~1 Hz, but always flush the terminal (>=99.5%) value.
+                        val now = android.os.SystemClock.elapsedRealtime()
+                        if (now - lastProgressUpdateAt >= 1_000L || p.percentage >= 99.5f) {
+                            lastProgressUpdateAt = now
+                            repository.updateProgress(
+                                id = uploadId,
+                                uploadedBytes = p.uploadedBytes,
+                                totalBytes = p.totalBytes,
+                                progress = p.percentage,
+                                speed = p.speedBytesPerSecond,
+                                averageSpeed = p.averageSpeedBytesPerSecond,
+                                eta = p.etaSeconds
+                            )
+                            // Update the progress notification with real-time percentage
+                            uploadEventNotifier.showProgressNotification(
+                                uploadId = uploadId,
+                                fileName = uploadTask.fileName,
+                                progress = p.percentage.toInt(),
+                                uploadedBytes = p.uploadedBytes,
+                                totalBytes = p.totalBytes
+                            )
+                            runCatching {
+                                setForeground(buildForegroundInfo(uploadId, uploadTask.fileName, p.percentage.toInt(), p.uploadedBytes, p.totalBytes))
+                            }
                         }
-                        // Do not log every progress event at high frequency in production to preserve resource usage.
                     }
                     is UploadEngineResult.Success -> {
                         terminalEventReceived = true

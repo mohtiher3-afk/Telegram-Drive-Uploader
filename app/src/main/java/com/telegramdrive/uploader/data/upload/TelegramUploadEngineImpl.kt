@@ -13,8 +13,10 @@ import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.upload.SpeedCalculator
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,7 +45,11 @@ class TelegramUploadEngineImpl @Inject constructor(
         val stagedFile = File.createTempFile("tdlib-upload-", "-${safeName(task.fileName)}")
         val speedCalculator = SpeedCalculator()
         try {
-            val copiedBytes = streamingFileReader.copyToFile(source, stagedFile)
+            // copyToFile is a blocking full-file read/write; keep it off the worker's
+            // compute dispatcher so the upload coroutine does not tie up a shared thread.
+            val copiedBytes = withContext(Dispatchers.IO) {
+                streamingFileReader.copyToFile(source, stagedFile)
+            }
             val totalBytes = copiedBytes.takeIf { it > 0L } ?: task.fileSize
             if (totalBytes <= 0L) {
                 emit(UploadEngineResult.Error("Unable to determine source file size", false))
