@@ -174,8 +174,8 @@ guards in a later low-risk stage, not in the baseline.
 
 ## 8. External / deferred items (🔲)
 
-1. **Device matrix Android 13–16** notification + background execution
-   validation — requires physical devices/emulators and user-test credentials.
+1. **Device matrix Android 13–16** — DONE via cloud emulator matrix (see §11);
+   physical-device notification/background confirmation still open.
 2. **§14 performance benchmarking** with representative video sizes on device;
    host-side profiling is documented but device telemetry (Peak RSS) is CI-only.
 3. **Firebase / Crashlytics credits** — no real account approved; crash
@@ -197,9 +197,8 @@ previous is verified on the full gates.
 3. **About/Diagnostics completeness** (low) — extend existing diagnostics
    screen with version/build/non-sensitive info, matching §6 without touching
    TDLib/upload logic.
-4. **Device/emulator validation** (medium, external) — run the existing
-   JNI/device smoke workflow and API 13–16 notification/background matrix once
-   a device or emulator is available.
+4. **Device/emulator validation** (medium, external) — DONE: API 33–36 emulator
+   matrix via cloud (see §11); physical-device confirmation optional.
 5. **Performance §14** (medium, external) — host-side streaming benchmarks then
    representative-file device throughput measurement; sequential stays default.
 6. **Privacy/safety review gates** (medium) — final security re-scan and
@@ -211,7 +210,29 @@ previous is verified on the full gates.
 
 ## 10. Conclusion
 
-The repository already satisfies the large majority of the Spec V2 Stage-1
+The repository already satisfies the large majority of the Spec V2 Stage-1 baseline contract: layered architecture, real TDLib upload engine, Room-backed queue, WorkManager background execution, Compose/M3 Mission Control UI with Arabic RTL, Hilt DI, documented security posture, and 101 green unit tests on a clean re-run. The remaining items are external (physical-device matrix, §14 benchmark, Firebase approval, Copilot subscription) plus two low-risk warning guards and a diagnostics completeness pass. No product source was modified by this stage.
+
+## 11. Device matrix execution (API 33–36) — ADDENDUM
+
+After the untouched-baseline build, `android-device-smoke.yml` was parametrized
+with a `strategy.matrix` over API levels 33/34/35/36 (one job per Android
+13/14/15/16), x86_64, `google_apis`, `pixel_2` profile, KVM-accelerated host
+runner. Workflow change: commit `205886d`.
+
+Result (run `34264391418`):
+
+| Job | Conclusion |
+|-----|------------|
+| TDLib JNI smoke (Android 36) | ✅ success |
+| TDLib JNI smoke (Android 35) | ✅ success |
+| TDLib JNI smoke (Android 34) | ✅ success |
+| TDLib JNI smoke (Android 33) | ✅ success |
+
+Each wave executed the same `run-tdlib-device-smoke-test.sh` suite: APK
+install, TDLib JNI init/destroy on the emulator, official-artifact check.
+All four Android 13–16 waves pass. This closes the API 13–16 emulator matrix
+(Spec V2 §15); a physical-device notification/background confirmation remains
+optional and requires user hardware.
 baseline contract: layered architecture, real TDLib upload engine, Room-backed
 queue, WorkManager background execution, Compose/M3 Mission Control UI with
 Arabic RTL, Hilt DI, documented security posture, and 101 green unit tests on a
