@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 engine:
   id: copilot
-  model: gpt-5-mini
+  model: gpt-5.6-luna
 permissions:
   contents: read
   metadata: read
