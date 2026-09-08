@@ -180,10 +180,16 @@ guards in a later low-risk stage, not in the baseline.
    host-side profiling is documented but device telemetry (Peak RSS) is CI-only.
 3. **Firebase / Crashlytics credits** — no real account approved; crash
    reporting is not wired and must not be added without approval.
-4. **`tdlib-release-check` (gh-aw / Copilot)** — blocked on the GitHub account
-   `mohtiher3-afk` lacking an active Copilot subscription (`/user/copilot` 404).
-   The workflow file is fixed and compiled (`tdlib-release-check.lock.yml`);
-   unblocking takes effect once a Copilot plan is activated.
+4. **`tdlib-release-check` (gh-aw / Copilot)** — root cause identified and
+   fixed. Contrary to the earlier `404`-based assumption, the account **has an
+   active Copilot subscription**: `copilot -p` with the default/`auto` model
+   consumes AI credits successfully, while every explicit model identifier
+   (`gpt-5.6-luna`, `gpt-5-mini`, `gpt-4o`, `claude-sonnet-4`, `gemini-2.5-pro`,
+   `o4-mini`) is rejected with `Model is not available` / 400 "model not
+   supported". The workflow pinned an unavailable model
+   (`agent_model: gpt-5.6-luna`). Fixed by setting `engine.model: auto`
+   (regenerated `tdlib-release-check.lock.yml`). No Copilot plan change is
+   required from the user; the workflow will pick a supported model at runtime.
 
 ## 9. Migration plan (lowest → highest risk)
 
@@ -236,6 +242,7 @@ optional and requires user hardware.
 baseline contract: layered architecture, real TDLib upload engine, Room-backed
 queue, WorkManager background execution, Compose/M3 Mission Control UI with
 Arabic RTL, Hilt DI, documented security posture, and 101 green unit tests on a
-clean re-run. The remaining items are external (device matrix, §14 benchmark,
-Firebase approval, Copilot subscription) plus two low-risk warning guards and a
-diagnostics completeness pass. No product source was modified by this stage.
+clean re-run. The remaining items are external (physical-device matrix, §14
+benchmark, Firebase approval) plus two low-risk warning guards and a
+diagnostics pass; the `tdlib-release-check` model issue was fixed in-workflow.
+No product source was modified by this stage.

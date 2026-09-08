@@ -1,37 +1,40 @@
 ---
-name: tdlib-release-check
-on:
-  schedule:
-    - cron: "0 9 * * *"
-  workflow_dispatch:
 engine:
   id: copilot
-  model: gpt-5.6-luna
-permissions:
-  contents: read
-  metadata: read
-  issues: read
-  pull-requests: read
-tools:
-  github:
-    mode: local
-    toolsets:
-      - repos
-      - issues
-      - pull_requests
-    github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-    read-only: true
-  bash: ["*"]
+  model: auto
+intent: Notify maintainers when a newer TDLib release than the version pinned in the repository is published.
+name: tdlib-release-check
 network:
   allowed:
     - defaults
     - github
+"on":
+  schedule:
+    - cron: 0 9 * * *
+  workflow_dispatch: null
+permissions:
+  contents: read
+  issues: read
+  metadata: read
+  pull-requests: read
 safe-outputs:
   create-issue:
-    title-prefix: "[tdlib] "
-    labels: [automation, dependencies]
     close-older-issues: true
-intent: Notify maintainers when a newer TDLib release than the version pinned in the repository is published.
+    labels:
+      - automation
+      - dependencies
+    title-prefix: "[tdlib] "
+tools:
+  bash:
+    - "*"
+  github:
+    github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+    mode: local
+    read-only: true
+    toolsets:
+      - repos
+      - issues
+      - pull_requests
 ---
 
 # TDLib Release Check
