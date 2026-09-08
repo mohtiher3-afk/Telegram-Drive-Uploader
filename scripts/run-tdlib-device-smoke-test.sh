@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PACKAGE="com.telegramdrive.uploader"
+# Source namespace package for class names. The installed application package
+# and the instrumentation package (testApplicationId) are derived from the APKs
+# below, because applicationId (and therefore testApplicationId) can differ from
+# the source namespace.
 TEST_CLASS="com.telegramdrive.uploader.tdlib.TdLibRuntimeSmokeTest"
+TEST_PACKAGE="${TEST_PACKAGE:-}"
 SERIAL=""
 APK=""
 TEST_APK=""
@@ -26,6 +30,7 @@ while [[ $# -gt 0 ]]; do
     --test-apk) TEST_APK="${2:?Missing value for --test-apk}"; shift 2 ;;
     --serial) SERIAL="${2:?Missing value for --serial}"; shift 2 ;;
     --log-dir) LOG_DIR="${2:?Missing value for --log-dir}"; shift 2 ;;
+    --test-package) TEST_PACKAGE="${2:?Missing value for --test-package}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage >&2; exit 2 ;;
   esac
@@ -61,6 +66,51 @@ echo "DEVICE_ABIS=$abi_list"
 echo "APK=$APK"
 echo "TEST_APK=$TEST_APK"
 
+# Locate an Android build-tools binary (aapt / aapt2) to read package names.
+find_build_tool() {
+  local name="$1" base cand
+  for base in "${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}" /usr/local/lib/android/sdk; do
+    [[ -n "$base" && -d "$base/build-tools" ]] || continue
+    cand=$(find "$base/build-tools" -maxdepth 2 -type f -name "$name" 2>/dev/null | sort -V | tail -n1 || true)
+    if [[ -n "$cand" && -x "$cand" ]]; then
+      printf '%s\n' "$cand"
+      return 0
+    fi
+  done
+  command -v "$name" 2>/dev/null && return 0
+  return 1
+}
+
+# Print the installed package name of an APK (aapt preferred, aapt2 fallback).
+apk_package() {
+  local apk_path="$1" tool out
+  if tool="$(find_build_tool aapt)"; then
+    out=$("$tool" dump badging "$apk_path" 2>/dev/null \
+      | sed -n "s/^[[:space:]]*package: name='\([^']*\)'.*/\1/p" | head -n1 || true)
+    [[ -n "$out" ]] && { printf '%s\n' "$out"; return 0; }
+  fi
+  if tool="$(find_build_tool aapt2)"; then
+    out=$("$tool" dump packagename "$apk_path" 2>/dev/null | head -n1 || true)
+    [[ -n "$out" ]] && { printf '%s\n' "$out"; return 0; }
+  fi
+  return 0
+}
+
+# Instrumentation package = testApplicationId (defaults to applicationId + ".test").
+if [[ -z "$TEST_PACKAGE" ]]; then
+  TEST_PACKAGE="$(apk_package "$TEST_APK")"
+  if [[ -z "$TEST_PACKAGE" ]]; then
+    app_package="$(apk_package "$APK")"
+    [[ -n "$app_package" ]] && TEST_PACKAGE="${app_package}.test"
+  fi
+fi
+if [[ -z "$TEST_PACKAGE" ]]; then
+  echo "Could not determine the instrumentation test package from $TEST_APK." >&2
+  echo "Install Android build-tools (aapt/aapt2) or pass --test-package <id>.test" >&2
+  exit 2
+fi
+echo "TEST_PACKAGE=$TEST_PACKAGE"
+
 "${ADB[@]}" install -r -d "$APK" >/dev/null
 "${ADB[@]}" install -r -d "$TEST_APK" >/dev/null
 "${ADB[@]}" logcat -c
@@ -70,12 +120,12 @@ logcat_output="$LOG_DIR/logcat.txt"
 set +e
 "${ADB[@]}" shell am instrument -w -r \
   -e class "$TEST_CLASS" \
-  "${PACKAGE}.test/androidx.test.runner.AndroidJUnitRunner" \
+  "${TEST_PACKAGE}/androidx.test.runner.AndroidJUnitRunner" \
   2>&1 | tee "$instrumentation_output"
 instrumentation_status=${PIPESTATUS[0]}
 set -e
 
-"${ADB[@]}" logcat -d -v threadtime -s TdLibRuntimeSmokeTest:I '*:S' > "$logcat_output" || true
+"${ADB[@]}" logcat -d -v threadtime -s TdLibRuntimeSmokeTest:I AndroidRuntime:E '*:S' > "$logcat_output" || true
 
 if (( instrumentation_status != 0 )); then
   echo "STATUS: DEVICE_TEST_RUN=false"
