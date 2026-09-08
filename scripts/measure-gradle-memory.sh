@@ -66,7 +66,7 @@ while kill -0 "$command_pid" 2>/dev/null; do
   mapfile -t process_ids < <(collect_process_tree "$command_pid")
   if [[ ${#process_ids[@]} -gt 0 ]]; then
     joined_process_ids="$(IFS=,; printf '%s' "${process_ids[*]}")"
-    current_tree_rss_kib="$(ps -o rss= -p "$joined_process_ids" 2>/dev/null | awk '{ total += $1 } END { print total + 0 }')"
+    current_tree_rss_kib="$( { ps -o rss= -p "$joined_process_ids" 2>/dev/null || true; } | awk '{ total += $1 } END { print total + 0 }' )"
     (( current_tree_rss_kib > peak_tree_rss_kib )) && peak_tree_rss_kib="$current_tree_rss_kib"
 
     for process_id in "${process_ids[@]}"; do
