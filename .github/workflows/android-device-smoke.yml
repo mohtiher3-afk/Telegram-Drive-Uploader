@@ -18,11 +18,14 @@ permissions:
 
 env:
   ABI: x86_64
-  API_LEVEL: '36'
 
 jobs:
   tdlib-device-smoke:
-    name: TDLib JNI smoke test on Android emulator
+    name: TDLib JNI smoke (Android ${{ matrix.api_level }})
+    strategy:
+      fail-fast: false
+      matrix:
+        api_level: ['33', '34', '35', '36']
     # The custom ubuntu-24.04-4core label is not registered for this repository and leaves the job queued forever.
     # Use a standard hosted runner; the KVM step below enables acceleration when available.
     runs-on: ubuntu-24.04
@@ -90,7 +93,7 @@ jobs:
       - name: Run TDLib smoke test on cloud emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: ${{ env.API_LEVEL }}
+          api-level: ${{ matrix.api_level }}
           target: google_apis
           arch: x86_64
           profile: pixel_2
