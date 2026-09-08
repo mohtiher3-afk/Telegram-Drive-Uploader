@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
-import java.io.IOException
+import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
@@ -45,8 +45,12 @@ class StreamingFileReaderImpl @Inject constructor(
 
     override fun copyToFile(uri: Uri, destination: File): Long {
         destination.parentFile?.mkdirs()
+        // A null stream means the source is permanently unreadable (e.g. a content:// grant
+        // that died with the picking process). Throw FileNotFoundException so the engine
+        // classifies it non-retryable and fails fast with a clear message instead of
+        // burning all WorkManager retry attempts on a source that will never open.
         val input = context.contentResolver.openInputStream(uri)
-            ?: throw IOException("Could not open source stream for $uri")
+            ?: throw FileNotFoundException("Source is no longer readable: $uri. Re-select the file.")
         return input.use { source ->
             destination.outputStream().use { target ->
                 copy(source, target)
