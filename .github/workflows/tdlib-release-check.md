@@ -1,7 +1,6 @@
 ---
 engine:
   id: copilot
-  model: auto
   version: 1.0.83
 intent: Notify maintainers when a newer TDLib release than the version pinned in the repository is published.
 name: tdlib-release-check
