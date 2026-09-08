@@ -5,7 +5,7 @@
 Telegram Drive Uploader provides a high-reliability, offline-first interface for Telegram file delivery. Built with modern Android technologies (Jetpack Compose, Room, WorkManager, and Material 3), it leverages the official Telegram Database Library (TDLib) for authoritative transfer logic.
 
 [![Android Multi-ABI CI](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml/badge.svg)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml)
-[![Version](https://img.shields.io/badge/version-1.0.18-blue)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases)
+[![Version](https://img.shields.io/badge/version-1.0.22-blue)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases)
 
 ---
 
@@ -43,7 +43,7 @@ Log in securely using your Telegram phone number or a QR code. The app uses real
 
 ### Prerequisites
 - **JDK 17+** (JDK 21 recommended for current build matrices)
-- **Android SDK** (API 34/35)
+- **Android SDK** (API 35)
 - **NDK** (Matching the version specified in `app/build.gradle.kts`)
 - **Telegram API Credentials**: A valid [API ID and API hash][2] from [my.telegram.org](https://my.telegram.org).
 
@@ -76,7 +76,7 @@ scripts/                Artifact validation and project helper scripts
 ### TDLib & Native Artifacts
 The project includes official [TDLib][1] v1.8.66 native libraries. 
 
-> **ABI Compatibility**: The project is currently configured to package only the `armeabi-v7a` binary to ensure universal compatibility across ARM devices (including ARM64) while only requiring a single checked-in native library.
+> **ABI Compatibility**: Official TDLib native libraries are checked in for `arm64-v8a`, `armeabi-v7a`, and `x86_64`. The signed release workflow builds a per-ABI APK for each, so devices install the binary matching their ABI.
 
 Run the artifact gate from the project root:
 ```bash
@@ -101,6 +101,7 @@ The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds
 ## Security & Privacy
 - **Privacy First**: Smart File Assistant is local; no remote AI keys are required.
 - **Local Storage**: Telegram session data and the TDLib database are stored in private application storage. **Never share these files.**
+- **No Session Backup**: `allowBackup` is disabled, so TDLib session files are excluded from cloud backup and device-to-device transfer. Re-authenticate after a fresh install.
 - **Diagnostic Safety**: Diagnostics are privacy-conscious. Inspect logs before sharing; the system redacts sensitive identifiers by default.
 
 ---
