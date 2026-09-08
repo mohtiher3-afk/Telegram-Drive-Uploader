@@ -48,7 +48,7 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Install Android SDK packages
-        run: sdkmanager "platform-tools" "platforms;android-37" "build-tools;36.0.0" "ndk;26.3.11579264"
+        run: sdkmanager "platform-tools" "build-tools;36.0.0" "ndk;26.3.11579264"
 
       - name: Prepare official OpenSSL runtime dependencies
         env:
