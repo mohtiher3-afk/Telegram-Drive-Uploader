@@ -1,5 +1,17 @@
 # Release Notes
 
+## v1.0.23 (Unreleased)
+
+### Engineering / Toolchain
+
+Full build-stack update to the current stable line (AGP 9, Gradle 9, JDK 21, API 37):
+
+- **Toolchain**: Android Gradle Plugin 9.4.0, Gradle 9.6.0, JDK 21, compileSdk 37 (targetSdk stays 36 for the Play deadline), build-tools 36.0.0, NDK 26.3.
+- **Kotlin/AGP 9**: The `org.jetbrains.kotlin.android` plugin is removed; AGP 9's built-in Kotlin compiles the module. The Compose compiler plugin and KSP 2.3.11 continue to run alongside it.
+- **Dependency refresh**: Hilt 2.60.1, KSP 2.3.11, androidx.hilt 1.4.0 / hilt-navigation-compose 1.4.0, Compose BOM 2026.08.00, core-ktx 1.19.0, lifecycle 2.11.0, navigation 2.10.0, Room 2.8.4, WorkManager 2.11.2, DataStore 1.2.1, core-splashscreen 1.2.0, activity-compose 1.13.0, Coroutines 1.11.0, coil3 3.6.2, Roborazzi 1.74.0, androidx.test core/runner 1.7.0.
+- **Coil 3**: `coil.compose.AsyncImage` moved to `coil3.compose.AsyncImage` (`io.coil-kt.coil3`). Only a local-file loader is used, so no network artifact is pulled.
+- **hiltViewModel**: imports moved to `androidx.hilt.lifecycle.viewmodel.compose` (deprecation cleanup in all screens and navigation).
+
 ## v1.0.22
 
 ### Highlights

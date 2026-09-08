@@ -43,7 +43,7 @@ Log in securely using your Telegram phone number or a QR code. The app uses real
 
 ### Prerequisites
 - **JDK 17+** (JDK 21 recommended for current build matrices)
-- **Android SDK** (API 35)
+- **Android SDK** (API 37)
 - **NDK** (Matching the version specified in `app/build.gradle.kts`)
 - **Telegram API Credentials**: A valid [API ID and API hash][2] from [my.telegram.org](https://my.telegram.org).
 

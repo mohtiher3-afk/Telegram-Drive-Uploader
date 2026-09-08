@@ -12,7 +12,6 @@ if (System.getProperty("os.name").lowercase().contains("win")) {
 plugins {
   
   alias(libs.plugins.android.application)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.roborazzi)
@@ -23,12 +22,12 @@ plugins {
 
 android {
   namespace = "com.telegramdrive.uploader"
-  compileSdk = 35
+  compileSdk = 37
 
   defaultConfig {
     applicationId = "com.aistudio.telegramdrive.prmuq"
     minSdk = 24
-    targetSdk = 35
+    targetSdk = 36
     versionCode = 22
     versionName = "1.0.22"
 
@@ -117,12 +116,12 @@ android {
     debug { signingConfig = signingConfigs.getByName("debugConfig") }
   }
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
   kotlin {
     compilerOptions {
-      jvmTarget.set(JvmTarget.JVM_11)
+      jvmTarget.set(JvmTarget.JVM_17)
       freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
   }
