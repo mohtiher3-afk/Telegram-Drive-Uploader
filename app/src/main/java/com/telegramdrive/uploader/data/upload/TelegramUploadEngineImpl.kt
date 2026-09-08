@@ -8,15 +8,19 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.data.upload.reader.StreamingFileReader
+import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.UploadProgress
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.upload.SpeedCalculator
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,13 +31,43 @@ class TelegramUploadEngineImpl @Inject constructor(
     private val telegramClient: TelegramClient
 ) : TelegramUploadEngine {
 
+    companion object {
+        private const val AUTH_WAIT_TIMEOUT_MS = 30_000L
+    }
+
     override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {
         if (!telegramClient.isConfigured) {
             emit(UploadEngineResult.Error("Telegram TDLib credentials are not configured", false))
             return@flow
         }
-        if (telegramClient.connectionState.value.name != "AUTHORIZED") {
-            emit(UploadEngineResult.Error("Telegram account is not authorized", true))
+        // Wait (bounded) for the TDLib session to reach AUTHORIZED. Background workers can
+        // be resumed by WorkManager before the client finishes bootstrapping at cold start;
+        // failing instantly on "not authorized yet" would burn a retry attempt on every
+        // queued task at once. Instead wait up to AUTH_WAIT_TIMEOUT_MS, then fail
+        // non-retryable on timeout or a terminal/error state so the loop cannot spin forever.
+        val authState = try {
+            withTimeout(AUTH_WAIT_TIMEOUT_MS) {
+                telegramClient.connectionState.first { state ->
+                    state != TelegramConnectionState.DISCONNECTED &&
+                        state != TelegramConnectionState.CONNECTING
+                }
+            }
+        } catch (e: TimeoutCancellationException) {
+            emit(
+                UploadEngineResult.Error(
+                    "Timed out waiting for Telegram authorization; re-authenticate to continue.",
+                    false
+                )
+            )
+            return@flow
+        }
+        if (authState != TelegramConnectionState.AUTHORIZED) {
+            emit(
+                UploadEngineResult.Error(
+                    "Telegram account is not authorized (state: ${authState}); re-authenticate to continue.",
+                    false
+                )
+            )
             return@flow
         }
         if (task.destinationId == 0L) {
@@ -107,6 +141,17 @@ class TelegramUploadEngineImpl @Inject constructor(
                 }
             }
         } catch (error: Throwable) {
+            // Surface the real cause at the point it is thrown. Background workers retry
+            // transient failures without logging the reason (see UploadWorker), so without
+            // this the diagnostics export never shows why a retrying task actually failed.
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_FAILED,
+                severity = DiagnosticSeverity.ERROR,
+                message = "Upload engine failed (retryable=${isRetryable(error)}).",
+                uploadId = task.id,
+                errorCode = DiagnosticsManager.mapExceptionToCode(error),
+                exception = error
+            )
             emit(UploadEngineResult.Error(error.message ?: "TDLib upload failed", isRetryable(error)))
         } finally {
             stagedFile?.delete()

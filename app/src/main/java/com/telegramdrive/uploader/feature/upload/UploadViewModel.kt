@@ -24,6 +24,7 @@ import com.telegramdrive.uploader.domain.repository.TelegramRepository
 import com.telegramdrive.uploader.domain.upload.UploadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +33,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 sealed interface UploadUiState {
@@ -199,6 +202,83 @@ class UploadViewModel @Inject constructor(
         )
     }
 
+    private suspend fun snapshotContentToOwnedFile(original: UploadTask): UploadTask? =
+        withContext(Dispatchers.IO) {
+            val uri = Uri.parse(original.sourceUri)
+            if (uri.scheme != "content") return@withContext original
+
+            try {
+                val stagingDir = File(context.cacheDir, "staged-uploads")
+                if (!stagingDir.exists() && !stagingDir.mkdirs()) {
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.UPLOAD_FAILED,
+                        severity = DiagnosticSeverity.WARN,
+                        message = "Could not create staging directory for ${original.sourceUri}",
+                        errorCode = ErrorCode.SOURCE_FILE_UNAVAILABLE,
+                        uploadId = original.id
+                    )
+                    return@withContext null
+                }
+                val safeName = sanitizeFileName(original.fileName).ifBlank { "upload" }
+                val stagingFile = File(stagingDir, "${original.id}-$safeName")
+
+                val copied = context.contentResolver.openInputStream(uri)?.use { input ->
+                    stagingFile.outputStream().use { output ->
+                        input.copyTo(output)
+                        output.flush()
+                    }
+                    stagingFile.length()
+                } ?: run {
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.UPLOAD_FAILED,
+                        severity = DiagnosticSeverity.WARN,
+                        message = "Could not open source stream while staging ${original.sourceUri}",
+                        errorCode = ErrorCode.SOURCE_FILE_UNAVAILABLE,
+                        uploadId = original.id
+                    )
+                    return@withContext null
+                }
+
+                if (copied <= 0L) {
+                    stagingFile.delete()
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.UPLOAD_FAILED,
+                        severity = DiagnosticSeverity.WARN,
+                        message = "Staged copy of ${original.sourceUri} is empty; dropping it",
+                        errorCode = ErrorCode.SOURCE_FILE_UNAVAILABLE,
+                        uploadId = original.id
+                    )
+                    return@withContext null
+                }
+
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.UPLOAD_PREPARING,
+                    severity = DiagnosticSeverity.INFO,
+                    message = "Staged content source into app storage: $copied bytes",
+                    uploadId = original.id
+                )
+                original.copy(
+                    sourceUri = Uri.fromFile(stagingFile).toString(),
+                    totalBytes = copied
+                )
+            } catch (e: Exception) {
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.UPLOAD_FAILED,
+                    severity = DiagnosticSeverity.WARN,
+                    message = "Failed to stage ${original.sourceUri} into app storage: ${e.message}",
+                    errorCode = ErrorCode.SOURCE_FILE_UNAVAILABLE,
+                    exception = e,
+                    uploadId = original.id
+                )
+                null
+            }
+        }
+
+    private fun sanitizeFileName(name: String): String {
+        val cleaned = name.replace(Regex("[^A-Za-z0-9._-]"), "_")
+        return cleaned.take(120)
+    }
+
     fun setPrepareUris(uris: List<Uri>) {
         if (uris.isEmpty()) return
         _uiState.value = UploadUiState.Loading
@@ -207,8 +287,11 @@ class UploadViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 var skippedCount = 0
+                val seenOriginalUris = mutableSetOf<String>()
                 uris.forEach { uri ->
                     try {
+                        if (!seenOriginalUris.add(uri.toString())) return@forEach
+
                         // Persist read permission if available
                         try {
                             val flags = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -225,14 +308,22 @@ class UploadViewModel @Inject constructor(
                         }
 
                         if (isReadable && task.totalBytes > 0L) {
-                            if (_preparedList.none { it.sourceUri == task.sourceUri }) {
-                                _preparedList.add(task)
+                            // Snapshot content:// sources into application-owned storage while
+                            // the picker grant is still alive. The background worker otherwise
+                            // depends on the URI grant surviving process death/reboot, which
+                            // SAF grants are not guaranteed to do (they die silently and the
+                            // worker then spins in retryable staging failure until 5/5).
+                            val ownedSource = snapshotContentToOwnedFile(task)
+                            if (ownedSource != null) {
+                                _preparedList.add(ownedSource)
                                 DiagnosticsManager.log(
                                     category = DiagnosticCategory.UPLOAD_CREATED,
                                     severity = DiagnosticSeverity.INFO,
-                                    message = "Prepared video metadata. Bytes size: ${task.totalBytes}",
-                                    uploadId = task.id
+                                    message = "Prepared video metadata. Bytes size: ${ownedSource.totalBytes}",
+                                    uploadId = ownedSource.id
                                 )
+                            } else {
+                                skippedCount++
                             }
                         } else {
                             skippedCount++

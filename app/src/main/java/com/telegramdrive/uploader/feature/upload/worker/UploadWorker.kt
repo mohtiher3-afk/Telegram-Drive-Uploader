@@ -198,7 +198,7 @@ class UploadWorker @AssistedInject constructor(
                                 DiagnosticsManager.log(
                                     category = DiagnosticCategory.UPLOAD_RETRY,
                                     severity = DiagnosticSeverity.WARN,
-                                    message = "Upload task failed transiently (${runAttemptCount + 1}/$MAX_RETRY_ATTEMPTS). WorkManager will retry it.",
+                                    message = "Upload task failed transiently (${runAttemptCount + 1}/$MAX_RETRY_ATTEMPTS): ${engineResult.message}. WorkManager will retry it.",
                                     uploadId = uploadId,
                                     errorCode = ErrorCode.UPLOAD_FAILED
                                 )
