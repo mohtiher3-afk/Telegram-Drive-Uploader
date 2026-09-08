@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: "0 9 * * *"
   workflow_dispatch:
+engine:
+  id: copilot
+  model: gpt-5-mini
 permissions:
   contents: read
   metadata: read
