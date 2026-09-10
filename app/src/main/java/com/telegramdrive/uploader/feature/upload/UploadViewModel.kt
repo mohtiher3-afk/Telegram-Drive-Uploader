@@ -74,6 +74,7 @@ class UploadViewModel @Inject constructor(
 
     private val _preparedList = mutableListOf<UploadTask>()
     private var _selectedDestination: TelegramDestination? = null
+    private var _restoredDestinationId: Long? = null
     private var _isSubmitting = false
 
     init {
@@ -89,10 +90,37 @@ class UploadViewModel @Inject constructor(
                     photo = null,
                     canSendMessages = true
                 )
+                // Provisional until revalidated against the live TDLib chat list below:
+                // metadata restored from storage may be stale (wrong title/type/rights).
+                _restoredDestinationId = savedId
                 val current = _uiState.value
                 if (current is UploadUiState.Success) {
                     _uiState.value = current.copy(selectedDestination = _selectedDestination)
                 }
+            }
+        }
+        viewModelScope.launch {
+            // Revalidate the restored destination once a live, non-empty destination
+            // list arrives. If the saved ID no longer exists there, drop it (in memory
+            // and in storage) instead of submitting uploads against stale metadata.
+            val live = try {
+                telegramRepository.getDestinations("").firstOrNull { it.isNotEmpty() }
+            } catch (_: Exception) {
+                null
+            } ?: return@launch
+            val restoredId = _restoredDestinationId ?: return@launch
+            if (live.none { it.id == restoredId }) {
+                _restoredDestinationId = null
+                _selectedDestination = null
+                settingsDataStore.clearSelectedDestination()
+                updateState()
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.UPLOAD_FAILED,
+                    severity = DiagnosticSeverity.WARN,
+                    message = "Dropped stale restored destination id=$restoredId: absent from live TDLib chat list."
+                )
+            } else {
+                _restoredDestinationId = null
             }
         }
     }

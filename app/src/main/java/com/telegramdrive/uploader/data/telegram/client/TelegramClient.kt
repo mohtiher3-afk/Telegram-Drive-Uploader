@@ -29,6 +29,11 @@ interface TelegramClient {
 
     fun getDestinations(query: String = ""): Flow<List<TelegramDestination>>
     fun uploadLocalDocument(task: UploadTask, localPath: String): Flow<TelegramUploadEvent>
+    /**
+     * Best-effort cancellation of in-flight TDLib preliminary uploads tracked by
+     * this client. Fire-and-forget: safe to call from worker cancellation paths.
+     */
+    fun cancelActiveUploads()
 }
 
 sealed class TelegramUploadEvent {

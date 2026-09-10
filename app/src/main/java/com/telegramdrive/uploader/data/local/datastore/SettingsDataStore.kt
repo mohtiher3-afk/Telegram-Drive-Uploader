@@ -161,6 +161,13 @@ class SettingsDataStore @Inject constructor(
         }
     }
 
+    suspend fun clearSelectedDestination() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(SELECTED_DESTINATION_ID_KEY)
+            preferences.remove(SELECTED_DESTINATION_TITLE_KEY)
+        }
+    }
+
     suspend fun setThemePreference(theme: String) {
         context.dataStore.edit { preferences ->
             preferences[THEME_KEY] = theme

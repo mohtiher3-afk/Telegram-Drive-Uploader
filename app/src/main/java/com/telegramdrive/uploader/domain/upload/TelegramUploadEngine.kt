@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface TelegramUploadEngine {
     fun uploadFile(task: UploadTask): Flow<UploadEngineResult>
+    /** Forwards best-effort cancellation of in-flight TDLib uploads to the client. */
+    fun cancelActiveUploads()
 }
 
 sealed class UploadEngineResult {

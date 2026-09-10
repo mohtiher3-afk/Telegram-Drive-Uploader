@@ -121,6 +121,9 @@ class UploadWorker @AssistedInject constructor(
 
             uploadEngine.uploadFile(uploadTask).collect { engineResult ->
                 if (isStopped) {
+                    // Stop TDLib-side bytes too, not just this worker: cancellation must
+                    // cancel the actual preliminary upload where possible.
+                    runCatching { uploadEngine.cancelActiveUploads() }
                     DiagnosticsManager.log(
                         category = DiagnosticCategory.WORKER_STOPPED,
                         severity = DiagnosticSeverity.INFO,
@@ -221,6 +224,7 @@ class UploadWorker @AssistedInject constructor(
             if (isStopped) {
                 val latestTask = repository.getUploadById(uploadId)
                 return if (latestTask?.status == UploadStatus.CANCELLED || latestTask?.status == UploadStatus.PAUSED) {
+                    runCatching { uploadEngine.cancelActiveUploads() }
                     Result.success()
                 } else {
                     repository.updateStatus(uploadId, UploadStatus.RETRYING)
