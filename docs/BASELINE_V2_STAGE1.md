@@ -180,16 +180,24 @@ guards in a later low-risk stage, not in the baseline.
    host-side profiling is documented but device telemetry (Peak RSS) is CI-only.
 3. **Firebase / Crashlytics credits** — no real account approved; crash
    reporting is not wired and must not be added without approval.
-4. **`tdlib-release-check` (gh-aw / Copilot)** — root cause identified and
-   fixed. Contrary to the earlier `404`-based assumption, the account **has an
-   active Copilot subscription**: `copilot -p` with the default/`auto` model
-   consumes AI credits successfully, while every explicit model identifier
-   (`gpt-5.6-luna`, `gpt-5-mini`, `gpt-4o`, `claude-sonnet-4`, `gemini-2.5-pro`,
-   `o4-mini`) is rejected with `Model is not available` / 400 "model not
-   supported". The workflow pinned an unavailable model
-   (`agent_model: gpt-5.6-luna`). Fixed by setting `engine.model: auto`
-   (regenerated `tdlib-release-check.lock.yml`). No Copilot plan change is
-   required from the user; the workflow will pick a supported model at runtime.
+4. **`tdlib-release-check` (gh-aw)** — root cause proven and fixed
+    2026-09-10. The account is **Copilot Free ("automatic model selection
+    only")**: every explicitly pinned model — including `auto` itself once the
+    harness pins it (`configuredModel="auto"`) — is rejected with `400 The
+    requested model is not supported / unavailable for this subscription
+    tier`. Matches upstream `github/gh-aw#46531` exactly; the fix PR
+    (`#46556`, `model: auto`/`none` sentinels) was closed unmerged, and the
+    PDF guide's `copilot-requests: write` path was re-tested (run
+    `34434639765`) and failed identically. Fix: `codex` engine via the
+    OpenRouter free router (`model: openrouter/free`, `OPENAI_BASE_URL`,
+    `max-ai-credits: -1` to bypass AIC pricing for BYOK models).
+    Green in run `34442903270` (router picked
+    `nvidia/nemotron-3-ultra-550b-a12b:free`), which produced issue `#12`
+    end-to-end via `create_issue`. Issues `#5/#6/#7/#8/#9/#10/#11` closed.
+    Requires repo secret `OPENROUTER_API_KEY`. Known fragility: the free
+    router picks randomly — a reasoning-mandatory pick fails the run; a
+    re-run re-rolls. If flakiness persists, fund OpenRouter credits and pin
+    `deepseek/deepseek-chat`.
 
 ## 9. Migration plan (lowest → highest risk)
 
