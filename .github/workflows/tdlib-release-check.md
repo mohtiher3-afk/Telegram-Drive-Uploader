@@ -1,7 +1,7 @@
 ---
 engine:
   id: codex
-  model: llama-3.3-70b-versatile
+  model: openai/gpt-oss-120b
   env:
     OPENAI_BASE_URL: "https://api.groq.com/openai/v1"
     OPENAI_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -9,7 +9,7 @@ intent: Notify maintainers when a newer TDLib release than the version pinned in
 name: tdlib-release-check
 max-ai-credits: -1
 env:
-  AWF_API_PROXY_PROVIDERS: '{"openai":{"models":{"llama-3.3-70b-versatile":{"cost":{"input":0.00000059,"output":0.00000079}}}}}'
+  AWF_API_PROXY_PROVIDERS: '{"openai":{"models":{"openai/gpt-oss-120b":{"cost":{"input":0.00000059,"output":0.00000079}}}}}'
 network:
   allowed:
     - defaults
