@@ -1,15 +1,17 @@
 ---
 engine:
-  id: gemini
-  model: gemini-2.5-flash
+  id: codex
+  model: llama-3.3-70b-versatile
   env:
-    GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    OPENAI_BASE_URL: "https://api.groq.com/openai/v1"
+    OPENAI_API_KEY: ${{ secrets.GROQ_API_KEY }}
 intent: Notify maintainers when a newer TDLib release than the version pinned in the repository is published.
 name: tdlib-release-check
 network:
   allowed:
     - defaults
     - github
+    - api.groq.com
 "on":
   schedule:
     - cron: 0 9 * * *
