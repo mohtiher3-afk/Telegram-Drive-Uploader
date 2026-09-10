@@ -194,10 +194,14 @@ class UploadWorkerTest {
         var results: List<UploadEngineResult> = emptyList()
         var onCollect: (() -> Unit)? = null
         var calls = 0
+        var cancelCalls = 0
         override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {
             calls++
             onCollect?.invoke()
             results.forEach { emit(it) }
+        }
+        override fun cancelActiveUploads() {
+            cancelCalls++
         }
     }
 

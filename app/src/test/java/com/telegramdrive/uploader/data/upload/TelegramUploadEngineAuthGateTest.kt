@@ -190,6 +190,7 @@ class TelegramUploadEngineAuthGateTest {
 
         override fun getDestinations(query: String): Flow<List<TelegramDestination>> = flow { emit(emptyList()) }
         override fun uploadLocalDocument(task: UploadTask, localPath: String): Flow<TelegramUploadEvent> = uploadResult
+        override fun cancelActiveUploads() {}
     }
 
     private class FakeStreamingFileReader : StreamingFileReader {

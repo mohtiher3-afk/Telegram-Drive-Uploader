@@ -35,8 +35,7 @@ class TelegramUploadEngineImpl @Inject constructor(
         private const val AUTH_WAIT_TIMEOUT_MS = 30_000L
     }
 
-    override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {
-        if (!telegramClient.isConfigured) {
+    override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {        if (!telegramClient.isConfigured) {
             emit(UploadEngineResult.Error("Telegram TDLib credentials are not configured", false))
             return@flow
         }
@@ -156,6 +155,10 @@ class TelegramUploadEngineImpl @Inject constructor(
         } finally {
             stagedFile?.delete()
         }
+    }
+
+    override fun cancelActiveUploads() {
+        telegramClient.cancelActiveUploads()
     }
 
     private fun progress(

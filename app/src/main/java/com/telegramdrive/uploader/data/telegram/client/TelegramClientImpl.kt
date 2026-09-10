@@ -205,6 +205,25 @@ class TelegramClientImpl @Inject constructor(
         _error.value = null
     }
 
+    override fun cancelActiveUploads() {
+        val client = synchronized(clientLock) { tdClient } ?: return
+        // Snapshot keys: the map is concurrent and callbacks mutate it.
+        val fileIds = pendingUploads.keys.toList()
+        if (fileIds.isEmpty()) return
+        for (fileId in fileIds) {
+            runCatching {
+                client.send(TdApi.CancelPreliminaryUploadFile(fileId), { _ -> }, null)
+            }.onFailure { failure ->
+                reportCallbackFailure(failure)
+            }
+        }
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.UPLOAD_FAILED,
+            severity = DiagnosticSeverity.INFO,
+            message = "Requested TDLib-side cancellation for ${fileIds.size} in-flight upload(s)."
+        )
+    }
+
     override fun getDestinations(query: String): Flow<List<TelegramDestination>> {
         requestDestinationSearch(query)
         return _chatDestinations.map { destinations ->
