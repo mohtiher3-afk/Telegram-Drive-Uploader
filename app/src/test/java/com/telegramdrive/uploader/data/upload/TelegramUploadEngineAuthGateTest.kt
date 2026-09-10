@@ -5,9 +5,11 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
+import com.telegramdrive.uploader.data.telegram.client.SendConfirmation
 import com.telegramdrive.uploader.data.telegram.client.TelegramClient
 import com.telegramdrive.uploader.data.telegram.client.TelegramUploadEvent
 import com.telegramdrive.uploader.data.upload.reader.StreamingFileReader
+import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramError
@@ -45,14 +47,15 @@ class TelegramUploadEngineAuthGateTest {
         sourceFile.writeBytes(ByteArray(1024))
         engine = TelegramUploadEngineImpl(
             streamingFileReader = FakeStreamingFileReader(),
-            telegramClient = FakeTelegramClient()
+            telegramClient = FakeTelegramClient(),
+            uploadRepository = FakeUploadRepository()
         )
     }
 
     @Test
     fun `waits for authorized then uploads successfully`() = runTest {
         val client = FakeTelegramClient()
-        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client)
+        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, FakeUploadRepository())
         client.uploadResult = flow { emit(TelegramUploadEvent.Completed(messageLink = "https://t.me/c/1/2")) }
 
         val deferred = async { engine.uploadFile(task()).toList() }
@@ -78,7 +81,7 @@ class TelegramUploadEngineAuthGateTest {
     @Test
     fun `times out waiting for authorization and fails non-retryable`() = runTest {
         val client = FakeTelegramClient().also { it.state.value = TelegramConnectionState.DISCONNECTED }
-        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client)
+        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, FakeUploadRepository())
 
         val error = engine.uploadFile(task()).toList()
             .filterIsInstance<UploadEngineResult.Error>()
@@ -91,7 +94,7 @@ class TelegramUploadEngineAuthGateTest {
     @Test
     fun `error state fails non-retryable immediately`() = runTest {
         val client = FakeTelegramClient().also { it.state.value = TelegramConnectionState.ERROR }
-        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client)
+        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, FakeUploadRepository())
 
         val error = engine.uploadFile(task()).toList()
             .filterIsInstance<UploadEngineResult.Error>()
@@ -105,7 +108,8 @@ class TelegramUploadEngineAuthGateTest {
     fun `staging failure logs the real exception so root cause is not swallowed`() = runTest {
         engine = TelegramUploadEngineImpl(
             FailingStreamingFileReader(),
-            FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED }
+            FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED },
+            FakeUploadRepository()
         )
 
         // content:// source forces the staging path, exercising copyToFile.
@@ -141,7 +145,8 @@ class TelegramUploadEngineAuthGateTest {
     fun `source that cannot be opened fails fast and non-retryable`() = runTest {
         engine = TelegramUploadEngineImpl(
             UnopenableStreamingFileReader(),
-            FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED }
+            FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED },
+            FakeUploadRepository()
         )
 
         // content:// source forces the staging path; a dead grant surfaces as
@@ -159,6 +164,53 @@ class TelegramUploadEngineAuthGateTest {
         assertEquals(false, error.isRetryable)
     }
 
+    @Test
+    fun `persists provisional id on send then completes without resending`() = runTest {
+        val client = FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED }
+        val repository = FakeUploadRepository()
+        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, repository)
+        client.uploadResult = flow {
+            emit(TelegramUploadEvent.Progress(512L, 1024L))
+            emit(TelegramUploadEvent.MessageSent(provisionalMessageId = 777L))
+            emit(TelegramUploadEvent.Completed(messageLink = "https://t.me/c/1/2"))
+        }
+
+        val results = engine.uploadFile(task()).toList()
+
+        assertTrue(results.any { it is UploadEngineResult.Success })
+        assertEquals("test-upload" to 777L, repository.lastProvisional)
+    }
+
+    @Test
+    fun `retry with provisional id awaits confirmation instead of resending`() = runTest {
+        val client = FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED }
+        client.bufferedConfirmation = SendConfirmation(chatId = 123L, messageId = 999L, messageLink = "https://t.me/c/1/999")
+        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, FakeUploadRepository())
+
+        val results = engine.uploadFile(task().copy(provisionalMessageId = 777L)).toList()
+
+        assertEquals(0, client.uploadCalls)
+        val success = results.filterIsInstance<UploadEngineResult.Success>().firstOrNull()
+        assertTrue("Expected Success from buffered confirmation, got: $results", success != null)
+        assertEquals("https://t.me/c/1/999", success?.messageLink)
+        assertTrue(results.none { it is UploadEngineResult.Error })
+    }
+
+    @Test
+    fun `provisional retry without confirmation fails non-retryable, never resends`() = runTest {
+        val client = FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED }
+        // bufferedConfirmation and awaitedConfirmation stay null: the send may have
+        // happened, but nothing confirms it — resending would duplicate the message.
+        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, FakeUploadRepository())
+
+        val results = engine.uploadFile(task().copy(provisionalMessageId = 777L)).toList()
+        val error = results.filterIsInstance<UploadEngineResult.Error>().firstOrNull()
+
+        assertEquals(0, client.uploadCalls)
+        assertTrue("Expected ambiguous-failure error, got: $results", error != null)
+        assertEquals(false, error?.isRetryable)
+    }
+
     private fun task(): UploadTask = UploadTask(
         id = "test-upload",
         sourceUri = Uri.fromFile(sourceFile).toString(),
@@ -171,6 +223,9 @@ class TelegramUploadEngineAuthGateTest {
     private class FakeTelegramClient : TelegramClient {
         val state = MutableStateFlow(TelegramConnectionState.CONNECTING)
         var uploadResult: Flow<TelegramUploadEvent> = flow { emit(TelegramUploadEvent.Completed("https://t.me/c/1/2")) }
+        var uploadCalls = 0
+        var bufferedConfirmation: SendConfirmation? = null
+        var awaitedConfirmation: SendConfirmation? = null
 
         override val connectionState: StateFlow<TelegramConnectionState> get() = state
         override val currentUser: StateFlow<TelegramUser?> = MutableStateFlow(null)
@@ -189,8 +244,49 @@ class TelegramUploadEngineAuthGateTest {
         override fun clearError() {}
 
         override fun getDestinations(query: String): Flow<List<TelegramDestination>> = flow { emit(emptyList()) }
-        override fun uploadLocalDocument(task: UploadTask, localPath: String): Flow<TelegramUploadEvent> = uploadResult
+        override fun uploadLocalDocument(task: UploadTask, localPath: String): Flow<TelegramUploadEvent> {
+            uploadCalls++
+            return uploadResult
+        }
         override fun cancelActiveUploads() {}
+        override fun takeBufferedSendSuccess(oldMessageId: Long): SendConfirmation? = bufferedConfirmation
+        override suspend fun awaitSendConfirmation(chatId: Long, oldMessageId: Long, timeoutMs: Long): SendConfirmation? =
+            awaitedConfirmation
+    }
+
+    private class FakeUploadRepository : UploadRepository {
+        val tasks = mutableMapOf<String, UploadTask>()
+        var lastProvisional: Pair<String, Long>? = null
+
+        override fun getAllUploads(): Flow<List<UploadTask>> = flow { emit(tasks.values.toList()) }
+        override fun getActiveUploads(): Flow<List<UploadTask>> = flow { emit(tasks.values.toList()) }
+        override suspend fun getUploadById(id: String): UploadTask? = tasks[id]
+        override fun observeUploadById(id: String): Flow<UploadTask?> = flow { emit(tasks[id]) }
+        override suspend fun insertUpload(upload: UploadTask) { tasks[upload.id] = upload }
+        override suspend fun updateStatus(id: String, status: UploadStatus) {
+            tasks[id]?.let { tasks[id] = it.copy(status = status) }
+        }
+        override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>) {
+            tasks[id]?.let { if (it.status in allowedStatuses) tasks[id] = it.copy(status = status) }
+        }
+        override suspend fun updateProgress(
+            id: String, uploadedBytes: Long, totalBytes: Long, progress: Float,
+            speed: Long, averageSpeed: Long, eta: Long
+        ) {
+        }
+        override suspend fun updateUploadDuration(id: String, durationMs: Long) {}
+        override suspend fun updateMessageLink(id: String, messageLink: String) {
+            tasks[id]?.let { tasks[id] = it.copy(messageLink = messageLink) }
+        }
+        override suspend fun updateProvisionalMessageId(id: String, messageId: Long) {
+            lastProvisional = id to messageId
+            tasks[id]?.let { tasks[id] = it.copy(provisionalMessageId = messageId) }
+        }
+        override suspend fun reconcileInterruptedUploads(): Int = 0
+        override suspend fun getInterruptedUploads(): List<UploadTask> = emptyList()
+        override suspend fun deleteUploadById(id: String) { tasks.remove(id) }
+        override suspend fun deleteCompletedUploads() {}
+        override suspend fun clearAllUploads() { tasks.clear() }
     }
 
     private class FakeStreamingFileReader : StreamingFileReader {

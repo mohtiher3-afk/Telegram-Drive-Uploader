@@ -250,6 +250,12 @@ class QueueScreenComposeTest {
             }
         }
 
+        override suspend fun updateProvisionalMessageId(id: String, messageId: Long) {
+            tasks.value = tasks.value.map {
+                if (it.id == id) it.copy(provisionalMessageId = messageId) else it
+            }
+        }
+
         override suspend fun reconcileInterruptedUploads(): Int = 0
 
         override suspend fun getInterruptedUploads(): List<UploadTask> = emptyList()

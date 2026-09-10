@@ -3,6 +3,7 @@ package com.telegramdrive.uploader.core.di
 import android.content.Context
 import androidx.room.Room
 import com.telegramdrive.uploader.data.local.database.AppDatabase
+import com.telegramdrive.uploader.data.local.database.MIGRATION_5_6
 import com.telegramdrive.uploader.data.local.database.UploadDao
 import dagger.Module
 import dagger.Provides
@@ -21,7 +22,9 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "telegram_drive_db"
-        ).fallbackToDestructiveMigration(dropAllTables = true).build()
+        ).fallbackToDestructiveMigration(dropAllTables = true)
+            .addMigrations(MIGRATION_5_6)
+            .build()
     }
 
     @Provides

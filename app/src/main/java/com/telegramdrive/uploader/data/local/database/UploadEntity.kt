@@ -29,5 +29,12 @@ data class UploadEntity(
     val height: Int,
     val scheduledAt: Long? = null,
     val uploadDurationMs: Long = 0L,
-    val messageLink: String? = null
+    val messageLink: String? = null,
+    /**
+     * Provisional TDLib message id from SendMessage, persisted the moment the send
+     * call returns — before Telegram confirms. On worker retry, a non-null value
+     * means "already sent, await confirmation" and the engine must NEVER blind-resend
+     * (that would duplicate the Telegram message).
+     */
+    val provisionalMessageId: Long? = null
 )

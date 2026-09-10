@@ -236,6 +236,9 @@ class UploadWorkerTest {
             lastMessageLink = messageLink
             task = task?.copy(messageLink = messageLink)
         }
+        override suspend fun updateProvisionalMessageId(id: String, messageId: Long) {
+            task = task?.copy(provisionalMessageId = messageId)
+        }
         override suspend fun reconcileInterruptedUploads(): Int = 0
         override suspend fun getInterruptedUploads(): List<UploadTask> = emptyList()
         override suspend fun deleteUploadById(id: String) { task = null }

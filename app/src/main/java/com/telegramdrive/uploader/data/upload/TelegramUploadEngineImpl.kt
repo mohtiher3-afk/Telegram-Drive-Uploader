@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.SystemClock
 import com.telegramdrive.uploader.data.telegram.client.TelegramClient
 import com.telegramdrive.uploader.data.telegram.client.TelegramUploadEvent
+import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
@@ -28,11 +29,13 @@ import javax.inject.Singleton
 @Singleton
 class TelegramUploadEngineImpl @Inject constructor(
     private val streamingFileReader: StreamingFileReader,
-    private val telegramClient: TelegramClient
+    private val telegramClient: TelegramClient,
+    private val uploadRepository: UploadRepository
 ) : TelegramUploadEngine {
 
     companion object {
         private const val AUTH_WAIT_TIMEOUT_MS = 30_000L
+        private const val CONFIRM_WAIT_TIMEOUT_MS = 60_000L
     }
 
     override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {        if (!telegramClient.isConfigured) {
@@ -71,6 +74,43 @@ class TelegramUploadEngineImpl @Inject constructor(
         }
         if (task.destinationId == 0L) {
             emit(UploadEngineResult.Error("A Telegram destination is required", false))
+            return@flow
+        }
+        // Idempotency: a previous attempt already called SendMessage for this task
+        // (provisional id persisted at send time). Resending here would deliver the
+        // video to Telegram TWICE. Instead, await the outstanding confirmation.
+        val provisionalId = task.provisionalMessageId
+        if (provisionalId != null) {
+            if (telegramClient.connectionState.value != TelegramConnectionState.AUTHORIZED) {
+                emit(
+                    UploadEngineResult.Error(
+                        "Telegram account is not authorized (state: ${telegramClient.connectionState.value}); re-authenticate to continue.",
+                        false
+                    )
+                )
+                return@flow
+            }
+            val buffered = telegramClient.takeBufferedSendSuccess(provisionalId)
+            if (buffered != null) {
+                emit(UploadEngineResult.Success(uploadDurationMs = 0L, messageLink = buffered.messageLink))
+                return@flow
+            }
+            val confirmed = telegramClient.awaitSendConfirmation(
+                chatId = task.destinationId,
+                oldMessageId = provisionalId,
+                timeoutMs = CONFIRM_WAIT_TIMEOUT_MS
+            )
+            if (confirmed != null) {
+                emit(UploadEngineResult.Success(uploadDurationMs = 0L, messageLink = confirmed.messageLink))
+            } else {
+                emit(
+                    UploadEngineResult.Error(
+                        "Message was sent but Telegram confirmation was not observed within timeout. " +
+                            "Verify delivery in Telegram before retrying to avoid a duplicate send.",
+                        false
+                    )
+                )
+            }
             return@flow
         }
 
@@ -124,6 +164,13 @@ class TelegramUploadEngineImpl @Inject constructor(
             )
             telegramClient.uploadLocalDocument(task, localPath).collect { event ->
                 when (event) {
+                    is TelegramUploadEvent.MessageSent -> {
+                        // Persist immediately: if this worker dies before confirmation,
+                        // the retry must await THIS send instead of sending again.
+                        runCatching {
+                            uploadRepository.updateProvisionalMessageId(task.id, event.provisionalMessageId)
+                        }
+                    }
                     is TelegramUploadEvent.Progress -> {
                         val uploaded = event.uploadedBytes.coerceIn(0L, totalBytes)
                         emit(progress(uploaded, totalBytes, speedCalculator))
