@@ -1,7 +1,7 @@
 ---
 engine:
   id: codex
-  model: kimi-for-coding-free
+  model: gpt-4.1-nano-free
   env:
     OPENAI_BASE_URL: "https://aihubmix.com/v1"
     OPENAI_API_KEY: ${{ secrets.AIHUBMIX_API_KEY }}
