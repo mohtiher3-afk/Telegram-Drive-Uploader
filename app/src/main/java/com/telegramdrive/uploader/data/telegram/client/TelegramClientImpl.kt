@@ -28,8 +28,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.drinkless.tdlib.Client
 import org.drinkless.tdlib.TdApi
 import java.io.File
@@ -65,6 +67,8 @@ class TelegramClientImpl @Inject constructor(
     private val pendingUploads = ConcurrentHashMap<Int, PendingUpload>()
     private val pendingMessageSuccesses = ConcurrentHashMap<Long, TdApi.UpdateMessageSendSucceeded>()
     private val pendingMessageFailures = ConcurrentHashMap<Long, TdApi.UpdateMessageSendFailed>()
+    private val sendConfirmationWaiters =
+        ConcurrentHashMap<Long, CompletableDeferred<TdApi.UpdateMessageSendSucceeded>>()
     private var tdClient: Client? = null
     private var activeAccountKey: String? = null
 
@@ -199,10 +203,50 @@ class TelegramClientImpl @Inject constructor(
         pendingUploads.clear()
         pendingMessageSuccesses.clear()
         pendingMessageFailures.clear()
+        sendConfirmationWaiters.values.forEach { it.cancel() }
+        sendConfirmationWaiters.clear()
     }
 
     override fun clearError() {
         _error.value = null
+    }
+
+    override fun takeBufferedSendSuccess(oldMessageId: Long): SendConfirmation? {
+        val update = pendingMessageSuccesses.remove(oldMessageId) ?: return null
+        return SendConfirmation(
+            chatId = update.message.chatId,
+            messageId = update.message.id,
+            messageLink = buildMessageLink(update.message.chatId, update.message.id)
+        )
+    }
+
+    override suspend fun awaitSendConfirmation(
+        chatId: Long,
+        oldMessageId: Long,
+        timeoutMs: Long
+    ): SendConfirmation? {
+        // A confirmation may have arrived before this attempt started listening.
+        takeBufferedSendSuccess(oldMessageId)?.let { return it }
+        val waiter = CompletableDeferred<TdApi.UpdateMessageSendSucceeded>()
+        sendConfirmationWaiters[oldMessageId] = waiter
+        try {
+            val update = withTimeoutOrNull(timeoutMs) { waiter.await() } ?: return null
+            return SendConfirmation(
+                chatId = update.message.chatId,
+                messageId = update.message.id,
+                messageLink = buildMessageLink(update.message.chatId, update.message.id)
+            )
+        } finally {
+            sendConfirmationWaiters.remove(oldMessageId)
+        }
+    }
+
+    private fun completeSendWaiter(update: TdApi.UpdateMessageSendSucceeded): Boolean {
+        val waiter = sendConfirmationWaiters.remove(update.oldMessageId) ?: return false
+        // The waiter owns this confirmation; do NOT also buffer it, or a later
+        // takeBufferedSendSuccess would report the same delivery twice.
+        waiter.complete(update)
+        return true
     }
 
     override fun cancelActiveUploads() {
@@ -312,6 +356,10 @@ class TelegramClientImpl @Inject constructor(
                                 pendingUploads.computeIfPresent(fileId) { _, pending ->
                                     pending.copy(provisionalMessageId = sent.id)
                                 }
+                                // Notify the collector immediately so the provisional id can be
+                                // persisted: on worker retry the engine must await confirmation
+                                // for THIS id instead of sending the message a second time.
+                                trySend(TelegramUploadEvent.MessageSent(sent.id))
                                 pendingMessageSuccesses.remove(sent.id)?.let(::handleMessageSendSucceeded)
                                 pendingMessageFailures.remove(sent.id)?.let(::handleMessageSendFailed)
                             } else if (sent is TdApi.Error) {
@@ -378,6 +426,8 @@ class TelegramClientImpl @Inject constructor(
     }
 
     private fun handleMessageSendSucceeded(update: TdApi.UpdateMessageSendSucceeded) {
+        // An explicit waiter (retry path) owns this confirmation outright.
+        if (completeSendWaiter(update)) return
         val match = pendingUploads.entries.firstOrNull { (_, pending) ->
             pending.destinationId == update.message.chatId &&
                 pending.provisionalMessageId != null && pending.provisionalMessageId == update.oldMessageId

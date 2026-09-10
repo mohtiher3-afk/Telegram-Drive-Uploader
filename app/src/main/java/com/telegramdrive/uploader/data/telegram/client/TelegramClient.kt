@@ -34,10 +34,34 @@ interface TelegramClient {
      * this client. Fire-and-forget: safe to call from worker cancellation paths.
      */
     fun cancelActiveUploads()
+    /**
+     * Removes and returns a buffered send-success for [oldMessageId], if a
+     * confirmation arrived before anyone waited for it. Null otherwise.
+     */
+    fun takeBufferedSendSuccess(oldMessageId: Long): SendConfirmation?
+    /**
+     * Waits up to [timeoutMs] for `UpdateMessageSendSucceeded` matching
+     * ([chatId], [oldMessageId]). Null on timeout — the message may still have been
+     * sent, so callers must treat this as ambiguous and must NOT blind-resend.
+     */
+    suspend fun awaitSendConfirmation(chatId: Long, oldMessageId: Long, timeoutMs: Long): SendConfirmation?
 }
 
 sealed class TelegramUploadEvent {
     data class Progress(val uploadedBytes: Long, val totalBytes: Long) : TelegramUploadEvent()
     data class Completed(val messageLink: String?) : TelegramUploadEvent()
     data class Failed(val message: String, val retryable: Boolean) : TelegramUploadEvent()
+    /**
+     * TDLib accepted the SendMessage call and returned a provisional (local) message id.
+     * This is NOT delivery proof — the engine must persist it and keep waiting for
+     * [Completed]. Emitted before any terminal event of the same send.
+     */
+    data class MessageSent(val provisionalMessageId: Long) : TelegramUploadEvent()
 }
+
+/** Telegram-side confirmation of a previously sent provisional message. */
+data class SendConfirmation(
+    val chatId: Long,
+    val messageId: Long,
+    val messageLink: String?
+)
