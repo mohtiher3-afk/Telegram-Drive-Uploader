@@ -1,14 +1,17 @@
 ---
 engine:
-  id: copilot
-  model: copilot/auto
-  version: 1.0.83
+  id: codex
+  model: openrouter/free
+  env:
+    OPENAI_BASE_URL: "https://openrouter.ai/api/v1"
+    OPENAI_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 intent: Notify maintainers when a newer TDLib release than the version pinned in the repository is published.
 name: tdlib-release-check
 network:
   allowed:
     - defaults
     - github
+    - openrouter.ai
 "on":
   schedule:
     - cron: 0 9 * * *
