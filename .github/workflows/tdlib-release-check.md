@@ -18,6 +18,7 @@ permissions:
   issues: read
   metadata: read
   pull-requests: read
+  copilot-requests: write
 safe-outputs:
   create-issue:
     close-older-issues: true
