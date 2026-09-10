@@ -1,20 +1,18 @@
 ---
 engine:
   id: codex
-  model: openai/gpt-oss-120b
+  model: openrouter/free
   env:
-    OPENAI_BASE_URL: "https://api.groq.com/openai/v1"
-    OPENAI_API_KEY: ${{ secrets.GROQ_API_KEY }}
+    OPENAI_BASE_URL: "https://openrouter.ai/api/v1"
+    OPENAI_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 intent: Notify maintainers when a newer TDLib release than the version pinned in the repository is published.
 name: tdlib-release-check
 max-ai-credits: -1
-env:
-  AWF_API_PROXY_PROVIDERS: '{"openai":{"models":{"openai/gpt-oss-120b":{"cost":{"input":0.00000059,"output":0.00000079}}}}}'
 network:
   allowed:
     - defaults
     - github
-    - api.groq.com
+    - openrouter.ai
 "on":
   schedule:
     - cron: 0 9 * * *
