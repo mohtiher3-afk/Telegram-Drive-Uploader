@@ -198,6 +198,11 @@ guards in a later low-risk stage, not in the baseline.
     router picks randomly — a reasoning-mandatory pick fails the run; a
     re-run re-rolls. If flakiness persists, fund OpenRouter credits and pin
     `deepseek/deepseek-chat`.
+    Dead free paths (proven, do NOT retry): `copilot` engine (Free tier
+    400); Groq (rejects codex payload fields `store`/`include`); `gemini`
+    + free key (AWF proxy exit 41, upstream `#58445` open); AIHubMix
+    (systematically severs SSE streams, 2 models tested); pinned
+    `:free` models (compiler bans `:` in `engine.model`).
 
 ## 9. Migration plan (lowest → highest risk)
 
