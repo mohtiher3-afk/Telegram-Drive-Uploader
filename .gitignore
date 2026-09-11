@@ -25,3 +25,6 @@ build/
 .externalNativeBuild/
 .cxx/
 .native-build/
+
+# Git worktrees
+.worktrees/
