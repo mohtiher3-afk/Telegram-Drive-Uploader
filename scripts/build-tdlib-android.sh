@@ -9,9 +9,16 @@ set -euo pipefail
 # with FORCE_ALL_ABIS=1 so every ABI has headers under install-<abi>/.
 #
 # Usage:
-#   TDLIB_VERSION=1.8.67 ./build-tdlib-android.sh
+#   TDLIB_REF=master ./build-tdlib-android.sh          # version derived from source
+#   TDLIB_REF=<full-sha> ./build-tdlib-android.sh       # pin an exact commit
+#
+# TDLib does not publish per-patch git tags: upstream only has v1.8.0 and the
+# current 1.8.xx line lives on master, with the version string defined in the
+# root CMakeLists.txt. So the checkout ref is a branch/tag/sha, and the exact
+# version is derived from the cloned source.
 
-TDLIB_VERSION="${TDLIB_VERSION:?Set TDLIB_VERSION (e.g. 1.8.67)}"
+TDLIB_REF="${TDLIB_REF:-master}"
+TDLIB_VERSION="${TDLIB_VERSION:-}"        # optional; validated against the source version
 TARGET_ABIS="${TARGET_ABIS:-arm64-v8a armeabi-v7a x86_64}"
 ANDROID_API="${ANDROID_API:-24}"
 
@@ -30,14 +37,34 @@ command -v php  >/dev/null || { echo "php not found on PATH (needed by AddIntDef
 
 mkdir -p "$CACHE_ROOT"
 
-# ── Stage 0: Clone TDLib at the target version ─────────────────────────────
-TD_DIR="$CACHE_ROOT/td-$TDLIB_VERSION"
-if [[ ! -d "$TD_DIR" ]]; then
-  echo "=== Cloning TDLib v$TDLIB_VERSION ==="
-  git clone --depth 1 --branch "v${TDLIB_VERSION}" \
-    https://github.com/tdlib/td.git "$TD_DIR"
+# ── Stage 0: Fetch TDLib source at the requested ref ───────────────────────
+TD_DIR="$CACHE_ROOT/td-${TDLIB_REF//\//_}"
+if [[ ! -d "$TD_DIR/.git" ]]; then
+  echo "=== Fetching TDLib ref: $TDLIB_REF ==="
+  git init -q "$TD_DIR"
+  git -C "$TD_DIR" remote add origin https://github.com/tdlib/td.git
 fi
+git -C "$TD_DIR" fetch --depth 1 origin "$TDLIB_REF"
+git -C "$TD_DIR" checkout -q --detach FETCH_HEAD
 echo "TDLib source: $TD_DIR @ $(git -C "$TD_DIR" rev-parse --short HEAD)"
+
+# Derive the exact version from the upstream source (root CMakeLists.txt)
+# because TDLib does not tag per-patch releases.
+SRC_VERSION="$(awk '/^project\(TDLib VERSION/ { for (i = 1; i <= NF; i++) if ($i == "VERSION") { print $(i + 1); exit } }' "$TD_DIR/CMakeLists.txt")"
+if [[ -z "$SRC_VERSION" ]]; then
+  echo "Could not read TDLib version from $TD_DIR/CMakeLists.txt" >&2
+  exit 1
+fi
+if [[ -n "$TDLIB_VERSION" && "$TDLIB_VERSION" != "$SRC_VERSION" ]]; then
+  echo "Requested TDLIB_VERSION=$TDLIB_VERSION but ref '$TDLIB_REF' is v$SRC_VERSION. Aborting to avoid mislabeling." >&2
+  exit 1
+fi
+TDLIB_VERSION="$SRC_VERSION"
+echo "Resolved TDLib version: v$TDLIB_VERSION"
+# Export the resolved version so later workflow steps (branch/PR/check) use it.
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  echo "TDLIB_VERSION=$TDLIB_VERSION" >> "$GITHUB_ENV"
+fi
 
 # ── Stage 1: Host build of source generators + generated C++ sources ───────
 # The project root for both host and cross builds is example/android (that is
