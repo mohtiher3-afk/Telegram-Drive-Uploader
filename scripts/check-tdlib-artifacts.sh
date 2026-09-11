@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== TDLib v1.8.66 Android Artifact Integrity & Completeness Check ==="
+TDLIB_VERSION="${TDLIB_VERSION:-1.8.66}"
+
+echo "=== TDLib v${TDLIB_VERSION} Android Artifact Integrity & Completeness Check ==="
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 JNI_DIR="$PROJECT_ROOT/app/src/main/jniLibs"
@@ -110,13 +112,13 @@ fi
 echo ""
 echo "2. Checking Native JNI Libraries (.so)..."
 if should_check_abi "arm64-v8a"; then
-    check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v1.8.66 arm64-v8a Native Library" && check_elf_arch "arm64-v8a" "AArch64"
+    check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v${TDLIB_VERSION} arm64-v8a Native Library" && check_elf_arch "arm64-v8a" "AArch64"
 fi
 if should_check_abi "armeabi-v7a"; then
-    check_file "$JNI_DIR/armeabi-v7a/libtdjni.so" 5000000 "TDLib v1.8.66 armeabi-v7a Native Library" && check_elf_arch "armeabi-v7a" "ARM"
+    check_file "$JNI_DIR/armeabi-v7a/libtdjni.so" 5000000 "TDLib v${TDLIB_VERSION} armeabi-v7a Native Library" && check_elf_arch "armeabi-v7a" "ARM"
 fi
 if should_check_abi "x86_64"; then
-    check_file "$JNI_DIR/x86_64/libtdjni.so" 5000000 "TDLib v1.8.66 x86_64 Native Library" && check_elf_arch "x86_64" "Advanced Micro Devices X86-64"
+    check_file "$JNI_DIR/x86_64/libtdjni.so" 5000000 "TDLib v${TDLIB_VERSION} x86_64 Native Library" && check_elf_arch "x86_64" "Advanced Micro Devices X86-64"
 fi
 
 if command -v readelf >/dev/null 2>&1; then
@@ -130,7 +132,7 @@ fi
 echo ""
 echo "3. Checking TDLib Java/JNI Source Bindings..."
 check_file "$JAVA_BINDING_DIR/Client.java" 1000 "TDLib Java Client Binding"
-check_file "$JAVA_BINDING_DIR/TdApi.java" 1500000 "TDLib v1.8.66 TdApi Bindings"
+check_file "$JAVA_BINDING_DIR/TdApi.java" 1500000 "TDLib v${TDLIB_VERSION} TdApi Bindings"
 check_file "$JAVA_BINDING_DIR/Log.java" 1000 "TDLib Java Log Binding"
 
 echo ""
@@ -141,6 +143,6 @@ if [ "$MISSING_COUNT" -gt 0 ]; then
     exit 1
 else
     echo "STATUS: TDLIB_ARTIFACTS_PRESENT=true"
-    echo "All required official TDLib v1.8.66 native and Java artifacts verified successfully for ABI scope '$CHECK_ABI'."
+    echo "All required official TDLib v${TDLIB_VERSION} native and Java artifacts verified successfully for ABI scope '$CHECK_ABI'."
     exit 0
 fi

@@ -65,9 +65,14 @@ build_abi() {
   esac
 
   local tdjni="$PROJECT_ROOT/app/src/main/jniLibs/$abi/libtdjni.so"
-  if ! readelf -d "$tdjni" | grep -q 'Shared library: \[libssl.so\]'; then
-    echo "${abi}: libtdjni.so does not require libssl.so; no OpenSSL build needed."
-    return 0
+  # FORCE_ALL_ABIS=1 builds every requested ABI regardless of the currently
+  # checked-in TDLib binary. Required before a TDLib upgrade, where the new
+  # libtdjni.so will link against OpenSSL even if the old binary did not.
+  if [[ "${FORCE_ALL_ABIS:-0}" != "1" ]]; then
+    if ! readelf -d "$tdjni" | grep -q 'Shared library: \[libssl.so\]'; then
+      echo "${abi}: libtdjni.so does not require libssl.so; no OpenSSL build needed."
+      return 0
+    fi
   fi
 
   local build_dir="$CACHE_ROOT/build-$abi"
@@ -99,6 +104,12 @@ EOF
       -Wl,-z,max-page-size=16384
   PATH="$wrapper_dir:$TOOLCHAIN/bin:$PATH" \
     make -j"${OPENSSL_JOBS:-2}" build_libs \
+      CC="$wrapper" AR="$TOOLCHAIN/bin/llvm-ar" RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
+      CFLAGS="$cflags"
+  # Install headers and libraries into $install_dir so downstream TDLib CMake
+  # builds can consume them via -DOPENSSL_ROOT_DIR="$install_dir".
+  PATH="$wrapper_dir:$TOOLCHAIN/bin:$PATH" \
+    make -j"${OPENSSL_JOBS:-2}" install_sw \
       CC="$wrapper" AR="$TOOLCHAIN/bin/llvm-ar" RANLIB="$TOOLCHAIN/bin/llvm-ranlib" \
       CFLAGS="$cflags"
   popd >/dev/null
