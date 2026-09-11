@@ -140,18 +140,20 @@ class UploadViewModel @Inject constructor(
     private val _compressedIds = MutableStateFlow<Set<String>>(emptySet())
     val compressedIds: StateFlow<Set<String>> = _compressedIds.asStateFlow()
     private val compressor = VideoCompressor(context)
+    /** Cache of original UploadTask state before first compression, keyed by task id. */
+    private val _originalCache = mutableMapOf<String, UploadTask>()
 
     fun setCompressionPreset(preset: VideoQualityPreset) {
         _compressionPreset.value = preset
         if (preset != VideoQualityPreset.ORIGINAL) {
             compressAllVideos()
         } else {
-            // Reset all to their original state
+            // Restore all tasks to their pre-compression state from the cache.
+            // The old firstOrNull() lookup was a no-op because it matched the
+            // same element it was iterating — originals were never actually restored.
             _compressedIds.value = emptySet()
-            _preparedList.replaceAll { original ->
-                // Restore original source from storage if available
-                val originalTask = _preparedList.firstOrNull { it.id == original.id }
-                originalTask ?: original
+            _preparedList.replaceAll { task ->
+                _originalCache[task.id] ?: task
             }
             updateState()
         }
@@ -170,6 +172,10 @@ class UploadViewModel @Inject constructor(
                 val tasksToCompress = _preparedList.filter { it.id !in _compressedIds.value }
                 tasksToCompress.forEach { task ->
                     try {
+                        // Snapshot the original state once so restoration is lossless.
+                        if (task.id !in _originalCache) {
+                            _originalCache[task.id] = task
+                        }
                         val sourceUri = android.net.Uri.parse(task.sourceUri)
                         val compressedUri = compressor.compress(sourceUri, preset)
                         if (compressedUri != null) {
@@ -177,6 +183,8 @@ class UploadViewModel @Inject constructor(
                             if (index >= 0) {
                                 _preparedList[index] = _preparedList[index].copy(
                                     sourceUri = compressedUri.toString(),
+                                    mimeType = "video/mp4",
+                                    totalBytes = resolveFileSize(compressedUri),
                                     fileSize = resolveFileSize(compressedUri)
                                 )
                                 _compressedIds.value = _compressedIds.value + task.id
