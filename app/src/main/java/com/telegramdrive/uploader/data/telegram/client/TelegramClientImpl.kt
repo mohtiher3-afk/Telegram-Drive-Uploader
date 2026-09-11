@@ -2,9 +2,11 @@ package com.telegramdrive.uploader.data.telegram.client
 
 import android.content.Context
 import android.os.Build
+import android.os.SystemClock
 import com.telegramdrive.uploader.BuildConfig
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
+import com.telegramdrive.uploader.data.local.database.UploadDao
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
@@ -30,6 +32,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.drinkless.tdlib.Client
@@ -38,12 +42,15 @@ import java.io.File
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TelegramClientImpl @Inject constructor(
     private val settingsDataStore: SettingsDataStore,
+    private val uploadDao: UploadDao,
     @ApplicationContext private val context: Context
 ) : TelegramClient {
     private val clientScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -59,14 +66,18 @@ class TelegramClientImpl @Inject constructor(
     private val chatsRequested = AtomicBoolean(false)
     private data class PendingUpload(
         val channel: SendChannel<TelegramUploadEvent>,
+        val taskId: String,
         val destinationId: Long,
         val totalBytes: Long,
         val provisionalMessageId: Long? = null
     )
 
+    /** Buffered send update with its arrival time, for TTL-based eviction. */
+    private data class BufferedSendEvent<T>(val update: T, val bufferedAtMs: Long = SystemClock.elapsedRealtime())
+
     private val pendingUploads = ConcurrentHashMap<Int, PendingUpload>()
-    private val pendingMessageSuccesses = ConcurrentHashMap<Long, TdApi.UpdateMessageSendSucceeded>()
-    private val pendingMessageFailures = ConcurrentHashMap<Long, TdApi.UpdateMessageSendFailed>()
+    private val pendingMessageSuccesses = ConcurrentHashMap<Long, BufferedSendEvent<TdApi.UpdateMessageSendSucceeded>>()
+    private val pendingMessageFailures = ConcurrentHashMap<Long, BufferedSendEvent<TdApi.UpdateMessageSendFailed>>()
     private val sendConfirmationWaiters =
         ConcurrentHashMap<Long, CompletableDeferred<TdApi.UpdateMessageSendSucceeded>>()
     private var tdClient: Client? = null
@@ -92,11 +103,23 @@ class TelegramClientImpl @Inject constructor(
             _connectionState.value == TelegramConnectionState.AUTHORIZED
         ) return
 
-        _connectionState.value = TelegramConnectionState.CONNECTING
         _error.value = null
         _qrLoginLink.value = null
         val accountList = settingsDataStore.accounts.firstOrNull() ?: emptyList()
         activeAccountKey = accountList.firstOrNull { it.isActive }?.key ?: accountList.firstOrNull()?.key
+
+        val existingClient = synchronized(clientLock) { tdClient }
+        if (existingClient != null) {
+            // TDLib will NOT re-emit WaitPhoneNumber/WaitCode after a failed attempt
+            // (e.g. wrong code/password leaves the client alive in the same wait
+            // state). Blindly flipping to CONNECTING would spin forever, so re-sync
+            // the connection state from the live authorization state instead.
+            _connectionState.value = TelegramConnectionState.CONNECTING
+            resyncAuthorizationState(existingClient)
+            return
+        }
+
+        _connectionState.value = TelegramConnectionState.CONNECTING
         try {
             ensureNativeRuntime()
             synchronized(clientLock) {
@@ -120,6 +143,41 @@ class TelegramClientImpl @Inject constructor(
                 "TDLib native runtime could not be initialized: ${failure.javaClass.simpleName}"
             )
         }
+    }
+
+    private suspend fun resyncAuthorizationState(client: Client) {
+        try {
+            when (val result = sendAwaitObject(client, TdApi.GetAuthorizationState())) {
+                is TdApi.AuthorizationState -> handleAuthorizationState(result)
+                is TdApi.Error -> {
+                    // The client is not answering properly; discard it so the next
+                    // connect() starts from a fresh Client.create instead of wedging.
+                    fail(
+                        TelegramError.Unknown(result.message),
+                        "Authorization re-sync failed: TDLib error ${result.code}: ${result.message}"
+                    )
+                    discardClient()
+                }
+                else -> {
+                    fail(
+                        TelegramError.Unknown("Unexpected GetAuthorizationState result"),
+                        "Authorization re-sync returned an unexpected TDLib result."
+                    )
+                    discardClient()
+                }
+            }
+        } catch (failure: Throwable) {
+            reportCallbackFailure(failure)
+            fail(
+                TelegramError.TdLibRuntimeUnavailable,
+                "Authorization re-sync failed: ${failure.javaClass.simpleName}"
+            )
+            discardClient()
+        }
+    }
+
+    private fun discardClient() {
+        synchronized(clientLock) { tdClient = null }
     }
 
     override suspend fun sendPhoneNumber(phoneNumber: String) {
@@ -212,7 +270,8 @@ class TelegramClientImpl @Inject constructor(
     }
 
     override fun takeBufferedSendSuccess(oldMessageId: Long): SendConfirmation? {
-        val update = pendingMessageSuccesses.remove(oldMessageId) ?: return null
+        val buffered = pendingMessageSuccesses.remove(oldMessageId) ?: return null
+        val update = buffered.update
         return SendConfirmation(
             chatId = update.message.chatId,
             messageId = update.message.id,
@@ -230,12 +289,22 @@ class TelegramClientImpl @Inject constructor(
         val waiter = CompletableDeferred<TdApi.UpdateMessageSendSucceeded>()
         sendConfirmationWaiters[oldMessageId] = waiter
         try {
-            val update = withTimeoutOrNull(timeoutMs) { waiter.await() } ?: return null
-            return SendConfirmation(
-                chatId = update.message.chatId,
-                messageId = update.message.id,
-                messageLink = buildMessageLink(update.message.chatId, update.message.id)
-            )
+            val update = withTimeoutOrNull(timeoutMs) { waiter.await() }
+            if (update != null) {
+                return SendConfirmation(
+                    chatId = update.message.chatId,
+                    messageId = update.message.id,
+                    messageLink = buildMessageLink(update.message.chatId, update.message.id)
+                )
+            }
+            // The confirmation never arrived in-process (typically the process died
+            // between send and confirmation, losing the buffered update). Resolve the
+            // ambiguity from chat history before giving up — the message may already
+            // be delivered, and blind-resending would duplicate it.
+            val client = synchronized(clientLock) { tdClient } ?: return null
+            return runCatching { resolveSentMessageFromHistory(client, chatId) }
+                .onFailure { failure -> reportCallbackFailure(failure) }
+                .getOrNull()
         } finally {
             sendConfirmationWaiters.remove(oldMessageId)
         }
@@ -247,6 +316,65 @@ class TelegramClientImpl @Inject constructor(
         // takeBufferedSendSuccess would report the same delivery twice.
         waiter.complete(update)
         return true
+    }
+
+    /**
+     * Bounded, timestamp-based buffer for send updates nobody is waiting for yet:
+     * entries older than [PENDING_SEND_EVENT_TTL_MS] are dropped, and the buffer is
+     * capped at [PENDING_SEND_EVENT_LIMIT] by evicting the oldest entries first (the
+     * newest confirmations are the ones a retry is most likely still awaiting).
+     */
+    private fun <T> bufferSendEvent(map: ConcurrentHashMap<Long, BufferedSendEvent<T>>, key: Long, value: T) {
+        if (map.isEmpty()) {
+            map[key] = BufferedSendEvent(value)
+            return
+        }
+        val now = SystemClock.elapsedRealtime()
+        map.entries.removeIf { now - it.value.bufferedAtMs > PENDING_SEND_EVENT_TTL_MS }
+        if (map.size >= PENDING_SEND_EVENT_LIMIT) {
+            map.entries
+                .sortedBy { it.value.bufferedAtMs }
+                .take(map.size - PENDING_SEND_EVENT_LIMIT + 1)
+                .forEach { map.remove(it.key) }
+        }
+        map[key] = BufferedSendEvent(value)
+    }
+
+    private suspend fun sendAwaitObject(client: Client, function: TdApi.Function<*>): TdApi.Object {
+        return suspendCancellableCoroutine { continuation ->
+            client.send(
+                function,
+                { result -> continuation.resume(result) },
+                { failure -> continuation.resumeWithException(failure) }
+            )
+        }
+    }
+
+    /**
+     * Best-effort resolution of an ambiguous send: fetch the newest chat history page
+     * and match the most recent outgoing document/video message. This is a TDLib
+     * device-only path (not exercisable from JVM unit tests); it exists so a lost
+     * confirmation can still mark the task COMPLETED instead of wedging retries in a
+     * forever-waiting loop.
+     */
+    private suspend fun resolveSentMessageFromHistory(client: Client, chatId: Long): SendConfirmation? {
+        if (chatId == 0L) return null
+        val result = sendAwaitObject(client, TdApi.GetChatHistory(chatId, 0L, 0, HISTORY_LOOKUP_PAGE_SIZE, false))
+        val messages = (result as? TdApi.Messages)?.messages ?: return null
+        val delivered = messages.firstOrNull { message ->
+            message.isOutgoing &&
+                (message.content is TdApi.MessageVideo || message.content is TdApi.MessageDocument)
+        } ?: return null
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.UPLOAD_COMPLETED,
+            severity = DiagnosticSeverity.INFO,
+            message = "Resolved an ambiguous send via chat history; marking the upload as delivered."
+        )
+        return SendConfirmation(
+            chatId = chatId,
+            messageId = delivered.id,
+            messageLink = buildMessageLink(chatId, delivered.id)
+        )
     }
 
     override fun cancelActiveUploads() {
@@ -319,6 +447,39 @@ class TelegramClientImpl @Inject constructor(
             return@callbackFlow
         }
 
+        // Idempotency fast-path: a previous attempt already CONFIRMED delivery (final
+        // message id / link persisted durably). Never send again — report completion
+        // for the stored link so the engine can finish the task.
+        val persisted = runCatching { uploadDao.getUploadById(task.id) }.getOrNull()
+        if (persisted?.finalMessageId != null || persisted?.messageLink != null) {
+            trySend(TelegramUploadEvent.Completed(persisted.messageLink))
+            close()
+            return@callbackFlow
+        }
+        // The send was dispatched earlier but the provisional id was lost (process
+        // death between SendMessage dispatch and its persist). Resolve via chat
+        // history: a delivered message completes the task; nothing found means the
+        // send never reached Telegram, so clear the flag and fall through to a fresh
+        // send (safe — history is the server-side delivery state).
+        if (persisted?.sendDispatched == true && persisted.provisionalMessageId == null) {
+            val resolved = runCatching { resolveSentMessageFromHistory(client, task.destinationId) }
+                .onFailure { failure -> reportCallbackFailure(failure) }
+                .getOrNull()
+            if (resolved != null) {
+                persistSendConfirmed(task.id, resolved.messageId, resolved.chatId)
+                trySend(TelegramUploadEvent.Completed(resolved.messageLink))
+                close()
+                return@callbackFlow
+            }
+            runCatching { uploadDao.clearSendDispatched(task.id) }
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_RETRY,
+                severity = DiagnosticSeverity.WARN,
+                message = "Dispatch flag without a provisional id; chat history shows no delivered message, proceeding with a fresh send.",
+                uploadId = task.id
+            )
+        }
+
         val fileType = if (task.mimeType.startsWith("video/")) {
             TdApi.FileTypeVideo()
         } else {
@@ -335,6 +496,7 @@ class TelegramClientImpl @Inject constructor(
                     val fileId = result.id
                     pendingUploads[fileId] = PendingUpload(
                         channel = this@callbackFlow,
+                        taskId = task.id,
                         destinationId = task.destinationId,
                         totalBytes = task.fileSize.coerceAtLeast(result.size.toLong())
                     )
@@ -347,33 +509,56 @@ class TelegramClientImpl @Inject constructor(
                         message = "Handing off $contentType message to Telegram TDLib client for delivery.",
                         uploadId = task.id
                     )
-                    client.send(
-                        TdApi.SendMessage(task.destinationId, null, null, null, null, content),
-                        { sent ->
-                            if (sent is TdApi.Message) {
-                                // SendMessage returns a local/pending Message first. It is not proof
-                                // that Telegram accepted the message. Wait for UpdateMessageSendSucceeded.
-                                pendingUploads.computeIfPresent(fileId) { _, pending ->
-                                    pending.copy(provisionalMessageId = sent.id)
+                    // Persist the dispatch flag BEFORE the SendMessage call: if the
+                    // process dies after Telegram accepted the message but before the
+                    // provisional id is persisted, the retry must resolve instead of
+                    // re-sending. A failed flag write aborts the send (retryable) so
+                    // the durable state can never lag behind an actual dispatch.
+                    val flagPersisted = runCatching {
+                        runBlocking { uploadDao.markSendDispatched(task.id) }
+                    }.isSuccess
+                    if (flagPersisted) {
+                        client.send(
+                            TdApi.SendMessage(task.destinationId, null, null, null, null, content),
+                            { sent ->
+                                if (sent is TdApi.Message) {
+                                    // SendMessage returns a local/pending Message first. It is not proof
+                                    // that Telegram accepted the message. Wait for UpdateMessageSendSucceeded.
+                                    pendingUploads.computeIfPresent(fileId) { _, pending ->
+                                        pending.copy(provisionalMessageId = sent.id)
+                                    }
+                                    // Notify the collector immediately so the provisional id can be
+                                    // persisted: on worker retry the engine must await confirmation
+                                    // for THIS id instead of sending the message a second time.
+                                    trySend(TelegramUploadEvent.MessageSent(sent.id))
+                                    pendingMessageSuccesses.remove(sent.id)?.let { buffered ->
+                                        handleMessageSendSucceeded(buffered.update)
+                                    }
+                                    pendingMessageFailures.remove(sent.id)?.let { buffered ->
+                                        handleMessageSendFailed(buffered.update)
+                                    }
+                                } else if (sent is TdApi.Error) {
+                                    trySend(TelegramUploadEvent.Failed(sent.message, isRetryableTelegramError(sent.code)))
+                                    pendingUploads.remove(fileId)
+                                    close()
                                 }
-                                // Notify the collector immediately so the provisional id can be
-                                // persisted: on worker retry the engine must await confirmation
-                                // for THIS id instead of sending the message a second time.
-                                trySend(TelegramUploadEvent.MessageSent(sent.id))
-                                pendingMessageSuccesses.remove(sent.id)?.let(::handleMessageSendSucceeded)
-                                pendingMessageFailures.remove(sent.id)?.let(::handleMessageSendFailed)
-                            } else if (sent is TdApi.Error) {
-                                trySend(TelegramUploadEvent.Failed(sent.message, isRetryableTelegramError(sent.code)))
+                            },
+                            { failure ->
+                                trySend(TelegramUploadEvent.Failed(failure.message ?: "TDLib send failed", true))
                                 pendingUploads.remove(fileId)
                                 close()
                             }
-                        },
-                        { failure ->
-                            trySend(TelegramUploadEvent.Failed(failure.message ?: "TDLib send failed", true))
-                            pendingUploads.remove(fileId)
-                            close()
-                        }
-                    )
+                        )
+                    } else {
+                        trySend(
+                            TelegramUploadEvent.Failed(
+                                "Could not persist send bookkeeping before dispatch; aborting to avoid duplicate-send risk.",
+                                true
+                            )
+                        )
+                        pendingUploads.remove(fileId)
+                        close()
+                    }
                 }
             },
             { failure ->
@@ -432,13 +617,36 @@ class TelegramClientImpl @Inject constructor(
             pending.destinationId == update.message.chatId &&
                 pending.provisionalMessageId != null && pending.provisionalMessageId == update.oldMessageId
         } ?: run {
-            if (update.oldMessageId != 0L) pendingMessageSuccesses[update.oldMessageId] = update
+            if (update.oldMessageId != 0L) bufferSendEvent(pendingMessageSuccesses, update.oldMessageId, update)
             return
         }
         val pending = pendingUploads.remove(match.key) ?: return
+        persistSendConfirmed(pending.taskId, update.message.id, update.message.chatId)
         pending.channel.trySend(TelegramUploadEvent.Progress(pending.totalBytes, pending.totalBytes))
         pending.channel.trySend(TelegramUploadEvent.Completed(buildMessageLink(update.message.chatId, update.message.id)))
         pending.channel.close()
+    }
+
+    /**
+     * Durable confirmation bookkeeping: persist the final message id/link and clear
+     * the provisional id + dispatch flag. After this write, a retry can never resend
+     * the same message — it resolves as already-delivered instead.
+     */
+    private fun persistSendConfirmed(taskId: String, finalMessageId: Long, chatId: Long) {
+        runCatching {
+            runBlocking {
+                uploadDao.markSendConfirmed(taskId, finalMessageId, buildMessageLink(chatId, finalMessageId))
+            }
+        }.onFailure { failure ->
+            // Non-fatal: the engine/worker still persist the link on Success; a lost
+            // write here is recovered by the retry confirmation/history path.
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.DATABASE_ERROR,
+                severity = DiagnosticSeverity.WARN,
+                message = "Could not persist send-confirmation bookkeeping for task $taskId.",
+                exception = failure
+            )
+        }
     }
 
     /**
@@ -462,7 +670,7 @@ class TelegramClientImpl @Inject constructor(
             pending.destinationId == update.message.chatId &&
                 pending.provisionalMessageId != null && pending.provisionalMessageId == update.oldMessageId
         } ?: run {
-            if (update.oldMessageId != 0L) pendingMessageFailures[update.oldMessageId] = update
+            if (update.oldMessageId != 0L) bufferSendEvent(pendingMessageFailures, update.oldMessageId, update)
             return
         }
         val pending = pendingUploads.remove(match.key) ?: return
@@ -492,7 +700,13 @@ class TelegramClientImpl @Inject constructor(
                 requestChats()
             }
             is TdApi.AuthorizationStateClosing -> setState(TelegramConnectionState.CLOSING)
-            is TdApi.AuthorizationStateClosed -> setState(TelegramConnectionState.DISCONNECTED)
+            is TdApi.AuthorizationStateClosed -> {
+                // The TDLib client is dead. Tear it down (and clear session-scoped
+                // caches) so the next connect() re-creates a client via Client.create
+                // instead of seeing DISCONNECTED and skipping creation forever.
+                closeClient()
+                setState(TelegramConnectionState.DISCONNECTED)
+            }
             else -> fail(
                 TelegramError.Unknown("Unsupported Telegram authorization state: ${state.javaClass.simpleName}"),
                 "Unsupported TDLib authorization state."
@@ -755,6 +969,9 @@ class TelegramClientImpl @Inject constructor(
     companion object {
         private val nativeLoaded = AtomicBoolean(false)
         private const val CHAT_PAGE_SIZE = 100
+        private const val PENDING_SEND_EVENT_LIMIT = 128
+        private const val PENDING_SEND_EVENT_TTL_MS = 10 * 60 * 1000L
+        private const val HISTORY_LOOKUP_PAGE_SIZE = 20
     }
 }
 

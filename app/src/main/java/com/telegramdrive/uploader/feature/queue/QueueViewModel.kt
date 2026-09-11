@@ -6,6 +6,7 @@ import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.UploadManager
+import com.telegramdrive.uploader.core.util.OwnedStagedFileStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,7 +37,8 @@ data class QueueUiState(
 @HiltViewModel
 class QueueViewModel @Inject constructor(
     private val uploadRepository: UploadRepository,
-    private val uploadManager: UploadManager
+    private val uploadManager: UploadManager,
+    private val ownedStagedFileStore: OwnedStagedFileStore
 ) : ViewModel() {
 
     private val selectedFilter = MutableStateFlow(QueueFilter.ALL)
@@ -150,12 +152,14 @@ class QueueViewModel @Inject constructor(
         viewModelScope.launch {
             uploadRepository.updateStatus(id, UploadStatus.CANCELLED)
             uploadManager.cancelUpload(id)
+            uploadRepository.getUploadById(id)?.let { ownedStagedFileStore.deleteOwnedFilesFor(it) }
         }
     }
 
     fun removeUpload(id: String) {
         viewModelScope.launch {
             uploadManager.cancelUpload(id)
+            uploadRepository.getUploadById(id)?.let { ownedStagedFileStore.deleteOwnedFilesFor(it) }
             uploadRepository.deleteUploadById(id)
         }
     }

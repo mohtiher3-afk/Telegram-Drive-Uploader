@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.telegramdrive.uploader.data.local.database.AppDatabase
 import com.telegramdrive.uploader.data.local.database.MIGRATION_5_6
+import com.telegramdrive.uploader.data.local.database.MIGRATION_6_7
 import com.telegramdrive.uploader.data.local.database.UploadDao
 import dagger.Module
 import dagger.Provides
@@ -22,8 +23,12 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "telegram_drive_db"
-        ).fallbackToDestructiveMigration(dropAllTables = true)
-            .addMigrations(MIGRATION_5_6)
+        )
+            // Destructive fallback is allowed ONLY on downgrade. A missing forward
+            // migration must crash loudly during development instead of silently
+            // wiping every upload row on upgrade.
+            .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
             .build()
     }
 

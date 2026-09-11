@@ -2,6 +2,8 @@ package com.telegramdrive.uploader.data.upload
 
 import android.net.Uri
 import android.os.SystemClock
+import com.telegramdrive.uploader.data.local.database.UploadDao
+import com.telegramdrive.uploader.data.telegram.client.SendConfirmation
 import com.telegramdrive.uploader.data.telegram.client.TelegramClient
 import com.telegramdrive.uploader.data.telegram.client.TelegramUploadEvent
 import com.telegramdrive.uploader.domain.repository.UploadRepository
@@ -30,7 +32,8 @@ import javax.inject.Singleton
 class TelegramUploadEngineImpl @Inject constructor(
     private val streamingFileReader: StreamingFileReader,
     private val telegramClient: TelegramClient,
-    private val uploadRepository: UploadRepository
+    private val uploadRepository: UploadRepository,
+    private val uploadDao: UploadDao
 ) : TelegramUploadEngine {
 
     companion object {
@@ -38,7 +41,16 @@ class TelegramUploadEngineImpl @Inject constructor(
         private const val CONFIRM_WAIT_TIMEOUT_MS = 60_000L
     }
 
-    override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {        if (!telegramClient.isConfigured) {
+    override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {
+        // Idempotency fast-path: a previous attempt already CONFIRMED delivery (final
+        // message id / link persisted durably). Re-emit Success so the worker completes
+        // the task without touching TDLib again — no duplicate send, no confirmation wait.
+        val persistedState = runCatching { uploadDao.getUploadById(task.id) }.getOrNull()
+        if (persistedState?.finalMessageId != null || persistedState?.messageLink != null) {
+            emit(UploadEngineResult.Success(uploadDurationMs = 0L, messageLink = persistedState.messageLink))
+            return@flow
+        }
+        if (!telegramClient.isConfigured) {
             emit(UploadEngineResult.Error("Telegram TDLib credentials are not configured", false))
             return@flow
         }
@@ -77,9 +89,11 @@ class TelegramUploadEngineImpl @Inject constructor(
             return@flow
         }
         // Idempotency: a previous attempt already called SendMessage for this task
-        // (provisional id persisted at send time). Resending here would deliver the
-        // video to Telegram TWICE. Instead, await the outstanding confirmation.
-        val provisionalId = task.provisionalMessageId
+        // (send dispatched + provisional id persisted at send time). Resending here
+        // would deliver the video to Telegram TWICE. Instead, await the outstanding
+        // confirmation. The persisted row is the source of truth — the worker's task
+        // snapshot may predate a client-side confirm persist.
+        val provisionalId = persistedState?.provisionalMessageId ?: task.provisionalMessageId
         if (provisionalId != null) {
             if (telegramClient.connectionState.value != TelegramConnectionState.AUTHORIZED) {
                 emit(
@@ -92,6 +106,7 @@ class TelegramUploadEngineImpl @Inject constructor(
             }
             val buffered = telegramClient.takeBufferedSendSuccess(provisionalId)
             if (buffered != null) {
+                persistSendConfirmed(task.id, buffered)
                 emit(UploadEngineResult.Success(uploadDurationMs = 0L, messageLink = buffered.messageLink))
                 return@flow
             }
@@ -101,6 +116,9 @@ class TelegramUploadEngineImpl @Inject constructor(
                 timeoutMs = CONFIRM_WAIT_TIMEOUT_MS
             )
             if (confirmed != null) {
+                // Durable bookkeeping BEFORE emitting Success: after this write, any
+                // retry sees a resolved send and can never re-send the same message.
+                persistSendConfirmed(task.id, confirmed)
                 emit(UploadEngineResult.Success(uploadDurationMs = 0L, messageLink = confirmed.messageLink))
             } else {
                 emit(
@@ -166,9 +184,17 @@ class TelegramUploadEngineImpl @Inject constructor(
                 when (event) {
                     is TelegramUploadEvent.MessageSent -> {
                         // Persist immediately: if this worker dies before confirmation,
-                        // the retry must await THIS send instead of sending again.
-                        runCatching {
+                        // the retry must await THIS send instead of sending again. Do
+                        // NOT swallow write failures: an unpersisted provisional id
+                        // would let a retry blind-resend and duplicate the message, so
+                        // fail the attempt non-retryably to keep idempotency consistent.
+                        try {
                             uploadRepository.updateProvisionalMessageId(task.id, event.provisionalMessageId)
+                        } catch (failure: Throwable) {
+                            throw SendBookkeepingException(
+                                "Could not persist the provisional send id; aborting so retries stay idempotent.",
+                                failure
+                            )
                         }
                     }
                     is TelegramUploadEvent.Progress -> {
@@ -186,6 +212,15 @@ class TelegramUploadEngineImpl @Inject constructor(
                     )
                 }
             }
+        } catch (bookkeeping: SendBookkeepingException) {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_FAILED,
+                severity = DiagnosticSeverity.ERROR,
+                message = bookkeeping.message ?: "Send bookkeeping persist failed.",
+                uploadId = task.id,
+                exception = bookkeeping
+            )
+            emit(UploadEngineResult.Error(bookkeeping.message ?: "Could not persist send bookkeeping", false))
         } catch (error: Throwable) {
             // Surface the real cause at the point it is thrown. Background workers retry
             // transient failures without logging the reason (see UploadWorker), so without
@@ -206,6 +241,22 @@ class TelegramUploadEngineImpl @Inject constructor(
 
     override fun cancelActiveUploads() {
         telegramClient.cancelActiveUploads()
+    }
+
+    private suspend fun persistSendConfirmed(uploadId: String, confirmation: SendConfirmation) {
+        runCatching {
+            uploadDao.markSendConfirmed(uploadId, confirmation.messageId, confirmation.messageLink)
+        }.onFailure { failure ->
+            // Non-fatal: the worker also persists the link on Success, and the retry
+            // path can still resolve via the provisional-id confirmation flow.
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.DATABASE_ERROR,
+                severity = DiagnosticSeverity.WARN,
+                message = "Could not persist send-confirmation bookkeeping for a resolved upload.",
+                uploadId = uploadId,
+                exception = failure
+            )
+        }
     }
 
     private fun progress(
@@ -243,3 +294,10 @@ class TelegramUploadEngineImpl @Inject constructor(
             else -> false
         }
 }
+
+/**
+ * Thrown when the provisional send id cannot be persisted. The send may already be
+ * in flight, so retrying blindly could duplicate the Telegram message — the attempt
+ * must fail non-retryably instead.
+ */
+private class SendBookkeepingException(message: String, cause: Throwable) : RuntimeException(message, cause)
