@@ -143,4 +143,43 @@ class UploadDaoTest {
         val allUploads = uploadDao.getAllUploads().first()
         assertTrue(allUploads.isEmpty())
     }
+
+    @Test
+    fun markSendDispatchedTogglesTheDurableFlag() = runBlocking {
+        uploadDao.insertUpload(createTestUpload("dispatch_1", "UPLOADING"))
+
+        uploadDao.markSendDispatched("dispatch_1")
+        assertTrue(uploadDao.getUploadById("dispatch_1")?.sendDispatched == true)
+
+        uploadDao.clearSendDispatched("dispatch_1")
+        assertTrue(uploadDao.getUploadById("dispatch_1")?.sendDispatched == false)
+    }
+
+    @Test
+    fun markSendConfirmedPersistsFinalStateAndClearsBookkeeping() = runBlocking {
+        uploadDao.insertUpload(createTestUpload("confirm_1", "UPLOADING"))
+        uploadDao.updateProvisionalMessageId("confirm_1", 777L)
+        uploadDao.markSendDispatched("confirm_1")
+
+        uploadDao.markSendConfirmed("confirm_1", 999L, "https://t.me/c/1/999")
+
+        val row = uploadDao.getUploadById("confirm_1")
+        assertEquals(999L, row?.finalMessageId)
+        assertEquals("https://t.me/c/1/999", row?.messageLink)
+        assertNull("Provisional id must be cleared once resolved", row?.provisionalMessageId)
+        assertTrue("Dispatch flag must be cleared once resolved", row?.sendDispatched == false)
+    }
+
+    @Test
+    fun markSendConfirmedAcceptsNullMessageLink() = runBlocking {
+        uploadDao.insertUpload(createTestUpload("confirm_2", "UPLOADING"))
+        uploadDao.updateProvisionalMessageId("confirm_2", 555L)
+
+        uploadDao.markSendConfirmed("confirm_2", 888L, null)
+
+        val row = uploadDao.getUploadById("confirm_2")
+        assertNotNull(row?.finalMessageId)
+        assertNull(row?.messageLink)
+        assertNull(row?.provisionalMessageId)
+    }
 }
