@@ -1,6 +1,8 @@
 # Release Notes
 
-## v1.0.23 (Unreleased)
+## v1.0.23 (2026-09-11)
+
+> **Signing key changed.** v1.0.23 is signed with a new release key (SHA-256 `632aea289bfc8d9a96c42b976e665479d687b8822a739c2bedbf27b9563af903`). Devices on older release-signed builds must uninstall first; direct upgrade is blocked by Android signature rules.
 
 ### Engineering / Toolchain
 
