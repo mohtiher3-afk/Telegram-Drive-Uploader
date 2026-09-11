@@ -7,9 +7,15 @@ name: tdlib-upgrade
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "TDLib version tag without the v prefix (e.g. 1.8.67)"
-        required: true
+      ref:
+        description: "TDLib upstream ref to build (branch/tag/sha). Current 1.8.xx line lives on master; TDLib has no per-patch tags."
+        required: false
+        default: "master"
+        type: string
+      expected_version:
+        description: "Optional exact version to assert (e.g. 1.8.67). The real version is always derived from the cloned CMakeLists.txt."
+        required: false
+        default: ""
         type: string
 
 permissions:
@@ -22,11 +28,10 @@ concurrency:
 
 jobs:
   build:
-    name: Build TDLib ${{ inputs.version }} for Android
+    name: Build TDLib ${{ inputs.ref }} for Android
     runs-on: ubuntu-latest
     timeout-minutes: 300
     env:
-      TDLIB_VERSION: ${{ inputs.version }}
       TARGET_ABIS: arm64-v8a armeabi-v7a x86_64
     steps:
       - name: Checkout
@@ -67,8 +72,10 @@ jobs:
           FORCE_ALL_ABIS: "1"
         run: ./scripts/build-openssl-android.sh
 
-      - name: Build TDLib ${{ inputs.version }} (JNI + Java bindings)
+      - name: Build TDLib ${{ inputs.ref }} (JNI + Java bindings)
         env:
+          TDLIB_REF: ${{ inputs.ref }}
+          TDLIB_VERSION: ${{ inputs.expected_version }}
           TDLIB_NATIVE_BUILD_DIR: ${{ github.workspace }}/.native-build
         run: ./scripts/build-tdlib-android.sh
 
@@ -80,7 +87,7 @@ jobs:
       - name: Summarize artifacts
         if: always()
         run: |
-          echo "## TDLib ${{ inputs.version }} artifacts" >> "$GITHUB_STEP_SUMMARY"
+          echo "## TDLib v${TDLIB_VERSION:-unknown} artifacts (ref: ${{ inputs.ref }})" >> "$GITHUB_STEP_SUMMARY"
           for abi in $TARGET_ABIS; do
             f="app/src/main/jniLibs/$abi/libtdjni.so"
             if [ -f "$f" ]; then
