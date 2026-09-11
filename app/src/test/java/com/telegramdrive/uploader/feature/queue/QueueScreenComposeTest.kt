@@ -14,6 +14,7 @@ import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.UploadManager
+import com.telegramdrive.uploader.core.util.OwnedStagedFileStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -37,7 +38,11 @@ class QueueScreenComposeTest {
     @Test
     fun `empty queue shows full screen empty state`() {
         composeRule.setContent {
-            QueueScreen(viewModel = QueueViewModel(FakeQueueRepository(), FakeUploadManager()))
+            QueueScreen(viewModel = QueueViewModel(
+                FakeQueueRepository(),
+                FakeUploadManager(),
+                OwnedStagedFileStore(ApplicationProvider.getApplicationContext())
+            ))
         }
 
         composeRule.onNodeWithTag("queue_empty_state").assertIsDisplayed()
@@ -165,7 +170,11 @@ class QueueScreenComposeTest {
         manager: FakeUploadManager = FakeUploadManager()
     ) {
         composeRule.setContent {
-            QueueScreen(viewModel = QueueViewModel(FakeQueueRepository(tasks), manager))
+            QueueScreen(viewModel = QueueViewModel(
+                FakeQueueRepository(tasks),
+                manager,
+                OwnedStagedFileStore(ApplicationProvider.getApplicationContext())
+            ))
         }
         composeRule.waitForIdle()
     }

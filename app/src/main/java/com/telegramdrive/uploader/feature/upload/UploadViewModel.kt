@@ -13,6 +13,7 @@ import com.telegramdrive.uploader.core.diagnostics.ErrorCode
 import com.telegramdrive.uploader.core.util.media.VideoMetadataExtractor
 import com.telegramdrive.uploader.core.util.media.VideoCompressor
 import com.telegramdrive.uploader.core.util.media.VideoQualityPreset
+import com.telegramdrive.uploader.core.util.OwnedStagedFileStore
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.domain.model.TelegramDestinationType
 import com.telegramdrive.uploader.domain.model.UploadTask
@@ -58,6 +59,7 @@ class UploadViewModel @Inject constructor(
     private val telegramRepository: TelegramRepository,
     private val uploadManager: UploadManager,
     private val settingsDataStore: SettingsDataStore,
+    private val ownedStagedFileStore: OwnedStagedFileStore,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -152,6 +154,11 @@ class UploadViewModel @Inject constructor(
             // The old firstOrNull() lookup was a no-op because it matched the
             // same element it was iterating — originals were never actually restored.
             _compressedIds.value = emptySet()
+            _preparedList.forEach { task ->
+                if (task.id in _originalCache) {
+                    ownedStagedFileStore.deleteOwnedFile(task.sourceUri)
+                }
+            }
             _preparedList.replaceAll { task ->
                 _originalCache[task.id] ?: task
             }
@@ -244,7 +251,7 @@ class UploadViewModel @Inject constructor(
             if (uri.scheme != "content") return@withContext original
 
             try {
-                val stagingDir = File(context.cacheDir, "staged-uploads")
+                val stagingDir = File(context.filesDir, "staged-uploads")
                 if (!stagingDir.exists() && !stagingDir.mkdirs()) {
                     DiagnosticsManager.log(
                         category = DiagnosticCategory.UPLOAD_FAILED,

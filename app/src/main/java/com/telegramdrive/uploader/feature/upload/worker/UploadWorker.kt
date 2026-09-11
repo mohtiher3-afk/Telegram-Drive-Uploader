@@ -10,6 +10,7 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.ErrorCode
+import com.telegramdrive.uploader.core.util.OwnedStagedFileStore
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
@@ -27,7 +28,8 @@ class UploadWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val repository: UploadRepository,
     private val uploadEngine: TelegramUploadEngine,
-    private val uploadEventNotifier: UploadEventNotifier
+    private val uploadEventNotifier: UploadEventNotifier,
+    private val ownedStagedFileStore: OwnedStagedFileStore
 ) : CoroutineWorker(context, params) {
 
     companion object {
@@ -68,6 +70,9 @@ class UploadWorker @AssistedInject constructor(
         }
 
         if (uploadTask.status == UploadStatus.CANCELLED || uploadTask.status == UploadStatus.PAUSED) {
+            if (uploadTask.status == UploadStatus.CANCELLED) {
+                ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+            }
             DiagnosticsManager.log(
                 category = DiagnosticCategory.WORKER_STOPPED,
                 severity = DiagnosticSeverity.INFO,
@@ -172,6 +177,7 @@ class UploadWorker @AssistedInject constructor(
                             repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
                             engineResult.messageLink?.let { repository.updateMessageLink(uploadId, it) }
                             repository.updateStatus(uploadId, UploadStatus.COMPLETED)
+                            ownedStagedFileStore.deleteOwnedFilesFor(latestTask ?: uploadTask)
                             notifyTerminalStatus(uploadId, UploadStatus.COMPLETED)
                             result = Result.success()
                             val duration = System.currentTimeMillis() - startTime
@@ -183,13 +189,19 @@ class UploadWorker @AssistedInject constructor(
                                 durationMs = duration
                             )
                         } else {
+                            if (latestTask.status == UploadStatus.CANCELLED) {
+                                ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                            }
                             result = Result.success()
                         }
                     }
                     is UploadEngineResult.Error -> {
                         terminalEventReceived = true
                         val latestTask = repository.getUploadById(uploadId)
-                        if (latestTask?.status == UploadStatus.CANCELLED || latestTask?.status == UploadStatus.PAUSED) {
+                        if (latestTask?.status == UploadStatus.CANCELLED) {
+                            ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                            result = Result.success()
+                        } else if (latestTask?.status == UploadStatus.PAUSED) {
                             result = Result.success()
                         } else {
                             val canRetry = engineResult.isRetryable && runAttemptCount < MAX_RETRY_ATTEMPTS
@@ -223,7 +235,11 @@ class UploadWorker @AssistedInject constructor(
             }
             if (isStopped) {
                 val latestTask = repository.getUploadById(uploadId)
-                return if (latestTask?.status == UploadStatus.CANCELLED || latestTask?.status == UploadStatus.PAUSED) {
+                return if (latestTask?.status == UploadStatus.CANCELLED) {
+                    ownedStagedFileStore.deleteOwnedFilesFor(latestTask)
+                    runCatching { uploadEngine.cancelActiveUploads() }
+                    Result.success()
+                } else if (latestTask?.status == UploadStatus.PAUSED) {
                     runCatching { uploadEngine.cancelActiveUploads() }
                     Result.success()
                 } else {
@@ -245,12 +261,18 @@ class UploadWorker @AssistedInject constructor(
                     )
                     result = Result.failure()
                 } else {
+                    if (latestTask.status == UploadStatus.CANCELLED) {
+                        ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                    }
                     result = Result.success()
                 }
             }
         } catch (e: Exception) {
             val latestTask = repository.getUploadById(uploadId)
-            if (latestTask?.status == UploadStatus.CANCELLED || latestTask?.status == UploadStatus.PAUSED || isStopped) {
+            if (latestTask?.status == UploadStatus.CANCELLED) {
+                ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                result = Result.success()
+            } else if (latestTask?.status == UploadStatus.PAUSED || isStopped) {
                 result = Result.success()
             } else {
                 val canRetry = runAttemptCount < MAX_RETRY_ATTEMPTS

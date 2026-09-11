@@ -57,7 +57,7 @@ class VideoCompressor(private val context: Context) {
             return@withContext sourceUri
         }
 
-        val outputDir = File(context.cacheDir, "compressed")
+        val outputDir = File(context.filesDir, "compressed")
         if (!outputDir.exists()) outputDir.mkdirs()
 
         val outputFile = File(outputDir, "compressed_${UUID.randomUUID()}.mp4")

@@ -12,6 +12,10 @@ Full build-stack update to the current stable line (AGP 9, Gradle 9, JDK 21, API
 - **Coil 3**: `coil.compose.AsyncImage` moved to `coil3.compose.AsyncImage` (`io.coil-kt.coil3`). Only a local-file loader is used, so no network artifact is pulled.
 - **hiltViewModel**: imports moved to `androidx.hilt.lifecycle.viewmodel.compose` (deprecation cleanup in all screens and navigation).
 
+### Bug Fixes
+
+- **Permanent upload failures after file selection**: Staging and compressed scratch files were written to `cacheDir`, which the OS may evict at any time. Once evicted, every queued upload for that session hit `FileNotFoundException` on the worker's first attempt and failed permanently — there was no source left to re-stage. These files are now written to `filesDir/staged-uploads` and `filesDir/compressed`, which are durable. Owned files are explicitly deleted on terminal worker states (COMPLETED, CANCELLED) and when tasks are removed or cancelled from the queue or history. This resolves the reported cluster of 12 consecutive `SOURCE_FILE_UNAVAILABLE` failures.
+
 ## v1.0.22
 
 ### Highlights
@@ -41,4 +45,4 @@ No new performance measurements or speculative optimizations were introduced.
 
 - The release workflow still requires the configured GitHub signing secrets and a `v*` tag push.
 - Real Telegram authentication, upload, and device background testing remain separate validation steps.
-- Staged snapshots live in `cacheDir`; the OS may evict them under storage pressure, which surfaces as a non-retryable "re-select the file" error rather than a silent failure.
+- Staged snapshots now live in `filesDir` and are explicitly cleaned on terminal states; cache eviction no longer causes silent upload failure.
