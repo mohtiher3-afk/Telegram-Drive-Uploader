@@ -1,5 +1,8 @@
 package com.telegramdrive.uploader.data.repository
 
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.data.local.database.UploadDao
 import com.telegramdrive.uploader.data.local.database.UploadEntity
 import com.telegramdrive.uploader.domain.model.UploadTask
@@ -82,6 +85,22 @@ class UploadRepositoryImpl @Inject constructor(
         uploadDao.clearAllUploads()
     }
 
+    /**
+     * A raw status string from the database must never crash the Flow collectors that
+     * feed home/queue/history: an unknown value (e.g. from an older or newer build)
+     * maps to FAILED and is logged instead of throwing [IllegalArgumentException].
+     */
+    private fun resolveStatus(raw: String): UploadStatus {
+        return runCatching { UploadStatus.valueOf(raw) }.getOrElse {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.DATABASE_ERROR,
+                severity = DiagnosticSeverity.WARN,
+                message = "Unknown upload status '$raw' found in the local database; treating it as FAILED."
+            )
+            UploadStatus.FAILED
+        }
+    }
+
     private fun UploadEntity.toDomain(): UploadTask {
         return UploadTask(
             id = id,
@@ -90,7 +109,7 @@ class UploadRepositoryImpl @Inject constructor(
             fileSize = fileSize,
             mimeType = mimeType,
             destinationId = destinationId,
-            status = UploadStatus.valueOf(status),
+            status = resolveStatus(status),
             progress = progress,
             uploadedBytes = uploadedBytes,
             totalBytes = totalBytes,

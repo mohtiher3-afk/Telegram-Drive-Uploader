@@ -47,6 +47,24 @@ interface UploadDao {
     @Query("UPDATE uploads SET provisionalMessageId = :messageId WHERE id = :id")
     suspend fun updateProvisionalMessageId(id: String, messageId: Long)
 
+    /** Marks a SendMessage as handed to TDLib; must be persisted BEFORE dispatch. */
+    @Query("UPDATE uploads SET sendDispatched = 1 WHERE id = :id")
+    suspend fun markSendDispatched(id: String)
+
+    /** Clears a stale dispatch flag once history lookup proved the send never left. */
+    @Query("UPDATE uploads SET sendDispatched = 0 WHERE id = :id")
+    suspend fun clearSendDispatched(id: String)
+
+    /**
+     * Records confirmed delivery: final message id + link become durable, and the
+     * provisional id / dispatch flag are cleared so no retry can re-send the message.
+     */
+    @Query(
+        "UPDATE uploads SET finalMessageId = :messageId, messageLink = :messageLink, " +
+            "provisionalMessageId = NULL, sendDispatched = 0 WHERE id = :id"
+    )
+    suspend fun markSendConfirmed(id: String, messageId: Long, messageLink: String?)
+
     @Query("UPDATE uploads SET status = 'QUEUED' WHERE status IN ('PREPARING', 'UPLOADING')")
     suspend fun reconcileInterruptedUploads(): Int
 

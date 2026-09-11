@@ -36,5 +36,18 @@ data class UploadEntity(
      * means "already sent, await confirmation" and the engine must NEVER blind-resend
      * (that would duplicate the Telegram message).
      */
-    val provisionalMessageId: Long? = null
+    val provisionalMessageId: Long? = null,
+    /**
+     * Durable "send dispatched" marker, persisted BEFORE the SendMessage call reaches
+     * TDLib. If the process dies between dispatch and the provisional-id persist, a
+     * retry still sees this flag and must resolve via the confirmation/history path
+     * instead of re-sending (which would duplicate the Telegram message).
+     */
+    val sendDispatched: Boolean = false,
+    /**
+     * Final (post-confirmation) TDLib message id, persisted when delivery is
+     * confirmed. A non-null value means the upload already completed delivery and
+     * retries must never touch TDLib again.
+     */
+    val finalMessageId: Long? = null
 )

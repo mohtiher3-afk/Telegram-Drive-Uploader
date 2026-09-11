@@ -2,6 +2,7 @@ package com.telegramdrive.uploader.feature.upload.worker
 
 import android.app.Notification
 import android.content.Context
+import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker
@@ -10,6 +11,7 @@ import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.workDataOf
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
+import com.telegramdrive.uploader.core.util.OwnedStagedFileStore
 import com.telegramdrive.uploader.domain.model.UploadProgress
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
@@ -23,11 +25,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 class UploadWorkerTest {
@@ -63,7 +67,14 @@ class UploadWorkerTest {
                 appContext: Context,
                 workerClassName: String,
                 workerParameters: WorkerParameters
-            ): ListenableWorker = UploadWorker(appContext, workerParameters, repository, engine, notifier)
+            ): ListenableWorker = UploadWorker(
+                appContext,
+                workerParameters,
+                repository,
+                engine,
+                notifier,
+                OwnedStagedFileStore(appContext)
+            )
         }
         return TestListenableWorkerBuilder.from(context, UploadWorker::class.java)
             .setInputData(workDataOf("upload_id" to UPLOAD_ID))
@@ -189,6 +200,55 @@ class UploadWorkerTest {
             etaSeconds = 0L
         )
     )
+
+    private fun ownedStagedFile(): File {
+        val dir = OwnedStagedFileStore(context).stagingDir
+        val file = File(dir, "$UPLOAD_ID-clip.mp4").apply {
+            parentFile?.mkdirs()
+            writeText("staged bytes")
+        }
+        return file
+    }
+
+    private fun newOwnedTask(): UploadTask = newTask(UploadStatus.QUEUED).copy(
+        sourceUri = Uri.fromFile(ownedStagedFile()).toString()
+    )
+
+    @Test
+    fun `completed upload deletes the owned staged file`() = runTest {
+        repository = FakeRepository(newOwnedTask())
+        engine.results = listOf(progress(100f), UploadEngineResult.Success(uploadDurationMs = 10L, messageLink = null))
+
+        val result = buildWorker().doWork()
+
+        assertTrue("Expected success, got $result", result is ListenableWorker.Result.Success)
+        assertEquals(UploadStatus.COMPLETED, repository.task?.status)
+        assertFalse("Owned staged file must be deleted after COMPLETED", File(Uri.parse(repository.task?.sourceUri).path!!).exists())
+    }
+
+    @Test
+    fun `cancelled task deletes the owned staged file`() = runTest {
+        val staged = ownedStagedFile()
+        repository = FakeRepository(newTask(UploadStatus.CANCELLED).copy(sourceUri = Uri.fromFile(staged).toString()))
+
+        val result = buildWorker().doWork()
+
+        assertTrue("Expected success, got $result", result is ListenableWorker.Result.Success)
+        assertEquals(0, engine.calls)
+        assertFalse("Owned staged file must be deleted after CANCELLED", staged.exists())
+    }
+
+    @Test
+    fun `permanent failure keeps the owned staged file for retry`() = runTest {
+        repository = FakeRepository(newOwnedTask())
+        engine.results = listOf(UploadEngineResult.Error("source unavailable", isRetryable = false))
+
+        val result = buildWorker().doWork()
+
+        assertTrue("Expected failure, got $result", result is ListenableWorker.Result.Failure)
+        assertEquals(UploadStatus.FAILED, repository.task?.status)
+        assertTrue("Owned staged file must survive FAILED so retry can reuse it", File(Uri.parse(repository.task?.sourceUri).path!!).exists())
+    }
 
     private class FakeEngine : TelegramUploadEngine {
         var results: List<UploadEngineResult> = emptyList()
