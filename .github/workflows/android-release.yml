@@ -101,7 +101,7 @@ jobs:
       - name: Set up Gradle 9.6
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "9.6"
+          gradle-version: wrapper
 
       - name: Prepare required Telegram configuration
         env:
@@ -226,7 +226,7 @@ jobs:
       - name: Set up Gradle 9.6
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "9.6"
+          gradle-version: wrapper
 
       - name: Prepare required Telegram configuration
         env:
