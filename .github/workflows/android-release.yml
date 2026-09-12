@@ -90,13 +90,13 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
 
       - name: Install Android SDK packages
-        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;26.3.11579264"
+        run: sdkmanager "platform-tools" "build-tools;36.0.0" "ndk;26.3.11579264"
 
       - name: Set up Gradle 9.6
         uses: gradle/actions/setup-gradle@v6
@@ -215,13 +215,13 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
 
       - name: Install Android SDK packages
-        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;26.3.11579264"
+        run: sdkmanager "platform-tools" "build-tools;36.0.0" "ndk;26.3.11579264"
 
       - name: Set up Gradle 9.6
         uses: gradle/actions/setup-gradle@v6
