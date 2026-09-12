@@ -7,7 +7,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudQueue
@@ -32,12 +32,10 @@ import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -57,13 +55,33 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.R
+import com.telegramdrive.uploader.core.ui.components.GradientCard
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.GradientPalette
+import com.telegramdrive.uploader.core.ui.theme.GradientPalettes
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
+
+/** Calm, near-slate gradient for low-emphasis stat tiles. */
+private val CalmSlate = GradientPalette(
+    top = Color(0xFF23262E),
+    mid = Color(0xFF1E2128),
+    base = Color(0xFF181B21),
+    glow = Color(0xFF2A2E38)
+)
+
+/** Subtle dark gradient tile for the empty active-uploads state. */
+private val EmptyTile = GradientPalette(
+    top = Color(0xFF20242C),
+    mid = Color(0xFF1C1F26),
+    base = Color(0xFF181B21),
+    glow = Color(0xFF2A2E38),
+    content = Color(0xFFB7BDC8)
+)
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -182,6 +200,7 @@ fun HomeScreen(
                             title = stringResource(R.string.total_videos),
                             value = uiState.totalVideosCount.toString(),
                             icon = Icons.Default.VideoLibrary,
+                            palette = CalmSlate,
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("stat_total_videos")
@@ -190,6 +209,7 @@ fun HomeScreen(
                             title = stringResource(R.string.total_size),
                             value = formatFileSize(uiState.totalSize),
                             icon = Icons.Default.Storage,
+                            palette = CalmSlate,
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("stat_total_size")
@@ -204,6 +224,7 @@ fun HomeScreen(
                             title = stringResource(R.string.pending),
                             value = uiState.pendingCount.toString(),
                             icon = Icons.Default.Schedule,
+                            palette = GradientPalettes.Ocean,
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("stat_pending")
@@ -212,6 +233,7 @@ fun HomeScreen(
                             title = stringResource(R.string.completed),
                             value = uiState.completedCount.toString(),
                             icon = Icons.Default.CheckCircle,
+                            palette = GradientPalettes.Mint,
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("stat_completed")
@@ -240,24 +262,21 @@ fun HomeScreen(
 
                 if (uiState.activeUploads.isEmpty()) {
                     item {
-                        Card(
+                        GradientCard(
+                            palette = EmptyTile,
                             modifier = Modifier.fillMaxWidth(),
-                            shape = MaterialTheme.shapes.medium,
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                            ),
-                            border = null
+                            glowAlpha = 0.12f
                         ) {
                             Row(
-                                modifier = Modifier.padding(AppSpacing.md),
+                                modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Surface(
                                     modifier = Modifier.size(40.dp),
                                     shape = CircleShape,
-                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Icon(
@@ -304,27 +323,22 @@ private fun TelegramConnectionCard(
     modifier: Modifier = Modifier
 ) {
     val tgAuthorized = telegramState == TelegramConnectionState.AUTHORIZED
+    val palette = if (tgAuthorized) GradientPalettes.Mint else GradientPalettes.Ocean
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    GradientCard(
+        palette = palette,
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(AppSpacing.md),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
             Surface(
                 modifier = Modifier.size(48.dp),
                 shape = CircleShape,
-                color = if (tgAuthorized) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = if (tgAuthorized) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                color = palette.content.copy(alpha = 0.14f),
+                contentColor = palette.content
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
@@ -340,7 +354,7 @@ private fun TelegramConnectionCard(
                     text = "Telegram",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = palette.content
                 )
                 Text(
                     text = if (tgAuthorized) {
@@ -349,22 +363,30 @@ private fun TelegramConnectionCard(
                         stringResource(R.string.telegram_not_connected)
                     },
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = palette.content.copy(alpha = 0.82f)
                 )
             }
 
             if (!tgAuthorized) {
-                FilledTonalButton(
+                OutlinedButton(
                     onClick = onTelegramConnectClick,
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.medium,
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = palette.content
+                    )
                 ) {
-                    Text(stringResource(R.string.connect))
+                    Text(
+                        text = stringResource(R.string.connect),
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             } else {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = palette.content,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -377,18 +399,14 @@ private fun UploadFeatureCard(
     onSelectVideos: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    val palette = GradientPalettes.Neon
+
+    GradientCard(
+        palette = palette,
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier
-                .padding(AppSpacing.medium)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -397,21 +415,21 @@ private fun UploadFeatureCard(
                     text = stringResource(R.string.new_upload),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = palette.content.copy(alpha = 0.82f)
                 )
                 Text(
                     text = stringResource(R.string.select_files_from_telegram),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = palette.content
                 )
             }
-            FilledTonalButton(
+            Button(
                 onClick = onSelectVideos,
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                shape = RoundedCornerShape(28.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = palette.content,
+                    contentColor = palette.base
                 )
             ) {
                 Icon(
@@ -433,8 +451,9 @@ private fun StatusPill(
 ) {
     Surface(
         shape = MaterialTheme.shapes.small,
-        color = accent.copy(alpha = 0.16f),
-        contentColor = MaterialTheme.colorScheme.onSurface
+        color = accent.copy(alpha = 0.18f),
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        border = BorderStroke(1.dp, accent.copy(alpha = 0.5f))
     ) {
         Text(
             text = activeCount.toString(),
@@ -450,23 +469,19 @@ private fun StatCard(
     title: String,
     value: String,
     icon: ImageVector,
+    palette: GradientPalette = GradientPalettes.Neon,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    GradientCard(
+        palette = palette,
+        modifier = modifier
     ) {
-        Column(
-            modifier = Modifier.padding(AppSpacing.medium),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.small)
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                color = palette.content.copy(alpha = 0.14f),
+                contentColor = palette.content
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
@@ -480,14 +495,14 @@ private fun StatCard(
                 text = value,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = palette.content,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = palette.content.copy(alpha = 0.7f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

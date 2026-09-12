@@ -34,6 +34,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -55,9 +56,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.components.GradientCard
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.GradientPalette
+
+/** Calm, near-slate gradient for low-emphasis section tiles. Matches Home's CalmSlate. */
+private val CalmSlate = GradientPalette(
+    top = Color(0xFF23262E),
+    mid = Color(0xFF1E2128),
+    base = Color(0xFF181B21),
+    glow = Color(0xFF2A2E38)
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -722,19 +732,15 @@ fun SettingsSection(
             )
         }
         
-        Card(
+        // Section body as a dim molten gradient tile. GradientCard supplies
+        // AppSpacing.md padding and LocalContentColor, so inner explicit
+        // Material colors keep working over the dark surface.
+        GradientCard(
+            palette = CalmSlate,
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
-            shape = MaterialTheme.shapes.large,
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            shape = RoundedCornerShape(26.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(AppSpacing.md)
-            ) {
-                content()
-            }
+            content()
         }
     }
 }
