@@ -98,10 +98,10 @@ jobs:
       - name: Install Android SDK packages
         run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;26.3.11579264"
 
-      - name: Set up Gradle 8.9
+      - name: Set up Gradle 9.6
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "8.9"
+          gradle-version: "9.6"
 
       - name: Prepare required Telegram configuration
         env:
@@ -156,7 +156,7 @@ jobs:
           echo "==GATE:check-tdlib-artifacts=="
           ./scripts/check-tdlib-artifacts.sh
           echo "==GATE:gradle-tests-and-lint=="
-          gradle --no-daemon --max-workers=2 :app:testDebugUnitTest :app:lintVitalRelease
+          ./gradlew --no-daemon --max-workers=2 :app:testDebugUnitTest :app:lintVitalRelease
 
       - name: Build signed Release APK for selected ABI
         env:
@@ -165,7 +165,7 @@ jobs:
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          gradle --no-daemon --max-workers=1 \
+          ./gradlew --no-daemon --max-workers=1 \
             -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8" \
             -PtargetAbi=${{ matrix.abi }} \
             :app:assembleRelease
@@ -223,10 +223,10 @@ jobs:
       - name: Install Android SDK packages
         run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;26.3.11579264"
 
-      - name: Set up Gradle 8.9
+      - name: Set up Gradle 9.6
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "8.9"
+          gradle-version: "9.6"
 
       - name: Prepare required Telegram configuration
         env:
@@ -274,7 +274,7 @@ jobs:
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          gradle --no-daemon --max-workers=1 \
+          ./gradlew --no-daemon --max-workers=1 \
             -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8" \
             :app:bundleRelease
 
