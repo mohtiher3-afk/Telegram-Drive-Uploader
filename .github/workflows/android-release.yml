@@ -199,6 +199,110 @@ jobs:
         if: always()
         run: rm -f .env release.keystore local.properties
 
+  bundle:
+    name: Build signed release App Bundle
+    needs: validate-release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.validate-release.outputs.source_ref }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;26.3.11579264"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: "8.9"
+
+      - name: Prepare required Telegram configuration
+        env:
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+        run: |
+          set -euo pipefail
+          test -n "$TELEGRAM_API_ID"
+          test -n "$TELEGRAM_API_HASH"
+          printf 'TELEGRAM_API_ID=%s\n' "$TELEGRAM_API_ID" > .env
+          printf 'TELEGRAM_API_HASH=%s\n' "$TELEGRAM_API_HASH" >> .env
+          chmod 600 .env
+
+      - name: Prepare official OpenSSL runtime dependencies for all ABIs
+        env:
+          TARGET_ABIS: "arm64-v8a armeabi-v7a x86_64"
+        run: ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/26.3.11579264" ./scripts/build-openssl-android.sh
+
+      - name: Prepare Release signing
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$RELEASE_KEYSTORE_BASE64"
+          test -n "$RELEASE_STORE_PASSWORD"
+          test -n "$RELEASE_KEY_ALIAS"
+          test -n "$RELEASE_KEY_PASSWORD"
+          printf '%s' "$RELEASE_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode > "$GITHUB_WORKSPACE/release.keystore"
+          chmod 600 "$GITHUB_WORKSPACE/release.keystore"
+          keytool -list \
+            -keystore "$GITHUB_WORKSPACE/release.keystore" \
+            -storepass "$RELEASE_STORE_PASSWORD" \
+            -alias "$RELEASE_KEY_ALIAS" > /dev/null
+
+      - name: Verify TDLib native artifacts for all ABIs
+        run: ./scripts/check-tdlib-artifacts.sh
+
+      - name: Build signed Release App Bundle
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          gradle --no-daemon --max-workers=1 \
+            -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8" \
+            :app:bundleRelease
+
+      - name: Verify signed App Bundle and create checksum
+        run: |
+          set -euo pipefail
+          AAB="app/build/outputs/bundle/release/app-release.aab"
+          test -f "$AAB"
+          for ABI in arm64-v8a armeabi-v7a x86_64; do
+            unzip -l "$AAB" | grep -q "base/lib/${ABI}/libtdjni.so"
+          done
+          jarsigner -verify -certs "$AAB" > /dev/null
+          sha256sum "$AAB" | tee app-release.aab.sha256
+
+      - name: Upload verified App Bundle artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: telegram-drive-uploader-bundle
+          path: |
+            app/build/outputs/bundle/release/app-release.aab
+            app-release.aab.sha256
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove sensitive build files
+        if: always()
+        run: rm -f .env release.keystore local.properties
+
   publish:
     name: Publish verified multi-ABI GitHub Release
     needs: [validate-release, release]
@@ -209,6 +313,13 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: telegram-drive-uploader-*-release
+          path: release-assets
+          merge-multiple: true
+
+      - name: Download verified App Bundle asset
+        uses: actions/download-artifact@v8
+        with:
+          name: telegram-drive-uploader-bundle
           path: release-assets
           merge-multiple: true
 
@@ -224,6 +335,11 @@ jobs:
             cp "$APK" "release-assets/app-${ABI}-release.apk"
             (cd release-assets && sha256sum "app-${ABI}-release.apk" > "app-${ABI}-release.apk.sha256")
           done
+          AAB="$(find release-assets -type f -name "app-release.aab" -print -quit)"
+          test -n "$AAB"
+          test "$AAB" != "release-assets/app-release.aab"
+          cp "$AAB" "release-assets/app-release.aab"
+          (cd release-assets && sha256sum "app-release.aab" > "app-release.aab.sha256")
 
       - name: Verify release asset set
         run: |
@@ -233,6 +349,9 @@ jobs:
             test -f "release-assets/app-${ABI}-release.apk.sha256"
             (cd release-assets && sha256sum --check "app-${ABI}-release.apk.sha256")
           done
+          test -f "release-assets/app-release.aab"
+          test -f "release-assets/app-release.aab.sha256"
+          (cd release-assets && sha256sum --check "app-release.aab.sha256")
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3
@@ -242,4 +361,5 @@ jobs:
           generate_release_notes: true
           files: |
             release-assets/*.apk
+            release-assets/*.aab
             release-assets/*.sha256

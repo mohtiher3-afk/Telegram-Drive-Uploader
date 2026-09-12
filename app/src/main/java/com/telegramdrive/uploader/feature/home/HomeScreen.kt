@@ -337,7 +337,7 @@ private fun TelegramConnectionCard(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Telegram",
+                    text = stringResource(R.string.telegram_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface

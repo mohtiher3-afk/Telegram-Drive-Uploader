@@ -8,6 +8,7 @@
     <string name="settings">Settings</string>
     <string name="back">Back</string>
     <string name="telegram_drive">Telegram Drive</string>
+    <string name="telegram_title">Telegram</string>
     <string name="home_greeting">Hi, %1$s</string>
     <string name="home_upload_snapshot">Upload overview</string>
     <string name="telegram_connected">Telegram Connected</string>

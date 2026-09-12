@@ -14,6 +14,7 @@ import java.util.UUID
 
 enum class DiagnosticCategory {
     APP_START,
+    CRASH_REPORTING,
     TELEGRAM_INIT,
     TELEGRAM_AUTH_STATE,
     TELEGRAM_AUTH_ERROR,
