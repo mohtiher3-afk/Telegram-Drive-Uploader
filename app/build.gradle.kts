@@ -1,4 +1,4 @@
-import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
+﻿import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
 import java.util.Base64
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -28,8 +28,8 @@ android {
     applicationId = "com.aistudio.telegramdrive.prmuq"
     minSdk = 24
     targetSdk = 36
-    versionCode = 22
-    versionName = "1.0.22"
+    versionCode = 24
+    versionName = "1.0.24"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
