@@ -116,13 +116,11 @@ jobs:
           git push origin "$BRANCH"
           echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
 
-      - name: Open PR
+      - name: Open PR (best-effort)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create \
-            --title "chore: upgrade TDLib to v${TDLIB_VERSION} (native rebuild)" \
-            --body "$(cat <<EOF
+          cat > /tmp/pr-body.md <<'EOF'
           Automated TDLib upgrade produced by the tdlib-upgrade workflow.
 
           ## Contents
@@ -138,6 +136,15 @@ jobs:
 
           Refs the automated TDLib release check issue.
           EOF
-          )" \
+          if gh pr create \
+            --title "chore: upgrade TDLib to v${TDLIB_VERSION} (native rebuild)" \
+            --body-file /tmp/pr-body.md \
             --base main \
-            --head "$BRANCH"
+            --head "$BRANCH"; then
+            echo "## TDLib upgrade PR opened in CI" >> "$GITHUB_STEP_SUMMARY"
+          else
+            PR_URL="https://github.com/${GITHUB_REPOSITORY}/pull/new/${BRANCH}"
+            echo "Automatic PR creation is not permitted for this repository (GitHub Actions create-PR policy)." >&2
+            echo "## Open the upgrade PR manually" >> "$GITHUB_STEP_SUMMARY"
+            echo "Branch \`${BRANCH}\` pushed and ready: ${PR_URL}" >> "$GITHUB_STEP_SUMMARY"
+          fi
