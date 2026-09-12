@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AssistChip
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,13 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -42,11 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
+import com.telegramdrive.uploader.core.ui.components.GradientCard
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.GradientPalettes
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,68 +125,54 @@ fun HistoryScreen(
                         }
                     }
                     item {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .liquidGlassOverlay(
-                                    shape = MaterialTheme.shapes.large,
-                                    accent = MaterialTheme.colorScheme.primary
-                                ),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                            shape = MaterialTheme.shapes.large,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                        GradientCard(
+                            palette = GradientPalettes.Mint,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp)
                         ) {
-                            Column(
+                            Text(
+                                text = stringResource(
+                                    com.telegramdrive.uploader.R.string.history_matches_summary,
+                                    uiState.totalMatches,
+                                    formatFileSize(uiState.totalSize)
+                                ),
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                color = GradientPalettes.Mint.content
+                            )
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    .padding(top = 2.dp, bottom = 4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text(
-                                    text = stringResource(
-                                        com.telegramdrive.uploader.R.string.history_matches_summary,
-                                        uiState.totalMatches,
-                                        formatFileSize(uiState.totalSize)
-                                    ),
-                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.primary
+                                AssistChip(
+                                    onClick = { viewModel.setSort(HistorySort.NEWEST) },
+                                    label = { Text(stringResource(com.telegramdrive.uploader.R.string.newest)) },
+                                    leadingIcon = {
+                                        if (uiState.sort == HistorySort.NEWEST) {
+                                            Icon(
+                                                Icons.Default.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier.testTag("sort_newest")
                                 )
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 4.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    AssistChip(
-                                        onClick = { viewModel.setSort(HistorySort.NEWEST) },
-                                        label = { Text(stringResource(com.telegramdrive.uploader.R.string.newest)) },
-                                        leadingIcon = {
-                                            if (uiState.sort == HistorySort.NEWEST) {
-                                                Icon(
-                                                    Icons.Default.Check,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(18.dp)
-                                                )
-                                            }
-                                        },
-                                        modifier = Modifier.testTag("sort_newest")
-                                    )
-                                    AssistChip(
-                                        onClick = { viewModel.setSort(HistorySort.LARGEST) },
-                                        label = { Text(stringResource(com.telegramdrive.uploader.R.string.largest)) },
-                                        leadingIcon = {
-                                            if (uiState.sort == HistorySort.LARGEST) {
-                                                Icon(
-                                                    Icons.Default.Check,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(18.dp)
-                                                )
-                                            }
-                                        },
-                                        modifier = Modifier.testTag("sort_largest")
-                                    )
-                                }
+                                AssistChip(
+                                    onClick = { viewModel.setSort(HistorySort.LARGEST) },
+                                    label = { Text(stringResource(com.telegramdrive.uploader.R.string.largest)) },
+                                    leadingIcon = {
+                                        if (uiState.sort == HistorySort.LARGEST) {
+                                            Icon(
+                                                Icons.Default.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier.testTag("sort_largest")
+                                )
                             }
                         }
                     }

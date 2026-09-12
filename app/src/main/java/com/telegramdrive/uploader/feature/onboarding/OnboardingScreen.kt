@@ -15,7 +15,9 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,17 +34,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +53,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -61,16 +65,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.R
-import com.telegramdrive.uploader.core.ui.components.glowSignalRim
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.components.GradientButton
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
+import com.telegramdrive.uploader.core.ui.theme.GradientPalette
+import com.telegramdrive.uploader.core.ui.theme.GradientPalettes
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 private data class OnboardingPage(
     val title: String,
     val description: String,
     val icon: ImageVector,
-    val accent: Color
+    val accent: GradientPalette
 )
 
 @Composable
@@ -86,19 +91,19 @@ fun OnboardingScreen(
                 title = stringResource(R.string.onboarding_page_upload_title),
                 description = stringResource(R.string.onboarding_page_upload_description),
                 icon = Icons.Default.CloudUpload,
-                accent = MaterialTheme.colorScheme.primaryContainer
+                accent = GradientPalettes.Neon
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_schedule_title),
                 description = stringResource(R.string.onboarding_page_schedule_description),
                 icon = Icons.Default.Schedule,
-                accent = MaterialTheme.colorScheme.tertiaryContainer
+                accent = GradientPalettes.Ocean
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_private_title),
                 description = stringResource(R.string.onboarding_page_private_description),
                 icon = Icons.Default.Security,
-                accent = MaterialTheme.colorScheme.secondaryContainer
+                accent = GradientPalettes.Neon
             )
         )
 
@@ -129,7 +134,25 @@ fun OnboardingScreen(
         }
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFF0E0F12), Color(0xFF15171C))
+                )
+            )
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        GradientPalettes.Neon.glow.copy(alpha = 0.16f),
+                        Color.Transparent
+                    ),
+                    center = Offset.Zero
+                )
+            ),
+        color = Color.Transparent
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -146,7 +169,12 @@ fun OnboardingScreen(
                         viewModel.complete()
                         onFinished()
                     },
-                    shape = MaterialTheme.shapes.extraLarge
+                    shape = MaterialTheme.shapes.extraLarge,
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.White.copy(alpha = 0.9f)
+                    )
                 ) {
                     Text(stringResource(com.telegramdrive.uploader.R.string.skip))
                 }
@@ -154,18 +182,25 @@ fun OnboardingScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Surface(
+            val accent = pages[page].accent
+            val tileShape = MaterialTheme.shapes.extraLarge
+            Box(
                 modifier = Modifier
                     .size(176.dp)
-                    .liquidGlassOverlay(
-                        shape = MaterialTheme.shapes.extraLarge,
-                        accent = MaterialTheme.colorScheme.primary
-                    ),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = pages[page].accent,
-                tonalElevation = 4.dp
+                    .clip(tileShape)
+                    .background(Brush.verticalGradient(accent.stops))
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                accent.glow.copy(alpha = 0.28f),
+                                Color.Transparent
+                            )
+                        )
+                    )
+                    .border(1.dp, Color.White.copy(alpha = 0.12f), tileShape),
+                contentAlignment = Alignment.Center
             ) {
-                Box(contentAlignment = Alignment.Center) {
+                CompositionLocalProvider(LocalContentColor provides accent.content) {
                     if (page == 0) {
                         androidx.compose.foundation.Image(
                             painter = painterResource(R.drawable.mission_control_logo),
@@ -178,7 +213,8 @@ fun OnboardingScreen(
                         Icon(
                             imageVector = pages[page].icon,
                             contentDescription = null,
-                            modifier = Modifier.size(64.dp)
+                            modifier = Modifier.size(64.dp),
+                            tint = accent.content
                         )
                     }
                 }
@@ -226,7 +262,7 @@ fun OnboardingScreen(
                         label = "onboarding_dot_width_$index"
                     )
                     val dotColor by animateColorAsState(
-                        targetValue = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                        targetValue = if (active) GradientPalettes.Neon.top else MaterialTheme.colorScheme.outlineVariant,
                         animationSpec = AppMotion.shortTween(motionEnabled),
                         label = "onboarding_dot_color_$index"
                     )
@@ -241,22 +277,17 @@ fun OnboardingScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Button(
+            GradientButton(
+                text = if (page < pages.lastIndex) {
+                    stringResource(com.telegramdrive.uploader.R.string.continue_action)
+                } else {
+                    stringResource(com.telegramdrive.uploader.R.string.choose_permissions)
+                },
                 onClick = {
                     if (page < pages.lastIndex) page++ else finishOnboarding()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .glowSignalRim(MaterialTheme.shapes.extraLarge),
-                shape = MaterialTheme.shapes.extraLarge,
-                contentPadding = ButtonDefaults.ButtonWithIconContentPadding
-            ) {
-                if (page == pages.lastIndex) {
-                    Icon(Icons.Default.VideoLibrary, contentDescription = null)
-                    Spacer(modifier = Modifier.size(8.dp))
-                }
-                Text(if (page < pages.lastIndex) stringResource(com.telegramdrive.uploader.R.string.continue_action) else stringResource(com.telegramdrive.uploader.R.string.choose_permissions))
-            }
+                palette = GradientPalettes.Neon
+            )
         }
     }
 }

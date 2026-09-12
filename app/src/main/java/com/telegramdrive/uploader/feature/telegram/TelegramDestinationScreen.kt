@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -22,11 +23,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.telegramdrive.uploader.core.ui.components.glowSignalRim
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.components.GradientButton
+import com.telegramdrive.uploader.core.ui.components.GradientCard
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramDestinationType
+import com.telegramdrive.uploader.core.ui.theme.GradientPalette
+import com.telegramdrive.uploader.core.ui.theme.GradientPalettes
+
+/** Calm, near-slate gradient for low-emphasis utility tiles. Matches Home's CalmSlate. */
+private val CalmSlate = GradientPalette(
+    top = Color(0xFF23262E),
+    mid = Color(0xFF1E2128),
+    base = Color(0xFF181B21),
+    glow = Color(0xFF2A2E38)
+)
 
 @Composable
 fun TelegramDestinationScreen(
@@ -98,15 +109,13 @@ fun TelegramDestinationScreen(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(
+                    GradientButton(
+                        text = stringResource(com.telegramdrive.uploader.R.string.connect_telegram),
                         onClick = onConnectClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .glowSignalRim(MaterialTheme.shapes.extraLarge)
                             .testTag("destination_connect_telegram_button")
-                    ) {
-                        Text(stringResource(com.telegramdrive.uploader.R.string.connect_telegram))
-                    }
+                    )
                 }
             } else {
                 // Search Bar
@@ -128,57 +137,37 @@ fun TelegramDestinationScreen(
                     singleLine = true
                 )
 
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .liquidGlassOverlay(
-                            shape = MaterialTheme.shapes.medium,
-                            accent = MaterialTheme.colorScheme.secondary
-                        ),
-                    shape = MaterialTheme.shapes.medium
+                GradientCard(
+                    palette = CalmSlate,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.Info,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = CalmSlate.content
                         )
                         Text(
                             text = stringResource(com.telegramdrive.uploader.R.string.direct_upload_info),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = CalmSlate.content.copy(alpha = 0.9f)
                         )
                     }
                 }
 
                 // Selected Destination Banner
                 selectedDestination?.let { dest ->
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .liquidGlassOverlay(
-                                shape = MaterialTheme.shapes.large,
-                                accent = MaterialTheme.colorScheme.primary
-                            )
-                            .glowSignalRim(MaterialTheme.shapes.large)
-                            .testTag("selected_destination_banner")
-                        ,
-                        shape = MaterialTheme.shapes.large
+                    GradientCard(
+                        palette = GradientPalettes.Ocean,
+                        modifier = Modifier.fillMaxWidth(),
+                        testTag = "selected_destination_banner"
                     ) {
                         Row(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -186,18 +175,18 @@ fun TelegramDestinationScreen(
                                 Text(
                                     text = stringResource(com.telegramdrive.uploader.R.string.target_destination),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = GradientPalettes.Ocean.content.copy(alpha = 0.85f)
                                 )
                                 Text(
                                     text = dest.title,
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    color = GradientPalettes.Ocean.content
                                 )
                                 dest.username?.let {
                                     Text(
                                         text = "@$it",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        color = GradientPalettes.Ocean.content.copy(alpha = 0.9f)
                                     )
                                 }
                             }
@@ -208,7 +197,7 @@ fun TelegramDestinationScreen(
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = stringResource(com.telegramdrive.uploader.R.string.remove_selection),
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    tint = GradientPalettes.Ocean.content
                                 )
                             }
                         }
@@ -262,22 +251,18 @@ fun TelegramDestinationScreen(
                 }
 
                 // Action Confirm Button
-                Button(
+                GradientButton(
+                    text = stringResource(com.telegramdrive.uploader.R.string.confirm_destination),
                     onClick = {
                         selectedDestination?.let { onDestinationSelected(it) }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
-                        .glowSignalRim(
-                            shape = MaterialTheme.shapes.extraLarge,
-                            enabled = selectedDestination != null
-                        )
                         .testTag("confirm_destination_button"),
+                    palette = GradientPalettes.Neon,
                     enabled = selectedDestination != null
-                ) {
-                    Text(stringResource(com.telegramdrive.uploader.R.string.confirm_destination))
-                }
+                )
             }
         }
     }
@@ -299,32 +284,15 @@ fun DestinationRow(
         TelegramDestinationType.OTHER -> Icons.Default.Folder
     }
 
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.secondaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            }
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.medium,
-                accent = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-            )
-            .glowSignalRim(
-                shape = MaterialTheme.shapes.medium,
-                enabled = isSelected
-            )
-            .testTag("destination_item_${destination.id}")
-        ,
-        shape = MaterialTheme.shapes.medium
+    val palette = if (isSelected) GradientPalettes.Ocean else CalmSlate
+
+    GradientCard(
+        palette = palette,
+        modifier = Modifier.fillMaxWidth(),
+        testTag = "destination_item_${destination.id}"
     ) {
         Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
@@ -340,7 +308,7 @@ fun DestinationRow(
             ) {
                 Surface(
                     shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.surface,
+                    color = palette.content.copy(alpha = 0.16f),
                     modifier = Modifier.size(40.dp)
                 ) {
                     Box(
@@ -350,7 +318,7 @@ fun DestinationRow(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = palette.content
                         )
                     }
                 }
@@ -359,13 +327,13 @@ fun DestinationRow(
                     Text(
                         text = destination.title,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = palette.content
                     )
                     destination.username?.let {
                         Text(
                             text = "@$it",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = palette.content.copy(alpha = 0.8f)
                         )
                     }
                 }
@@ -384,9 +352,9 @@ fun DestinationRow(
                         }
                     ),
                     tint = if (isPinned) {
-                        MaterialTheme.colorScheme.primary
+                        palette.content
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                        palette.content.copy(alpha = 0.6f)
                     }
                 )
             }
@@ -394,7 +362,7 @@ fun DestinationRow(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = stringResource(com.telegramdrive.uploader.R.string.selected),
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = palette.content,
                     modifier = Modifier.size(24.dp)
                 )
             }

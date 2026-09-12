@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -26,13 +25,13 @@ import androidx.compose.material.icons.filled.PauseCircleOutline
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,16 +40,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
+import com.telegramdrive.uploader.core.ui.components.GradientCard
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.GradientPalettes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,38 +145,28 @@ fun QueueScreen(
                     }
                     item {
                         if (uiState.failedCount > 0 || uiState.activeCount > 0) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .liquidGlassOverlay(
-                                        shape = MaterialTheme.shapes.large,
-                                        accent = MaterialTheme.colorScheme.secondary
-                                    ),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                                ),
-                                shape = MaterialTheme.shapes.large,
-                                border = BorderStroke(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.42f)
-                                ),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                            val controlsPalette = if (uiState.failedCount > 0) {
+                                GradientPalettes.Sunset
+                            } else {
+                                GradientPalettes.Neon
+                            }
+                            GradientCard(
+                                palette = controlsPalette,
+                                modifier = Modifier.fillMaxWidth()
                             ) {
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(12.dp),
+                                    modifier = Modifier.fillMaxWidth(),
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_title),
                                         style = MaterialTheme.typography.titleSmall,
-                                        color = MaterialTheme.colorScheme.secondary
+                                        color = controlsPalette.content
                                     )
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.R.string.queue_controls_supporting),
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = controlsPalette.content.copy(alpha = 0.82f)
                                     )
                                     Row(
                                         modifier = Modifier
@@ -184,13 +175,19 @@ fun QueueScreen(
                                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
                                         if (uiState.failedCount > 0) {
-                                            FilledTonalButton(
+                                            OutlinedButton(
                                                 onClick = viewModel::retryAllFailed,
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .heightIn(min = 48.dp)
                                                     .testTag("retry_all_failed"),
-                                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
+                                                shape = MaterialTheme.shapes.medium,
+                                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
+                                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+                                                colors = ButtonDefaults.outlinedButtonColors(
+                                                    containerColor = Color.Transparent,
+                                                    contentColor = controlsPalette.content
+                                                )
                                             ) {
                                                 Icon(
                                                     Icons.Default.Refresh,
@@ -205,13 +202,19 @@ fun QueueScreen(
                                             }
                                         }
                                         if (uiState.activeCount > 0) {
-                                            FilledTonalButton(
+                                            OutlinedButton(
                                                 onClick = viewModel::pauseAllActive,
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .heightIn(min = 48.dp)
                                                     .testTag("pause_all_active"),
-                                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
+                                                shape = MaterialTheme.shapes.medium,
+                                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
+                                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+                                                colors = ButtonDefaults.outlinedButtonColors(
+                                                    containerColor = Color.Transparent,
+                                                    contentColor = controlsPalette.content
+                                                )
                                             ) {
                                                 Icon(
                                                     Icons.Default.PauseCircleOutline,
