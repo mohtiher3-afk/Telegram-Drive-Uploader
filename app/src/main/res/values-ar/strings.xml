@@ -8,6 +8,7 @@
     <string name="settings">الإعدادات</string>
     <string name="back">رجوع</string>
     <string name="telegram_drive">تيليجرام درايف</string>
+    <string name="telegram_title">تيليجرام</string>
     <string name="home_greeting">مرحبًا، %1$s</string>
     <string name="home_upload_snapshot">نظرة عامة على الرفع</string>
     <string name="telegram_connected">تم ربط تيليجرام</string>

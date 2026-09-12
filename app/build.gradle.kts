@@ -103,6 +103,18 @@ android {
     }
   }
 
+  bundle {
+    abi {
+      enableSplit = true
+    }
+    density {
+      enableSplit = true
+    }
+    language {
+      enableSplit = false
+    }
+  }
+
   buildTypes {
     release {
       isCrunchPngs = false
@@ -154,7 +166,9 @@ dependencies {
   implementation(libs.hilt.android)
   ksp(libs.hilt.android.compiler)
   implementation(libs.androidx.hilt.navigation.compose)
+  implementation(libs.sentry.android)
   implementation(libs.androidx.work.runtime.ktx)
+  implementation(libs.sentry.android)
   implementation(platform(libs.androidx.compose.bom))
   implementation(libs.androidx.compose.animation.graphics)
   // implementation(libs.accompanist.permissions)

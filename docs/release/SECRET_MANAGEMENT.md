@@ -12,6 +12,7 @@ Source code must always be `NOT STORED` for every secret listed below. This docu
 | `RELEASE_STORE_PASSWORD` | Keystore password | GitHub Actions repository secret | Manual Android Release workflow | NOT STORED |
 | `RELEASE_KEY_ALIAS` | Signing key alias | GitHub Actions repository secret | Manual Android Release workflow | NOT STORED |
 | `RELEASE_KEY_PASSWORD` | Signing key password | GitHub Actions repository secret | Manual Android Release workflow | NOT STORED |
+| `SENTRY_DSN` | Crash-reporting endpoint for Sentry; only enables Sentry when non-blank and not the placeholder `YOUR_SENTRY_DSN_HERE` | GitHub Actions repository secret / local untracked environment | App runtime crash reporting (feature-flagged in code; no DSN means no network calls) | NOT STORED |
 | `UPLOAD_API_KEY` | Gateway upload authentication credential | Deployment secret store | Gateway server | NOT STORED |
 
 ## Handling Rules

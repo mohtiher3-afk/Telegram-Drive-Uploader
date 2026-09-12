@@ -9,6 +9,8 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import dagger.hilt.android.HiltAndroidApp
+import io.sentry.Sentry
+import io.sentry.android.core.SentryAndroid
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -24,6 +26,29 @@ class TelegramDriveApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Initialize crash reporting (Sentry) only when a real DSN is configured.
+        // Prevents Sentry from attempting network calls and leaking a placeholder DSN
+        // when TELEGRAM_API_ID/HASH/SENTRY_DSN secrets are absent (e.g. in smoke builds).
+        val sentryDsn = BuildConfig.SENTRY_DSN
+        if (sentryDsn.isNotBlank() && sentryDsn != "YOUR_SENTRY_DSN_HERE") {
+            SentryAndroid.init(this) { options ->
+                options.dsn = sentryDsn
+                options.tracesSampleRate = 0.25
+            }
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.CRASH_REPORTING,
+                severity = DiagnosticSeverity.INFO,
+                message = "Sentry crash reporting initialized in the Telegram Drive Uploader application."
+            )
+        } else {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.CRASH_REPORTING,
+                severity = DiagnosticSeverity.WARN,
+                message = "Sentry DSN not configured; crash reporting won't be enabled. Add SENTRY_DSN to .env to activate."
+            )
+        }
+
         DiagnosticsManager.log(
             category = DiagnosticCategory.APP_START,
             severity = DiagnosticSeverity.INFO,
