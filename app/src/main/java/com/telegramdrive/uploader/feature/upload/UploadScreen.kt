@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -25,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
@@ -34,11 +36,21 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
 import com.telegramdrive.uploader.core.ui.components.ErrorState
+import com.telegramdrive.uploader.core.ui.components.GradientButton
+import com.telegramdrive.uploader.core.ui.components.GradientCard
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
-import com.telegramdrive.uploader.core.ui.components.glowSignalRim
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.theme.GradientPalette
+import com.telegramdrive.uploader.core.ui.theme.GradientPalettes
 import com.telegramdrive.uploader.core.util.media.VideoQualityPreset
+
+/** Calm, near-slate gradient for low-emphasis tiles. Matches Home's CalmSlate. */
+private val CalmSlate = GradientPalette(
+    top = Color(0xFF23262E),
+    mid = Color(0xFF1E2128),
+    base = Color(0xFF181B21),
+    glow = Color(0xFF2A2E38)
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +70,7 @@ fun UploadScreen(
     val isSelectionMode = selectedVideoIds.isNotEmpty()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (isSelectionMode && uiState is UploadUiState.Success) {
                 val successState = uiState as UploadUiState.Success
@@ -190,65 +203,77 @@ fun UploadScreen(
                                 .padding(16.dp)
                         ) {
                             // Destination Selection
-                            Card(
+                            GradientCard(
+                                palette = if (selectedDestination != null) {
+                                    GradientPalettes.Ocean
+                                } else {
+                                    CalmSlate
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 12.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = if (selectedDestination != null)
-                                        MaterialTheme.colorScheme.secondaryContainer
-                                    else
-                                        MaterialTheme.colorScheme.surfaceVariant
-                                ),
-                                shape = MaterialTheme.shapes.large,
-                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                                border = if (selectedDestination == null) {
-                                    BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                                } else null
+                                shape = RoundedCornerShape(24.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
                                             text = stringResource(com.telegramdrive.uploader.R.string.telegram_destination_label),
                                             style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.primary
+                                            color = if (selectedDestination != null)
+                                                GradientPalettes.Ocean.content.copy(alpha = 0.85f)
+                                            else
+                                                CalmSlate.content.copy(alpha = 0.85f)
                                         )
                                         Text(
                                             text = selectedDestination?.title ?: stringResource(com.telegramdrive.uploader.R.string.select_target),
-                                            style = MaterialTheme.typography.titleLarge
+                                            style = MaterialTheme.typography.titleLarge,
+                                            color = if (selectedDestination != null)
+                                                GradientPalettes.Ocean.content
+                                            else
+                                                CalmSlate.content
                                         )
                                     }
-                                    TextButton(onClick = onSelectDestination) {
+                                    OutlinedButton(
+                                        onClick = onSelectDestination,
+                                        shape = RoundedCornerShape(28.dp),
+                                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = if (selectedDestination != null)
+                                                GradientPalettes.Ocean.content
+                                            else
+                                                CalmSlate.content
+                                        )
+                                    ) {
                                         Text(stringResource(if (selectedDestination == null) com.telegramdrive.uploader.R.string.select_action else com.telegramdrive.uploader.R.string.schedule_change))
                                     }
                                 }
                             }
 
-                            Card(
+                            GradientCard(
+                                palette = CalmSlate,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 12.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                                ),
-                                shape = MaterialTheme.shapes.medium,
-                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                                shape = RoundedCornerShape(24.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
-                                        Text(stringResource(com.telegramdrive.uploader.R.string.schedule_upload), style = MaterialTheme.typography.titleSmall)
+                                        Text(
+                                            stringResource(com.telegramdrive.uploader.R.string.schedule_upload),
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = CalmSlate.content
+                                        )
                                         Text(
                                             scheduledAt?.let {
                                                 DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(it)
                                             } ?: stringResource(com.telegramdrive.uploader.R.string.start_immediately),
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = CalmSlate.content.copy(alpha = 0.82f)
                                         )
                                     }
                                     TextButton(
@@ -279,28 +304,35 @@ fun UploadScreen(
                                                 calendar.get(Calendar.DAY_OF_MONTH)
                                             ).show()
                                         },
+                                        colors = ButtonDefaults.textButtonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = CalmSlate.content
+                                        ),
                                         modifier = Modifier.testTag("schedule_upload_button")
                                     ) { Text(stringResource(if (scheduledAt == null) com.telegramdrive.uploader.R.string.schedule_choose else com.telegramdrive.uploader.R.string.schedule_change)) }
                                     if (scheduledAt != null) {
-                                        TextButton(onClick = { viewModel.setScheduledAt(null) }) { Text(stringResource(com.telegramdrive.uploader.R.string.clear)) }
+                                        TextButton(
+                                            onClick = { viewModel.setScheduledAt(null) },
+                                            colors = ButtonDefaults.textButtonColors(
+                                                containerColor = Color.Transparent,
+                                                contentColor = CalmSlate.content
+                                            )
+                                        ) { Text(stringResource(com.telegramdrive.uploader.R.string.clear)) }
                                     }
                                 }
                             }
 
                             // Smart File Assistant
-                            Card(
+                            GradientCard(
+                                palette = GradientPalettes.Neon,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 12.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                                ),
-                                shape = MaterialTheme.shapes.large
+                                shape = RoundedCornerShape(24.dp)
                             ) {
                                 Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(14.dp),
+                                        .fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
@@ -309,18 +341,23 @@ fun UploadScreen(
                                             text = stringResource(com.telegramdrive.uploader.R.string.smart_file_assistant_title),
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                                            color = GradientPalettes.Neon.content
                                         )
                                         Text(
                                             text = stringResource(com.telegramdrive.uploader.R.string.smart_file_assistant_description),
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                                            color = GradientPalettes.Neon.content.copy(alpha = 0.82f)
                                         )
                                     }
-                                    FilledTonalButton(
+                                    OutlinedButton(
                                         onClick = viewModel::applyAllSmartSuggestions,
                                         enabled = smartSuggestions.isNotEmpty(),
                                         shape = MaterialTheme.shapes.extraLarge,
+                                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = GradientPalettes.Neon.content
+                                        ),
                                         modifier = Modifier.testTag("smart_file_assistant_button")
                                     ) {
                                         Text(stringResource(com.telegramdrive.uploader.R.string.smart_file_assistant_suggest))
@@ -329,39 +366,32 @@ fun UploadScreen(
                             }
                             // Warning Banner if invalid files were skipped
                             state.invalidFilesWarning?.let { warning ->
-                                Card(
+                                GradientCard(
+                                    palette = GradientPalettes.Sunset,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(bottom = 12.dp)
-                                        .testTag("invalid_files_warning_card"),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer
-                                    ),
-                                    shape = MaterialTheme.shapes.medium
+                                        .padding(bottom = 12.dp),
+                                    shape = RoundedCornerShape(24.dp),
+                                    testTag = "invalid_files_warning_card"
                                 ) {
                                     Text(
                                         text = warning,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onErrorContainer,
-                                        modifier = Modifier.padding(12.dp)
+                                        color = GradientPalettes.Sunset.content
                                     )
                                 }
                             }
 
                             // Compression Quality Selector
-                            Card(
+                            GradientCard(
+                                palette = CalmSlate,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 12.dp)
-                                    .testTag("compression_selector_card"),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                                ),
-                                shape = MaterialTheme.shapes.large,
-                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                                    .padding(bottom = 12.dp),
+                                shape = RoundedCornerShape(24.dp),
+                                testTag = "compression_selector_card"
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(14.dp),
                                     verticalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
                                     Row(
@@ -372,18 +402,20 @@ fun UploadScreen(
                                             Text(
                                                 text = stringResource(com.telegramdrive.uploader.R.string.compression_title),
                                                 style = MaterialTheme.typography.titleMedium,
-                                                fontWeight = FontWeight.Bold
+                                                fontWeight = FontWeight.Bold,
+                                                color = CalmSlate.content
                                             )
                                             Text(
                                                 text = stringResource(com.telegramdrive.uploader.R.string.compression_subtitle),
                                                 style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                color = CalmSlate.content.copy(alpha = 0.82f)
                                             )
                                         }
                                         if (state.isCompressing) {
                                             CircularProgressIndicator(
                                                 modifier = Modifier.size(20.dp),
-                                                strokeWidth = 2.dp
+                                                strokeWidth = 2.dp,
+                                                color = CalmSlate.content
                                             )
                                         }
                                     }
@@ -416,31 +448,24 @@ fun UploadScreen(
                             }
 
                             // Summary Header
-                            Card(
+                            GradientCard(
+                                palette = GradientPalettes.Neon,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 16.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                                ),
-                                shape = MaterialTheme.shapes.extraLarge,
-                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                                shape = RoundedCornerShape(28.dp)
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    Text(
-                                        text = stringResource(com.telegramdrive.uploader.R.string.videos_selected_summary, state.preparedVideos.size),
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
-                                            text = stringResource(com.telegramdrive.uploader.R.string.total_size_summary, formatFileSize(totalSize)),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
-                                }
+                                Text(
+                                    text = stringResource(com.telegramdrive.uploader.R.string.videos_selected_summary, state.preparedVideos.size),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = GradientPalettes.Neon.content
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = stringResource(com.telegramdrive.uploader.R.string.total_size_summary, formatFileSize(totalSize)),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = GradientPalettes.Neon.content.copy(alpha = 0.85f)
+                                )
                             }
 
                             // List
@@ -477,38 +502,18 @@ fun UploadScreen(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             // Bottom Add to Queue Action
-                            Button(
-                                onClick = {
-                                    viewModel.addToQueue(onComplete = onQueueAdded)
-                                },
+                            GradientButton(
+                                text = stringResource(com.telegramdrive.uploader.R.string.add_to_queue),
+                                onClick = { viewModel.addToQueue(onComplete = onQueueAdded) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(min = 56.dp)
-                                    .glowSignalRim(
-                                        shape = MaterialTheme.shapes.extraLarge,
-                                        enabled = selectedDestination != null && !state.isSubmitting
-                                    )
                                     .testTag("add_to_queue_button"),
+                                palette = GradientPalettes.Neon,
+                                shape = RoundedCornerShape(28.dp),
                                 enabled = selectedDestination != null && !state.isSubmitting,
-                                shape = MaterialTheme.shapes.extraLarge,
-                                elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                if (state.isSubmitting) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp),
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        strokeWidth = 2.5.dp
-                                    )
-                                } else {
-                                    Text(
-                                        text = stringResource(com.telegramdrive.uploader.R.string.add_to_queue),
-                                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                                    )
-                                }
-                            }
+                                loading = state.isSubmitting
+                            )
                         }
                     }
                 }
