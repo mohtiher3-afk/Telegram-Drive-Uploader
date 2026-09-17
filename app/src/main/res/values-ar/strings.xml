@@ -222,13 +222,6 @@
     <string name="status_completed">مكتمل</string>
     <string name="status_failed">فشل</string>
     <string name="status_cancelled">أُلغي</string>
-    <string name="upload_notification_channel_name">حالة الرفع</string>
-    <string name="upload_notification_channel_description">تنبيهات الرفع المؤكد أو الفشل النهائي فقط.</string>
-    <string name="upload_notification_in_progress_title">جارٍ الرفع</string>
-    <string name="upload_notification_completed_title">اكتمل الرفع</string>
-    <string name="upload_notification_completed_text">تم تسليم ملف إلى وجهة تيليجرام المحددة.</string>
-    <string name="upload_notification_failed_title">فشل الرفع</string>
-    <string name="upload_notification_failed_text">تعذر تسليم ملف. افتح التطبيق للمراجعة وإعادة المحاولة عند توفرها.</string>
     <string name="upload_notifications">إشعارات الرفع</string>
     <string name="upload_notifications_summary">تلقي تنبيه حالة خاص فقط بعد تأكيد تسليم ملف أو فشله نهائيًا.</string>
     <string name="upload_notifications_enabled">إشعارات الرفع مفعّلة</string>

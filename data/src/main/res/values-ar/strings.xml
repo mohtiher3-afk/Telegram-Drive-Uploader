@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="upload_notification_channel_name">حالة الرفع</string>
+    <string name="upload_notification_channel_description">تنبيهات الرفع المؤكد أو الفشل النهائي فقط.</string>
+    <string name="upload_notification_in_progress_title">جارٍ الرفع</string>
+    <string name="upload_notification_completed_title">اكتمل الرفع</string>
+    <string name="upload_notification_completed_text">تم تسليم ملف إلى وجهة تيليجرام المحددة.</string>
+    <string name="upload_notification_failed_title">فشل الرفع</string>
+    <string name="upload_notification_failed_text">تعذر تسليم ملف. افتح التطبيق للمراجعة وإعادة المحاولة عند توفرها.</string>
+</resources>

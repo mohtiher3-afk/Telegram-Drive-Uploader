@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 TDLIB_VERSION="${TDLIB_VERSION:-1.8.66}"
@@ -6,8 +6,8 @@ TDLIB_VERSION="${TDLIB_VERSION:-1.8.66}"
 echo "=== TDLib v${TDLIB_VERSION} Android Artifact Integrity & Completeness Check ==="
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-JNI_DIR="$PROJECT_ROOT/app/src/main/jniLibs"
-JAVA_BINDING_DIR="$PROJECT_ROOT/app/src/main/java/org/drinkless/tdlib"
+JNI_DIR="$PROJECT_ROOT/data/src/main/jniLibs"
+JAVA_BINDING_DIR="$PROJECT_ROOT/data/src/main/java/org/drinkless/tdlib"
 MANIFEST_FILE="$PROJECT_ROOT/docs/TDLIB_ARTIFACT_MANIFEST.md"
 
 MISSING_COUNT=0

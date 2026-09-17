@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.core.di
+package com.telegramdrive.uploader.data.di
 
 import android.content.Context
 import androidx.work.WorkManager

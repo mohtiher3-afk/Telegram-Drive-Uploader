@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.core.di
+package com.telegramdrive.uploader.data.di
 
 import com.telegramdrive.uploader.data.repository.UploadRepositoryImpl
 import com.telegramdrive.uploader.data.telegram.client.TelegramClient

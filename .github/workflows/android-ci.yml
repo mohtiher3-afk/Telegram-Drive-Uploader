@@ -1,4 +1,4 @@
-name: Android Multi-ABI CI
+﻿name: Android Multi-ABI CI
 
 on:
   push:
@@ -91,7 +91,7 @@ jobs:
       - name: Run JVM unit tests
         env:
           MEMORY_TELEMETRY_DIR: ${{ runner.temp }}/ci-memory/${{ matrix.abi }}
-        run: ./scripts/measure-gradle-memory.sh jvm-unit-tests gradle --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test
+        run: ./scripts/measure-gradle-memory.sh jvm-unit-tests gradle --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test :data:testDebugUnitTest
 
       - name: Run release lint
         env:

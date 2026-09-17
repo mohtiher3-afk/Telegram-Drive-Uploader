@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.feature.upload.worker
+package com.telegramdrive.uploader.data.upload.worker
 
 import android.app.Notification
 import android.content.Context
@@ -19,7 +19,7 @@ import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
 import com.telegramdrive.uploader.domain.upload.UploadEventNotificationEvent
-import com.telegramdrive.uploader.domain.upload.UploadEventNotifier
+import com.telegramdrive.uploader.data.upload.notifications.UploadEventNotifier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf

@@ -222,13 +222,6 @@
     <string name="status_completed">Completed</string>
     <string name="status_failed">Failed</string>
     <string name="status_cancelled">Cancelled</string>
-    <string name="upload_notification_channel_name">Upload status</string>
-    <string name="upload_notification_channel_description">Confirmed upload completion and permanent failure updates.</string>
-    <string name="upload_notification_in_progress_title">Uploading</string>
-    <string name="upload_notification_completed_title">Upload completed</string>
-    <string name="upload_notification_completed_text">A file was delivered to your selected Telegram destination.</string>
-    <string name="upload_notification_failed_title">Upload failed</string>
-    <string name="upload_notification_failed_text">A file could not be delivered. Open the app to review and retry when available.</string>
     <string name="upload_notifications">Upload notifications</string>
     <string name="upload_notifications_summary">Receive a private status alert only after a file is confirmed delivered or permanently fails.</string>
     <string name="upload_notifications_enabled">Upload notifications are enabled</string>

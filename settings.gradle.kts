@@ -28,3 +28,4 @@ rootProject.name = "Telegram Drive Uploader"
 include(":app")
 include(":domain")
 include(":core")
+include(":data")

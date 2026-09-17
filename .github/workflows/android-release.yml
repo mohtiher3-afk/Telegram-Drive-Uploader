@@ -1,4 +1,4 @@
-name: Android Signed Multi-ABI Release
+﻿name: Android Signed Multi-ABI Release
 
 on:
   push:
@@ -156,7 +156,7 @@ jobs:
           echo "==GATE:check-tdlib-artifacts=="
           ./scripts/check-tdlib-artifacts.sh
           echo "==GATE:gradle-tests-and-lint=="
-          ./gradlew --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test :app:lintVitalRelease
+          ./gradlew --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test :data:testDebugUnitTest :app:lintVitalRelease
 
       - name: Build signed Release APK for selected ABI
         env:

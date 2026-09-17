@@ -163,6 +163,7 @@ googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.W
 dependencies {
   implementation(project(":domain"))
   implementation(project(":core"))
+  implementation(project(":data"))
   implementation(libs.androidx.hilt.work)
   ksp(libs.androidx.hilt.compiler)
   implementation(libs.hilt.android)
@@ -186,15 +187,12 @@ dependencies {
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.core.splashscreen)
-  implementation(libs.androidx.datastore.preferences)
   // implementation(libs.kotlogram)
   // implementation("org.telegram:tdlib:1.8.0") // Replace with latest version if possible, but 1.8.0 is a reasonable start if not specified
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.androidx.room.ktx)
-  implementation(libs.androidx.room.runtime)
   implementation(libs.coil.compose)
   // implementation(libs.firebase.firestore)
 
@@ -213,7 +211,6 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
-    testImplementation(libs.androidx.work.testing)
   testImplementation(libs.roborazzi)
   testImplementation(libs.roborazzi.compose)
   testImplementation(libs.roborazzi.junit.rule)
@@ -224,5 +221,4 @@ dependencies {
   androidTestImplementation(libs.androidx.runner)
   debugImplementation(libs.androidx.compose.ui.test.manifest)
   debugImplementation(libs.androidx.compose.ui.tooling)
-  "ksp"(libs.androidx.room.compiler)
 }

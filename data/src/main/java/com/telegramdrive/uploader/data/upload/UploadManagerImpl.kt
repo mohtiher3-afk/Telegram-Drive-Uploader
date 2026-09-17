@@ -8,7 +8,7 @@ import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.UploadManager
-import com.telegramdrive.uploader.feature.upload.worker.UploadWorker
+import com.telegramdrive.uploader.data.upload.worker.UploadWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.Dispatchers

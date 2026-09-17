@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -uo pipefail
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
@@ -77,11 +77,11 @@ gradle_help() {
 }
 
 gradle_compile() {
-  $GRADLE_BIN --no-daemon --max-workers=2 :app:compileDebugKotlin :core:compileDebugKotlin :domain:compileKotlin
+  $GRADLE_BIN --no-daemon --max-workers=2 :app:compileDebugKotlin :core:compileDebugKotlin :domain:compileKotlin :data:compileDebugKotlin
 }
 
 gradle_tests() {
-  $GRADLE_BIN --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test
+  $GRADLE_BIN --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test :data:testDebugUnitTest
 }
 
 gradle_lint() {
