@@ -5,7 +5,7 @@
 | Field | Record |
 |---|---|
 | Request | Post Android notifications when a real upload is confirmed complete or fails permanently. |
-| Confirmed write point | `feature/upload/worker/UploadWorker.kt` writes `COMPLETED` only after `UploadEngineResult.Success`, which is backed by confirmed TDLib delivery; it writes terminal `FAILED` only for permanent engine error, unconfirmed stream termination, or exhausted exception retries. |
+| Confirmed write point | `data/src/main/java/com/telegramdrive/uploader/data/upload/worker/UploadWorker.kt` writes `COMPLETED` only after `UploadEngineResult.Success`, which is backed by confirmed TDLib delivery; it writes terminal `FAILED` only for permanent engine error, unconfirmed stream termination, or exhausted exception retries. |
 | Current notification state | No Android notification implementation, channel, or `POST_NOTIFICATIONS` declaration exists. Existing onboarding requests media permission only. |
 | Privacy boundary | Notification copy must not reveal filenames, Telegram destinations, account details, TDLib errors, phone numbers, or credentials on the lock screen. |
 

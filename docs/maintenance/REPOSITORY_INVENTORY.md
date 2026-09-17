@@ -22,7 +22,7 @@
 | `design/` | Reference assets | Application icon concept and multi-device UI preview. |
 | `.native-build/`, `build/`, `.gradle/`, `debug.keystore` | Local/ignored output | Present in the working environment but ignored and not tracked. |
 
-No `buildSrc/`, convention-plugin module, separate native source tree, or separate test module exists in the audited tree. Native TDLib artifacts are stored under `app/src/main/jniLibs/` and generated Java bindings under `app/src/main/java/org/drinkless/tdlib/`.
+No `buildSrc/`, convention-plugin module, separate native source tree, or separate test module exists in the audited tree. Native TDLib artifacts are stored under `data/src/main/jniLibs/` and generated Java bindings under `data/src/main/java/org/drinkless/tdlib/`.
 
 ## Application structure
 

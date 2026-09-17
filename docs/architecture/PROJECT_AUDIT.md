@@ -54,7 +54,7 @@ The package structure is already organized by `core`, `data`, `domain`, and `fea
 
 ## Protected areas
 
-The following must not be changed during initial organization: `app/src/main/jniLibs/**`, official `org.drinkless.tdlib.*` bindings, TDLib artifact manifests/checkers, OpenSSL build scripts, `TelegramClientImpl.kt`, `UploadWorker.kt`, Room schema/migrations, `AndroidManifest.xml`, and release-signing configuration. Any change to these areas requires a separate risk review, focused tests, and a rollback point.
+The following must not be changed during initial organization: `data/src/main/jniLibs/**`, official `org.drinkless.tdlib.*` bindings, TDLib artifact manifests/checkers, OpenSSL build scripts, `TelegramClientImpl.kt`, `UploadWorker.kt`, Room schema/migrations, `AndroidManifest.xml`, and release-signing configuration. Any change to these areas requires a separate risk review, focused tests, and a rollback point.
 
 ## Safe refactoring principle
 

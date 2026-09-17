@@ -48,4 +48,4 @@ The only class that directly couples to generated TDLib types is `TelegramClient
 
 ## Protected surfaces
 
-The following remain outside this refactoring boundary: `org.drinkless.tdlib.*`, `app/src/main/jniLibs/**`, `libtdjni.so`, generated bindings, native artifacts, ABI configuration, TDLib build scripts and version, authentication behavior, session behavior, logout behavior, upload behavior, WorkManager behavior, credentials, and UI design.
+The following remain outside this refactoring boundary: `org.drinkless.tdlib.*`, `data/src/main/jniLibs/**`, `libtdjni.so`, generated bindings, native artifacts, ABI configuration, TDLib build scripts and version, authentication behavior, session behavior, logout behavior, upload behavior, WorkManager behavior, credentials, and UI design.

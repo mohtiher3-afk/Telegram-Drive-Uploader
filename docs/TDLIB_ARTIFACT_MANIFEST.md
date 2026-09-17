@@ -25,24 +25,24 @@ The Android project is packaged as separate ABI APKs for **arm64-v8a**, **armeab
 
 | Artifact | Relative path | Size | Status |
 |---|---|---:|---|
-| ARM64 JNI | `app/src/main/jniLibs/arm64-v8a/libtdjni.so` | 58,944,152 bytes | PASS; stripped ELF AArch64 |
-| ARMv7 JNI | `app/src/main/jniLibs/armeabi-v7a/libtdjni.so` | 23,441,904 bytes | PASS; stripped ELF ARM EABI5 |
-| x86_64 JNI | `app/src/main/jniLibs/x86_64/libtdjni.so` | 36,146,336 bytes | PASS; stripped ELF X86-64 |
-| Client binding | `app/src/main/java/org/drinkless/tdlib/Client.java` | 11,015 bytes | PASS |
-| Log binding | `app/src/main/java/org/drinkless/tdlib/Log.java` | 3,401 bytes | PASS |
-| TdApi binding | `app/src/main/java/org/drinkless/tdlib/TdApi.java` | 1,757,224 bytes | PASS |
+| ARM64 JNI | `data/src/main/jniLibs/arm64-v8a/libtdjni.so` | 58,944,152 bytes | PASS; stripped ELF AArch64 |
+| ARMv7 JNI | `data/src/main/jniLibs/armeabi-v7a/libtdjni.so` | 23,441,904 bytes | PASS; stripped ELF ARM EABI5 |
+| x86_64 JNI | `data/src/main/jniLibs/x86_64/libtdjni.so` | 36,146,336 bytes | PASS; stripped ELF X86-64 |
+| Client binding | `data/src/main/java/org/drinkless/tdlib/Client.java` | 11,015 bytes | PASS |
+| Log binding | `data/src/main/java/org/drinkless/tdlib/Log.java` | 3,401 bytes | PASS |
+| TdApi binding | `data/src/main/java/org/drinkless/tdlib/TdApi.java` | 1,757,224 bytes | PASS |
 
 The mandatory checker reports `TDLIB_ARTIFACTS_PRESENT=true`, verifies the ELF header, and rejects a non-AArch64 ARM64 artifact. Missing native libraries remain a hard failure at build/runtime integration boundaries.
 
 ## 4. SHA-256 Checksums
 
 ```text
-e3b7b195000787efce458cdf9b1bfa6271c9b18ea23041b03e805b9ae2515654  app/src/main/jniLibs/arm64-v8a/libtdjni.so
-77350d864515071279a51549b145b925c820f42a8e87d039bdab622cdc47e9a8  app/src/main/jniLibs/armeabi-v7a/libtdjni.so
-2a66e9c5927a5bebe8aadbfb97e6776babb804f8326a3fb75856b073267edab8  app/src/main/jniLibs/x86_64/libtdjni.so
-ea37f5c3f2cb894ad14381a22e1c6ca22affbaa25346669ff117e0b489e6eabe  app/src/main/java/org/drinkless/tdlib/Client.java
-e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36  app/src/main/java/org/drinkless/tdlib/Log.java
-8f40a88e7bd379c5362afe8af0fe079c36b7d638f0adf19d024cfbce2ee74e7d  app/src/main/java/org/drinkless/tdlib/TdApi.java
+e3b7b195000787efce458cdf9b1bfa6271c9b18ea23041b03e805b9ae2515654  data/src/main/jniLibs/arm64-v8a/libtdjni.so
+77350d864515071279a51549b145b925c820f42a8e87d039bdab622cdc47e9a8  data/src/main/jniLibs/armeabi-v7a/libtdjni.so
+2a66e9c5927a5bebe8aadbfb97e6776babb804f8326a3fb75856b073267edab8  data/src/main/jniLibs/x86_64/libtdjni.so
+ea37f5c3f2cb894ad14381a22e1c6ca22affbaa25346669ff117e0b489e6eabe  data/src/main/java/org/drinkless/tdlib/Client.java
+e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36  data/src/main/java/org/drinkless/tdlib/Log.java
+8f40a88e7bd379c5362afe8af0fe079c36b7d638f0adf19d024cfbce2ee74e7d  data/src/main/java/org/drinkless/tdlib/TdApi.java
 ```
 
 ## 5. Android Build Verification

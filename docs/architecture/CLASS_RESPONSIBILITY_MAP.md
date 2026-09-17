@@ -9,7 +9,7 @@
 | `TelegramRepositoryImpl` | Domain-facing Telegram operations | Telegram client, models | `data/telegram/repository` | KEEP |
 | `UploadManagerImpl` | Queue orchestration and WorkManager enqueue | Repository, WorkManager | `data/upload` | REVIEW |
 | `TelegramUploadEngineImpl` | File preparation, send request and terminal confirmation | TDLib repository, completion policy | `data/upload` | REVIEW |
-| `UploadWorker` | Background execution and retry result | Hilt, manager, WorkManager | `feature/upload/worker` or `data/upload/worker` | KEEP until worker tests exist |
+| `UploadWorker` | Background execution and retry result | Hilt, manager, WorkManager | `data/upload/worker` | KEEP; moved to `:data`, UploadWorkerTest exists |
 | `UploadRepositoryImpl` | Room-backed upload persistence | DAO, entities | `data/repository` | KEEP |
 | `*ViewModel` classes | Screen state and user actions | Domain contracts | Existing feature packages | KEEP |
 | `VideoFormatSupport`, `VideoMetadataExtractor` | Media validation and metadata | Android media APIs | `core/util` | KEEP |

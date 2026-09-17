@@ -11,5 +11,5 @@
 | Logs | Sanitized diagnostics | `DiagnosticsManager` | Medium | Review required for future additions; no secret values intentionally emitted |
 | Network | Telegram/TDLib and configured HTTPS services | Android network stack | High | No trust-all TLS code found; no custom cleartext policy found |
 | Components | Main activity and AndroidX startup provider | `AndroidManifest.xml` | Medium | Provider non-exported; launcher activity exported only for launcher intent |
-| Native libraries | Official TDLib JNI artifacts | `app/src/main/jniLibs/` | High | Protected and unchanged |
+| Native libraries | Official TDLib JNI artifacts | `data/src/main/jniLibs/` | High | Protected and unchanged |
 | Backups | Database/DataStore exclusion rules | `res/xml/*backup*` | High | Explicit exclusions present |
