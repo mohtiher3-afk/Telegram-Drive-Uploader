@@ -1,6 +1,6 @@
-package com.telegramdrive.uploader.domain.repository
+﻿package com.telegramdrive.uploader.domain.repository
 
-import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
+import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramError

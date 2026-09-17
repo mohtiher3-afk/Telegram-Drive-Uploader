@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+﻿@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.telegramdrive.uploader.feature.telegram
 
@@ -35,7 +35,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
-import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
+import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing

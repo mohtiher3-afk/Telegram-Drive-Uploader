@@ -77,11 +77,11 @@ gradle_help() {
 }
 
 gradle_compile() {
-  $GRADLE_BIN --no-daemon --max-workers=2 :app:compileDebugKotlin
+  $GRADLE_BIN --no-daemon --max-workers=2 :app:compileDebugKotlin :core:compileDebugKotlin :domain:compileKotlin
 }
 
 gradle_tests() {
-  $GRADLE_BIN --no-daemon --max-workers=2 :app:testDebugUnitTest
+  $GRADLE_BIN --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test
 }
 
 gradle_lint() {

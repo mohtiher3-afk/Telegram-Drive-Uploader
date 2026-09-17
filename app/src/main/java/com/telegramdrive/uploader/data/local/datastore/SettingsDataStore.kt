@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.telegramdrive.uploader.core.util.PinnedDestinationIds
+import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -257,10 +258,3 @@ class SettingsDataStore @Inject constructor(
     }
 
 }
-
-data class TelegramAccountEntry(
-    val key: String,
-    val phone: String,
-    val displayName: String,
-    val isActive: Boolean = false
-)

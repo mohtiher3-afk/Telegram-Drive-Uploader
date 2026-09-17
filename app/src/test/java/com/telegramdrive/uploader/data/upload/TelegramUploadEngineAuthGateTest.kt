@@ -1,10 +1,10 @@
-package com.telegramdrive.uploader.data.upload
+﻿package com.telegramdrive.uploader.data.upload
 
 import android.net.Uri
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
-import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
+import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.data.local.database.UploadDao
 import com.telegramdrive.uploader.data.local.database.UploadEntity
 import com.telegramdrive.uploader.data.telegram.client.SendConfirmation
@@ -206,7 +206,7 @@ class TelegramUploadEngineAuthGateTest {
     fun `provisional retry without confirmation fails non-retryable, never resends`() = runTest {
         val client = FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED }
         // bufferedConfirmation and awaitedConfirmation stay null: the send may have
-        // happened, but nothing confirms it — resending would duplicate the message.
+        // happened, but nothing confirms it â€” resending would duplicate the message.
         engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, FakeUploadRepository(), FakeUploadDao())
 
         val results = engine.uploadFile(task().copy(provisionalMessageId = 777L)).toList()

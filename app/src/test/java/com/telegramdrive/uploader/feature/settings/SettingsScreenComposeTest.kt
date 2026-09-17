@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.feature.settings
+﻿package com.telegramdrive.uploader.feature.settings
 
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
@@ -13,7 +13,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import com.telegramdrive.uploader.BuildConfig
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
-import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
+import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramError

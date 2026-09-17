@@ -1,7 +1,7 @@
-package com.telegramdrive.uploader.core.diagnostics
+﻿package com.telegramdrive.uploader.core.diagnostics
 
 import android.os.Build
-import com.telegramdrive.uploader.BuildConfig
+import com.telegramdrive.uploader.core.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

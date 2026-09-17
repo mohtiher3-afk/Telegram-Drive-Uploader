@@ -1,8 +1,8 @@
-package com.telegramdrive.uploader.feature.telegram
+﻿package com.telegramdrive.uploader.feature.telegram
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
+import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramError
 import com.telegramdrive.uploader.domain.model.TelegramUser

@@ -29,7 +29,7 @@ android {
     minSdk = 24
     targetSdk = 36
     versionCode = 24
-    versionName = "1.0.24"
+    versionName = rootProject.extra["appVersionName"] as String
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -161,6 +161,8 @@ googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.W
 // Some unused dependencies are commented out below instead of being removed.
 // This makes it easy to add them back in the future if needed.
 dependencies {
+  implementation(project(":domain"))
+  implementation(project(":core"))
   implementation(libs.androidx.hilt.work)
   ksp(libs.androidx.hilt.compiler)
   implementation(libs.hilt.android)
