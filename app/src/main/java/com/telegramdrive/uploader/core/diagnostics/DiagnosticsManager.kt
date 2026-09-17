@@ -141,7 +141,7 @@ object DiagnosticsManager {
             durationMs = durationMs,
             message = sanitizedMsg,
             androidApi = Build.VERSION.SDK_INT,
-            appVersion = "1.0.0"
+            appVersion = BuildConfig.VERSION_NAME
         )
 
         // Bounded list management

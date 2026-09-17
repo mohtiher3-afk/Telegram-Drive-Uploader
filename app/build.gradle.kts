@@ -168,7 +168,6 @@ dependencies {
   implementation(libs.androidx.hilt.navigation.compose)
   implementation(libs.sentry.android)
   implementation(libs.androidx.work.runtime.ktx)
-  implementation(libs.sentry.android)
   implementation(platform(libs.androidx.compose.bom))
   implementation(libs.androidx.compose.animation.graphics)
   // implementation(libs.accompanist.permissions)

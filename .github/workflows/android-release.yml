@@ -177,9 +177,12 @@ jobs:
           set -euo pipefail
           APK="app/build/outputs/apk/release/app-${ABI}-release.apk"
           test -f "$APK"
-          unzip -l "$APK" | grep -q "lib/${ABI}/libtdjni.so"
-          if unzip -l "$APK" | grep -Eq "lib/(arm64-v8a|armeabi-v7a|x86_64)/libtdjni.so" | grep -v "lib/${ABI}/libtdjni.so"; then
-            echo "Unexpected additional ABI library found in $ABI APK"
+          APK_LISTING="$(unzip -l "$APK")"
+          printf '%s\n' "$APK_LISTING" | grep "lib/${ABI}/libtdjni.so" > /dev/null
+          UNEXPECTED_LIBS="$(printf '%s\n' "$APK_LISTING" | grep -oE "lib/(arm64-v8a|armeabi-v7a|x86_64)/libtdjni\.so" | grep -v "lib/${ABI}/libtdjni\.so" || true)"
+          if [ -n "$UNEXPECTED_LIBS" ]; then
+            echo "Unexpected additional ABI library found in $ABI APK:"
+            printf '%s\n' "$UNEXPECTED_LIBS"
             exit 1
           fi
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK"
@@ -283,8 +286,9 @@ jobs:
           set -euo pipefail
           AAB="app/build/outputs/bundle/release/app-release.aab"
           test -f "$AAB"
+          AAB_LISTING="$(unzip -l "$AAB")"
           for ABI in arm64-v8a armeabi-v7a x86_64; do
-            unzip -l "$AAB" | grep -q "base/lib/${ABI}/libtdjni.so"
+            printf '%s\n' "$AAB_LISTING" | grep "base/lib/${ABI}/libtdjni.so" > /dev/null
           done
           jarsigner -verify -certs "$AAB" > /dev/null
           sha256sum "$AAB" | tee app-release.aab.sha256
