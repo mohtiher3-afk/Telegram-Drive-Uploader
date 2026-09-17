@@ -3,7 +3,7 @@
 import android.content.Context
 import android.os.Build
 import android.os.SystemClock
-import com.telegramdrive.uploader.BuildConfig
+import com.telegramdrive.uploader.data.BuildConfig
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.data.local.database.UploadDao

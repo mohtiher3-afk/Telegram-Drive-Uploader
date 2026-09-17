@@ -1,4 +1,4 @@
-name: Android TDLib Device Smoke Test
+﻿name: Android TDLib Device Smoke Test
 
 on:
   workflow_dispatch:
@@ -6,8 +6,8 @@ on:
     branches: [main]
     paths:
       - 'app/src/androidTest/**'
-      - 'app/src/main/java/org/drinkless/tdlib/**'
-      - 'app/src/main/jniLibs/x86_64/**'
+      - 'data/src/main/java/org/drinkless/tdlib/**'
+      - 'data/src/main/jniLibs/x86_64/**'
       - 'scripts/run-tdlib-device-smoke-test.sh'
       - 'scripts/build-openssl-android.sh'
       - '.github/workflows/android-device-smoke.yml'

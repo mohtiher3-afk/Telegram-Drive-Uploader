@@ -1,4 +1,4 @@
-name: tdlib-upgrade
+﻿name: tdlib-upgrade
 
 # Builds TDLib native JNI libraries for Android from the official upstream
 # source and opens a PR with the resulting artifacts. Trigger manually after
@@ -89,7 +89,7 @@ jobs:
         run: |
           echo "## TDLib v${TDLIB_VERSION:-unknown} artifacts (ref: ${{ inputs.ref }})" >> "$GITHUB_STEP_SUMMARY"
           for abi in $TARGET_ABIS; do
-            f="app/src/main/jniLibs/$abi/libtdjni.so"
+            f="data/src/main/jniLibs/$abi/libtdjni.so"
             if [ -f "$f" ]; then
               size=$(wc -c < "$f")
               echo "- ✅ $abi: libtdjni.so ($size bytes)" >> "$GITHUB_STEP_SUMMARY"
@@ -105,8 +105,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
-          git add app/src/main/jniLibs app/src/main/java/org/drinkless/tdlib/TdApi.java \
-                  app/src/main/java/org/drinkless/tdlib/Client.java \
+          git add data/src/main/jniLibs data/src/main/java/org/drinkless/tdlib/TdApi.java \
+                  data/src/main/java/org/drinkless/tdlib/Client.java \
                   docs/TDLIB_ARTIFACT_MANIFEST.md docs/TDLIB_SHA256SUMS.txt
           if git diff --cached --quiet; then
             echo "No artifact changes — aborting PR creation." >> "$GITHUB_STEP_SUMMARY"

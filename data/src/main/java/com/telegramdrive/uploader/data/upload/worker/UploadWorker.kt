@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.feature.upload.worker
+package com.telegramdrive.uploader.data.upload.worker
 
 import android.content.Context
 import androidx.core.app.NotificationCompat
@@ -16,7 +16,7 @@ import com.telegramdrive.uploader.domain.repository.UploadRepository
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadCompletionPolicy
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
-import com.telegramdrive.uploader.domain.upload.UploadEventNotifier
+import com.telegramdrive.uploader.data.upload.notifications.UploadEventNotifier
 import com.telegramdrive.uploader.domain.upload.UploadEventNotificationPolicy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

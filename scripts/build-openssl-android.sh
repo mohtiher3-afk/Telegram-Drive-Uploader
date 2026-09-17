@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 # Build only the OpenSSL shared libraries required by the checked-in TDLib JNI
@@ -64,7 +64,7 @@ build_abi() {
       ;;
   esac
 
-  local tdjni="$PROJECT_ROOT/app/src/main/jniLibs/$abi/libtdjni.so"
+  local tdjni="$PROJECT_ROOT/data/src/main/jniLibs/$abi/libtdjni.so"
   # FORCE_ALL_ABIS=1 builds every requested ABI regardless of the currently
   # checked-in TDLib binary. Required before a TDLib upgrade, where the new
   # libtdjni.so will link against OpenSSL even if the old binary did not.
@@ -114,7 +114,7 @@ EOF
       CFLAGS="$cflags"
   popd >/dev/null
 
-  local destination="$PROJECT_ROOT/app/src/main/jniLibs/$abi"
+  local destination="$PROJECT_ROOT/data/src/main/jniLibs/$abi"
   mkdir -p "$destination"
   local crypto_so ssl_so
   crypto_so="$(find "$build_dir" -maxdepth 4 \( -type f -o -type l \) -name 'libcrypto.so*' | sort | head -n 1)"

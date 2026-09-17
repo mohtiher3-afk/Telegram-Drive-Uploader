@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 # Build TDLib native JNI libraries for Android from the official upstream
@@ -127,7 +127,7 @@ for ABI in $TARGET_ABIS; do
     echo "libtdjni.so not produced for $ABI." >&2
     exit 1
   fi
-  DEST="$PROJECT_ROOT/app/src/main/jniLibs/$ABI"
+  DEST="$PROJECT_ROOT/data/src/main/jniLibs/$ABI"
   mkdir -p "$DEST"
   cp -f "$SO_FILE" "$DEST/libtdjni.so"
   echo "$ABI: installed $(wc -c < "$DEST/libtdjni.so") bytes → $DEST/libtdjni.so"
@@ -135,7 +135,7 @@ done
 
 # ── Stage 4: Install Java bindings into the project ────────────────────────
 echo "=== Stage 4: Installing Java bindings ==="
-JAVA_DEST="$PROJECT_ROOT/app/src/main/java/org/drinkless/tdlib"
+JAVA_DEST="$PROJECT_ROOT/data/src/main/java/org/drinkless/tdlib"
 mkdir -p "$JAVA_DEST"
 cp -f "$JAVA_OUT/org/drinkless/tdlib/TdApi.java" "$JAVA_DEST/TdApi.java"
 cp -f "$JAVA_OUT/org/drinkless/tdlib/Client.java" "$JAVA_DEST/Client.java"
@@ -147,7 +147,7 @@ echo "Client.java:  $(wc -l < "$JAVA_DEST/Client.java") lines"
 echo "=== Stage 5: Refreshing packaged OpenSSL libraries ==="
 for ABI in $TARGET_ABIS; do
   SRC="$CACHE_ROOT/install-${ABI}/lib"
-  DEST="$PROJECT_ROOT/app/src/main/jniLibs/$ABI"
+  DEST="$PROJECT_ROOT/data/src/main/jniLibs/$ABI"
   for lib in libssl.so libcrypto.so; do
     if [[ -f "$SRC/$lib" ]]; then
       cp -f "$SRC/$lib" "$DEST/$lib"
@@ -162,7 +162,7 @@ CHECKSUM_FILE="$PROJECT_ROOT/docs/TDLIB_SHA256SUMS.txt"
 {
   echo "# TDLib v${TDLIB_VERSION} Android native artifacts — generated $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   for ABI in $TARGET_ABIS; do
-    find "$PROJECT_ROOT/app/src/main/jniLibs/$ABI" -maxdepth 1 -name '*.so' -print0 \
+    find "$PROJECT_ROOT/data/src/main/jniLibs/$ABI" -maxdepth 1 -name '*.so' -print0 \
       | sort -z \
       | xargs -0 -r sha256sum
   done
@@ -179,7 +179,7 @@ fi
 
 echo ""
 echo "✅ TDLib v${TDLIB_VERSION} build complete."
-echo "   JNI:     app/src/main/jniLibs/<abi>/libtdjni.so"
+echo "   JNI:     data/src/main/jniLibs/<abi>/libtdjni.so"
 echo "   Java:    $JAVA_DEST/TdApi.java, Client.java"
 echo "   SHA256:  $CHECKSUM_FILE"
 echo "   Next:    TDLIB_VERSION=${TDLIB_VERSION} ./scripts/check-tdlib-artifacts.sh"

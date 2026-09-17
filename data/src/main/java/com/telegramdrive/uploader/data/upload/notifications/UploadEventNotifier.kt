@@ -1,6 +1,7 @@
-package com.telegramdrive.uploader.domain.upload
+package com.telegramdrive.uploader.data.upload.notifications
 
 import android.app.Notification
+import com.telegramdrive.uploader.domain.upload.UploadEventNotificationEvent
 
 /** Posts a user-visible observation of a persisted terminal upload event. */
 interface UploadEventNotifier {
