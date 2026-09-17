@@ -14,7 +14,7 @@ ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/26.3.11579264" \
   ./scripts/build-openssl-android.sh
 ```
 
-The script only builds OpenSSL for an ABI whose checked-in `libtdjni.so` actually requests `libssl.so`. It writes the resulting `libssl.so`, `libcrypto.so`, and their versioned counterparts into the matching `app/src/main/jniLibs/<abi>/` directory.
+The script only builds OpenSSL for an ABI whose checked-in `libtdjni.so` actually requests `libssl.so`. It writes the resulting `libssl.so`, `libcrypto.so`, and their versioned counterparts into the matching `data/src/main/jniLibs/<abi>/` directory.
 
 ## Verification
 

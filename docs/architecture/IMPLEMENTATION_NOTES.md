@@ -24,7 +24,7 @@ No files were moved, renamed, merged, or deleted in this phase. No package, depe
 
 The unresolved items are the mixed responsibility of `VideoMetadataExtractor`—metadata extraction plus `UploadTask` construction—and the temporary-file staging behavior in `TelegramUploadEngineImpl`. Both are high-risk behavior boundaries and remain unchanged pending dedicated characterization tests. No duplicate implementation was confirmed safe to remove.
 
-Protected files and surfaces remain unchanged: generated TDLib bindings, `app/src/main/jniLibs/**`, ABI configuration, TDLib build scripts and version, AndroidManifest/WorkManager configuration, credentials, database schema/entities/DAOs/migrations, upload engine behavior, and UI/navigation code.
+Protected files and surfaces remain unchanged: generated TDLib bindings, `data/src/main/jniLibs/**`, ABI configuration, TDLib build scripts and version, AndroidManifest/WorkManager configuration, credentials, database schema/entities/DAOs/migrations, upload engine behavior, and UI/navigation code.
 
 ## Smart Assistant correction
 
