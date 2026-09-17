@@ -1,11 +1,11 @@
-package com.telegramdrive.uploader.data.telegram.client
+﻿package com.telegramdrive.uploader.data.telegram.client
 
 import android.content.Context
 import android.os.Build
 import android.os.SystemClock
 import com.telegramdrive.uploader.BuildConfig
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
-import com.telegramdrive.uploader.data.local.datastore.TelegramAccountEntry
+import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.data.local.database.UploadDao
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
@@ -299,7 +299,7 @@ class TelegramClientImpl @Inject constructor(
             }
             // The confirmation never arrived in-process (typically the process died
             // between send and confirmation, losing the buffered update). Resolve the
-            // ambiguity from chat history before giving up — the message may already
+            // ambiguity from chat history before giving up â€” the message may already
             // be delivered, and blind-resending would duplicate it.
             val client = synchronized(clientLock) { tdClient } ?: return null
             return runCatching { resolveSentMessageFromHistory(client, chatId) }
@@ -448,7 +448,7 @@ class TelegramClientImpl @Inject constructor(
         }
 
         // Idempotency fast-path: a previous attempt already CONFIRMED delivery (final
-        // message id / link persisted durably). Never send again — report completion
+        // message id / link persisted durably). Never send again â€” report completion
         // for the stored link so the engine can finish the task.
         val persisted = runCatching { uploadDao.getUploadById(task.id) }.getOrNull()
         if (persisted?.finalMessageId != null || persisted?.messageLink != null) {
@@ -460,7 +460,7 @@ class TelegramClientImpl @Inject constructor(
         // death between SendMessage dispatch and its persist). Resolve via chat
         // history: a delivered message completes the task; nothing found means the
         // send never reached Telegram, so clear the flag and fall through to a fresh
-        // send (safe — history is the server-side delivery state).
+        // send (safe â€” history is the server-side delivery state).
         if (persisted?.sendDispatched == true && persisted.provisionalMessageId == null) {
             val resolved = runCatching { resolveSentMessageFromHistory(client, task.destinationId) }
                 .onFailure { failure -> reportCallbackFailure(failure) }
@@ -630,7 +630,7 @@ class TelegramClientImpl @Inject constructor(
     /**
      * Durable confirmation bookkeeping: persist the final message id/link and clear
      * the provisional id + dispatch flag. After this write, a retry can never resend
-     * the same message — it resolves as already-delivered instead.
+     * the same message â€” it resolves as already-delivered instead.
      */
     private fun persistSendConfirmed(taskId: String, finalMessageId: Long, chatId: Long) {
         runCatching {

@@ -622,9 +622,10 @@ fun SettingsScreen(
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
-                                                if (event.incidentId != null) {
+                                                val incidentId = event.incidentId
+                                                if (incidentId != null) {
                                                     Text(
-                                                        text = stringResource(com.telegramdrive.uploader.R.string.incident_id, event.incidentId),
+                                                        text = stringResource(com.telegramdrive.uploader.R.string.incident_id, incidentId),
                                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                                         color = MaterialTheme.colorScheme.error
                                                     )

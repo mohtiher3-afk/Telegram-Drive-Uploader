@@ -91,7 +91,7 @@ jobs:
       - name: Run JVM unit tests
         env:
           MEMORY_TELEMETRY_DIR: ${{ runner.temp }}/ci-memory/${{ matrix.abi }}
-        run: ./scripts/measure-gradle-memory.sh jvm-unit-tests gradle --no-daemon --max-workers=2 :app:testDebugUnitTest
+        run: ./scripts/measure-gradle-memory.sh jvm-unit-tests gradle --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test
 
       - name: Run release lint
         env:

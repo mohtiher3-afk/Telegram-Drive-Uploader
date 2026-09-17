@@ -1,6 +1,7 @@
 package com.telegramdrive.uploader.domain.model
 
 import com.telegramdrive.uploader.R
+import com.telegramdrive.uploader.feature.telegram.messageResId
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

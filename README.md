@@ -58,10 +58,13 @@ Log in securely using your Telegram phone number or a QR code. The app uses real
 ### Project Structure
 ```text
 app/src/main/java/com/telegramdrive/uploader/
-  core/                 Navigation, diagnostics, datastore, UI theme, and shared utilities
+  core/                 Navigation, notifications, DI wiring, and Material 3 UI (theme + components)
   data/                 TDLib client, repositories, upload data, and platform integrations
-  domain/               Models, repository contracts, and upload state definitions
+  domain/               Android UI contracts kept in the app shell (UploadEventNotifier, TelegramError UI mapping)
   feature/              Compose screens and ViewModels (Home, Uploads, History, Auth)
+
+core/                   :core Kotlin module - diagnostics, smart file assistant, and shared utilities
+domain/                 :domain Kotlin module - models, repository contracts, and pure upload state logic
 
 app/src/main/java/org/drinkless/tdlib/
   TdApi.java            Official generated TDLib API binding
