@@ -22,13 +22,13 @@ if missing_ar:
     print("Missing Arabic keys:", ", ".join(missing_ar))
     sys.exit(1)
 
-queue_source = (root / "app/src/main/java/com/telegramdrive/uploader/feature/queue/QueueScreen.kt").read_text(encoding="utf-8")
+queue_source = (root / "feature/src/main/java/com/telegramdrive/uploader/feature/queue/QueueScreen.kt").read_text(encoding="utf-8")
 for literal in ("Your queue is empty", "Queue controls", "No matching uploads", '"All"', '"Active"', '"Paused"', '"Failed"'):
     if literal in queue_source:
         print(f"QUEUE_LITERAL_SCAN=FAIL: {literal}")
         sys.exit(1)
 
-progress_source = (root / "app/src/main/java/com/telegramdrive/uploader/core/ui/components/UploadStatusIndicator.kt").read_text(encoding="utf-8")
+progress_source = (root / "feature/src/main/java/com/telegramdrive/uploader/core/ui/components/UploadStatusIndicator.kt").read_text(encoding="utf-8")
 required = ("uploadProgressFraction", "percentage / 100f", "uploadProgressPercent")
 if not all(token in progress_source for token in required):
     print("PROGRESS_CONVERSION=FAIL")

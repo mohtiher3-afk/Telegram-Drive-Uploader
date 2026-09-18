@@ -58,9 +58,10 @@ Log in securely using your Telegram phone number or a QR code. The app uses real
 ### Project Structure
 ```text
 app/src/main/java/com/telegramdrive/uploader/
-  core/                 Navigation, DI wiring, and Material 3 UI (theme + components)
-  feature/              Compose screens and ViewModels (Home, Uploads, History, Auth)
+  core/                 Navigation, DI wiring, and remaining app shell
+  (feature UI now lives in the :feature module below)
 
+feature/                :feature Android module - Compose screens, ViewModels, theme + shared UI components
 core/                   :core Kotlin module - diagnostics, smart file assistant, and shared utilities
 data/                   :data Android module - TDLib client, repositories, Room, upload engine and WorkManager worker
 domain/                 :domain Kotlin module - models, repository contracts, and pure upload state logic

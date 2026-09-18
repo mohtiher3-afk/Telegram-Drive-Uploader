@@ -9,10 +9,14 @@ fail() {
 manifest="app/src/main/AndroidManifest.xml"
 en_strings="app/src/main/res/values/strings.xml"
 ar_strings="app/src/main/res/values-ar/strings.xml"
+feature_en_strings="feature/src/main/res/values/strings.xml"
+feature_ar_strings="feature/src/main/res/values-ar/strings.xml"
 
 [[ -f "$manifest" ]] || fail "Missing $manifest"
 [[ -f "$en_strings" ]] || fail "Missing $en_strings"
 [[ -f "$ar_strings" ]] || fail "Missing $ar_strings"
+[[ -f "$feature_en_strings" ]] || fail "Missing $feature_en_strings"
+[[ -f "$feature_ar_strings" ]] || fail "Missing $feature_ar_strings"
 
 extract_ids() {
   grep -o 'name="[^"]*"' "$1" | sort
@@ -22,12 +26,24 @@ if [[ "$(extract_ids "$en_strings")" != "$(extract_ids "$ar_strings")" ]]; then
   fail "English and Arabic string resource IDs differ"
 fi
 
+if [[ "$(extract_ids "$feature_en_strings")" != "$(extract_ids "$feature_ar_strings")" ]]; then
+  fail "Feature English and Arabic string resource IDs differ"
+fi
+
 if [[ "$(grep -o 'name="[^"]*"' "$en_strings" | sort | uniq -d)" != "" ]]; then
   fail "Duplicate English string resource ID"
 fi
 
 if [[ "$(grep -o 'name="[^"]*"' "$ar_strings" | sort | uniq -d)" != "" ]]; then
   fail "Duplicate Arabic string resource ID"
+fi
+
+if [[ "$(grep -o 'name="[^"]*"' "$feature_en_strings" | sort | uniq -d)" != "" ]]; then
+  fail "Duplicate feature English string resource ID"
+fi
+
+if [[ "$(grep -o 'name="[^"]*"' "$feature_ar_strings" | sort | uniq -d)" != "" ]]; then
+  fail "Duplicate feature Arabic string resource ID"
 fi
 
 grep -Fq 'android:supportsRtl="true"' "$manifest" \
