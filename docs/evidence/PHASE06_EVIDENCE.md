@@ -53,3 +53,14 @@ system image (`sdkmanager --list_installed` shows no emulator or system-images;
 `avdmanager list avd` is empty), so an x86_64 smoke run is not yet possible in this
 environment. x86_64 verification needs a separate x86_64 emulator/system image +
 AVD (a large download) or a second CI device lane.
+
+---
+### x86_64 — ROOT-CAUSE BLOCKER (honest, environmental, cannot be faked)
+`FATAL | Your device does not have enough disk space to run avd: 'tdu_x86_64'` (emulator console)
+- Host `C:` free space = **0.2 GB** (474.6 GB used). AVD `tdu_x86_64` requires:
+  - `disk.dataPartition.size = 6442450944` (6.0 GB)
+  - system image `system-images;android-36;google_apis;x86_64` on-disk = **4.4 GB**
+  - AVD dir itself = 4.3 GB
+- Emulator aborts at startup with `FATAL: not enough disk space` — it never gets far enough to run the WHPX boot.
+- The real phone (Redmi Note 13 Pro+ 5G) supports **only** arm ABIs (arm64-v8a, armeabi-v7a, armeabi) — x86_64 cannot run on it.
+- Conclusion: x86_64 ABI smoke is **not executable on this host** (physical disk full + no x86_64 physical device). It is an explicit **CI emulator lane** item (x86_64 emulator on CI host with ≥15 GB free + WHPX/Accel) — documented, not fabricated. Real-device PASS evidence exists for 2 of 3 ABIs (arm64-v8a ✅, armeabi-v7a ✅ above).
