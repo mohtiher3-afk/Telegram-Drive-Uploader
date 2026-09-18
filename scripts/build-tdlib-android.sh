@@ -112,9 +112,15 @@ for ABI in $TARGET_ABIS; do
     exit 1
   fi
 
+  # 16 KB page-size compliance (Google Play: apps targeting API 35+ must
+  # ship 16 KB-aligned ELF LOAD segments on 64-bit devices). NDK r27 or
+  # older does NOT default to 16 KB ELF alignment, so the linker flags are
+  # required explicitly. NDK r28+ defaults to this; flags are harmless there.
+  # (docs: developer.android.com/guide/practices/page-sizes)
   cmake -S "$TD_DIR/example/android" -B "$BUILD_ABI" -G Ninja \
     -DCMAKE_TOOLCHAIN_FILE="$NDK_ROOT/build/cmake/android.toolchain.cmake" \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384" \
     -DANDROID_ABI="$ABI" \
     -DANDROID_STL=c++_static \
     -DANDROID_PLATFORM="android-${ANDROID_API}" \

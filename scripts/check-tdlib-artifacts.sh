@@ -88,6 +88,52 @@ check_elf_arch() {
     fi
 }
 
+# Verify 16 KB ELF page-size alignment of LOAD segments (Google Play
+# requirement for apps targeting API 35+). Accepts p_align >= 0x4000 (16384).
+# Uses `readelf -lW` (single-line LOAD rows, last field = Align in hex) or
+# `llvm-objdump -p` (`align 2**N`), parsed with portable bash arithmetic.
+check_16kb_alignment() {
+    local abi="$1"
+    local file_path="$JNI_DIR/$abi/libtdjni.so"
+
+    local aligns=""
+    if command -v readelf >/dev/null 2>&1; then
+        aligns=$(readelf -lW "$file_path" 2>/dev/null | awk '/[[:space:]]LOAD[[:space:]]/{print $NF}')
+    elif command -v llvm-objdump >/dev/null 2>&1; then
+        aligns=$(llvm-objdump -p "$file_path" 2>/dev/null | awk '/align 2\*\*/{print $NF}')
+    fi
+
+    if [ -z "$aligns" ]; then
+        echo "[16KB CHECK] $abi: no LOAD segments readable (readelf/llvm-objdump failure)"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
+        return
+    fi
+
+    local failed=""
+    local v h had_hex=0
+    for v in $aligns; do
+        case "$v" in
+            0x*) h="${v#0x}"; had_hex=1; if (( 16#$h < 16384 )); then failed="$failed $v"; fi ;;
+            2**) n="${v#2\*\*}"; had_hex=1; if (( (1 << n) < 16384 )); then failed="$failed $v"; fi ;;
+            *) echo "[16KB CHECK] $abi: unparseable align token '$v'; manual verification required"
+               MISSING_COUNT=$((MISSING_COUNT + 1))
+               return ;;
+        esac
+    done
+    if [ "$had_hex" -eq 0 ]; then
+        echo "[16KB CHECK] $abi: no align values found"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
+        return
+    fi
+
+    if [ -n "$failed" ]; then
+        echo "[16KB CHECK] $abi: NOT 16 KB aligned (segments below 0x4000:$failed)"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
+    else
+        echo "[16KB CHECK] $abi: LOAD segments aligned (aligns: $(echo $aligns | tr '\n' ' '))"
+    fi
+}
+
 check_runtime_dependencies() {
     local abi="$1"
     local file_path="$JNI_DIR/$abi/libtdjni.so"
@@ -113,12 +159,15 @@ echo ""
 echo "2. Checking Native JNI Libraries (.so)..."
 if should_check_abi "arm64-v8a"; then
     check_file "$JNI_DIR/arm64-v8a/libtdjni.so" 5000000 "TDLib v${TDLIB_VERSION} arm64-v8a Native Library" && check_elf_arch "arm64-v8a" "AArch64"
+    check_16kb_alignment "arm64-v8a"
 fi
 if should_check_abi "armeabi-v7a"; then
     check_file "$JNI_DIR/armeabi-v7a/libtdjni.so" 5000000 "TDLib v${TDLIB_VERSION} armeabi-v7a Native Library" && check_elf_arch "armeabi-v7a" "ARM"
+    check_16kb_alignment "armeabi-v7a"
 fi
 if should_check_abi "x86_64"; then
     check_file "$JNI_DIR/x86_64/libtdjni.so" 5000000 "TDLib v${TDLIB_VERSION} x86_64 Native Library" && check_elf_arch "x86_64" "Advanced Micro Devices X86-64"
+    check_16kb_alignment "x86_64"
 fi
 
 if command -v readelf >/dev/null 2>&1; then
