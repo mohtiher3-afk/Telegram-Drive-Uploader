@@ -32,6 +32,18 @@ Device: Redmi Note 13 Pro+ 5G (arm64-v8a, Android 16 / SDK 36) — `BUFYHQZXR4BQ
 - Verified: `:domain:test` green (regression suite still passes), `:data:compileDebugKotlin` green.
   Logging-only change — no behavior change, no on-device reinstall required.
 
+## Phase 05 — WorkManager upload scheduling verification (2026-09-18)
+
+- Hypothesis: upload jobs stuck at `ENQUEUED`, never reaching `RUNNING`.
+- Configuration review: constraints = `NetworkType.CONNECTED` only (battery
+  constraint already removed), `TelegramDriveApp` `Configuration.Provider` +
+  `HiltWorkerFactory`, manifest removes WorkManagerInitializer — all correct.
+- Live device evidence (Redmi Note 13 Pro+ 5G, Android 16 / API 36): 4 consecutive
+  real uploads, every one `ENQUEUED → WORKER_STARTED` in 103–288 ms, then
+  `UPLOAD_COMPLETED` → `WORKER_STOPPED Success`. Zero stuck jobs.
+- Result: defect does NOT reproduce. No code change shipped — honest verification.
+- Evidence: `docs/evidence/PHASE05_EVIDENCE.md` + `phase05-workmanager.logcat.txt`.
+
 ## Next
 
-- Roadmap item after Phase 04.
+- Roadmap item after Phase 05.
