@@ -60,3 +60,6 @@ Evidence: rtifacts/tdlib-smoke/{arm64-v8a,armeabi-v7a}/ (instrumentation.txt + 
 - Real device does not support x86_64 (ABIs = arm64-v8a,armeabi-v7a,armeabi) -> cannot run x86_64 on the physical phone.
 - x86_64 app APK built cleanly (app-x86_64-debug.apk, BUILD SUCCESSFUL) — ready for a CI emulator instrumentation lane.
 - **Action required (CI):** run un-tdlib-device-smoke-test.sh --serial <emulator> --abi x86_64 in an x86_64 emulator lane; capture instrumentation.txt + logcat.txt to rtifacts/tdlib-smoke/x86_64/.
+
+## Phase 06 final blocker (verbatim, emulator console)
+FATAL: Your device does not have enough disk space to run avd: 'tdu_x86_64' — host C: free=0.2GB (needs 6GB data partition + 4.4GB image + 4.3GB AVD). Real path: free disk space, then WHPX first-boot (~15-30 min). Evidence: 2/3 ABIs PASS on real device (arm64-v8a + armeabi-v7a), committed+pushped (de95772). x86_64 = CI emulator lane, documented.
