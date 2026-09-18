@@ -1,0 +1,6 @@
+--------- beginning of main
+09-18 19:16:54.027 32347 32415 I TdLibRuntimeSmokeTest: JNI_LOAD_STATUS=PASS
+09-18 19:16:54.030 32347 32415 I TdLibRuntimeSmokeTest: CLIENT_CREATE_STATUS=PASS
+09-18 19:16:54.035 32347 32437 I TdLibRuntimeSmokeTest: AUTH_STATE=AuthorizationStateWaitTdlibParameters
+09-18 19:16:54.035 32347 32437 I TdLibRuntimeSmokeTest: AUTH_STATE=AuthorizationStateClosing
+09-18 19:16:54.038 32347 32437 I TdLibRuntimeSmokeTest: AUTH_STATE=AuthorizationStateClosed

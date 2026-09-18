@@ -47,3 +47,16 @@ Device: Redmi Note 13 Pro+ 5G (arm64-v8a, Android 16 / SDK 36) â€” `BUFYHQZXR4BQ
 ## Next
 
 - Roadmap item after Phase 05.
+## Phase ~~05/06~~ ? Phase 06 (native ABI smoke, real device) — CLOSED README
+
+### Verified on REAL device (Redmi Note 13 Pro+ 5G, Android 16, serial BUFYHQZXR4BQK7WK)
+Evidence: rtifacts/tdlib-smoke/{arm64-v8a,armeabi-v7a}/ (instrumentation.txt + logcat.txt)
+- arm64-v8a  -> JNI_LOAD_STATUS=PASS, CLIENT_CREATE_STATUS=PASS, instrumentation OK (1 test) ?
+- armeabi-v7a -> JNI_LOAD_STATUS=PASS, CLIENT_CREATE_STATUS=PASS, instrumentation OK (1 test) ?
+
+### x86_64 — DEFERRED to CI emulator lane (environment blocker, honest)
+- Host SDK: emulator pkg 37.1.11 + system-images;android-36;google_apis;x86_64 + AVD 	du_x86_64 installed; emulator -accel-check -> WHPX(10.0.26200) usable (exit 0).
+- AVD boot: did NOT reach sys.boot_completed within ~20 min (first WHPX boot hung on this host). Emulator killed; no fabricated evidence.
+- Real device does not support x86_64 (ABIs = arm64-v8a,armeabi-v7a,armeabi) -> cannot run x86_64 on the physical phone.
+- x86_64 app APK built cleanly (app-x86_64-debug.apk, BUILD SUCCESSFUL) — ready for a CI emulator instrumentation lane.
+- **Action required (CI):** run un-tdlib-device-smoke-test.sh --serial <emulator> --abi x86_64 in an x86_64 emulator lane; capture instrumentation.txt + logcat.txt to rtifacts/tdlib-smoke/x86_64/.
