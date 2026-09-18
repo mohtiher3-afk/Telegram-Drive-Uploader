@@ -1,13 +1,10 @@
-# Official TDLib v1.8.66 Android artifact checksums
-# Source commit: 022d60202e446ad1287b9fb68e687c8a0760788b
-
-e3b7b195000787efce458cdf9b1bfa6271c9b18ea23041b03e805b9ae2515654  data/src/main/jniLibs/arm64-v8a/libtdjni.so
-77350d864515071279a51549b145b925c820f42a8e87d039bdab622cdc47e9a8  data/src/main/jniLibs/armeabi-v7a/libtdjni.so
-2a66e9c5927a5bebe8aadbfb97e6776babb804f8326a3fb75856b073267edab8  data/src/main/jniLibs/x86_64/libtdjni.so
-ea37f5c3f2cb894ad14381a22e1c6ca22affbaa25346669ff117e0b489e6eabe  data/src/main/java/org/drinkless/tdlib/Client.java
-e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36  data/src/main/java/org/drinkless/tdlib/Log.java
-8f40a88e7bd379c5362afe8af0fe079c36b7d638f0adf19d024cfbce2ee74e7d  data/src/main/java/org/drinkless/tdlib/TdApi.java
-
-# APK verification
-07ae90143853b78da072b58c8bbfaba866ad119e6b4235e94dfcb57c288d165e  app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
-aea78956e436e632821be1737ee0dec4a126eecaa6dd8f8384bc04008850810a  app/build/outputs/apk/release/app-arm64-v8a-release.apk
+# TDLib v1.8.66 Android native artifacts — generated 2026-09-18T11:21:11Z
+5272a49d48958cb320d9819227c1a735a07b28e5cfb669ed6c4bb4dffb9d89c7  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/arm64-v8a/libcrypto.so
+46c6084a75ded7bfe2ecb7cce248e3039bb4c44908c15d61970fb49a85334554  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/arm64-v8a/libssl.so
+f26e1dcb1a44d8d2c7eecca0f600b11bdacff660c9cc0b121f6171e31b598aab  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/arm64-v8a/libtdjni.so
+58207b5b9fb0c472fcd721044d6ee3d98baa0624c954dd03f467966736810a75  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/armeabi-v7a/libcrypto.so
+182cf159b823b2872590ed2bc6da430aad9e847124a852cf43a7e424594d9d3a  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/armeabi-v7a/libssl.so
+aada91bdf245906185291637e3f288dd8e02c4c0fe6937ab9809ef28709c10e5  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/armeabi-v7a/libtdjni.so
+89f98f2deb1ac500797ef5f716a24b256b5a5aac4a7fa45481fe082dab1749d1  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/x86_64/libcrypto.so
+3552a1a890d1bfa9f81f399fb75d42a1e4db1e4ad94cb9d10bb0554eec1c4454  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/x86_64/libssl.so
+d0aea943947c1050210801a15cb0b45fceb8e40a7f5c3e7340d0f6ec0db6bede  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/x86_64/libtdjni.so
