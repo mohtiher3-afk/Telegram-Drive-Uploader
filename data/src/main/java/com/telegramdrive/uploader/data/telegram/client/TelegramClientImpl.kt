@@ -418,52 +418,29 @@ class TelegramClientImpl @Inject constructor(
         // SearchPublicChat resolves an exact public username; SearchPublicChats discovers
         // public channels/groups by name even when they are not yet joined; SearchChatsOnServer
         // handles partial matches within chats already known to the server.
-        DiagnosticsManager.log(
-            category = DiagnosticCategory.DESTINATION_RESOLUTION,
-            severity = DiagnosticSeverity.DEBUG,
-            message = "Destination search fired for query=[$searchText] via SearchPublicChat/SearchPublicChats/SearchChatsOnServer"
-        )
         client.send(
             TdApi.SearchPublicChat(searchText),
-            { result -> handleDestinationSearchResult(result, "SearchPublicChat") },
+            { result -> handleDestinationSearchResult(result) },
             null
         )
         client.send(
             TdApi.SearchPublicChats(searchText, null),
-            { result -> handleDestinationSearchResult(result, "SearchPublicChats") },
+            { result -> handleDestinationSearchResult(result) },
             null
         )
         client.send(
             TdApi.SearchChatsOnServer(searchText, null, 100),
-            { result -> handleDestinationSearchResult(result, "SearchChatsOnServer") },
+            { result -> handleDestinationSearchResult(result) },
             null
         )
     }
 
-    private fun handleDestinationSearchResult(result: TdApi.Object, source: String) {
+    private fun handleDestinationSearchResult(result: TdApi.Object) {
         when (result) {
-            is TdApi.Chat -> {
-                DiagnosticsManager.log(
-                    category = DiagnosticCategory.DESTINATION_RESOLUTION,
-                    severity = DiagnosticSeverity.DEBUG,
-                    message = "$source returned direct Chat id=${result.id} title=[${result.title}]"
-                )
-                upsertChat(result)
-            }
-            is TdApi.Chats -> {
-                DiagnosticsManager.log(
-                    category = DiagnosticCategory.DESTINATION_RESOLUTION,
-                    severity = DiagnosticSeverity.DEBUG,
-                    message = "$source returned ${result.chatIds.size} chat(s) ids=${result.chatIds.joinToString(",")}"
-                )
-                result.chatIds.forEach(::requestChat)
-            }
+            is TdApi.Chat -> upsertChat(result)
+            is TdApi.Chats -> result.chatIds.forEach(::requestChat)
             // A not-found username or empty server result is normal search behavior, not an auth failure.
-            is TdApi.Error -> DiagnosticsManager.log(
-                category = DiagnosticCategory.DESTINATION_RESOLUTION,
-                severity = DiagnosticSeverity.DEBUG,
-                message = "$source returned Error code=${result.code} message=[${result.message}]"
-            )
+            is TdApi.Error -> Unit
         }
     }
 
@@ -788,14 +765,7 @@ class TelegramClientImpl @Inject constructor(
 
     private fun handleChatsResult(result: TdApi.Object) {
         when (result) {
-            is TdApi.Chats -> {
-                DiagnosticsManager.log(
-                    category = DiagnosticCategory.DESTINATION_RESOLUTION,
-                    severity = DiagnosticSeverity.DEBUG,
-                    message = "GetChats initial batch returned ${result.chatIds.size} chat(s) ids=${result.chatIds.joinToString(",")}"
-                )
-                result.chatIds.forEach(::requestChat)
-            }
+            is TdApi.Chats -> result.chatIds.forEach(::requestChat)
             // An exhausted/empty chat list is normal; it is not an auth or connection failure.
             is TdApi.Error -> Unit
         }
@@ -835,11 +805,6 @@ class TelegramClientImpl @Inject constructor(
             requestSupergroup((chat.type as TdApi.ChatTypeSupergroup).supergroupId)
         }
         synchronized(chatLock) { chats[chat.id] = chat }
-        DiagnosticsManager.log(
-            category = DiagnosticCategory.DESTINATION_RESOLUTION,
-            severity = DiagnosticSeverity.DEBUG,
-            message = "Chat id=${chat.id} title=[${chat.title}] type=${chat.type::class.java.simpleName}"
-        )
         rebuildDestinations()
     }
 
@@ -883,11 +848,6 @@ class TelegramClientImpl @Inject constructor(
                         (supergroup.status as TdApi.ChatMemberStatusRestricted).permissions?.canSendBasicMessages == true
                     else -> chat.permissions?.canSendBasicMessages == true
                 }
-                DiagnosticsManager.log(
-                    category = DiagnosticCategory.DESTINATION_RESOLUTION,
-                    severity = DiagnosticSeverity.DEBUG,
-                    message = "Gate type=${type.name} id=${chat.id} canSend=$canSend supergroupResolved=${supergroup != null} sgStatus=${supergroup?.status?.let { "resolved" } ?: "UNRESOLVED"}"
-                )
                 if (!canSend) return@mapNotNull null
                 TelegramDestination(
                     id = chat.id,
