@@ -164,6 +164,7 @@ dependencies {
   implementation(project(":domain"))
   implementation(project(":core"))
   implementation(project(":data"))
+  implementation(project(":feature"))
   implementation(libs.androidx.hilt.work)
   ksp(libs.androidx.hilt.compiler)
   implementation(libs.hilt.android)
