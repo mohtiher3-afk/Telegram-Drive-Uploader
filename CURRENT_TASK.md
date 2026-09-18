@@ -20,8 +20,18 @@ Device: Redmi Note 13 Pro+ 5G (arm64-v8a, Android 16 / SDK 36) — `BUFYHQZXR4BQ
   client-side. Users must type space-separated words.
 - Evidence: `docs/evidence/PHASE04_EVIDENCE.md`.
 
+## Post-fix cleanup (2026-09-18, `2fd3acc`)
+
+- Removed all Phase 04 debug diagnostics (`DESTINATION_RESOLUTION` category): the
+  `Gate` flood in `rebuildDestinations` (~109k log lines per run), `Chat id=...`
+  in `upsertChat`, and the search-result/handler instrumentation.
+- `handleDestinationSearchResult`/`handleChatsResult` reverted to pre-instrumentation
+  shape; production logic (including `matchesSearch` fix) untouched.
+- Count of `DiagnosticsManager.log` calls in `TelegramClientImpl.kt` back to 9
+  (matches pre-Phase 04 baseline).
+- Verified: `:domain:test` green (regression suite still passes), `:data:compileDebugKotlin` green.
+  Logging-only change — no behavior change, no on-device reinstall required.
+
 ## Next
 
-- Roadmap item after Phase 04. Optional follow-up: reduce/remove the debug diagnostics
-  instrumentation (the `Gate` flood from `rebuildDestinations` is noisy), as a separate,
-  verified change. Confirm with user before proceeding.
+- Roadmap item after Phase 04.
