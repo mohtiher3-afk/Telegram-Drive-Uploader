@@ -59,7 +59,7 @@ jobs:
           executable pass is produced by running the instrumented tests on a device/emulator.
           No fabricated PASS is claimed here — this file is evidence-integrity, not a fake run. ==="
           # Verify the seam member really exists in the committed source (no invention):
-          grep -rn "UploadStatus.COMPLETED" app/src/main/java/com/telegramdrive/uploader/data/upload/UploadWorker.kt || { echo "SEAM_MISSING_HONEST"; exit 1; }
+          grep -rn "UploadStatus.COMPLETED" data/src/main/java/com/telegramdrive/uploader/data/upload/worker/UploadWorker.kt || { echo "SEAM_MISSING_HONEST"; exit 1; }
           echo "SEAM_VERIFIED=UploadStatus.COMPLETED (UploadWorker.kt)"
 
   # GATE 3 (optional) — instrumented run on a hardware-accelerated emulator:
