@@ -1,6 +1,8 @@
 package com.telegramdrive.uploader.data.upload.worker
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.ServiceInfo
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
@@ -34,8 +36,13 @@ class UploadWorker @AssistedInject constructor(
 
     companion object {
         private const val MAX_RETRY_ATTEMPTS = 5
+
+        // The constant value is compile-time inlined, so it is safe on API < 29; the
+        // foreground-service type is only honoured on API 29+ devices (documented in
+        // docs/archive/BASELINE_V2_STAGE1.md).
+        @SuppressLint("InlinedApi")
         private const val FOREGROUND_SERVICE_TYPE_DATA_SYNC =
-            android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
     }
 
     override suspend fun doWork(): Result {
@@ -313,6 +320,13 @@ class UploadWorker @AssistedInject constructor(
         uploadEventNotifier.dismissProgressNotification(uploadId)
     }
 
+    // The dataSync foreground-service type is declared in the app manifest
+    // (androidx.work.impl.foreground.SystemForegroundService) and the
+    // FOREGROUND_SERVICE_DATA_SYNC permission is granted; the explicit type is passed
+    // through ForegroundInfo so it is applied on API 29+ devices. This library module
+    // has no manifest of its own, so the WorkManager lint check cannot see the
+    // declaration that lives in the consuming app module.
+    @SuppressLint("MissingForegroundServiceType", "SpecifyForegroundServiceType")
     private fun buildForegroundInfo(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): ForegroundInfo {
         val notification = uploadEventNotifier.buildForegroundNotification(
             uploadId = uploadId,

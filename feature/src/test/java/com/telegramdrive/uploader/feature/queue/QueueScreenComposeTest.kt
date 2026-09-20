@@ -1,6 +1,7 @@
 package com.telegramdrive.uploader.feature.queue
 
 import androidx.compose.ui.test.assertIsDisplayed
+import android.annotation.SuppressLint
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -32,6 +33,8 @@ import org.robolectric.annotation.GraphicsMode
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [33])
+// ViewModels are constructed manually with fake dependencies specifically for testing.
+@SuppressLint("ViewModelConstructorInComposable")
 class QueueScreenComposeTest {
 
     @get:Rule

@@ -503,7 +503,7 @@ class TelegramClientImpl @Inject constructor(
                         channel = this@callbackFlow,
                         taskId = task.id,
                         destinationId = task.destinationId,
-                        totalBytes = task.fileSize.coerceAtLeast(result.size.toLong())
+                        totalBytes = task.fileSize.coerceAtLeast(result.size)
                     )
                     trySend(TelegramUploadEvent.Progress(result.remote.uploadedSize, result.size.coerceAtLeast(task.fileSize)))
                     val content = buildUploadMessageContent(task, fileId)
@@ -906,6 +906,9 @@ class TelegramClientImpl @Inject constructor(
         fail(mapped, "TDLib error ${error.code}: ${error.message}")
     }
 
+    // Native libraries are loaded by absolute path from the app's own private
+    // nativeLibraryDir (not an external/writable location), so this is safe.
+    @android.annotation.SuppressLint("UnsafeDynamicallyLoadedCode")
     private fun ensureNativeRuntime() {
         if (nativeLoaded.compareAndSet(false, true)) {
             try {

@@ -1,7 +1,7 @@
 package com.telegramdrive.uploader.data.upload
 
-import android.net.Uri
 import android.os.SystemClock
+import androidx.core.net.toUri
 import com.telegramdrive.uploader.data.local.database.UploadDao
 import com.telegramdrive.uploader.data.telegram.client.SendConfirmation
 import com.telegramdrive.uploader.data.telegram.client.TelegramClient
@@ -132,7 +132,7 @@ class TelegramUploadEngineImpl @Inject constructor(
             return@flow
         }
 
-        val source = Uri.parse(task.sourceUri)
+        val source = task.sourceUri.toUri()
         val speedCalculator = SpeedCalculator()
         var stagedFile: File? = null
         try {

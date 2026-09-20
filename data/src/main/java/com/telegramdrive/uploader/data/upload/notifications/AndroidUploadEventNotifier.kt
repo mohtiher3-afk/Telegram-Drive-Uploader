@@ -1,6 +1,7 @@
 ﻿package com.telegramdrive.uploader.data.upload.notifications
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -21,6 +22,9 @@ class AndroidUploadEventNotifier @Inject constructor(
     @ApplicationContext private val context: Context
 ) : UploadEventNotifier {
 
+    // POST_NOTIFICATIONS is declared in the app manifest and gated by canPostNotifications()
+    // at runtime; notify() is additionally wrapped in a SecurityException guard.
+    @SuppressLint("MissingPermission")
     override fun notify(event: UploadEventNotificationEvent, uploadId: String) {
         if (!canPostNotifications()) return
 
@@ -69,6 +73,7 @@ class AndroidUploadEventNotifier @Inject constructor(
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun showProgressNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long) {
         if (!canPostNotifications()) return
 

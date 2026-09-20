@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
@@ -46,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
@@ -597,7 +597,10 @@ fun SettingsScreen(
                                             "WARN" -> MaterialTheme.colorScheme.tertiaryContainer
                                             else -> MaterialTheme.colorScheme.primaryContainer
                                         }
-                                        val formattedTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(event.timestamp))
+                                        val locale = LocalConfiguration.current.locales[0]
+                                        val formattedTime = remember(event.timestamp, locale) {
+                                            SimpleDateFormat("HH:mm:ss", locale).format(Date(event.timestamp))
+                                        }
                                         
                                         Row(
                                             modifier = Modifier
