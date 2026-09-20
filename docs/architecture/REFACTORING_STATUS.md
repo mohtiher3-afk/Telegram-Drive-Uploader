@@ -44,7 +44,7 @@ The motion audit found two existing custom state-driven transitions: onboarding 
 
 The phase adds `core.ui.theme.AppMotion` with short semantic duration/easing tokens and applies those tokens only to the existing onboarding and Telegram authentication transitions. Upload progress remains Material-driven and tied to real state and byte values. No upload calculation, worker logic, progress state, navigation destination, Telegram/TDLib flow, or database behavior changed. Reduced-motion handling is documented as a follow-up device-validation item because no existing reduced-motion abstraction was present.
 
-The new design documents are `docs/design/CURRENT_MOTION_AUDIT.md` and `docs/design/MOTION_SYSTEM.md`. No new dependency or animation framework was introduced.
+The new design documents are `docs/archive/reports/design/CURRENT_MOTION_AUDIT.md` and `docs/design/MOTION_SYSTEM.md`. No new dependency or animation framework was introduced.
 
 ## Screen-by-Screen UI Redesign result
 
@@ -60,11 +60,11 @@ The localization phase added a complete Arabic resource counterpart for the exis
 
 `AndroidManifest.xml` already declares `android:supportsRtl="true"`. The phase preserves existing navigation and business logic. Date/time, size, duration, percentage, and count formatting remains presentation-only and is documented for a later focused pass where tests can cover English and Arabic plural/locale cases. Remaining SettingsScreen and HistoryScreen hardcoded UI strings are tracked in `LOCALIZATION_AUDIT.md` and are not silently claimed as complete.
 
-The localization documents are `docs/localization/LOCALIZATION_AUDIT.md`, `docs/localization/TERMINOLOGY.md`, and `docs/localization/LOCALE_FORMATTING.md`.
+The localization documents are `docs/archive/reports/localization/LOCALIZATION_AUDIT.md`, `docs/localization/TERMINOLOGY.md`, and `docs/localization/LOCALE_FORMATTING.md`.
 
 ## Resources and Assets result
 
-The supplied resource phase is complete as a conservative, source-grounded audit. `docs/resources/RESOURCE_INVENTORY.md`, `UNUSED_RESOURCES.md`, `LARGE_ASSETS.md`, `DUPLICATE_ASSETS.md`, and `RESOURCE_ARCHITECTURE.md` document the current resource tree, usage classes, protected manifest/XML/icon resources, duplicate launcher pairs, large assets, naming policy, theme ownership, RTL/localization behavior, and shrinking risks.
+The supplied resource phase is complete as a conservative, source-grounded audit. `docs/archive/reports/resources/RESOURCE_INVENTORY.md`, `UNUSED_RESOURCES.md`, `LARGE_ASSETS.md`, `DUPLICATE_ASSETS.md`, and `RESOURCE_ARCHITECTURE.md` document the current resource tree, usage classes, protected manifest/XML/icon resources, duplicate launcher pairs, large assets, naming policy, theme ownership, RTL/localization behavior, and shrinking risks.
 
 No resource was deleted, renamed, recompressed, or replaced without dependency evidence. The existing adaptive launcher stack, backup/data-extraction rules, theme resource, and both locale files were retained. Duplicate string definitions were removed and English/Arabic resource-ID parity was checked. Release R8/resource shrinking settings were reviewed and left unchanged. `scripts/check-resource-integrity.sh` provides a repeatable guard for locale parity, duplicate IDs, protected manifest references, adaptive-icon references, and dynamic resource lookup.
 

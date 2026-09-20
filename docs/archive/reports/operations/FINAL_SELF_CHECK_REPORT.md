@@ -43,7 +43,7 @@ JVM unit tests are blocking in `QUICK`, `FULL`, and `RELEASE`. Instrumentation/d
 
 ## Risk Detection
 
-The repository includes a change-scope detector and [CHANGE_RISK_MATRIX.md](CHANGE_RISK_MATRIX.md). Changes to authentication, TDLib, native code, uploads, queues, workers, progress, database, security, signing, identity, or migrations require elevated review and targeted regression evidence. Detection is informational unless the corresponding blocking quality gate fails.
+The repository includes a change-scope detector and [CHANGE_RISK_MATRIX.md](../../../operations/CHANGE_RISK_MATRIX.md). Changes to authentication, TDLib, native code, uploads, queues, workers, progress, database, security, signing, identity, or migrations require elevated review and targeted regression evidence. Detection is informational unless the corresponding blocking quality gate fails.
 
 ## Verification Modes
 

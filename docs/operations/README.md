@@ -17,7 +17,7 @@
 | TDLib updates | [TDLIB_UPDATE_POLICY.md](TDLIB_UPDATE_POLICY.md) |
 | Database changes | [../architecture/REFACTORING_STATUS.md](../architecture/REFACTORING_STATUS.md) |
 | Upload engine changes | [../performance/PERFORMANCE_GUIDE.md](../performance/PERFORMANCE_GUIDE.md) |
-| UI changes | [../localization/LOCALIZATION_AUDIT.md](../localization/LOCALIZATION_AUDIT.md) |
+| UI changes | [../archive/reports/localization/LOCALIZATION_AUDIT.md](../archive/reports/localization/LOCALIZATION_AUDIT.md) |
 | Architecture changes | [CHANGE_MANAGEMENT.md](CHANGE_MANAGEMENT.md) |
 | Technical debt | [TECHNICAL_DEBT.md](TECHNICAL_DEBT.md) |
 | Maintenance certification | [MAINTENANCE_CERTIFICATION.md](MAINTENANCE_CERTIFICATION.md) |

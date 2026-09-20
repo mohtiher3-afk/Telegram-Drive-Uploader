@@ -24,6 +24,65 @@ jobs:
         uses: actions/checkout@v7
       - name: Run redacted secret and signing-material scan
         run: ./scripts/check-repository-security.sh
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify documentation links resolve
+        run: python3 scripts/check-doc-links.py
+      - name: Verify no built binaries are tracked
+        run: |
+          if git ls-files '*.apk' '*.aab' 'releases/*' 'artifacts/*' | grep -q .; then
+            echo "Built binaries or runtime artifacts must not be tracked:"
+            git ls-files '*.apk' '*.aab' 'releases/*' 'artifacts/*'
+            exit 1
+          fi
+
+  lint:
+    name: Lint gate (all modules)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Install Android SDK packages
+        run: sdkmanager "platform-tools" "build-tools;36.0.0" "ndk;26.3.11579264"
+      - name: Prepare official OpenSSL runtime dependencies
+        env:
+          TARGET_ABIS: arm64-v8a
+        run: ANDROID_NDK_ROOT="$ANDROID_HOME/ndk/26.3.11579264" ./scripts/build-openssl-android.sh
+      - name: Set up Gradle 9.6
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: wrapper
+      - name: Prepare CI configuration
+        env:
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+        run: |
+          printf 'TELEGRAM_API_ID=%s\n' "${TELEGRAM_API_ID:-0}" > .env
+          printf 'TELEGRAM_API_HASH=%s\n' "${TELEGRAM_API_HASH:-placeholder_hash}" >> .env
+          keytool -genkeypair \
+            -keystore debug.keystore \
+            -storepass android \
+            -keypass android \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+      - name: Run full Android Lint across every module
+        run: ./gradlew --no-daemon --max-workers=2 lintDebug
+      - name: Remove local CI files
+        if: always()
+        run: rm -f .env debug.keystore local.properties
 
   build:
     name: Test and build Android ${{ matrix.abi }}
