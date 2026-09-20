@@ -6,6 +6,7 @@ Telegram Drive Uploader provides a high-reliability, offline-first interface for
 
 [![Android Multi-ABI CI](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml/badge.svg)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml)
 [![Version](https://img.shields.io/badge/version-1.0.24-blue)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
@@ -123,6 +124,10 @@ The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds
 ---
 
 ## Documentation & References
+- **Contributing**: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- **Security Policy**: [`SECURITY.md`](SECURITY.md)
+- **Changelog**: [`CHANGELOG.md`](CHANGELOG.md)
+- **License**: [`LICENSE`](LICENSE) (MIT)
 - **Audit Records**: [`docs/archive/PROJECT_AUDIT_2026-08-21.md`](docs/archive/PROJECT_AUDIT_2026-08-21.md)
 - **Maintenance Guide**: [`docs/maintenance/README.md`](docs/maintenance/README.md)
 - **Resource Reviews**: [`docs/resources/`](docs/resources/)

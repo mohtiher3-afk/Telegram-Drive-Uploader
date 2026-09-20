@@ -12,9 +12,11 @@ build/
 *.apk
 *.aab
 
-# Distributable release binaries (kept in the repo)
-!releases/
-!releases/*.apk
+# Built release binaries are distributed via GitHub Releases, never committed.
+releases/
+
+# Runtime artifacts produced by smoke/diagnostics scripts (kept out of VCS)
+artifacts/
 
 # IDE metadata
 .idea/
