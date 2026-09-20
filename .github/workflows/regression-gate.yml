@@ -104,12 +104,12 @@ jobs:
             ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon --console=plain
             adb install -r app/build/outputs/apk/debug/app-debug.apk
             adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-            adb shell am instrument -w -e class com.telegramdrive.uploader.regression.UploadChainRegressionTest com.telegramdrive.uploader.test/androidx.test.runner.AndroidJUnitRunner
+            adb shell am instrument -w -e class com.telegramdrive.uploader.regression.UploadChainRegressionTest com.aistudio.telegramdrive.prmuq.test/androidx.test.runner.AndroidJUnitRunner
       - name: Save instrumented evidence
         if: always()
         run: |
           mkdir -p artifacts
-          adb shell am instrument -w -e class com.telegramdrive.uploader.regression.UploadChainRegressionTest com.telegramdrive.uploader.test/androidx.test.runner.AndroidJUnitRunner 2>&1 | tee artifacts/instrumented.log || true
+          adb shell am instrument -w -e class com.telegramdrive.uploader.regression.UploadChainRegressionTest com.aistudio.telegramdrive.prmuq.test/androidx.test.runner.AndroidJUnitRunner 2>&1 | tee artifacts/instrumented.log || true
       - name: Remove local CI files
         if: always()
         run: rm -f .env debug.keystore local.properties
