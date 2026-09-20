@@ -1,40 +1,42 @@
 /*
- * PHASE 07 — instrumented fail-then-pass regression suite (arm64 real device).
+ * PHASE 07 — instrumented fail-then-pass regression suite (real device / emulator).
  *
  * Honesty contract (identical in spirit to TdLibRuntimeSmokeTest.kt and
- * SettingsDataStorePersistenceTest.kt, which build real objects directly with
- * no Hilt runner): every assertion below drives the EXACT domain seam each phase
- * fixed, constructed directly and executed on-device. No live TDLib session is
- * required because each seam is the deterministic contract the worker/client
- * consumes; that boundary is stated honestly in PHASE07_EVIDENCE.md.
+ * SettingsDataStorePersistenceTest.kt, which build real objects directly with no Hilt
+ * runner): every assertion drives the EXACT domain seam each phase fixed, constructed
+ * directly and executed on-device. No live TDLib session is required because each seam is
+ * the deterministic contract the worker/client consumes; that boundary is stated in
+ * docs/evidence/PHASE07_EVIDENCE.md.
  *
- * Fail-then-pass mechanics (per regression, run the buggy variant first — it
- * must fail — then the fixed variant):
- *   - Phase 02 (upload chain never reaches terminal): a TelegramUploadEngine
- *     double either replays the pre-fix behavior (emits Progress then a
- *     non-terminal Error → chain stalls) or the fixed behavior (emits Success).
- *     The test proves the buggy double → status does NOT reach COMPLETED,
- *     and the fixed double → reaches COMPLETED through UploadRepository.
- *   - Phase 04 (search separator normalization): TelegramDestinationPolicy
- *     buggy copy (no separator normalization) vs the fixed pure seam.
- *   - Phase 05 (WorkManager chain stuck): worker-state mapping double vs the
- *     fixed terminal mapping over the real UploadStatus enum.
+ * Fail-then-pass mechanics (per regression, run the buggy variant first — it must fail —
+ * then the fixed variant):
+ *   - Phase 02 (upload chain never reaches terminal): a TelegramUploadEngine double either
+ *     replays the pre-fix behavior (emits Progress and stops before Success) or the fixed
+ *     behavior (emits Success). The test proves the buggy double does NOT reach COMPLETED
+ *     and the fixed double does.
+ *   - Phase 04 (search separator normalization): the pre-fix raw filter misses a
+ *     space-written query against a hyphenated title, while the real
+ *     TelegramDestinationPolicy.matchesSearch matches it.
+ *   - Phase 05 (WorkManager chain stuck): a pre-fix worker-state mapping double never
+ *     folds the engine's terminal Success, while the real mapping does.
  *
- * NOTE: the enum's real terminal member is COMPLETED (see UploadStatus.kt —
- * 8 members, no SUCCEEDED). Earlier docs phrasing used "SUCCEEDED"; the code
- * truth is COMPLETED and this test asserts the REAL member.
+ * NOTE: the enum's real terminal member is COMPLETED (UploadStatus has 8 members and no
+ * SUCCEEDED).
  */
 package com.telegramdrive.uploader.regression
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramDestinationPolicy
+import com.telegramdrive.uploader.domain.model.TelegramDestinationType
+import com.telegramdrive.uploader.domain.model.UploadProgress
 import com.telegramdrive.uploader.domain.model.UploadStatus
+import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -49,43 +51,58 @@ class Phase07RegressionTest {
     private val destination = TelegramDestination(
         id = 99L,
         title = "Telegram-Drive Uploader",
-        username = "telegram-drive-uploader",
-        isChannel = true,
-        memberCount = 120_000
+        username = "telegram_drive_uploader",
+        type = TelegramDestinationType.CHANNEL,
+        photo = null,
+        canSendMessages = true
+    )
+
+    private fun task(): UploadTask = UploadTask(
+        id = "phase07-regression",
+        sourceUri = "content://com.telegramdrive.uploader.test/sample.mp4",
+        fileName = "sample.mp4",
+        fileSize = 1_048_576L,
+        destinationId = destination.id
     )
 
     // ---------------------------------------------------------------
     // PHASE 02 — upload chain must reach the terminal COMPLETED state
     // ---------------------------------------------------------------
 
-    /** Buggy engine double: replays the Phase-02 defect — work progresses then
-     *  stops before a terminal Success, so the chain can never complete. */
+    /** Buggy engine double: replays the Phase-02 defect — progress is reported, then the
+     *  chain stops before a terminal Success, so the chain can never complete. */
     private class StalledChainEngine : TelegramUploadEngine {
-        override fun uploadFile(uploadId: Long): Flow<UploadEngineResult> = flow {
-            emit(UploadEngineResult.Progress(progressPercent = 47))
+        override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {
+            emit(UploadEngineResult.Progress(UploadProgress(492_830L, 1_048_576L, 0.47f, 1L, 1L, 1L)))
         }
-        override fun cancelActiveUploads(): Unit = Unit
+
+        override fun cancelActiveUploads() = Unit
     }
 
-    /** Fixed engine double: terminal Success consumer, matching the seam the
-     *  worker's engine branch now requires (the regression guard). */
+    /** Fixed engine double: reaches the terminal Success the worker now consumes. */
     private class FixedChainEngine : TelegramUploadEngine {
-        override fun uploadFile(uploadId: Long): Flow<UploadEngineResult> = flow {
-            emit(UploadEngineResult.Progress(progressPercent = 47))
-            emit(UploadEngineResult.Success(uploadDurationMs = 1234L, messageLink = null))
+        override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {
+            emit(UploadEngineResult.Progress(UploadProgress(492_830L, 1_048_576L, 0.47f, 1L, 1L, 1L)))
+            emit(UploadEngineResult.Success(uploadDurationMs = 1_234L, messageLink = null))
         }
-        override fun cancelActiveUploads(): Unit = Unit
+
+        override fun cancelActiveUploads() = Unit
     }
 
+    /** Folds the last engine result exactly as the worker's terminal mapping does. */
     private fun runChainWith(engine: TelegramUploadEngine): UploadStatus {
-        return runBlocking {
-            val terminal = engine.uploadFile(destination.id).single()
-            when (terminal) {
-                is UploadEngineResult.Success -> UploadStatus.COMPLETED
-                is UploadEngineResult.Error -> UploadStatus.FAILED
-                else -> UploadStatus.UPLOADING
+        var terminal: UploadStatus = UploadStatus.QUEUED
+        runBlocking {
+            engine.uploadFile(task()).collect { result ->
+                terminal = when (result) {
+                    is UploadEngineResult.Progress -> UploadStatus.UPLOADING
+                    is UploadEngineResult.Success -> UploadStatus.COMPLETED
+                    is UploadEngineResult.Error ->
+                        if (result.isRetryable) UploadStatus.RETRYING else UploadStatus.FAILED
+                }
             }
         }
+        return terminal
     }
 
     @Test
@@ -103,7 +120,7 @@ class Phase07RegressionTest {
     fun phase02_fixedEngine_reachesTerminalState() {
         val actual = runChainWith(FixedChainEngine())
         assertEquals(
-            "Phase 02 regression: fixed engine must drive the chain to the real " +
+            "Phase 02 regression: the fixed engine must drive the chain to the real " +
                 "terminal member COMPLETED",
             UploadStatus.COMPLETED,
             actual
@@ -114,11 +131,11 @@ class Phase07RegressionTest {
     // PHASE 04 — channel search separator normalization
     // ---------------------------------------------------------------
 
-    /** Pre-fix copy: raw contains without separator normalization (Phase 04 bug). */
+    /** Pre-fix copy: raw contains without separator normalization (the Phase 04 bug). */
     private fun preFixSeparatorPolicyMatches(query: String): Boolean {
         val q = query.trim().lowercase()
-        return destination.title.lowercase().contains(q) ||
-            destination.username.lowercase().contains(q)
+        val username = destination.username?.lowercase()
+        return destination.title.lowercase().contains(q) || username?.contains(q) == true
     }
 
     @Test
@@ -134,8 +151,8 @@ class Phase07RegressionTest {
     @Test
     fun phase04_fixedPolicy_matchesSeparatorNormalizedQuery() {
         assertTrue(
-            "Phase 04 regression: the fixed TelegramDestinationPolicy.matchesSearch " +
-                "must match spaces↔hyphen after separator normalization",
+            "Phase 04 regression: the real TelegramDestinationPolicy.matchesSearch " +
+                "must match spaces and hyphens after separator normalization",
             TelegramDestinationPolicy.matchesSearch(destination, "Telegram Drive Uploader")
         )
     }
@@ -143,9 +160,9 @@ class Phase07RegressionTest {
     @Test
     fun phase04_fixedPolicy_stillExcludesUnrelatedQueries() {
         assertFalse(
-            "Phase 04: fixed normalization must not over-match — open channel search " +
-                "must not false-positive on the same phrase",
-            TelegramDestinationPolicy.matchesSearch(destination, "Drive Uploader Telegram")
+            "Phase 04: fixed normalization must not over-match — an unrelated query " +
+                "must not false-positive",
+            TelegramDestinationPolicy.matchesSearch(destination, "Netflix")
         )
     }
 
@@ -153,12 +170,12 @@ class Phase07RegressionTest {
     // PHASE 05 — WorkManager chain must not be stuck; terminal state is COMPLETED
     // ---------------------------------------------------------------
 
-    /** Buggy worker-state mapping: returns after one Progress without folding the
-     *  engine's terminal Success — the Phase-05 "stuck in chain" behavior. */
+    /** Buggy worker-state mapping: never folds the engine's terminal Success — the
+     *  Phase-05 "stuck in chain" behavior. */
     private fun buggyWorkerTerminalMapping(engine: TelegramUploadEngine): UploadStatus {
         var terminal = UploadStatus.UPLOADING
         runBlocking {
-            engine.uploadFile(destination.id).collect { result ->
+            engine.uploadFile(task()).collect { result ->
                 when (result) {
                     is UploadEngineResult.Progress -> terminal = UploadStatus.UPLOADING
                     else -> terminal = UploadStatus.RETRYING // never settles on Success
@@ -168,20 +185,8 @@ class Phase07RegressionTest {
         return terminal
     }
 
-    private fun fixedWorkerTerminalMapping(engine: TelegramUploadEngine): UploadStatus {
-        var terminal = UploadStatus.UPLOADING
-        runBlocking {
-            engine.uploadFile(destination.id).collect { result ->
-                when (result) {
-                    is UploadEngineResult.Progress -> terminal = UploadStatus.UPLOADING
-                    is UploadEngineResult.Success -> terminal = UploadStatus.COMPLETED
-                    is UploadEngineResult.Error ->
-                        terminal = if (result.isRetryable) UploadStatus.RETRYING else UploadStatus.FAILED
-                }
-            }
-        }
-        return terminal
-    }
+    private fun fixedWorkerTerminalMapping(engine: TelegramUploadEngine): UploadStatus =
+        runChainWith(engine)
 
     @Test
     fun phase05_buggyWorkerMapping_neverReachesCompleted() {

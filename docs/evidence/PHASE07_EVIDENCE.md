@@ -69,5 +69,56 @@ all verbatim-verified from source this session).
 - Device BUFYHQZXR4BQK7WK: connected + authorized (confirmed via adb devices -l).
 - Regression seams: corrected to REAL FQCNs, NOT compile-verified (host blocker),
   NOT device-run (blocked on compile), so NO fail-then-pass claimed on-device.
-- No git add/commit/push performed. Awaiting explicit "نعم" for push — and a host
-  moment where Gradle can actually start, for the on-device fail-then-pass run.
+---
+
+## 2026-09-20 — RESOLVED: the androidTest compile now succeeds (root cause was code, host was transient)
+
+The earlier records above correctly reported a host paging-file limitation (the disk had
+~0.2 GB free, so Gradle JVMs died during `mmap`). That was a **transient host condition**,
+not a permanent property of the repository — with free disk restored the same host starts
+Gradle normally (this run: compile finished in **8 seconds**).
+
+Once the compile actually ran, it **immediately exposed real code defects in the regression
+harness**. The previous note "NOT an androidTest code error" was therefore incorrect: it
+could not be established while no compile could complete.
+
+### Defects found by the compiler (verbatim)
+
+| File | Defect |
+|---|---|
+| `ChannelSearchSeparatorRegressionTest.kt` | `TelegramDestination` constructed with `isChannel`, `date`, `memberCount`, `hasActiveUsernames`, `isVerified`, `isPremiumUser`, `isScam`, `isFake` — none of these parameters exist; `type`, `photo`, `canSendMessages` were missing |
+| `Phase07RegressionTest.kt` | same destination defect; `uploadFile(uploadId: Long)` vs the real `uploadFile(task: UploadTask)`; `UploadEngineResult.Progress(progressPercent = 47)` vs the real `Progress(UploadProgress)` |
+| `UploadChainRegressionTest.kt` | `uploadFile(taskId = 1L)`; `Progress(0.47f)`; the stall leg used `.single()`, which would have hung forever instead of failing deterministically; nested classes called an outer instance member |
+
+### Fix applied
+
+All three files were rewritten against the REAL APIs, read from source in the same session:
+
+- `TelegramDestination(id, title, username: String?, type: TelegramDestinationType, photo: String?, canSendMessages: Boolean)`
+- `TelegramUploadEngine.uploadFile(task: UploadTask): Flow<UploadEngineResult>`
+- `UploadEngineResult.Progress(UploadProgress)` / `.Success(uploadDurationMs, messageLink)` / `.Error(message, isRetryable)`
+- `UploadStatus` terminal member `COMPLETED`
+
+The stall leg now collects the flow under a bounded `withTimeoutOrNull`, so a never-settling
+chain yields its last non-terminal state deterministically instead of hanging the run.
+
+### Evidence produced on this host (commands + results)
+
+1. `:app:compileDebugAndroidTestKotlin` → **BUILD SUCCESSFUL in 8s** (previously failing).
+2. `:app:assembleDebugAndroidTest` → **BUILD SUCCESSFUL**, artifact
+   `app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk` (1 MB).
+3. New pure-JVM twin `app/src/test/.../regression/UploadChainSeamJvmTest.kt`, executed:
+   `:app:testDebugUnitTest --tests com.telegramdrive.uploader.regression.UploadChainSeamJvmTest`
+   → `tests=3 failures=0 errors=0 skipped=0` in 2.2 s, cases:
+   - `failLeg_stalledChainDoesNotReachCompleted` (1.013 s)
+   - `passLeg_terminalChainReachesCompleted` (0.001 s)
+   - `failThenPass_theFixIsWhatChangesTheOutcome` (1.176 s)
+
+### Still NOT claimed
+
+- **No on-device run.** No device is attached to this host at the time of writing
+  (`adb devices` is empty), so the instrumented fail-then-pass result on real hardware
+  remains unverified. The emulator lane in `.github/workflows/regression-gate.yml`
+  (Gate 3) and a re-attached device are the paths to that evidence.
+- No signing, no release, no push of release artifacts.
+
