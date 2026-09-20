@@ -78,6 +78,22 @@ jobs:
           echo 'KERNEL_VM_SUPPORT:'
           grep -c -E '(vmx|svm)' /proc/cpuinfo || true
           ls /dev/kvm
+      - name: Prepare CI configuration (debug keystore + .env)
+        env:
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+        run: |
+          printf 'TELEGRAM_API_ID=%s\n' "${TELEGRAM_API_ID:-0}" > .env
+          printf 'TELEGRAM_API_HASH=%s\n' "${TELEGRAM_API_HASH:-placeholder_hash}" >> .env
+          keytool -genkeypair \
+            -keystore debug.keystore \
+            -storepass android \
+            -keypass android \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
@@ -94,6 +110,9 @@ jobs:
         run: |
           mkdir -p artifacts
           adb shell am instrument -w -e class com.telegramdrive.uploader.regression.UploadChainRegressionTest com.telegramdrive.uploader.test/androidx.test.runner.AndroidJUnitRunner 2>&1 | tee artifacts/instrumented.log || true
+      - name: Remove local CI files
+        if: always()
+        run: rm -f .env debug.keystore local.properties
       - uses: actions/upload-artifact@v4
         if: always()
         with:
