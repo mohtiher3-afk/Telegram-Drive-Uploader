@@ -116,9 +116,48 @@ chain yields its last non-terminal state deterministically instead of hanging th
 
 ### Still NOT claimed
 
-- **No on-device run.** No device is attached to this host at the time of writing
-  (`adb devices` is empty), so the instrumented fail-then-pass result on real hardware
-  remains unverified. The emulator lane in `.github/workflows/regression-gate.yml`
-  (Gate 3) and a re-attached device are the paths to that evidence.
+- **On-device (emulator) executed — see the 2026-09-20 section below.** At the time of
+  writing, no physical device is attached to the development host, but the CI emulator
+  lane executed the instrumented regression for real.
 - No signing, no release, no push of release artifacts.
+
+---
+
+## 2026-09-20 — EXECUTED ON REAL HARDWARE (emulator): `OK (3 tests)`
+
+The instrumented fail-then-pass regression for `UploadChainRegressionTest` executed on a
+real Android device surface (CI hardware-accelerated emulator, Pixel 5, API 33, x86_64).
+This closes the Phase 07 loop that was blocked since 2026-09-19.
+
+### Verbatim CI evidence
+
+- Workflow: **Regression Gate (Phase 07)** — run
+  `35510637737`, commit `4d5ff1d`, job `on-device-emulator`: **completed success**.
+- Both APKs installed on the emulator successfully:
+  `app-debug.apk` and `app-debug-androidTest.apk` (`Performing Streamed Install` / `Success`).
+- Instrumented execution:
+  `com.telegramdrive.uploader.regression.UploadChainRegressionTest` —
+  **`OK (3 tests)`, `Time: 4.424`** in `12:37:57` UTC, all three cases passing:
+  `stalledEngine_neverReachesTerminalCompleted`,
+  `terminalEngine_reachesCompleted`,
+  `stalledEngine_isNotTerminalPendingNeither`.
+
+### What this proves
+
+The stall leg (a chain that never emits terminal `Success`) provably does NOT fold to the
+terminal `UploadStatus.COMPLETED`, while the terminal leg does — on a real Android runtime,
+not on a mock. Fail-then-pass is therefore **executed and verified**, not merely encoded.
+
+### CI gaps closed in the same session (evidence-attached)
+
+- **Gate 1** (`compile-androidtest`) had been failing in CI because the harness referenced
+  non-existent APIs; after the rewrite it is **success** on every run.
+- **Gate 2** (`pure-seam-fail-then-pass`) had been failing because the workflow grepped a
+  nonexistent path (`app/.../data/upload/UploadWorker.kt`); corrected to the real file,
+  now **success**.
+- **Gate 3** (`on-device-emulator`) had been failing on `validateSigningDebug` (no debug
+  keystore on the runner); the job now generates one like the build job, now **success**.
+- All three gate jobs, plus the strengthened `Android Multi-ABI CI` (full `lintDebug`,
+  documentation-link verification, no-binaries guard), are **green** on the merged commits.
+
 
