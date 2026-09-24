@@ -1,4 +1,4 @@
-﻿name: Android Signed Multi-ABI Release
+name: Android Signed Multi-ABI Release
 
 on:
   push:
@@ -89,7 +89,7 @@ jobs:
           ref: ${{ needs.validate-release.outputs.source_ref }}
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "21"
@@ -219,7 +219,7 @@ jobs:
           ref: ${{ needs.validate-release.outputs.source_ref }}
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "21"

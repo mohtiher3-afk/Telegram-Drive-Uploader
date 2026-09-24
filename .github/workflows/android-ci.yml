@@ -1,4 +1,4 @@
-﻿name: Android Multi-ABI CI
+name: Android Multi-ABI CI
 
 on:
   push:
@@ -46,7 +46,7 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
@@ -98,7 +98,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'

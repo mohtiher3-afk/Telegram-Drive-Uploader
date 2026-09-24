@@ -1,4 +1,4 @@
-﻿name: tdlib-upgrade
+name: tdlib-upgrade
 
 # Builds TDLib native JNI libraries for Android from the official upstream
 # source and opens a PR with the resulting artifacts. Trigger manually after
@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
