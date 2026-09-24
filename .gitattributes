@@ -9,6 +9,7 @@
 *.xml text eol=lf
 *.md text eol=lf
 *.bat text eol=crlf
+data/src/main/java/org/drinkless/tdlib/** -text
 *.so binary
 *.jar binary
 *.jks binary

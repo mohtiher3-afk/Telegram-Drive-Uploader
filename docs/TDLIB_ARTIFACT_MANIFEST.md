@@ -28,17 +28,19 @@ The Android project is packaged as separate ABI APKs for **arm64-v8a**, **armeab
 | ARM64 JNI | `data/src/main/jniLibs/arm64-v8a/libtdjni.so` | 20,398,552 bytes | PASS; documented by SHA-256 |
 | ARMv7 JNI | `data/src/main/jniLibs/armeabi-v7a/libtdjni.so` | 14,407,696 bytes | PASS; documented by SHA-256 |
 | x86_64 JNI | `data/src/main/jniLibs/x86_64/libtdjni.so` | 22,573,928 bytes | PASS; documented by SHA-256 |
-| Client binding | `data/src/main/java/org/drinkless/tdlib/Client.java` | 11,274 bytes | PASS; documented by SHA-256 |
-| Log binding | `data/src/main/java/org/drinkless/tdlib/Log.java` | 3,483 bytes | PASS; documented by SHA-256 |
-| TdApi binding | `data/src/main/java/org/drinkless/tdlib/TdApi.java` | 5,248,495 bytes | PASS; documented by SHA-256 |
+| Client binding | `data/src/main/java/org/drinkless/tdlib/Client.java` | 11,015 bytes | PASS; documented by SHA-256 |
+| Log binding | `data/src/main/java/org/drinkless/tdlib/Log.java` | 3,401 bytes | PASS; documented by SHA-256 |
+| TdApi binding | `data/src/main/java/org/drinkless/tdlib/TdApi.java` | 5,096,314 bytes | PASS; documented by SHA-256 |
 
 The mandatory checker reports `TDLIB_ARTIFACTS_PRESENT=true`, verifies the ELF header, and rejects a non-matching ARM64 artifact when the selected ABI is `arm64-v8a`. Missing native libraries remain a hard failure at build/runtime integration boundaries.
 
 ## 4. SHA-256 Checksums
 
-The authoritative machine-readable checksums are in [`TDLIB_SHA256SUMS.txt`](TDLIB_SHA256SUMS.txt). That file covers all three `libtdjni.so` files, all packaged OpenSSL `libssl.so`/`libcrypto.so` files, and the three generated Java bindings using repository-relative paths.
+The authoritative machine-readable checksums are in [`TDLIB_SHA256SUMS.txt`](TDLIB_SHA256SUMS.txt). That file covers the three prebuilt `libtdjni.so` files and the three generated Java bindings using repository-relative paths and the exact Git blob bytes used for checkout on Linux CI.
 
-`scripts/check-tdlib-artifacts.sh` verifies every checksum entry against the tracked files, so stale paths, changed binaries, and stale binding documentation fail the CI artifact gate.
+The packaged OpenSSL `libssl.so`/`libcrypto.so` files are rebuilt per ABI by `scripts/build-openssl-android.sh` from the pinned official OpenSSL 3.0.16 source archive, whose SHA-256 is verified before extraction. They are intentionally not pinned by a repository checksum because the CI rebuild is the authoritative input to the APK.
+
+`scripts/check-tdlib-artifacts.sh` verifies every checksum entry against the checked-out files, so stale paths, changed prebuilt binaries, and stale binding documentation fail the CI artifact gate.
 
 ## 5. Android Build Verification
 

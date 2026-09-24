@@ -166,12 +166,10 @@ done
 echo "=== Stage 6: Regenerating SHA-256 checksums ==="
 CHECKSUM_FILE="$PROJECT_ROOT/docs/TDLIB_SHA256SUMS.txt"
 {
-  echo "# TDLib v${TDLIB_VERSION} Android artifacts — generated $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "# TDLib v${TDLIB_VERSION} prebuilt Android artifacts — Git blob SHA-256, generated $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   (
     cd "$PROJECT_ROOT"
-    for ABI in $TARGET_ABIS; do
-      find "data/src/main/jniLibs/$ABI" -maxdepth 1 -name '*.so' -print0
-    done |
+    find data/src/main/jniLibs -mindepth 2 -maxdepth 2 -name 'libtdjni.so' -print0 |
       sort -z |
       xargs -0 -r sha256sum
     sha256sum \
