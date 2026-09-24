@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package com.telegramdrive.uploader.feature.settings
 
 import android.Manifest

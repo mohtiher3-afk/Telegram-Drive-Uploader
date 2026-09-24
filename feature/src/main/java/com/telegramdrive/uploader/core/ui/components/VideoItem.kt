@@ -78,9 +78,10 @@ fun VideoItem(
                     .background(MaterialTheme.colorScheme.tertiaryContainer),
                 contentAlignment = Alignment.Center
             ) {
-                if (video.thumbnailPath != null && File(video.thumbnailPath).exists()) {
+                val thumbnailFile = video.thumbnailPath?.let(::File)?.takeIf(File::exists)
+                if (thumbnailFile != null) {
                     AsyncImage(
-                        model = File(video.thumbnailPath),
+                        model = thumbnailFile,
                         contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.video_thumbnail),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop

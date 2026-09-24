@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package com.telegramdrive.uploader.core.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
