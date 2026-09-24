@@ -1,4 +1,4 @@
-﻿name: Regression Gate (Phase 07) — fail-then-pass on a FREE host that actually has memory
+name: Regression Gate (Phase 07) — fail-then-pass on a FREE host that actually has memory
 
 # Why this exists (honest): the original authoring host (Windows laptop paging file too
 # small) crashed 3+ JVMs just launching the Gradle daemon (hs_err_pid*.log on disk), so
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run fail-then-pass seam harness on free host
         run: |
           # Honest harness lives in androidTest/regression (readable even without a device):
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
