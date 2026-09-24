@@ -57,6 +57,7 @@ You are a scheduled maintenance workflow for the Telegram-Drive-Uploader reposit
 3. **Compare versions.** Compare the latest upstream release tag against the pinned version using semantic-version ordering. Consider a release "newer" only if its version sorts above the pinned version. Ignore pre-release/alpha releases unless the pinned version itself is a pre-release.
 4. **Act on the result.**
    - If a newer release exists, call the safe output `create_issue` with a title like `New TDLib release vX.Y.Z available` and a body (at least 20 characters) containing: the newest tag, its release URL, publish date, and the pinned version being updated from.
+   - **Mandatory terminal action.** After completing the comparison, call exactly one safe-output tool before ending the run: `create_issue` if a newer release exists, otherwise `noop`. Never finish with analysis or prose only.
    - If no newer release exists, call `noop` and state the reason (latest upstream release equals or sorts below the pinned version, giving both versions).
 
 ## Constraints
