@@ -206,7 +206,7 @@ class TelegramUploadEngineAuthGateTest {
     fun `provisional retry without confirmation fails non-retryable, never resends`() = runTest {
         val client = FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED }
         // bufferedConfirmation and awaitedConfirmation stay null: the send may have
-        // happened, but nothing confirms it â€” resending would duplicate the message.
+        // happened, but nothing confirms it — resending would duplicate the message.
         engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, FakeUploadRepository(), FakeUploadDao())
 
         val results = engine.uploadFile(task().copy(provisionalMessageId = 777L)).toList()

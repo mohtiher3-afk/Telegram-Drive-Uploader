@@ -393,7 +393,7 @@ fun DestinationRow(
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
-                    contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.selected),
+                    contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.selection_selected),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )

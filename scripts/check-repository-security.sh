@@ -7,7 +7,7 @@ fail() {
 }
 
 # Scan tracked text files only. Never print matching content.
-mapfile -d '' tracked_files < <(git ls-files -z -- ':!docs/**' ':!.env.example' ':!.github/workflows/**')
+mapfile -d '' tracked_files < <(git ls-files -z -- ':!docs/**' ':!.env.example')
 if ((${#tracked_files[@]} == 0)); then
   echo "STATUS: SECURITY_SCAN=PASS"
   exit 0

@@ -1,7 +1,7 @@
 package com.telegramdrive.uploader.core.util
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import com.telegramdrive.uploader.domain.model.UploadTask
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -54,7 +54,7 @@ class OwnedStagedFileStore @Inject constructor(
     fun deleteOwnedFile(sourceUri: String?): Boolean {
         if (sourceUri.isNullOrBlank()) return false
         val uri = try {
-            Uri.parse(sourceUri)
+            sourceUri.toUri()
         } catch (_: Exception) {
             return false
         }

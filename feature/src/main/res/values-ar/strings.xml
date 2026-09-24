@@ -35,7 +35,7 @@
     <string name="clear_search">مسح البحث</string>
     <string name="remove_selection">إزالة التحديد</string>
     <string name="confirm_destination">تأكيد اختيار الوجهة</string>
-    <string name="selected">محدد</string>
+    <string name="selection_selected">محدد</string>
     <string name="telegram_disconnected_title">تيليجرام غير متصل</string>
     <string name="telegram_disconnected_message">اربط حساب تيليجرام أولاً لاستعراض القنوات والمجموعات المصرح بها.</string>
     <string name="direct_upload_info">يتم رفع الملفات مباشرةً من هذا الجهاز إلى تيليجرام، ولا تحتاج إلى وسيط مدفوع.</string>

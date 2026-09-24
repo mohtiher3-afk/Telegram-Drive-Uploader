@@ -5,10 +5,11 @@ ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT_DIR"
 
 # This is a detector, not an auto-fixer. Documentation and tests are classified but
-# do not fail the gate. A NotImplementedException in shipped app code is blocking.
+# do not fail the gate. A NotImplementedException in any shipped production module is blocking.
 status=0
-matches=$(grep -RInE --exclude-dir=.git --exclude-dir=build --exclude='*.md' --exclude='*.txt' \
-  '\b(NotImplementedException|TODO|FIXME|fake|mock|dummy|debug-only)\b' app/src/main .github 2>/dev/null || true)
+matches=$(grep -RInE --exclude-dir=.git --exclude-dir=build --exclude-dir=tdlib --exclude='*.md' --exclude='*.txt' \
+  '\b(NotImplementedException|TODO|FIXME|fake|mock|dummy|debug-only)\b' \
+  app/src/main core/src/main data/src/main domain/src/main feature/src/main .github 2>/dev/null || true)
 
 if [[ -n "$matches" ]]; then
   echo "Production-code findings (values shown are marker names and locations only):"
@@ -19,7 +20,7 @@ if [[ -n "$matches" ]]; then
     message=${rest#*:}
     marker=$(printf '%s\n' "$message" | grep -oE '\b(NotImplementedException|TODO|FIXME|fake|mock|dummy|debug-only)\b' | head -1 || true)
     printf '  %s:%s [%s]\n' "$file" "$line_number" "${marker:-classified finding}"
-    if [[ "$marker" == "NotImplementedException" && "$file" == app/src/main/* ]]; then
+    if [[ "$marker" == "NotImplementedException" && "$file" == */src/main/* ]]; then
       status=1
     fi
   done <<< "$matches"

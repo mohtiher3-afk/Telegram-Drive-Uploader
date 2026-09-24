@@ -1,7 +1,7 @@
 package com.telegramdrive.uploader.feature.upload
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.telegramdrive.uploader.core.ai.SmartFileAssistant
@@ -183,7 +183,7 @@ class UploadViewModel @Inject constructor(
                         if (task.id !in _originalCache) {
                             _originalCache[task.id] = task
                         }
-                        val sourceUri = android.net.Uri.parse(task.sourceUri)
+                        val sourceUri = task.sourceUri.toUri()
                         val compressedUri = compressor.compress(sourceUri, preset)
                         if (compressedUri != null) {
                             val index = _preparedList.indexOfFirst { it.id == task.id }
@@ -247,7 +247,7 @@ class UploadViewModel @Inject constructor(
 
     private suspend fun snapshotContentToOwnedFile(original: UploadTask): UploadTask? =
         withContext(Dispatchers.IO) {
-            val uri = Uri.parse(original.sourceUri)
+            val uri = original.sourceUri.toUri()
             if (uri.scheme != "content") return@withContext original
 
             try {

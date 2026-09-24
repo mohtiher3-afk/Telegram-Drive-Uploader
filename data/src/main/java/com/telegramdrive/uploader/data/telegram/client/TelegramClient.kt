@@ -41,7 +41,7 @@ interface TelegramClient {
     fun takeBufferedSendSuccess(oldMessageId: Long): SendConfirmation?
     /**
      * Waits up to [timeoutMs] for `UpdateMessageSendSucceeded` matching
-     * ([chatId], [oldMessageId]). Null on timeout â€” the message may still have been
+     * ([chatId], [oldMessageId]). Null on timeout — the message may still have been
      * sent, so callers must treat this as ambiguous and must NOT blind-resend.
      */
     suspend fun awaitSendConfirmation(chatId: Long, oldMessageId: Long, timeoutMs: Long): SendConfirmation?
@@ -53,7 +53,7 @@ sealed class TelegramUploadEvent {
     data class Failed(val message: String, val retryable: Boolean) : TelegramUploadEvent()
     /**
      * TDLib accepted the SendMessage call and returned a provisional (local) message id.
-     * This is NOT delivery proof â€” the engine must persist it and keep waiting for
+     * This is NOT delivery proof — the engine must persist it and keep waiting for
      * [Completed]. Emitted before any terminal event of the same send.
      */
     data class MessageSent(val provisionalMessageId: Long) : TelegramUploadEvent()

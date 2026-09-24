@@ -35,7 +35,7 @@
     <string name="clear_search">Clear search</string>
     <string name="remove_selection">Remove selection</string>
     <string name="confirm_destination">Confirm Destination Selection</string>
-    <string name="selected">Selected</string>
+    <string name="selection_selected">Selected</string>
     <string name="telegram_disconnected_title">Telegram Disconnected</string>
     <string name="telegram_disconnected_message">Connect your Telegram account first to explore authorized channels and groups.</string>
     <string name="direct_upload_info">Files are uploaded directly from this device to Telegram. No paid relay is required.</string>

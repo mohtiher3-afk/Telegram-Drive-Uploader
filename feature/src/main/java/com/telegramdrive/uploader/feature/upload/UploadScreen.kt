@@ -64,7 +64,7 @@ fun UploadScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = stringResource(com.telegramdrive.uploader.feature.R.string.selected) + " ${selectedVideoIds.size}",
+                            text = stringResource(com.telegramdrive.uploader.feature.R.string.selection_selected) + " ${selectedVideoIds.size}",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     },

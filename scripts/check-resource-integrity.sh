@@ -89,4 +89,14 @@ grep -Fq '@drawable/ic_launcher_monochrome' app/src/main/res/mipmap-anydpi-v26/i
 grep -RIn --include='*.kt' 'getIdentifier(' app/src/main \
   && fail "Dynamic resource lookup requires explicit shrinker review" || true
 
+mojibake_python=""
+if command -v python >/dev/null 2>&1 && python -c 'import sys' >/dev/null 2>&1; then
+  mojibake_python="python"
+elif command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then
+  mojibake_python="python3"
+fi
+[[ -n "$mojibake_python" ]] || fail "Python is required for the repository-wide mojibake check"
+"$mojibake_python" scripts/check-mojibake.py \
+  || fail "Mojibake detected; run $mojibake_python scripts/check-mojibake.py --fix"
+
 echo "STATUS: RESOURCE_INTEGRITY=PASS"
