@@ -1,0 +1,66 @@
+﻿name: TDLib release check
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: tdlib-release-check
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check upstream TDLib release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Check latest TDLib release
+        id: release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const source = fs.readFileSync('docs/TDLIB_ARTIFACT_MANIFEST.md', 'utf8');
+            const match = source.match(/TDLib\s+v(\d+\.\d+\.\d+)/i);
+            if (!match) core.setFailed('Could not determine pinned TDLib version from docs/TDLIB_ARTIFACT_MANIFEST.md');
+            const pinned = match?.[1];
+            const response = await github.rest.repos.listReleases({
+              owner: 'tdlib', repo: 'td', per_page: 10
+            });
+            const stable = response.data
+              .map(r => r.tag_name)
+              .filter(tag => /^v?\d+\.\d+\.\d+$/.test(tag))
+              .sort((a, b) => {
+                const x = a.replace(/^v/, '').split('.').map(Number);
+                const y = b.replace(/^v/, '').split('.').map(Number);
+                return (y[0]-x[0]) || (y[1]-x[1]) || (y[2]-x[2]);
+              })[0];
+            if (!stable) { core.info(`No stable upstream release found; pinned=${pinned}`); return; }
+            const compare = (v) => v.replace(/^v/, '').split('.').map(Number);
+            const newer = compare(stable) > compare(pinned);
+            core.setOutput('pinned', pinned);
+            core.setOutput('latest', stable);
+            core.setOutput('newer', String(newer));
+            if (!newer) { core.info(`No newer TDLib release. pinned=${pinned}, latest=${stable}`); return; }
+            const title = `[tdlib] New TDLib release ${stable} available`;
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'dependencies', per_page: 100
+            });
+            if (existing.some(issue => issue.title === title)) {
+              core.info(`Issue already exists: ${title}`);
+              return;
+            }
+            const release = response.data.find(r => r.tag_name === stable);
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo, title,
+              body: `A newer stable TDLib release is available.\n\n- Latest: ${stable}\n- Pinned: ${pinned}\n- Release: ${release?.html_url || 'https://github.com/tdlib/td/releases'}`
+            });
