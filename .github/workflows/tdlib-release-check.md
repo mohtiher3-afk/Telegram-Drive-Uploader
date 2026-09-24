@@ -25,6 +25,7 @@ permissions:
   pull-requests: read
   copilot-requests: write
 safe-outputs:
+  report-failure-as-issue: false
   create-issue:
     close-older-issues: true
     labels:
