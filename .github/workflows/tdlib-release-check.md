@@ -7,7 +7,8 @@ engine:
     OPENAI_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 intent: Notify maintainers when a newer TDLib release than the version pinned in the repository is published.
 name: tdlib-release-check
-max-ai-credits: -1
+max-ai-credits: 500
+timeout-minutes: 30
 network:
   allowed:
     - defaults
@@ -15,7 +16,7 @@ network:
     - openrouter.ai
 "on":
   schedule:
-    - cron: 0 9 * * *
+    - cron: "17 9 * * *"
   workflow_dispatch: null
 permissions:
   contents: read
@@ -30,6 +31,8 @@ safe-outputs:
       - automation
       - dependencies
     title-prefix: "[tdlib] "
+  noop:
+    report-as-issue: false
 tools:
   bash:
     - "*"
