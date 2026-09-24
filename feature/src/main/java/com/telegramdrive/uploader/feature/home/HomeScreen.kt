@@ -57,6 +57,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.feature.R
+import com.telegramdrive.uploader.core.ui.components.GlowBentoGrid
+import com.telegramdrive.uploader.core.ui.components.GlowBentoTile
+import com.telegramdrive.uploader.core.ui.components.glowBentoVariantForStatus
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
@@ -165,7 +168,6 @@ fun HomeScreen(
                             .testTag("upload_hero_card")
                     )
                 }
-
                 item {
                     Text(
                         text = stringResource(R.string.home_upload_snapshot),
@@ -174,50 +176,17 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(AppSpacing.sm))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
-                    ) {
-                        StatCard(
-                            title = stringResource(R.string.total_videos),
-                            value = uiState.totalVideosCount.toString(),
-                            icon = Icons.Default.VideoLibrary,
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag("stat_total_videos")
+                    GlowBentoGrid(
+                        tiles = listOf(
+                            GlowBentoTile(stringResource(R.string.total_videos), uiState.totalVideosCount.toString(), Icons.Default.VideoLibrary, "stat_total_videos", glowBentoVariantForStatus(false, uiState.pendingCount)),
+                            GlowBentoTile(stringResource(R.string.total_size), formatFileSize(uiState.totalSize), Icons.Default.Storage, "stat_total_size", glowBentoVariantForStatus(false, uiState.pendingCount)),
+                            GlowBentoTile(stringResource(R.string.pending), uiState.pendingCount.toString(), Icons.Default.Schedule, "stat_pending", glowBentoVariantForStatus(false, uiState.pendingCount)),
+                            GlowBentoTile(stringResource(R.string.completed), uiState.completedCount.toString(), Icons.Default.CheckCircle, "stat_completed", glowBentoVariantForStatus(uiState.completedCount > 0, uiState.pendingCount))
                         )
-                        StatCard(
-                            title = stringResource(R.string.total_size),
-                            value = formatFileSize(uiState.totalSize),
-                            icon = Icons.Default.Storage,
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag("stat_total_size")
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(AppSpacing.sm))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
-                    ) {
-                        StatCard(
-                            title = stringResource(R.string.pending),
-                            value = uiState.pendingCount.toString(),
-                            icon = Icons.Default.Schedule,
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag("stat_pending")
-                        )
-                        StatCard(
-                            title = stringResource(R.string.completed),
-                            value = uiState.completedCount.toString(),
-                            icon = Icons.Default.CheckCircle,
-                            modifier = Modifier
-                                .weight(1f)
-                                .testTag("stat_completed")
-                        )
-                    }
+                    )
                 }
+
+
 
                 item {
                     Row(
