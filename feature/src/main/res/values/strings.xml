@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Telegram Drive Uploader</string>
     <string name="splash_logo_description">Telegram Drive Uploader mission control logo</string>
-    <string name="splash_starting">Preparing secure uploadsΓÇª</string>
+    <string name="splash_starting">Preparing secure uploads…</string>
     <string name="smart_file_assistant_title">Smart File Assistant</string>
     <string name="smart_file_assistant_description">Suggest organized names and keywords locally. Uploads never depend on it.</string>
     <string name="smart_file_assistant_suggest">Suggest</string>
@@ -13,7 +13,14 @@
     <string name="home_upload_snapshot">Upload overview</string>
     <string name="telegram_connected">Telegram Connected</string>
     <string name="telegram_not_connected">Telegram not connected</string>
+    <string name="connect_account">Connect your Telegram account to upload videos to Telegram.</string>
+    <string name="user">User</string>
     <string name="connect">Connect</string>
+    <string name="upload_videos">Upload Videos</string>
+    <string name="select_videos">Select Videos</string>
+    <string name="select_videos_description">Select one or more videos and add them to your local queue for background preparation.</string>
+    <string name="upload_cloud_icon">Upload Cloud Icon</string>
+    <string name="local_statistics">Local Statistics</string>
     <string name="total_videos">Total Videos</string>
     <string name="total_size">Total Size</string>
     <string name="pending">Pending</string>
@@ -24,7 +31,7 @@
     <string name="schedule_upload">Schedule upload</string>
     <string name="clear">Clear</string>
     <string name="select_destination">Select Destination</string>
-    <string name="search_destinations">Search chats, channels, groupsΓÇª</string>
+    <string name="search_destinations">Search chats, channels, groups…</string>
     <string name="clear_search">Clear search</string>
     <string name="remove_selection">Remove selection</string>
     <string name="confirm_destination">Confirm Destination Selection</string>
@@ -38,6 +45,7 @@
     <string name="unpin_destination">Unpin destination</string>
     <string name="no_destinations_found">No destinations found.</string>
     <string name="no_destinations_found_for_query">No matching channels or groups.</string>
+    <string name="selected_destination_summary">Selected destination: %1$s</string>
     <string name="connect_telegram">Connect Telegram</string>
     <string name="phone_number">Phone Number</string>
     <string name="continue_action">Continue</string>
@@ -47,7 +55,7 @@
     <string name="password">Password</string>
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
-    <string name="logging_out">Logging out safelyΓÇª</string>
+    <string name="logging_out">Logging out safely…</string>
     <string name="continue_qr">Continue with QR login</string>
     <string name="retry_connection">Retry Connection</string>
     <string name="authorized_success">Authorized Successfully!</string>
@@ -73,8 +81,8 @@
     <string name="upload_time">Upload time: %1$s</string>
     <string name="upload_speed">Speed: %1$s</string>
     <string name="upload_eta">Remaining: %1$s</string>
-    <string name="upload_eta_calculating">CalculatingΓÇª</string>
-    <string name="upload_eta_stalled">Waiting for transfer dataΓÇª</string>
+    <string name="upload_eta_calculating">Calculating…</string>
+    <string name="upload_eta_stalled">Waiting for transfer data…</string>
     <string name="search_file_names">Search file names</string>
     <string name="filter_completed_uploads">Type to filter completed uploads</string>
     <string name="search_queue_files">Search queue files</string>
@@ -82,7 +90,7 @@
     <string name="newest">Newest</string>
     <string name="largest">Largest</string>
     <string name="upload_queue">Upload queue</string>
-    <string name="queue_count_summary">%1$d active ┬╖ %2$d failed</string>
+    <string name="queue_count_summary">%1$d active · %2$d failed</string>
     <string name="queue_empty_title">Your queue is empty</string>
     <string name="queue_empty_supporting">Select videos from Home to start a reliable background upload.</string>
     <string name="queue_controls_title">Queue controls</string>
@@ -93,6 +101,7 @@
     <string name="queue_filter_active">Active</string>
     <string name="queue_filter_paused">Paused</string>
     <string name="queue_filter_failed">Failed</string>
+    <string name="connected_status_description">Connected</string>
     <string name="onboarding_page_upload_title">Your files, in your Telegram</string>
     <string name="onboarding_page_upload_description">Prepare videos, choose a Telegram destination, and keep your uploads organized in one private workspace.</string>
     <string name="onboarding_page_schedule_title">Upload on your schedule</string>
@@ -106,13 +115,13 @@
     <string name="add_to_queue">Add to Upload Queue (Telegram)</string>
     <string name="no_videos_selected">No videos selected</string>
     <string name="select_videos_from_home">Please select videos from the Home tab to begin preparation.</string>
-    <string name="extracting_video_metadata">Extracting video metadataΓÇª</string>
+    <string name="extracting_video_metadata">Extracting video metadata…</string>
     <string name="all_videos_removed">All videos removed</string>
     <string name="select_more_videos">Select more videos from the Home tab to prepare them.</string>
     <string name="telegram_destination_label">Telegram Destination</string>
     <string name="telegram_auth_description">Connect your Telegram account to prepare video uploads and manage files in Saved Messages, Channels, or Groups.</string>
     <string name="telegram_api_not_configured">Developer Notice: Telegram API ID &amp; Hash are not configured. Connection attempts will fail securely.</string>
-    <string name="connecting_telegram">Connecting to Telegram serversΓÇª</string>
+    <string name="connecting_telegram">Connecting to Telegram servers…</string>
     <string name="telegram_phone_number">Telegram Phone Number</string>
     <string name="phone_number_help">Enter your phone number with your country code.</string>
     <string name="enter_verification_code">Enter Verification Code</string>
@@ -137,9 +146,13 @@
     <string name="application_version">Application Version</string>
     <string name="built_with_compose">Built with Jetpack Compose &amp; Material 3</string>
     <string name="go_back">Go Back</string>
-    <string name="select_target">Select TargetΓÇª</string>
+    <string name="select_target">Select Target…</string>
     <string name="select_action">Select</string>
     <string name="start_immediately">Start immediately</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_queue">Queue</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
     <string name="logout_dialog_title">Log out of Telegram</string>
     <string name="logout_dialog_message">Are you sure you want to log out? This will clear your Telegram session, but your local upload history and statistics will remain intact.</string>
     <string name="appearance">Appearance</string>
@@ -192,7 +205,7 @@
     <string name="history_no_uploads_supporting">Completed uploads will appear here with searchable metadata.</string>
     <string name="history_no_matching">No matching uploads</string>
     <string name="history_no_matching_supporting">Try a different name or time range.</string>
-    <string name="history_matches_summary">%1$d matches ┬╖ %2$s</string>
+    <string name="history_matches_summary">%1$d matches · %2$s</string>
     <string name="history_period_all">All time</string>
     <string name="history_period_today">Today</string>
     <string name="history_period_7_days">7 days</string>

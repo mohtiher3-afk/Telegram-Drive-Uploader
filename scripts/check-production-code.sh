@@ -8,7 +8,7 @@ cd "$ROOT_DIR"
 # do not fail the gate. A NotImplementedException in shipped app code is blocking.
 status=0
 matches=$(grep -RInE --exclude-dir=.git --exclude-dir=build --exclude='*.md' --exclude='*.txt' \
-  '\\b(NotImplementedException|TODO|FIXME|fake|mock|dummy|debug-only)\\b' app/src/main .github 2>/dev/null || true)
+  '\b(NotImplementedException|TODO|FIXME|fake|mock|dummy|debug-only)\b' app/src/main .github 2>/dev/null || true)
 
 if [[ -n "$matches" ]]; then
   echo "Production-code findings (values shown are marker names and locations only):"

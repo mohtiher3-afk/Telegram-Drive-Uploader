@@ -25,25 +25,20 @@ The Android project is packaged as separate ABI APKs for **arm64-v8a**, **armeab
 
 | Artifact | Relative path | Size | Status |
 |---|---|---:|---|
-| ARM64 JNI | `data/src/main/jniLibs/arm64-v8a/libtdjni.so` | 58,944,152 bytes | PASS; stripped ELF AArch64 |
-| ARMv7 JNI | `data/src/main/jniLibs/armeabi-v7a/libtdjni.so` | 23,441,904 bytes | PASS; stripped ELF ARM EABI5 |
-| x86_64 JNI | `data/src/main/jniLibs/x86_64/libtdjni.so` | 36,146,336 bytes | PASS; stripped ELF X86-64 |
-| Client binding | `data/src/main/java/org/drinkless/tdlib/Client.java` | 11,015 bytes | PASS |
-| Log binding | `data/src/main/java/org/drinkless/tdlib/Log.java` | 3,401 bytes | PASS |
-| TdApi binding | `data/src/main/java/org/drinkless/tdlib/TdApi.java` | 1,757,224 bytes | PASS |
+| ARM64 JNI | `data/src/main/jniLibs/arm64-v8a/libtdjni.so` | 20,398,552 bytes | PASS; documented by SHA-256 |
+| ARMv7 JNI | `data/src/main/jniLibs/armeabi-v7a/libtdjni.so` | 14,407,696 bytes | PASS; documented by SHA-256 |
+| x86_64 JNI | `data/src/main/jniLibs/x86_64/libtdjni.so` | 22,573,928 bytes | PASS; documented by SHA-256 |
+| Client binding | `data/src/main/java/org/drinkless/tdlib/Client.java` | 11,274 bytes | PASS; documented by SHA-256 |
+| Log binding | `data/src/main/java/org/drinkless/tdlib/Log.java` | 3,483 bytes | PASS; documented by SHA-256 |
+| TdApi binding | `data/src/main/java/org/drinkless/tdlib/TdApi.java` | 5,248,495 bytes | PASS; documented by SHA-256 |
 
-The mandatory checker reports `TDLIB_ARTIFACTS_PRESENT=true`, verifies the ELF header, and rejects a non-AArch64 ARM64 artifact. Missing native libraries remain a hard failure at build/runtime integration boundaries.
+The mandatory checker reports `TDLIB_ARTIFACTS_PRESENT=true`, verifies the ELF header, and rejects a non-matching ARM64 artifact when the selected ABI is `arm64-v8a`. Missing native libraries remain a hard failure at build/runtime integration boundaries.
 
 ## 4. SHA-256 Checksums
 
-```text
-e3b7b195000787efce458cdf9b1bfa6271c9b18ea23041b03e805b9ae2515654  data/src/main/jniLibs/arm64-v8a/libtdjni.so
-77350d864515071279a51549b145b925c820f42a8e87d039bdab622cdc47e9a8  data/src/main/jniLibs/armeabi-v7a/libtdjni.so
-2a66e9c5927a5bebe8aadbfb97e6776babb804f8326a3fb75856b073267edab8  data/src/main/jniLibs/x86_64/libtdjni.so
-ea37f5c3f2cb894ad14381a22e1c6ca22affbaa25346669ff117e0b489e6eabe  data/src/main/java/org/drinkless/tdlib/Client.java
-e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36  data/src/main/java/org/drinkless/tdlib/Log.java
-8f40a88e7bd379c5362afe8af0fe079c36b7d638f0adf19d024cfbce2ee74e7d  data/src/main/java/org/drinkless/tdlib/TdApi.java
-```
+The authoritative machine-readable checksums are in [`TDLIB_SHA256SUMS.txt`](TDLIB_SHA256SUMS.txt). That file covers all three `libtdjni.so` files, all packaged OpenSSL `libssl.so`/`libcrypto.so` files, and the three generated Java bindings using repository-relative paths.
+
+`scripts/check-tdlib-artifacts.sh` verifies every checksum entry against the tracked files, so stale paths, changed binaries, and stale binding documentation fail the CI artifact gate.
 
 ## 5. Android Build Verification
 
@@ -53,14 +48,9 @@ e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36  data/src/main/
 | Kotlin compilation | PASS |
 | Java compilation | PASS |
 | Unit tests | PASS |
-| ARM64 debug APK | PASS |
+| ARM64 debug APK build | PASS |
 | ABI split configuration | PASS; arm64-v8a, armeabi-v7a, x86_64 |
-| Debug APK path | `app/build/outputs/apk/debug/app-arm64-v8a-debug.apk` |
-| Debug APK size | 44,441,943 bytes |
-| Debug APK SHA-256 | `07ae90143853b78da072b58c8bbfaba866ad119e6b4235e94dfcb57c288d165e` |
-| Release APK path | `app/build/outputs/apk/release/app-arm64-v8a-release.apk` |
-| Release APK size | 21,550,668 bytes |
-| Release APK SHA-256 | `aea78956e436e632821be1737ee0dec4a126eecaa6dd8f8384bc04008850810a` |
+| Debug/release APK size and digest | Not documented here; generated APKs are ephemeral and must be verified from their per-build `.sha256` files |
 | APK native entries | `lib/<selected-abi>/libtdjni.so` |
 
 Each native library was stripped with the Android NDK `llvm-strip --strip-debug --strip-unneeded` operation and validated using ELF headers and SHA-256 checksums. This removes debug/unneeded symbols without changing the official TDLib implementation. Physical-device authentication still requires testing on a compatible Android device with valid Telegram API credentials and network access.

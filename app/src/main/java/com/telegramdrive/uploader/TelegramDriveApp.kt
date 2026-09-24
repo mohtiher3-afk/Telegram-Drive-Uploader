@@ -30,8 +30,8 @@ class TelegramDriveApp : Application(), Configuration.Provider {
         // Initialize crash reporting (Sentry) only when a real DSN is configured.
         // Prevents Sentry from attempting network calls and leaking a placeholder DSN
         // when TELEGRAM_API_ID/HASH/SENTRY_DSN secrets are absent (e.g. in smoke builds).
-        val sentryDsn = BuildConfig.SENTRY_DSN
-        if (sentryDsn.isNotBlank() && sentryDsn != "YOUR_SENTRY_DSN_HERE") {
+        val sentryDsn = BuildConfig.SENTRY_DSN.trim()
+        if (isUsableSentryDsn(sentryDsn)) {
             SentryAndroid.init(this) { options ->
                 options.dsn = sentryDsn
                 options.tracesSampleRate = 0.25
@@ -91,6 +91,13 @@ class TelegramDriveApp : Application(), Configuration.Provider {
             message = "Critical low memory warning received. Releasing transient diagnostics cache."
         )
         DiagnosticsManager.clearDiagnostics()
+    }
+
+    private fun isUsableSentryDsn(dsn: String): Boolean {
+        return dsn.isNotBlank() &&
+            dsn != "YOUR_SENTRY_DSN_HERE" &&
+            !dsn.contains("xxxxxxxx", ignoreCase = true) &&
+            !dsn.contains("@o000000.")
     }
 }
 

@@ -12,7 +12,8 @@ on:
         type: string
 
 permissions:
-  contents: write
+  contents: read
+  actions: read
 
 concurrency:
   group: android-release-${{ github.workflow }}-${{ github.ref || inputs.tag }}
@@ -56,7 +57,8 @@ jobs:
           esac
 
           git rev-parse --verify "refs/tags/$TAG" > /dev/null
-          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          VERSION_NAME=$(grep -oP 'extra\["appVersionName"\]\s*=\s*"\K[^"]+' build.gradle.kts | head -n 1)
+          test -n "$VERSION_NAME"
           if [ "$TAG" != "v$VERSION_NAME" ] && ! [[ "$TAG" == "v$VERSION_NAME-"* ]]; then
             echo "Tag $TAG does not match app versionName $VERSION_NAME"
             exit 1
@@ -107,12 +109,14 @@ jobs:
         env:
           TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
           TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
           set -euo pipefail
           test -n "$TELEGRAM_API_ID"
           test -n "$TELEGRAM_API_HASH"
           printf 'TELEGRAM_API_ID=%s\n' "$TELEGRAM_API_ID" > .env
           printf 'TELEGRAM_API_HASH=%s\n' "$TELEGRAM_API_HASH" >> .env
+          printf 'SENTRY_DSN=%s\n' "${SENTRY_DSN:-YOUR_SENTRY_DSN_HERE}" >> .env
           chmod 600 .env
 
       - name: Prepare official OpenSSL runtime dependencies
@@ -235,12 +239,14 @@ jobs:
         env:
           TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
           TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
           set -euo pipefail
           test -n "$TELEGRAM_API_ID"
           test -n "$TELEGRAM_API_HASH"
           printf 'TELEGRAM_API_ID=%s\n' "$TELEGRAM_API_ID" > .env
           printf 'TELEGRAM_API_HASH=%s\n' "$TELEGRAM_API_HASH" >> .env
+          printf 'SENTRY_DSN=%s\n' "${SENTRY_DSN:-YOUR_SENTRY_DSN_HERE}" >> .env
           chmod 600 .env
 
       - name: Prepare official OpenSSL runtime dependencies for all ABIs
@@ -309,9 +315,12 @@ jobs:
 
   publish:
     name: Publish verified multi-ABI GitHub Release
-    needs: [validate-release, release]
+    needs: [validate-release, release, bundle]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
     steps:
       - name: Download verified release assets
         uses: actions/download-artifact@v8

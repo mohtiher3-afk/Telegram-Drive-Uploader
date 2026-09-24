@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 TDLIB_VERSION="${TDLIB_VERSION:-1.8.66}"
@@ -9,6 +9,8 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 JNI_DIR="$PROJECT_ROOT/data/src/main/jniLibs"
 JAVA_BINDING_DIR="$PROJECT_ROOT/data/src/main/java/org/drinkless/tdlib"
 MANIFEST_FILE="$PROJECT_ROOT/docs/TDLIB_ARTIFACT_MANIFEST.md"
+CHECKSUM_FILE="$PROJECT_ROOT/docs/TDLIB_SHA256SUMS.txt"
+ELF_ALIGNMENT_HELPER="$PROJECT_ROOT/scripts/check-elf-alignment.py"
 
 MISSING_COUNT=0
 CHECK_ABI="${TDLIB_CHECK_ABI:-armeabi-v7a}"
@@ -90,8 +92,9 @@ check_elf_arch() {
 
 # Verify 16 KB ELF page-size alignment of LOAD segments (Google Play
 # requirement for apps targeting API 35+). Accepts p_align >= 0x4000 (16384).
-# Uses `readelf -lW` (single-line LOAD rows, last field = Align in hex) or
-# `llvm-objdump -p` (`align 2**N`), parsed with portable bash arithmetic.
+# Uses `readelf -lW` (single-line LOAD rows, last field = Align in hex),
+# `llvm-objdump -p` (`align 2**N`), or the Python ELF helper as a portable
+# fallback, parsed with portable bash arithmetic.
 check_16kb_alignment() {
     local abi="$1"
     local file_path="$JNI_DIR/$abi/libtdjni.so"
@@ -99,12 +102,20 @@ check_16kb_alignment() {
     local aligns=""
     if command -v readelf >/dev/null 2>&1; then
         aligns=$(readelf -lW "$file_path" 2>/dev/null | awk '/[[:space:]]LOAD[[:space:]]/{print $NF}')
-    elif command -v llvm-objdump >/dev/null 2>&1; then
+    fi
+    if [ -z "$aligns" ] && command -v llvm-objdump >/dev/null 2>&1; then
         aligns=$(llvm-objdump -p "$file_path" 2>/dev/null | awk '/align 2\*\*/{print $NF}')
     fi
+    if [ -z "$aligns" ] && command -v python >/dev/null 2>&1 && [ -f "$ELF_ALIGNMENT_HELPER" ]; then
+        aligns=$(python "$ELF_ALIGNMENT_HELPER" "$file_path" 2>/dev/null || true)
+    fi
+    if [ -z "$aligns" ] && command -v python3 >/dev/null 2>&1 && [ -f "$ELF_ALIGNMENT_HELPER" ]; then
+        aligns=$(python3 "$ELF_ALIGNMENT_HELPER" "$file_path" 2>/dev/null || true)
+    fi
+    aligns=${aligns//$'\r'/}
 
     if [ -z "$aligns" ]; then
-        echo "[16KB CHECK] $abi: no LOAD segments readable (readelf/llvm-objdump failure)"
+        echo "[16KB CHECK] $abi: no LOAD segments readable (readelf/llvm-objdump/Python failure)"
         MISSING_COUNT=$((MISSING_COUNT + 1))
         return
     fi
@@ -153,6 +164,41 @@ if [ -f "$MANIFEST_FILE" ]; then
 else
     echo "❌ [MISSING] Manifest: $MANIFEST_FILE"
     MISSING_COUNT=$((MISSING_COUNT + 1))
+fi
+
+echo ""
+echo "1b. Verifying documented SHA-256 checksums..."
+if [ ! -f "$CHECKSUM_FILE" ]; then
+    echo "❌ [MISSING] Checksum file: $CHECKSUM_FILE"
+    MISSING_COUNT=$((MISSING_COUNT + 1))
+elif ! command -v sha256sum >/dev/null 2>&1; then
+    echo "❌ [MISSING] sha256sum is required to verify documented artifacts"
+    MISSING_COUNT=$((MISSING_COUNT + 1))
+else
+    checksum_entries=0
+    while read -r expected relative_path; do
+        expected=${expected%$'\r'}
+        relative_path=${relative_path%$'\r'}
+        [[ -z "$expected" || "$expected" == \# ]] && continue
+        checksum_entries=$((checksum_entries + 1))
+        artifact="$PROJECT_ROOT/$relative_path"
+        if [ ! -f "$artifact" ]; then
+            echo "❌ [MISSING CHECKSUM TARGET] $relative_path"
+            MISSING_COUNT=$((MISSING_COUNT + 1))
+            continue
+        fi
+        actual=$(sha256sum "$artifact" | awk '{print $1}')
+        if [ "$actual" != "$expected" ]; then
+            echo "❌ [CHECKSUM MISMATCH] $relative_path"
+            MISSING_COUNT=$((MISSING_COUNT + 1))
+        else
+            echo "✅ [CHECKSUM] $relative_path"
+        fi
+    done < "$CHECKSUM_FILE"
+    if [ "$checksum_entries" -eq 0 ]; then
+        echo "❌ [EMPTY CHECKSUM FILE] $CHECKSUM_FILE"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
+    fi
 fi
 
 echo ""

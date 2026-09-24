@@ -46,6 +46,22 @@ if [[ "$(grep -o 'name="[^"]*"' "$feature_ar_strings" | sort | uniq -d)" != "" ]
   fail "Duplicate feature Arabic string resource ID"
 fi
 
+check_no_mojibake() {
+  local file=$1
+  local label=$2
+
+  # UTF-8 Arabic uses D8/D9 lead bytes. Box-drawing, Greek mojibake fragments,
+  # and U+FFFD indicate a prior double-decoding corruption.
+  if LC_ALL=C.UTF-8 grep -nP '[\x{0391}-\x{03C9}\x{2500}-\x{257F}\x{FFFD}]' "$file"; then
+    fail "$label contains mojibake marker characters; restore it as UTF-8"
+  fi
+}
+
+check_no_mojibake "$en_strings" "English app strings"
+check_no_mojibake "$ar_strings" "Arabic app strings"
+check_no_mojibake "$feature_en_strings" "English feature strings"
+check_no_mojibake "$feature_ar_strings" "Arabic feature strings"
+
 grep -Fq 'android:supportsRtl="true"' "$manifest" \
   || fail "RTL support is not enabled in the manifest"
 grep -Fq 'android:icon="@mipmap/ic_launcher"' "$manifest" \

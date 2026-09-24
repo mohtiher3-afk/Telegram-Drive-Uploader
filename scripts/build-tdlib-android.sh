@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Build TDLib native JNI libraries for Android from the official upstream
@@ -166,12 +166,19 @@ done
 echo "=== Stage 6: Regenerating SHA-256 checksums ==="
 CHECKSUM_FILE="$PROJECT_ROOT/docs/TDLIB_SHA256SUMS.txt"
 {
-  echo "# TDLib v${TDLIB_VERSION} Android native artifacts — generated $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  for ABI in $TARGET_ABIS; do
-    find "$PROJECT_ROOT/data/src/main/jniLibs/$ABI" -maxdepth 1 -name '*.so' -print0 \
-      | sort -z \
-      | xargs -0 -r sha256sum
-  done
+  echo "# TDLib v${TDLIB_VERSION} Android artifacts — generated $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  (
+    cd "$PROJECT_ROOT"
+    for ABI in $TARGET_ABIS; do
+      find "data/src/main/jniLibs/$ABI" -maxdepth 1 -name '*.so' -print0
+    done |
+      sort -z |
+      xargs -0 -r sha256sum
+    sha256sum \
+      data/src/main/java/org/drinkless/tdlib/Client.java \
+      data/src/main/java/org/drinkless/tdlib/Log.java \
+      data/src/main/java/org/drinkless/tdlib/TdApi.java
+  )
 } > "$CHECKSUM_FILE"
 echo "Checksums written: $CHECKSUM_FILE"
 
@@ -179,7 +186,7 @@ echo "Checksums written: $CHECKSUM_FILE"
 echo "=== Stage 7: Updating manifest ==="
 MANIFEST="$PROJECT_ROOT/docs/TDLIB_ARTIFACT_MANIFEST.md"
 if [[ -f "$MANIFEST" ]]; then
-  sed -i "s/TDLib v[0-9][0-9.]*/TDLib v${TDLIB_VERSION}/g" "$MANIFEST"
+  sed -i "s/v[0-9][0-9.]*/v${TDLIB_VERSION}/g" "$MANIFEST"
   echo "Manifest updated: $MANIFEST (review before committing)"
 fi
 

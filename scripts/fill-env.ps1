@@ -36,7 +36,7 @@ if ([string]::IsNullOrWhiteSpace($apiHash)) {
 $lines = @(
     "TELEGRAM_API_ID=$apiId",
     "TELEGRAM_API_HASH=$apiHash",
-    'SENTRY_DSN='
+    'SENTRY_DSN=YOUR_SENTRY_DSN_HERE'
 )
 
 Set-Content -Path $EnvPath -Value $lines -Encoding ascii -Force

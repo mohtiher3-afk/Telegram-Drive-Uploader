@@ -1,10 +1,13 @@
-# TDLib v1.8.66 Android native artifacts — generated 2026-09-18T11:21:11Z
-5272a49d48958cb320d9819227c1a735a07b28e5cfb669ed6c4bb4dffb9d89c7  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/arm64-v8a/libcrypto.so
-46c6084a75ded7bfe2ecb7cce248e3039bb4c44908c15d61970fb49a85334554  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/arm64-v8a/libssl.so
-f26e1dcb1a44d8d2c7eecca0f600b11bdacff660c9cc0b121f6171e31b598aab  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/arm64-v8a/libtdjni.so
-58207b5b9fb0c472fcd721044d6ee3d98baa0624c954dd03f467966736810a75  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/armeabi-v7a/libcrypto.so
-182cf159b823b2872590ed2bc6da430aad9e847124a852cf43a7e424594d9d3a  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/armeabi-v7a/libssl.so
-aada91bdf245906185291637e3f288dd8e02c4c0fe6937ab9809ef28709c10e5  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/armeabi-v7a/libtdjni.so
-89f98f2deb1ac500797ef5f716a24b256b5a5aac4a7fa45481fe082dab1749d1  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/x86_64/libcrypto.so
-3552a1a890d1bfa9f81f399fb75d42a1e4db1e4ad94cb9d10bb0554eec1c4454  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/x86_64/libssl.so
-d0aea943947c1050210801a15cb0b45fceb8e40a7f5c3e7340d0f6ec0db6bede  /home/runner/work/Telegram-Drive-Uploader/Telegram-Drive-Uploader/data/src/main/jniLibs/x86_64/libtdjni.so
+# TDLib v1.8.66 Android artifacts — regenerated from tracked files 2026-09-24
+5272a49d48958cb320d9819227c1a735a07b28e5cfb669ed6c4bb4dffb9d89c7  data/src/main/jniLibs/arm64-v8a/libcrypto.so
+46c6084a75ded7bfe2ecb7cce248e3039bb4c44908c15d61970fb49a85334554  data/src/main/jniLibs/arm64-v8a/libssl.so
+f26e1dcb1a44d8d2c7eecca0f600b11bdacff660c9cc0b121f6171e31b598aab  data/src/main/jniLibs/arm64-v8a/libtdjni.so
+58207b5b9fb0c472fcd721044d6ee3d98baa0624c954dd03f467966736810a75  data/src/main/jniLibs/armeabi-v7a/libcrypto.so
+182cf159b823b2872590ed2bc6da430aad9e847124a852cf43a7e424594d9d3a  data/src/main/jniLibs/armeabi-v7a/libssl.so
+aada91bdf245906185291637e3f288dd8e02c4c0fe6937ab9809ef28709c10e5  data/src/main/jniLibs/armeabi-v7a/libtdjni.so
+89f98f2deb1ac500797ef5f716a24b256b5a5aac4a7fa45481fe082dab1749d1  data/src/main/jniLibs/x86_64/libcrypto.so
+3552a1a890d1bfa9f81f399fb75d42a1e4db1e4ad94cb9d10bb0554eec1c4454  data/src/main/jniLibs/x86_64/libssl.so
+d0aea943947c1050210801a15cb0b45fceb8e40a7f5c3e7340d0f6ec0db6bede  data/src/main/jniLibs/x86_64/libtdjni.so
+5b30cb91dc25eb26b5dd93622974cec7024a0d87d81714965ae0416054347b26  data/src/main/java/org/drinkless/tdlib/Client.java
+d9dfccb7c0a6b6594a21098ed73cc5c00783a09d635c796df8fa696701114da3  data/src/main/java/org/drinkless/tdlib/Log.java
+5c4a2294bb6d0afd4257277b6f37d591639c71243229254b1a25d14b6e433c3b  data/src/main/java/org/drinkless/tdlib/TdApi.java

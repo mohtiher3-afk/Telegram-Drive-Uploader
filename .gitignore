@@ -3,6 +3,7 @@
 local.properties
 *.jks
 *.keystore
+google-services.json
 
 # Gradle and Android build outputs
 .gradle/
@@ -11,6 +12,7 @@ build/
 **/build/
 *.apk
 *.aab
+*.log
 
 # Built release binaries are distributed via GitHub Releases, never committed.
 releases/
@@ -27,6 +29,8 @@ artifacts/
 .externalNativeBuild/
 .cxx/
 .native-build/
+__pycache__/
+*.pyc
 
 # Git worktrees
 .worktrees/

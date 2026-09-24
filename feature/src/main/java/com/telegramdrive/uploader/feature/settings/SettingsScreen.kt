@@ -2,6 +2,8 @@
 package com.telegramdrive.uploader.feature.settings
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -365,13 +367,7 @@ fun SettingsScreen(
                             }
                         }
                         TextButton(
-                            onClick = {
-                                context.startActivity(
-                                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                                    }
-                                )
-                            },
+                            onClick = { openNotificationSettings(context) },
                             modifier = Modifier.testTag("open_notification_settings_button")
                         ) {
                             Text(stringResource(com.telegramdrive.uploader.feature.R.string.open_notification_settings))
@@ -676,6 +672,27 @@ fun SettingsScreen(
             }
         }
     }
+}
+
+private fun openNotificationSettings(context: Context) {
+    val appDetailsIntent = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", context.packageName, null)
+    )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val notificationSettingsIntent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        }
+        try {
+            context.startActivity(notificationSettingsIntent)
+            return
+        } catch (_: ActivityNotFoundException) {
+            // Fall through to the API 24-compatible application-details screen.
+        }
+    }
+
+    context.startActivity(appDetailsIntent)
 }
 
 private fun canPostUploadNotifications(context: android.content.Context): Boolean {

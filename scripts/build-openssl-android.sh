@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Build only the OpenSSL shared libraries required by the checked-in TDLib JNI
