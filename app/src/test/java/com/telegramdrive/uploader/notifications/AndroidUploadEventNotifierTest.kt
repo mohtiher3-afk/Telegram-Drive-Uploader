@@ -57,7 +57,10 @@ class AndroidUploadEventNotifierTest {
         assertTrue(labels.contains(context.getString(com.telegramdrive.uploader.data.R.string.upload_notification_action_cancel)))
         assertTrue(labels.contains(context.getString(com.telegramdrive.uploader.data.R.string.upload_notification_action_details)))
         // The paused card holds the real progress instead of resetting to 0%.
-        assertEquals("clip.mp4 — 42%", shown.contentText?.toString())
+        assertEquals(
+            "clip.mp4 — 42%",
+            shown.extras.getCharSequence(android.app.Notification.EXTRA_TEXT)?.toString()
+        )
     }
 
     @Test
