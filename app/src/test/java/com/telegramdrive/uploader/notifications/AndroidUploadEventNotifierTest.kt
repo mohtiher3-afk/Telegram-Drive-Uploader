@@ -46,6 +46,20 @@ class AndroidUploadEventNotifierTest {
     }
 
     @Test
+    fun `paused progress notification flips control action to resume`() {
+        // progress < 0 is the paused sentinel rendered via showPausedProgressNotification.
+        notifier.showPausedProgressNotification("upload-paused", "clip.mp4")
+
+        val shown = shadowOf(notificationManager).getNotification("upload-paused".hashCode())
+        assertNotNull(shown)
+        val labels = shown.actions.orEmpty().map { it.title.toString() }
+        assertEquals(3, shown.actions?.size)
+        assertTrue(labels.contains(context.getString(com.telegramdrive.uploader.data.R.string.upload_notification_action_resume)))
+        assertTrue(labels.contains(context.getString(com.telegramdrive.uploader.data.R.string.upload_notification_action_cancel)))
+        assertTrue(labels.contains(context.getString(com.telegramdrive.uploader.data.R.string.upload_notification_action_details)))
+    }
+
+    @Test
     fun `dismiss progress notification removes the stable upload notification`() {
         val notification: Notification = notifier.buildForegroundNotification(
             uploadId = "upload-2",

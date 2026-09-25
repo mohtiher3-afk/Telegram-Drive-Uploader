@@ -106,11 +106,17 @@ class AndroidUploadEventNotifier @Inject constructor(
         val percent = progress.coerceIn(0, 100)
         val text = "$fileName — $percent%"
 
-        val pauseIntent = PendingIntent.getService(
+        val controlIntent = PendingIntent.getService(
             context,
             notificationId,
             Intent(context, com.telegramdrive.uploader.service.ForegroundUploadControlService::class.java).apply {
-                action = com.telegramdrive.uploader.service.ForegroundUploadControlService.ACTION_PAUSE
+                // progress < 0 is the paused sentinel (see showPausedProgressNotification):
+                // the single control button toggles between Pause and Resume.
+                if (progress < 0) {
+                    action = com.telegramdrive.uploader.service.ForegroundUploadControlService.ACTION_RESUME
+                } else {
+                    action = com.telegramdrive.uploader.service.ForegroundUploadControlService.ACTION_PAUSE
+                }
                 putExtra(com.telegramdrive.uploader.service.ForegroundUploadControlService.EXTRA_UPLOAD_ID, uploadId)
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -142,15 +148,52 @@ class AndroidUploadEventNotifier @Inject constructor(
             .setContentText(text)
             .setContentIntent(pendingIntent)
             .setOnlyAlertOnce(true)
-            .setOngoing(progress < 100)
+            .setOngoing(progress >= 0 && progress < 100)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setProgress(100, percent, false)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
-            .addAction(R.drawable.ic_pause, context.getString(R.string.upload_notification_action_pause), pauseIntent)
+            .addAction(
+                if (progress < 0) R.drawable.ic_pause else R.drawable.ic_pause,
+                context.getString(
+                    if (progress < 0) R.string.upload_notification_action_resume
+                    else R.string.upload_notification_action_pause
+                ),
+                controlIntent
+            )
             .addAction(R.drawable.ic_cancel, context.getString(R.string.upload_notification_action_cancel), cancelIntent)
             .addAction(R.drawable.ic_info, context.getString(R.string.upload_notification_action_details), detailsIntent)
             .build()
+    }
+
+    /**
+     * Re-renders the stable progress notification in its paused state: same
+     * notification id, indeterminate progress, control button flipped to Resume.
+     * Called when the control service persists PAUSED so the user can resume
+     * from the same notification instead of a second one.
+     */
+    @SuppressLint("MissingPermission")
+    fun showPausedProgressNotification(uploadId: String, fileName: String) {
+        if (!canPostNotifications()) return
+
+        createChannelIfNeeded()
+        val manager = NotificationManagerCompat.from(context)
+        if (!manager.areNotificationsEnabled()) return
+
+        // Sentinel progress < 0 flips the control action to Resume inside
+        // buildProgressNotification; percent/text are clamped for display.
+        val notification = buildProgressNotification(
+            uploadId = uploadId,
+            fileName = fileName,
+            progress = -1,
+            uploadedBytes = 0L,
+            totalBytes = 0L
+        )
+        try {
+            manager.notify(uploadId.hashCode(), notification)
+        } catch (_: SecurityException) {
+            // Permission revoked between check and notify; DB remains authoritative.
+        }
     }
 
     override fun dismissProgressNotification(uploadId: String) {

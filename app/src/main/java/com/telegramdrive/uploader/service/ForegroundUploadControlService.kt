@@ -19,7 +19,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -88,7 +87,19 @@ class ForegroundUploadControlService : android.app.Service() {
                             listOf(UploadStatus.PAUSED)
                         )
                         uploadManager.pauseUpload(uploadId)
-                        showPausedNotification(uploadId)
+                        // Re-render the SAME stable notification (same id) in paused
+                        // state: control button flips to Resume, progress held.
+                        // Falls back to the legacy standalone paused card only via
+                        // showPausedNotification if the unified path throws.
+                        runCatching {
+                            val task = uploadRepository.getUploadById(uploadId)
+                            com.telegramdrive.uploader.notifications.AndroidUploadEventNotifier(
+                                applicationContext
+                            ).showPausedProgressNotification(
+                                uploadId,
+                                task?.fileName ?: uploadId
+                            )
+                        }.onFailure { showPausedNotification(uploadId) }
                     }
                 }
             } finally {
