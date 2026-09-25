@@ -231,6 +231,8 @@ class QueueScreenComposeTest {
             return true
         }
 
+        override suspend fun bumpExecutionGeneration(id: String, allowedStatuses: List<UploadStatus>): Boolean = true
+
         override suspend fun updateProgress(
             id: String,
             uploadedBytes: Long,

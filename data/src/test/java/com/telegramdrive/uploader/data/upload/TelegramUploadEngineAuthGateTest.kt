@@ -398,11 +398,13 @@ class TelegramUploadEngineAuthGateTest {
             tasks[id] = task.copy(status = status)
             return true
         }
+        override suspend fun bumpExecutionGeneration(id: String, allowedStatuses: List<UploadStatus>): Boolean = true
         override suspend fun updateProgress(
             id: String, uploadedBytes: Long, totalBytes: Long, progress: Float,
             speed: Long, averageSpeed: Long, eta: Long
         ) {
         }
+        override suspend fun updateProgressIfGeneration(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long, generation: Long): Boolean = true
         override suspend fun updateUploadDuration(id: String, durationMs: Long) {}
         override suspend fun updateMessageLink(id: String, messageLink: String) {
             tasks[id]?.let { tasks[id] = it.copy(messageLink = messageLink) }
@@ -465,6 +467,7 @@ class TelegramUploadEngineAuthGateTest {
             rows[id] = current.copy(uploadedBytes = uploadedBytes, totalBytes = totalBytes, progress = progress, speed = speed, averageSpeed = averageSpeed, eta = eta)
             return 1
         }
+        override suspend fun updateProgressIfGeneration(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long, generation: Long): Int = 1
         override suspend fun updateUploadDuration(id: String, durationMs: Long) {
             update(id) { it.copy(uploadDurationMs = durationMs) }
         }

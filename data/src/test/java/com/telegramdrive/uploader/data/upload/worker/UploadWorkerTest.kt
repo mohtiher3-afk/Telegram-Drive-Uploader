@@ -284,9 +284,14 @@ class UploadWorkerTest {
         override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>): Boolean {
             return task?.let { if (it.status in allowedStatuses) { updateStatus(id, status); true } else false } ?: false
         }
+        override suspend fun bumpExecutionGeneration(id: String, allowedStatuses: List<UploadStatus>): Boolean = true
         override suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long) {
             progressUpdates++
             task = task?.copy(uploadedBytes = uploadedBytes, totalBytes = totalBytes, progress = progress, speed = speed, averageSpeed = averageSpeed, eta = eta)
+        }
+        override suspend fun updateProgressIfGeneration(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long, generation: Long): Boolean {
+            updateProgress(id, uploadedBytes, totalBytes, progress, speed, averageSpeed, eta)
+            return true
         }
         override suspend fun updateUploadDuration(id: String, durationMs: Long) {
             lastDurationMs = durationMs
