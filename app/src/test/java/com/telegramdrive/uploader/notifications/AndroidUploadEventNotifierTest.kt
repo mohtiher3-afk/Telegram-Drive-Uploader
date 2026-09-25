@@ -47,9 +47,8 @@ class AndroidUploadEventNotifierTest {
 
     @Test
     fun `paused progress notification flips control action to resume`() {
-        notifier.showPausedProgressNotification("upload-paused", "clip.mp4", progress = 42)
+        val shown = notifier.buildPausedNotification("upload-paused", "clip.mp4", progress = 42)
 
-        val shown = shadowOf(notificationManager).getNotification("upload-paused".hashCode())
         assertNotNull(shown)
         val labels = shown.actions.orEmpty().map { it.title.toString() }
         assertEquals(3, shown.actions?.size)

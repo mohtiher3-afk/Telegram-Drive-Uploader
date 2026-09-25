@@ -93,6 +93,9 @@ class AndroidUploadEventNotifier @Inject constructor(
     override fun buildForegroundNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): Notification =
         buildProgressNotification(uploadId, fileName, progress, uploadedBytes, totalBytes, paused = false)
 
+    override fun buildPausedNotification(uploadId: String, fileName: String, progress: Int): Notification =
+        buildProgressNotification(uploadId, fileName, progress, 0L, 0L, paused = true)
+
     private fun buildProgressNotification(
         uploadId: String,
         fileName: String,

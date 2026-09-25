@@ -11,4 +11,7 @@ interface UploadEventNotifier {
 
     /** Builds a Notification to power a foreground service during an active upload. */
     fun buildForegroundNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): Notification
+
+    /** Builds a Notification representing an upload paused by the user. */
+    fun buildPausedNotification(uploadId: String, fileName: String, progress: Int): Notification
 }

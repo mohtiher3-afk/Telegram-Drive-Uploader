@@ -320,6 +320,8 @@ class UploadWorkerTest {
         override fun dismissProgressNotification(uploadId: String) { dismissed++ }
         override fun buildForegroundNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): Notification =
             NotificationCompat.Builder(context, "upload-test").setContentTitle(fileName).setSmallIcon(android.R.drawable.stat_sys_upload).build()
+        override fun buildPausedNotification(uploadId: String, fileName: String, progress: Int): Notification =
+            NotificationCompat.Builder(context, "upload-test").setContentTitle(fileName).setSmallIcon(android.R.drawable.stat_sys_upload).build()
     }
 
     private companion object {
