@@ -84,16 +84,23 @@ class AndroidUploadEventNotifier @Inject constructor(
 
         val notificationId = uploadId.hashCode()
         try {
-            manager.notify(notificationId, buildProgressNotification(uploadId, fileName, progress, uploadedBytes, totalBytes))
+            manager.notify(notificationId, buildProgressNotification(uploadId, fileName, progress, uploadedBytes, totalBytes, paused = false))
         } catch (_: SecurityException) {
             // The permission can change between the check and notify call; the upload state remains authoritative.
         }
     }
 
     override fun buildForegroundNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): Notification =
-        buildProgressNotification(uploadId, fileName, progress, uploadedBytes, totalBytes)
+        buildProgressNotification(uploadId, fileName, progress, uploadedBytes, totalBytes, paused = false)
 
-    private fun buildProgressNotification(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): Notification {
+    private fun buildProgressNotification(
+        uploadId: String,
+        fileName: String,
+        progress: Int,
+        uploadedBytes: Long,
+        totalBytes: Long,
+        paused: Boolean
+    ): Notification {
         createChannelIfNeeded()
         val notificationId = uploadId.hashCode()
         val pendingIntent = PendingIntent.getActivity(
@@ -110,9 +117,9 @@ class AndroidUploadEventNotifier @Inject constructor(
             context,
             notificationId,
             Intent(context, com.telegramdrive.uploader.service.ForegroundUploadControlService::class.java).apply {
-                // progress < 0 is the paused sentinel (see showPausedProgressNotification):
-                // the single control button toggles between Pause and Resume.
-                if (progress < 0) {
+                // Single control button toggles between Pause (running) and
+                // Resume (paused) on the same stable notification.
+                if (paused) {
                     action = com.telegramdrive.uploader.service.ForegroundUploadControlService.ACTION_RESUME
                 } else {
                     action = com.telegramdrive.uploader.service.ForegroundUploadControlService.ACTION_PAUSE
@@ -148,15 +155,15 @@ class AndroidUploadEventNotifier @Inject constructor(
             .setContentText(text)
             .setContentIntent(pendingIntent)
             .setOnlyAlertOnce(true)
-            .setOngoing(progress >= 0 && progress < 100)
+            .setOngoing(!paused && progress < 100)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setProgress(100, percent, false)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .addAction(
-                if (progress < 0) R.drawable.ic_pause else R.drawable.ic_pause,
+                R.drawable.ic_pause,
                 context.getString(
-                    if (progress < 0) R.string.upload_notification_action_resume
+                    if (paused) R.string.upload_notification_action_resume
                     else R.string.upload_notification_action_pause
                 ),
                 controlIntent
@@ -168,26 +175,26 @@ class AndroidUploadEventNotifier @Inject constructor(
 
     /**
      * Re-renders the stable progress notification in its paused state: same
-     * notification id, indeterminate progress, control button flipped to Resume.
-     * Called when the control service persists PAUSED so the user can resume
-     * from the same notification instead of a second one.
+     * notification id, control button flipped to Resume, real progress held on
+     * the bar so the user sees exactly where the upload stopped. Called when the
+     * control service persists PAUSED so the user can resume from the same
+     * notification instead of a second one.
      */
     @SuppressLint("MissingPermission")
-    fun showPausedProgressNotification(uploadId: String, fileName: String) {
+    fun showPausedProgressNotification(uploadId: String, fileName: String, progress: Int) {
         if (!canPostNotifications()) return
 
         createChannelIfNeeded()
         val manager = NotificationManagerCompat.from(context)
         if (!manager.areNotificationsEnabled()) return
 
-        // Sentinel progress < 0 flips the control action to Resume inside
-        // buildProgressNotification; percent/text are clamped for display.
         val notification = buildProgressNotification(
             uploadId = uploadId,
             fileName = fileName,
-            progress = -1,
+            progress = progress,
             uploadedBytes = 0L,
-            totalBytes = 0L
+            totalBytes = 0L,
+            paused = true
         )
         try {
             manager.notify(uploadId.hashCode(), notification)

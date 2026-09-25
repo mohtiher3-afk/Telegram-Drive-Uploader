@@ -122,7 +122,25 @@ class UploadWorker @AssistedInject constructor(
             // being backgrounded on Android 12+. The notification is also used for
             // subsequent progress updates without recreating the foreground service.
             runCatching {
-                setForeground(buildForegroundInfo(uploadId, uploadTask.fileName, 0, 0L, uploadTask.fileSize))
+                // Resume-aware first frame: seed the notification from the persisted
+                // checkpoint (uploadedBytes/progress) instead of flashing 0% when a
+                // paused or retried upload restarts.
+                val checkpointBytes = uploadTask.uploadedBytes.coerceAtLeast(0L)
+                val checkpointTotal = uploadTask.totalBytes.takeIf { it > 0L } ?: uploadTask.fileSize
+                val checkpointPercent = if (checkpointBytes > 0L && checkpointTotal > 0L) {
+                    ((checkpointBytes * 100L) / checkpointTotal).toInt().coerceIn(0, 100)
+                } else {
+                    0
+                }
+                setForeground(
+                    buildForegroundInfo(
+                        uploadId,
+                        uploadTask.fileName,
+                        checkpointPercent,
+                        checkpointBytes,
+                        checkpointTotal
+                    )
+                )
             }.onFailure { failure ->
                 DiagnosticsManager.log(
                     category = DiagnosticCategory.WORKER_STARTED,

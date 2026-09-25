@@ -109,6 +109,30 @@ class TelegramUploadEngineAuthGateTest {
     }
 
     @Test
+    fun `resumed attempt seeds first progress from persisted checkpoint`() = runTest {
+        val client = FakeTelegramClient().also { it.state.value = TelegramConnectionState.AUTHORIZED }
+        client.uploadResult = flow { emit(TelegramUploadEvent.Completed("https://t.me/c/1/2")) }
+        val dao = FakeUploadDao().also {
+            it.rows["test-upload"] = entity().copy(uploadedBytes = 512L, progress = 50f)
+        }
+        engine = TelegramUploadEngineImpl(FakeStreamingFileReader(), client, FakeUploadRepository(), dao)
+
+        val results = engine.uploadFile(task()).toList()
+
+        assertTrue("Expected a Success, got: $results", results.any { it is UploadEngineResult.Success })
+        val firstProgress = results.filterIsInstance<UploadEngineResult.Progress>().first().progress
+        assertEquals(
+            "First progress frame must resume from the persisted checkpoint, not 0",
+            512L,
+            firstProgress.uploadedBytes
+        )
+        assertTrue(
+            "Checkpoint percentage must be >= 50, was ${firstProgress.percentage}",
+            firstProgress.percentage >= 50f
+        )
+    }
+
+    @Test
     fun `staging failure logs the real exception so root cause is not swallowed`() = runTest {
         engine = TelegramUploadEngineImpl(
             FailingStreamingFileReader(),

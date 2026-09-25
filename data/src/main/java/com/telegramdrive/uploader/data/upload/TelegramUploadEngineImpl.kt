@@ -168,7 +168,19 @@ class TelegramUploadEngineImpl @Inject constructor(
                 return@flow
             }
 
-            emit(progress(0L, totalBytes, speedCalculator))
+            // Partial-resume checkpoint: seed the display (and the speed baseline)
+            // from the progress persisted before the previous attempt was paused or
+            // retried, so a resumed attempt starts at the last confirmed percentage
+            // instead of flashing 0% until TDLib reports its first UpdateFile tick.
+            // TDLib itself re-reports authoritative remote.uploadedSize on resume;
+            // this checkpoint only closes the gap before that first tick arrives.
+            val checkpointBytes = (persistedState?.uploadedBytes ?: 0L).coerceIn(0L, totalBytes)
+            if (checkpointBytes > 0L) {
+                speedCalculator.update(checkpointBytes) // seeds lastBytes/lastTime at 0 speed
+                emit(progress(checkpointBytes, totalBytes, speedCalculator))
+            } else {
+                emit(progress(0L, totalBytes, speedCalculator))
+            }
             val uploadStartedAt = SystemClock.elapsedRealtime()
             DiagnosticsManager.log(
                 category = DiagnosticCategory.UPLOAD_STARTED,

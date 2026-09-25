@@ -97,7 +97,8 @@ class ForegroundUploadControlService : android.app.Service() {
                                 applicationContext
                             ).showPausedProgressNotification(
                                 uploadId,
-                                task?.fileName ?: uploadId
+                                task?.fileName ?: uploadId,
+                                task?.progress?.toInt() ?: 0
                             )
                         }.onFailure { showPausedNotification(uploadId) }
                     }
