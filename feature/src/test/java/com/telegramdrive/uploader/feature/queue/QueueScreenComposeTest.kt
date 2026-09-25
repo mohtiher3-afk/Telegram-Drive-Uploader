@@ -224,9 +224,11 @@ class QueueScreenComposeTest {
             id: String,
             status: UploadStatus,
             allowedStatuses: List<UploadStatus>
-        ) {
+        ): Boolean {
             val current = tasks.value.firstOrNull { it.id == id }?.status
-            if (current in allowedStatuses) updateStatus(id, status)
+            if (current !in allowedStatuses) return false
+            updateStatus(id, status)
+            return true
         }
 
         override suspend fun updateProgress(

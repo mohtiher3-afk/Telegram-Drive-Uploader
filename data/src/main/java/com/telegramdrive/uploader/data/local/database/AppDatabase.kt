@@ -49,7 +49,13 @@ val MIGRATION_6_7: Migration = object : Migration(6, 7) {
     }
 }
 
-@Database(entities = [UploadEntity::class], version = 7, exportSchema = false)
+val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE uploads ADD COLUMN executionGeneration INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+@Database(entities = [UploadEntity::class], version = 8, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun uploadDao(): UploadDao
 }

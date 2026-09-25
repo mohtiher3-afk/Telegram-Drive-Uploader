@@ -50,6 +50,9 @@
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync"
             tools:node="merge" />
+        <service
+            android:name="com.telegramdrive.uploader.service.ForegroundUploadControlService"
+            android:exported="false" />
         <activity
             android:name="com.telegramdrive.uploader.MainActivity"
             android:exported="true"

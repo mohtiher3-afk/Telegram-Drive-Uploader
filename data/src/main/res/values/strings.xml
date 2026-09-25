@@ -7,4 +7,8 @@
     <string name="upload_notification_completed_text">A file was delivered to your selected Telegram destination.</string>
     <string name="upload_notification_failed_title">Upload failed</string>
     <string name="upload_notification_failed_text">A file could not be delivered. Open the app to review and retry when available.</string>
+    <string name="upload_notification_action_pause">Pause</string>
+    <string name="upload_notification_action_resume">Resume</string>
+    <string name="upload_notification_action_cancel">Cancel</string>
+    <string name="upload_notification_action_details">Details</string>
 </resources>

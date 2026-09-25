@@ -45,12 +45,21 @@ class UploadRepositoryImpl @Inject constructor(
         uploadDao.updateStatus(id, status.name)
     }
 
-    override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>) {
-        uploadDao.updateStatusIf(id, status.name, allowedStatuses.map { it.name })
+    override suspend fun bumpExecutionGeneration(id: String, allowedStatuses: List<UploadStatus>): Boolean {
+        return uploadDao.bumpExecutionGeneration(id, allowedStatuses.map { it.name }) > 0
     }
+
+    override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>): Boolean {
+        return uploadDao.updateStatusIf(id, status.name, allowedStatuses.map { it.name }) > 0
+    }
+
 
     override suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long) {
         uploadDao.updateProgress(id, uploadedBytes, totalBytes, progress, speed, averageSpeed, eta)
+    }
+
+    override suspend fun updateProgressIfGeneration(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long, generation: Long): Boolean {
+        return uploadDao.updateProgressIfGeneration(id, uploadedBytes, totalBytes, progress, speed, averageSpeed, eta, generation) > 0
     }
 
     override suspend fun updateUploadDuration(id: String, durationMs: Long) {
@@ -128,7 +137,8 @@ class UploadRepositoryImpl @Inject constructor(
             scheduledAt = scheduledAt,
             uploadDurationMs = uploadDurationMs,
             messageLink = messageLink,
-            provisionalMessageId = provisionalMessageId
+            provisionalMessageId = provisionalMessageId,
+            executionGeneration = executionGeneration
         )
     }
     private fun UploadTask.toEntity(): UploadEntity {
@@ -158,7 +168,8 @@ class UploadRepositoryImpl @Inject constructor(
             scheduledAt = scheduledAt,
             uploadDurationMs = uploadDurationMs,
             messageLink = messageLink,
-            provisionalMessageId = provisionalMessageId
+            provisionalMessageId = provisionalMessageId,
+            executionGeneration = executionGeneration
         )
     }
 }

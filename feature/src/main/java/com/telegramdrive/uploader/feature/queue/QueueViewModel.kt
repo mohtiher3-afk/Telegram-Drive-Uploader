@@ -101,16 +101,33 @@ class QueueViewModel @Inject constructor(
 
     fun pauseUpload(id: String) {
         viewModelScope.launch {
-            uploadRepository.updateStatus(id, UploadStatus.PAUSED)
-            uploadManager.pauseUpload(id)
+            val changed = uploadRepository.updateStatusIf(
+                id,
+                UploadStatus.PAUSED,
+                listOf(UploadStatus.QUEUED, UploadStatus.PREPARING, UploadStatus.UPLOADING, UploadStatus.RETRYING)
+            )
+            if (changed) {
+                uploadRepository.bumpExecutionGeneration(
+                    id,
+                    listOf(UploadStatus.PAUSED)
+                )
+                uploadManager.pauseUpload(id)
+            }
         }
     }
 
     fun resumeUpload(id: String) {
         viewModelScope.launch {
             uploadRepository.getUploadById(id)?.let {
-                uploadRepository.updateStatus(id, UploadStatus.QUEUED)
-                uploadManager.resumeUpload(it)
+                val changed = uploadRepository.updateStatusIf(
+                    id,
+                    UploadStatus.QUEUED,
+                    listOf(UploadStatus.PAUSED)
+                )
+                if (changed) {
+                    uploadRepository.bumpExecutionGeneration(id, listOf(UploadStatus.QUEUED))
+                    uploadManager.resumeUpload(it)
+                }
             }
         }
     }
@@ -118,8 +135,15 @@ class QueueViewModel @Inject constructor(
     fun retryUpload(id: String) {
         viewModelScope.launch {
             uploadRepository.getUploadById(id)?.let {
-                uploadRepository.updateStatus(id, UploadStatus.RETRYING)
-                uploadManager.retryUpload(it)
+                val changed = uploadRepository.updateStatusIf(
+                    id,
+                    UploadStatus.RETRYING,
+                    listOf(UploadStatus.FAILED)
+                )
+                if (changed) {
+                    uploadRepository.bumpExecutionGeneration(id, listOf(UploadStatus.RETRYING))
+                    uploadManager.retryUpload(it)
+                }
             }
         }
     }
@@ -129,8 +153,15 @@ class QueueViewModel @Inject constructor(
             uploadRepository.getAllUploads().first()
                 .filter { it.status == UploadStatus.FAILED }
                 .forEach { task ->
-                    uploadRepository.updateStatus(task.id, UploadStatus.RETRYING)
-                    uploadManager.retryUpload(task)
+                    val changed = uploadRepository.updateStatusIf(
+                        task.id,
+                        UploadStatus.RETRYING,
+                        listOf(UploadStatus.FAILED)
+                    )
+                    if (changed) {
+                        uploadRepository.bumpExecutionGeneration(task.id, listOf(UploadStatus.RETRYING))
+                        uploadManager.retryUpload(task)
+                    }
                 }
         }
     }
@@ -144,15 +175,37 @@ class QueueViewModel @Inject constructor(
                         it.status == UploadStatus.UPLOADING ||
                         it.status == UploadStatus.RETRYING
                 }
-                .forEach { task -> pauseUpload(task.id) }
+                .forEach { task ->
+                    val changed = uploadRepository.updateStatusIf(
+                        task.id,
+                        UploadStatus.PAUSED,
+                        listOf(UploadStatus.QUEUED, UploadStatus.PREPARING, UploadStatus.UPLOADING, UploadStatus.RETRYING)
+                    )
+                    if (changed) uploadManager.pauseUpload(task.id)
+                }
         }
     }
 
     fun cancelUpload(id: String) {
         viewModelScope.launch {
-            uploadRepository.updateStatus(id, UploadStatus.CANCELLED)
-            uploadManager.cancelUpload(id)
-            uploadRepository.getUploadById(id)?.let { ownedStagedFileStore.deleteOwnedFilesFor(it) }
+            val task = uploadRepository.getUploadById(id)
+            val changed = uploadRepository.updateStatusIf(
+                id,
+                UploadStatus.CANCELLED,
+                listOf(
+                    UploadStatus.QUEUED,
+                    UploadStatus.PREPARING,
+                    UploadStatus.UPLOADING,
+                    UploadStatus.PAUSED,
+                    UploadStatus.RETRYING,
+                    UploadStatus.FAILED
+                )
+            )
+            if (changed) {
+                uploadRepository.bumpExecutionGeneration(id, listOf(UploadStatus.CANCELLED))
+                uploadManager.cancelUpload(id)
+                task?.let { ownedStagedFileStore.deleteOwnedFilesFor(it) }
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.telegramdrive.uploader.feature.upload
 
 import android.content.Context
+import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -331,9 +332,9 @@ class UploadViewModel @Inject constructor(
             try {
                 var skippedCount = 0
                 val seenOriginalUris = mutableSetOf<String>()
-                uris.forEach { uri ->
+                for (uri in uris) {
                     try {
-                        if (!seenOriginalUris.add(uri.toString())) return@forEach
+                        if (!seenOriginalUris.add(uri.toString())) continue
 
                         // Persist read permission if available
                         try {

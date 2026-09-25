@@ -49,5 +49,7 @@ data class UploadEntity(
      * confirmed. A non-null value means the upload already completed delivery and
      * retries must never touch TDLib again.
      */
-    val finalMessageId: Long? = null
+    val finalMessageId: Long? = null,
+    /** Incremented whenever a new user execution replaces a previous execution. */
+    val executionGeneration: Long = 0L
 )

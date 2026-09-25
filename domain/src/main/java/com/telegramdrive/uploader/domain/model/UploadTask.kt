@@ -27,5 +27,6 @@ data class UploadTask(
     val scheduledAt: Long? = null,
     val uploadDurationMs: Long = 0L,
     val messageLink: String? = null,
-    val provisionalMessageId: Long? = null
+    val provisionalMessageId: Long? = null,
+    val executionGeneration: Long = 0L
 )

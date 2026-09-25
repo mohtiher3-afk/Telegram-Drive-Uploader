@@ -111,6 +111,7 @@ class UploadWorker @AssistedInject constructor(
             )
         }
 
+        val executionGeneration = uploadTask.executionGeneration
         var result: Result = Result.failure()
         var terminalEventReceived = false
         val startTime = System.currentTimeMillis()
@@ -155,25 +156,28 @@ class UploadWorker @AssistedInject constructor(
                         val now = android.os.SystemClock.elapsedRealtime()
                         if (now - lastProgressUpdateAt >= 1_000L || p.percentage >= 99.5f) {
                             lastProgressUpdateAt = now
-                            repository.updateProgress(
-                                id = uploadId,
-                                uploadedBytes = p.uploadedBytes,
-                                totalBytes = p.totalBytes,
-                                progress = p.percentage,
-                                speed = p.speedBytesPerSecond,
-                                averageSpeed = p.averageSpeedBytesPerSecond,
-                                eta = p.etaSeconds
-                            )
-                            // Update the progress notification with real-time percentage
-                            uploadEventNotifier.showProgressNotification(
-                                uploadId = uploadId,
-                                fileName = uploadTask.fileName,
-                                progress = p.percentage.toInt(),
-                                uploadedBytes = p.uploadedBytes,
-                                totalBytes = p.totalBytes
-                            )
-                            runCatching {
-                                setForeground(buildForegroundInfo(uploadId, uploadTask.fileName, p.percentage.toInt(), p.uploadedBytes, p.totalBytes))
+                            if (repository.updateProgressIfGeneration(
+                                    id = uploadId,
+                                    uploadedBytes = p.uploadedBytes,
+                                    totalBytes = p.totalBytes,
+                                    progress = p.percentage,
+                                    speed = p.speedBytesPerSecond,
+                                    averageSpeed = p.averageSpeedBytesPerSecond,
+                                    eta = p.etaSeconds,
+                                    generation = executionGeneration
+                                )
+                            ) {
+                                // Update the progress notification with real-time percentage
+                                uploadEventNotifier.showProgressNotification(
+                                    uploadId = uploadId,
+                                    fileName = uploadTask.fileName,
+                                    progress = p.percentage.toInt(),
+                                    uploadedBytes = p.uploadedBytes,
+                                    totalBytes = p.totalBytes
+                                )
+                                runCatching {
+                                    setForeground(buildForegroundInfo(uploadId, uploadTask.fileName, p.percentage.toInt(), p.uploadedBytes, p.totalBytes))
+                                }
                             }
                         }
                     }
@@ -181,20 +185,34 @@ class UploadWorker @AssistedInject constructor(
                         terminalEventReceived = true
                         val latestTask = repository.getUploadById(uploadId)
                         if (latestTask?.status != UploadStatus.CANCELLED && latestTask?.status != UploadStatus.PAUSED) {
-                            repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
-                            engineResult.messageLink?.let { repository.updateMessageLink(uploadId, it) }
-                            repository.updateStatus(uploadId, UploadStatus.COMPLETED)
-                            ownedStagedFileStore.deleteOwnedFilesFor(latestTask ?: uploadTask)
-                            notifyTerminalStatus(uploadId, UploadStatus.COMPLETED)
-                            result = Result.success()
-                            val duration = System.currentTimeMillis() - startTime
-                            DiagnosticsManager.log(
-                                category = DiagnosticCategory.UPLOAD_COMPLETED,
-                                severity = DiagnosticSeverity.INFO,
-                                message = "Upload task completed successfully.",
-                                uploadId = uploadId,
-                                durationMs = duration
+                            val completed = repository.updateStatusIf(
+                                id = uploadId,
+                                status = UploadStatus.COMPLETED,
+                                allowedStatuses = listOf(
+                                    UploadStatus.PREPARING,
+                                    UploadStatus.UPLOADING
+                                )
                             )
+                            if (completed) {
+                                repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
+                                engineResult.messageLink?.let { repository.updateMessageLink(uploadId, it) }
+                                ownedStagedFileStore.deleteOwnedFilesFor(latestTask ?: uploadTask)
+                                notifyTerminalStatus(uploadId, UploadStatus.COMPLETED)
+                                result = Result.success()
+                                val duration = System.currentTimeMillis() - startTime
+                                DiagnosticsManager.log(
+                                    category = DiagnosticCategory.UPLOAD_COMPLETED,
+                                    severity = DiagnosticSeverity.INFO,
+                                    message = "Upload task completed successfully.",
+                                    uploadId = uploadId,
+                                    durationMs = duration
+                                )
+                            } else {
+                                if (latestTask?.status == UploadStatus.CANCELLED) {
+                                    ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                                }
+                                result = Result.success()
+                            }
                         } else {
                             if (latestTask.status == UploadStatus.CANCELLED) {
                                 ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)

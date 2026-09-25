@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.data.upload.notifications
+package com.telegramdrive.uploader.notifications
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.data.R
+import com.telegramdrive.uploader.data.upload.notifications.UploadEventNotifier
 import com.telegramdrive.uploader.domain.upload.UploadEventNotificationEvent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -105,6 +106,36 @@ class AndroidUploadEventNotifier @Inject constructor(
         val percent = progress.coerceIn(0, 100)
         val text = "$fileName — $percent%"
 
+        val pauseIntent = PendingIntent.getService(
+            context,
+            notificationId,
+            Intent(context, com.telegramdrive.uploader.service.ForegroundUploadControlService::class.java).apply {
+                action = com.telegramdrive.uploader.service.ForegroundUploadControlService.ACTION_PAUSE
+                putExtra(com.telegramdrive.uploader.service.ForegroundUploadControlService.EXTRA_UPLOAD_ID, uploadId)
+            },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val cancelIntent = PendingIntent.getService(
+            context,
+            notificationId + 1,
+            Intent(context, com.telegramdrive.uploader.service.ForegroundUploadControlService::class.java).apply {
+                action = com.telegramdrive.uploader.service.ForegroundUploadControlService.ACTION_CANCEL
+                putExtra(com.telegramdrive.uploader.service.ForegroundUploadControlService.EXTRA_UPLOAD_ID, uploadId)
+            },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val detailsIntent = PendingIntent.getService(
+            context,
+            notificationId + 2,
+            Intent(context, com.telegramdrive.uploader.service.ForegroundUploadControlService::class.java).apply {
+                action = com.telegramdrive.uploader.service.ForegroundUploadControlService.ACTION_DETAILS
+                putExtra(com.telegramdrive.uploader.service.ForegroundUploadControlService.EXTRA_UPLOAD_ID, uploadId)
+            },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_upload_notification)
             .setContentTitle(context.getString(R.string.upload_notification_in_progress_title))
@@ -116,6 +147,9 @@ class AndroidUploadEventNotifier @Inject constructor(
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setProgress(100, percent, false)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .addAction(R.drawable.ic_pause, context.getString(R.string.upload_notification_action_pause), pauseIntent)
+            .addAction(R.drawable.ic_cancel, context.getString(R.string.upload_notification_action_cancel), cancelIntent)
+            .addAction(R.drawable.ic_info, context.getString(R.string.upload_notification_action_details), detailsIntent)
             .build()
     }
 

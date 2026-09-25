@@ -7,6 +7,7 @@ import com.telegramdrive.uploader.data.local.database.MIGRATION_3_4
 import com.telegramdrive.uploader.data.local.database.MIGRATION_4_5
 import com.telegramdrive.uploader.data.local.database.MIGRATION_5_6
 import com.telegramdrive.uploader.data.local.database.MIGRATION_6_7
+import com.telegramdrive.uploader.data.local.database.MIGRATION_7_8
 import com.telegramdrive.uploader.data.local.database.UploadDao
 import dagger.Module
 import dagger.Provides
@@ -30,7 +31,7 @@ object DatabaseModule {
             // migration must crash loudly during development instead of silently
             // wiping every upload row on upgrade.
             .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
-            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
             .build()
     }
 

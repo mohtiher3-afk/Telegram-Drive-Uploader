@@ -392,8 +392,11 @@ class TelegramUploadEngineAuthGateTest {
         override suspend fun updateStatus(id: String, status: UploadStatus) {
             tasks[id]?.let { tasks[id] = it.copy(status = status) }
         }
-        override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>) {
-            tasks[id]?.let { if (it.status in allowedStatuses) tasks[id] = it.copy(status = status) }
+        override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>): Boolean {
+            val task = tasks[id] ?: return false
+            if (task.status !in allowedStatuses) return false
+            tasks[id] = task.copy(status = status)
+            return true
         }
         override suspend fun updateProgress(
             id: String, uploadedBytes: Long, totalBytes: Long, progress: Float,
@@ -432,6 +435,8 @@ class TelegramUploadEngineAuthGateTest {
             emit(rows.values.filter { it.status in listOf("QUEUED", "PREPARING", "UPLOADING", "RETRYING") })
         }
         override suspend fun getUploadById(id: String): UploadEntity? = rows[id]
+        override suspend fun getUploadByIdAndGeneration(id: String, generation: Long): UploadEntity? =
+            rows[id]?.takeIf { it.executionGeneration == generation }
         override fun observeUploadById(id: String): Flow<UploadEntity?> = flow { emit(rows[id]) }
         override suspend fun insertUpload(upload: UploadEntity) { rows[upload.id] = upload }
         override suspend fun insertUploads(uploads: List<UploadEntity>) { uploads.forEach { rows[it.id] = it } }
@@ -439,6 +444,14 @@ class TelegramUploadEngineAuthGateTest {
             val current = rows[id] ?: return 0
             return if (current.status in allowedStatuses) {
                 rows[id] = current.copy(status = status)
+                1
+            } else 0
+        }
+
+        override suspend fun bumpExecutionGeneration(id: String, allowedStatuses: List<String>): Int {
+            val current = rows[id] ?: return 0
+            return if (current.status in allowedStatuses) {
+                rows[id] = current.copy(executionGeneration = current.executionGeneration + 1)
                 1
             } else 0
         }

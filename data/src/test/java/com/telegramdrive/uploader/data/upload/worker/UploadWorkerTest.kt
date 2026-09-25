@@ -281,8 +281,8 @@ class UploadWorkerTest {
             statusTransitions += status
             task = task?.copy(status = status)
         }
-        override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>) {
-            if (task?.status in allowedStatuses) updateStatus(id, status)
+        override suspend fun updateStatusIf(id: String, status: UploadStatus, allowedStatuses: List<UploadStatus>): Boolean {
+            return task?.let { if (it.status in allowedStatuses) { updateStatus(id, status); true } else false } ?: false
         }
         override suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long) {
             progressUpdates++
