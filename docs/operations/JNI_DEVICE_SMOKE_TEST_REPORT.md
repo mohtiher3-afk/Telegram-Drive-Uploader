@@ -10,6 +10,11 @@
 
 **Date:** 2026-08-24
 
+> Later evidence (2026-09-26): the x86_64 JNI smoke was re-verified across API levels 33-36 in
+> run `36215977328` after the artifact-gate fix, and its lane now re-runs whenever the artifact
+> contract changes. `docs/evidence/PHASE06_EVIDENCE.md` holds the current record; this report
+> describes run `32695682474` only.
+
 ## Result
 
 The dedicated GitHub-hosted Android emulator smoke test completed successfully. The workflow used a standard `ubuntu-24.04` hosted runner, JDK 17, Android SDK Platform 36, Build-Tools 36.0.0, NDK 26.3.11579264, the x86_64 ABI, API level 35, a `google_apis` Pixel 2 emulator profile, KVM acceleration, and disabled emulator animations.

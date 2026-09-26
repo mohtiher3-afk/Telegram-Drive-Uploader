@@ -42,6 +42,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fixes their corrupted non-ASCII prompt text).
 
 ### Changed
+- **Validation and certification docs now match the evidence.** `FULL_VALIDATION_MATRIX.md`,
+  `FINAL_GO_NO_GO_MATRIX.md` (Instrumentation and JNI rows moved from `BLOCKED`/`NOT VERIFIED`
+  to `PASS`), `FINAL_CERTIFICATION_MATRIX.md`, `PRODUCTION_CERTIFICATION.md`,
+  `KNOWN_LIMITATIONS.md`, `TECHNICAL_DEBT.md` (TD-001 rescoped; TD-002 downgraded — the Node.js 20
+  and `setup-java@v4` annotations are gone, only the `sdkmanager` CLI deprecation remains) and
+  `REPOSITORY_CERTIFICATION.md` were synchronized with the verified state. Product-flow evidence
+  (authentication, real upload, background recovery, UI modes, performance) is still recorded as
+  `NOT VERIFIED`.
 - **Phase 06 evidence now records x86_64 verification.** `docs/evidence/PHASE06_EVIDENCE.md`
   moved from `IN PROGRESS — x86_64 still unverified` to **COMPLETE**, citing the x86_64 CI
   emulator run `36215977328` on `8c32724` (API 33–36, `JNI_LOAD_STATUS=PASS`,

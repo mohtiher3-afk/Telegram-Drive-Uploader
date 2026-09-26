@@ -18,7 +18,7 @@ JDK 17, Gradle 8.9, AGP 8.7.3, Kotlin 2.2.10, compile/target SDK 36, Build Tools
 
 ## TDLib
 
-Official TDLib integration and matching native artifacts were validated by the release workflow for the supported ABIs. Device runtime fields such as JNI load, `Client.create()`, authorization, and real upload remain `NOT VERIFIED` in this handoff.
+Official TDLib integration and matching native artifacts were validated by the release workflow for the supported ABIs. JNI load and `Client.create()` are now `VERIFIED` on device/emulator hardware for all three shipped ABIs: arm64-v8a and armeabi-v7a on physical hardware, and x86_64 on the CI emulator across API levels 33-36 (workflow run `36215977328`, verbatim evidence in `docs/evidence/PHASE06_EVIDENCE.md`). Authorization/session behavior and real upload remain `NOT VERIFIED`.
 
 ## Security
 
@@ -26,7 +26,7 @@ Repository security, resource, manifest, backup, signing, and sensitive-logging 
 
 ## Testing
 
-JVM unit tests and release lint passed in the signed release workflow. Device/emulator authentication, upload, background recovery, and accessibility tests are `NOT VERIFIED`.
+JVM unit tests and release lint passed in the signed release workflow. Instrumented tests also execute in the CI emulator lanes (TDLib JNI smoke `36215977328` and the Phase-07 regression gate). Device/emulator authentication, real upload, background recovery, and accessibility flows are `NOT VERIFIED`.
 
 ## Performance
 

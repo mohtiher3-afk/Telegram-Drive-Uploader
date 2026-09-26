@@ -24,7 +24,7 @@ The repository has no known critical structural, documentation-link, script-refe
 
 ## Conditions
 
-The status is conditional because historical report duplication remains intentionally documented rather than removed, GitHub action deprecation annotations remain future maintenance work, and real-device runtime evidence is not established by static cleanup. These are non-critical and do not justify architectural or product changes in this phase.
+The status is conditional because historical report duplication remains intentionally documented rather than removed, the only remaining CI annotation is the `sdkmanager` CLI deprecation (the older Node.js 20 and `setup-java@v4` annotations are resolved), and product-flow runtime evidence (authentication, upload, background recovery, UI modes) is not established by static cleanup. These are non-critical and do not justify architectural or product changes in this phase.
 
 ## Re-certification triggers
 
@@ -35,4 +35,4 @@ Re-run the inventory and relevant gates after adding or removing modules, changi
 
 `./scripts/verify-project.sh RELEASE` completed with `VERIFICATION PASSED`. Repository sanity, TDLib artifacts, Gradle configuration, compilation, JVM tests, lint, debug/release assembly, security, resource integrity, and WorkManager checks passed. Bash syntax, executable permissions, internal script references, documentation references, and Git whitespace checks also passed.
 
-The resulting certification is **REPOSITORY CONDITIONALLY CLEAN** because historical documents remain intentionally retained, GitHub action deprecation annotations remain future maintenance work, and device-level Telegram/runtime evidence is outside static repository cleanup. No critical structural or documentation blocker was identified.
+The resulting certification is **REPOSITORY CONDITIONALLY CLEAN** because historical documents remain intentionally retained, the remaining CI annotation is limited to the `sdkmanager` CLI deprecation, and product-flow Telegram/runtime evidence is outside static repository cleanup. No critical structural or documentation blocker was identified.

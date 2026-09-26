@@ -5,9 +5,10 @@
 | Repository | PASS | Clean tagged release state documented | Documentation follow-up is separate from published binary commit |
 | Architecture | PASS | Architecture status and source audit | No handoff refactor |
 | Build | PASS | Release workflow `32630539974` | Three ABI APK builds succeeded |
-| Tests | PASS | JVM tests in release workflow | Device tests remain separate |
+| Tests | PASS | JVM tests in release workflow | Instrumented tests also execute in the CI emulator lanes (TDLib smoke and regression gates) |
 | Lint | PASS | Release lint in workflow | No release-blocking lint result |
-| TDLib | PASS | Artifact gate and packaged native entries | Runtime JNI/auth fields not device-verified |
+| TDLib | PASS | Artifact gate and packaged native entries | Runtime JNI fields are now device/emulator verified (see the JNI native loading row); auth fields remain unverified |
+| JNI native loading | PASS | Three ABIs: arm64-v8a and armeabi-v7a on physical hardware, x86_64 on the CI emulator; `JNI_LOAD_STATUS=PASS` and `CLIENT_CREATE_STATUS=PASS` (run `36215977328`, API 33-36) | Does not certify authentication, destination or upload |
 | Authentication | NOT VERIFIED | No real-device evidence in this handoff | Do not claim end-to-end login passed |
 | Upload | NOT VERIFIED | No real-device Telegram upload evidence | Source path remains documented |
 | Queue | NOT VERIFIED | Runtime recovery not device-tested | Static/source review only |
@@ -28,4 +29,4 @@
 
 ## Certification Status
 
-**NOT CERTIFIED**. Build and publication evidence is complete, but runtime/device evidence for authentication, real upload, background recovery, and critical UI modes remains unavailable.
+**NOT CERTIFIED**. Build and publication evidence is complete, but runtime/device evidence for authentication, real upload, background recovery, and critical UI modes remains unavailable. Native JNI loading and the existing instrumented regression suites are verified on device/emulator hardware as of 2026-09-26; the remaining gap is product-flow runtime evidence.

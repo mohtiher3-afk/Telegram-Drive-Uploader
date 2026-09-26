@@ -8,10 +8,10 @@
 | Version | PASS | `com.telegramdrive.uploader`, versionCode `15`, versionName `1.0.15` | No | Identity is consistent in source and APK. |
 | Build | PASS | Clean Gradle sequence completed successfully | No | JDK 17, SDK API 36, Gradle 8.9. |
 | Unit Tests | PASS | `:app:testDebugUnitTest` completed successfully | No | JVM tests pass in the local environment. |
-| Instrumentation | BLOCKED | No connected device/emulator available | Yes | Not executed; no runtime claim is made. |
+| Instrumentation | PASS | CI emulator lanes executed instrumented tests: regression gate run `36216418562` (`UploadChainRegressionTest`, `OK (3 tests)`) and TDLib smoke run `36215977328` (`TdLibRuntimeSmokeTest`, `OK (1 test)`) | No | Runs on GitHub-hosted KVM emulators (x86_64); no physical-device claim. |
 | Lint | PASS | `:app:lintVitalRelease` completed successfully | No | No blocking lint failure. |
 | TDLib | PASS | `check-tdlib-artifacts.sh` reports required v1.8.66 artifacts | No | Official bindings and native libraries are present. |
-| JNI | NOT VERIFIED | Static packaging is correct | Yes | Device JNI load and `Client.create()` were not exercised. |
+| JNI | PASS | `JNI_LOAD_STATUS=PASS` and `CLIENT_CREATE_STATUS=PASS` for all three shipped ABIs: arm64-v8a and armeabi-v7a on physical hardware, x86_64 on the CI emulator (run `36215977328`, API 33/34/35/36) | No | Verbatim evidence in `docs/evidence/PHASE06_EVIDENCE.md`. |
 | ABI | PASS | APKs for arm64-v8a, armeabi-v7a, and x86_64; matching native entries | No | ABI packaging is statically verified. |
 | Signing | NOT VERIFIED locally; PASS in published CI record | Local outputs are unsigned; GitHub release record documents signed APKs | Yes locally | No signing secret or keystore data is exposed. |
 | APK | PASS | Three local release APKs package correctly; signed copies documented in release | No | Local APKs are unsigned; published signed APK evidence is retained. |
@@ -35,4 +35,4 @@
 
 ## Gate interpretation
 
-The static repository and build gates pass. The release candidate does not satisfy the unrestricted-production GO threshold because the authentication, upload, startup, background, persistence, UI, accessibility, and performance runtime evidence remains unavailable. These are evidence gaps, not newly discovered source-code failures.
+The static repository and build gates pass. The release candidate does not satisfy the unrestricted-production GO threshold because the authentication, upload, startup, background, persistence, UI, accessibility, and performance runtime evidence remains unavailable. These are evidence gaps, not newly discovered source-code failures. Update 2026-09-26: the instrumentation and JNI rows moved to PASS on CI emulator hardware, so native loading and the existing instrumented suites are no longer evidence gaps. Authentication, real upload, startup, background/process-death, persistence, UI, accessibility and performance runtime evidence remain open, so the unrestricted-production GO threshold is still not met.

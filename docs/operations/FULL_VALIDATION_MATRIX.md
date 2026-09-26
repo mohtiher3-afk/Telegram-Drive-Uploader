@@ -4,6 +4,23 @@
 
 **Scope:** Evidence-based validation of the existing Telegram Drive Uploader. No mock TDLib, fake upload, placeholder native library, hard-coded credential, schema change, dependency upgrade, or business-logic rewrite is allowed.
 
+## Status update — 2026-09-26 (later evidence, same honest standard)
+
+Two tracks in this matrix have since been closed and are recorded here instead of left stale:
+
+- **Native ABI loading — CLOSED.** All three shipped ABIs now have runtime native-loading
+  evidence: arm64-v8a and armeabi-v7a on physical hardware (`PHASE06_EVIDENCE.md`), and
+  x86_64 on the CI emulator — workflow `Android TDLib Device Smoke Test`, run `36215977328`
+  on `8c32724`, four jobs (API 33/34/35/36), each `OK (1 test)` with `JNI_LOAD_STATUS=PASS`
+  and `CLIENT_CREATE_STATUS=PASS`.
+- **Android 16 / API 36 — CLOSED for the JNI markers.** The smoke lane matrix now covers API
+  levels 33, 34, 35 and 36, so API 36 build/install and runtime markers exist rather than
+  being inferred from the compile SDK.
+
+The remaining tracks below are unchanged and still require a controlled account, destination
+and device. `docs/evidence/PHASE06_EVIDENCE.md` holds the verbatim evidence and the scope
+boundary: native loading only, not authentication, destination or delivery certification.
+
 ## Validation tracks
 
 | Track | Required evidence | Current entry point | Boundary |
@@ -26,12 +43,12 @@ A successful build or a successful x86_64 smoke test does not certify all ABIs, 
 
 ## Planned order
 
-The safe order is to inspect and validate the existing workflows, run build/artifact checks for all ABIs, run the existing x86_64 smoke path on API 36 if supported, audit auth and destination code statically, then pause before real upload unless controlled runtime prerequisites are available. Lint and CI warnings are reviewed last so unrelated maintenance is not mixed into the device evidence.
+The safe order is to inspect and validate the existing workflows, run build/artifact checks for all ABIs, run the existing x86_64 smoke path on API 36 if supported, audit auth and destination code statically, then pause before real upload unless controlled runtime prerequisites are available. Completed by 2026-09-26: workflow validation, multi-ABI build/artifact checks, and the x86_64 smoke path including API 36; the real-upload step remains gated on the prerequisites above. Lint and CI warnings are reviewed last so unrelated maintenance is not mixed into the device evidence.
 
 ## Emulator-runner evidence
 
 The official `reactivecircus/android-emulator-runner` documentation confirms that modern x86/x86_64 emulator images are the supported fast path on GitHub-hosted Linux runners with KVM, while ARM-based emulator images are more limited in API-level availability and are not the default hosted path [1]. This means x86_64 device evidence can be obtained reliably on the existing runner; arm64-v8a and armeabi-v7a still require explicit compatible emulator/image support or physical-device evidence rather than being inferred from packaging success.
 
-The repository’s current smoke workflow already enables KVM, builds the selected x86_64 debug and instrumentation APKs, uses an API 35 Google APIs Pixel 2 emulator, and records runtime logcat evidence. API 36 compile SDK installation is not equivalent to API 36 runtime coverage, so an API 36 smoke run must be separately dispatched and its runner support observed.
+The repository’s current smoke workflow already enables KVM, builds the selected x86_64 debug and instrumentation APKs, runs an x86_64 Google APIs Pixel 2 emulator across API levels 33, 34, 35 and 36, and records runtime logcat evidence. API 36 compile SDK installation is not equivalent to API 36 runtime coverage, API 36 runtime coverage is now part of that matrix, observed green on 2026-09-26 (run `36215977328`).
 
 [1]: https://github.com/ReactiveCircus/android-emulator-runner "ReactiveCircus Android Emulator Runner documentation"
