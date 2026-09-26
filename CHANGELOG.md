@@ -42,6 +42,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fixes their corrupted non-ASCII prompt text).
 
 ### Changed
+- **Phase 06 evidence now records x86_64 verification.** `docs/evidence/PHASE06_EVIDENCE.md`
+  moved from `IN PROGRESS — x86_64 still unverified` to **COMPLETE**, citing the x86_64 CI
+  emulator run `36215977328` on `8c32724` (API 33–36, `JNI_LOAD_STATUS=PASS`,
+  `CLIENT_CREATE_STATUS=PASS`). The former blocker was environmental (arm-only physical
+  device, host disk too small for an AVD); the remaining validation tracks are unchanged.
 - **Documentation reorganized**: point-in-time records (inventories, final reports, audits,
   dated maintenance records, per-version release records) now live under
   `docs/archive/reports/<area>/`, keeping the topical folders for living documentation.
