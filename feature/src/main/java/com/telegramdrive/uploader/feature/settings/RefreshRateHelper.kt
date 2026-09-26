@@ -1,6 +1,7 @@
-package com.telegramdrive.uploader.core.ui
+package com.telegramdrive.uploader.feature.settings
 
 import android.content.Context
+import android.os.Build
 import android.view.Display
 import android.view.WindowManager
 import androidx.annotation.VisibleForTesting
@@ -42,10 +43,16 @@ object RefreshRateHelper {
     /**
      * Returns the maximum refresh rate the device supports.
      *
+     * Requires API 30+ (Android 11). Falls back to the current refresh rate
+     * on older devices.
+     *
      * @param context any application or activity context
      * @return maximum refresh rate in Hz
      */
     fun getMaxRefreshRate(context: Context): Float {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return getRefreshRate(context)
+        }
         return computeMaxRefreshRate(context)
     }
 
@@ -75,7 +82,7 @@ object RefreshRateHelper {
             val display: Display = wm.defaultDisplay
             display.maximumRefreshRate
         } catch (_: Exception) {
-            60f
+            getRefreshRate(context)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.telegramdrive.uploader.core.ui
+package com.telegramdrive.uploader.feature.settings
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 
 /**
  * Composable modifier and helpers for optimizing frame rate on high-refresh-rate displays.
@@ -49,9 +50,6 @@ class FrameRateOptimizer(private val refreshRateHz: Float) {
 
     /**
      * Returns a [Modifier] that adjusts rendering for optimal frame rate on the device.
-     *
-     * Uses [FrameRateOptimizer] internally to apply the appropriate rendering
-     * settings based on the detected refresh rate.
      */
     fun asModifier(): Modifier = Modifier.then(RefreshRateModifier(refreshRateHz))
 }
@@ -69,13 +67,6 @@ fun Modifier.refreshRateAware(): Modifier {
     return then(optimizer.asModifier())
 }
 
-/**
- * Animates a value with frame-rate-aware duration, automatically tuned for the
- * current display refresh rate.
- *
- * @param targetValue the target value to animate to
- * @param animationSpec the animation spec (duration is auto-adjusted by [FrameRateOptimizer])
- */
 @Composable
 fun <T> animateRefreshRateAwareFloat(
     targetValue: Float,
@@ -100,11 +91,8 @@ fun <T> animateRefreshRateAwareFloat(
 private fun Modifier.refreshRateModifier(refreshRateHz: Float): Modifier {
     val optimizer = remember { FrameRateOptimizer(refreshRateHz) }
     return this.graphicsLayer {
-        // Apply render priority optimization for high-refresh-rate displays
-        // Higher refresh rates benefit from reduced render priority to save battery
         if (refreshRateHz >= 120) {
-            // On 120Hz displays, ensure smooth rendering without dropping frames
-            // by leveraging the compositor's frame pacing
+            // On 120Hz displays, ensure smooth rendering
         }
     }
 }
