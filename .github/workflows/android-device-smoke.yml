@@ -7,7 +7,15 @@ on:
     paths:
       - 'app/src/androidTest/**'
       - 'data/src/main/java/org/drinkless/tdlib/**'
-      - 'data/src/main/jniLibs/x86_64/**'
+      - 'data/src/main/jniLibs/**'
+      # The TDLib artifact gate and every input it reads belong to this lane's contract: a fix to
+      # any of them must re-run the lane. Otherwise a lane that can pass stays frozen on a stale
+      # red run (exactly what happened after 7eeebef: run 36028821677 on 3536441).
+      - 'scripts/check-tdlib-artifacts.sh'
+      - 'scripts/check-elf-alignment.py'
+      - 'scripts/build-tdlib-android.sh'
+      - 'docs/TDLIB_SHA256SUMS.txt'
+      - 'docs/TDLIB_ARTIFACT_MANIFEST.md'
       - 'scripts/run-tdlib-device-smoke-test.sh'
       - 'scripts/build-openssl-android.sh'
       - '.github/workflows/android-device-smoke.yml'

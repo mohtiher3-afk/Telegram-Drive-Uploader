@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **TDLib smoke lane no longer freezes on a stale failure.** The `Android TDLib Device`
+  `Smoke Test` workflow now re-runs when the artifact gate it depends on changes
+  (`scripts/check-tdlib-artifacts.sh`, `scripts/check-elf-alignment.py`,
+  `scripts/build-tdlib-android.sh`, `docs/TDLIB_SHA256SUMS.txt`,
+  `docs/TDLIB_ARTIFACT_MANIFEST.md`), and its JNI-library filter covers every ABI
+  instead of `x86_64` only. The checksum-gate fix in `7eeebef` matched no trigger
+  path, so the lane stayed red on its pre-fix run `36028821677` (`3536441`) even
+  though the gate passes; the lane now re-verifies itself on the fix.
 - **Phase 07 regression harness now compiles.** The three instrumented regression tests
   (`UploadChainRegressionTest`, `Phase07RegressionTest`,
   `ChannelSearchSeparatorRegressionTest`) were written against non-existent APIs
