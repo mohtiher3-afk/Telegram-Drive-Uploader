@@ -56,7 +56,10 @@
         <activity
             android:name="com.telegramdrive.uploader.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.MyApplication">
+            android:theme="@style/Theme.MyApplication"
+            android:hasMaxRefreshRate="true"
+            android:preferredRefreshRate="120"
+            android:resizeableActivity="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
