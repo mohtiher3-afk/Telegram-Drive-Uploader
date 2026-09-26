@@ -1,4 +1,4 @@
-﻿import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
+import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
 import java.util.Base64
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -26,7 +26,7 @@ android {
 
   defaultConfig {
     applicationId = "com.aistudio.telegramdrive.prmuq"
-    minSdk = 24
+    minSdk = 30
     targetSdk = 36
     versionCode = 24
     versionName = rootProject.extra["appVersionName"] as String
