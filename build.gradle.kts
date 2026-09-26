@@ -11,4 +11,4 @@ plugins {
   alias(libs.plugins.hilt) apply false
 }
 
-extra["appVersionName"] = "1.0.24"
+extra["appVersionName"] = "1.0.25"
