@@ -53,7 +53,11 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
         with:
+          api-level: 36
+          ndk-version: 26.3.11579264
+          build-tools-version: 36.0.0
           accept-licenses: true
+          cache-key: android-sdk-${{ runner.os }}-36
 
       - name: Install Android SDK packages
         run: sdkmanager "platform-tools" "build-tools;36.0.0" "ndk;26.3.11579264"
@@ -111,7 +115,11 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
         with:
+          api-level: 36
+          ndk-version: 26.3.11579264
+          build-tools-version: 36.0.0
           accept-licenses: true
+          cache-key: android-sdk-${{ runner.os }}-36
 
       - name: Install Android SDK packages
         run: sdkmanager "platform-tools" "build-tools;36.0.0" "ndk;26.3.11579264"
@@ -125,6 +133,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: wrapper
+          cache-cleanup: always
 
       - name: Prepare CI configuration
         env:
