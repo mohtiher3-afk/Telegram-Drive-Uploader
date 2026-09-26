@@ -39,6 +39,9 @@ import com.telegramdrive.uploader.core.ui.components.formatFileSize
 import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.util.media.VideoQualityPreset
+import com.telegramdrive.uploader.core.ui.components.GlassCard
+import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
+import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -173,14 +176,23 @@ fun UploadScreen(
                 }
                 is UploadUiState.Success -> {
                     if (state.preparedVideos.isEmpty()) {
-                        EmptyState(
-                            icon = Icons.Default.VideoLibrary,
-                            title = stringResource(com.telegramdrive.uploader.feature.R.string.all_videos_removed),
-                            supportingText = stringResource(com.telegramdrive.uploader.feature.R.string.select_more_videos),
-                            actionText = stringResource(com.telegramdrive.uploader.feature.R.string.go_back),
-                            onActionClick = onBackClick,
-                            modifier = Modifier.testTag("upload_empty_state")
-                        )
+                        GlassCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 32.dp)
+                                .height(200.dp),
+                            shape = MaterialTheme.shapes.large,
+                            emphasis = LiquidGlassEmphasis.Subtle
+                        ) {
+                            EmptyState(
+                                icon = Icons.Default.VideoLibrary,
+                                title = stringResource(com.telegramdrive.uploader.feature.R.string.all_videos_removed),
+                                supportingText = stringResource(com.telegramdrive.uploader.feature.R.string.select_more_videos),
+                                actionText = stringResource(com.telegramdrive.uploader.feature.R.string.go_back),
+                                onActionClick = onBackClick,
+                                modifier = Modifier.fillMaxSize().testTag("upload_empty_state")
+                            )
+                        }
                     } else {
                         val totalSize = state.preparedVideos.sumOf { it.fileSize }
                         
@@ -450,27 +462,54 @@ fun UploadScreen(
                                     .testTag("prepared_video_list"),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(state.preparedVideos, key = { it.id }) { video ->
-                                    val isSelected = video.id in selectedVideoIds
-                                    VideoItem(
-                                        video = video,
-                                        isSelected = isSelected,
-                                        onSelectedChange = { checked ->
-                                            selectedVideoIds = if (checked) {
-                                                selectedVideoIds + video.id
-                                            } else {
-                                                selectedVideoIds - video.id
-                                            }
-                                        },
-                                        onRemoveClick = { viewModel.removePreparedVideo(video) },
-                                        modifier = Modifier.clickable {
-                                            selectedVideoIds = if (isSelected) {
-                                                selectedVideoIds - video.id
-                                            } else {
-                                                selectedVideoIds + video.id
-                                            }
+                                // Show shimmer placeholders while loading
+                                if (state.isLoading) {
+                                    repeat(3) { index ->
+                                        item {
+                                            ShimmerPlaceholder(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 4.dp)
+                                                    .height(92.dp)
+                                                    .testTag("upload_shimmer_$index"),
+                                                shape = MaterialTheme.shapes.medium
+                                            )
                                         }
-                                    )
+                                    }
+                                } else {
+                                    items(state.preparedVideos, key = { it.id }) { video ->
+                                        GlassCard(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp)
+                                                .height(92.dp),
+                                            shape = MaterialTheme.shapes.medium,
+                                            emphasis = LiquidGlassEmphasis.Operational
+                                        ) {
+                                            val isSelected = video.id in selectedVideoIds
+                                            VideoItem(
+                                                video = video,
+                                                isSelected = isSelected,
+                                                onSelectedChange = { checked ->
+                                                    selectedVideoIds = if (checked) {
+                                                        selectedVideoIds + video.id
+                                                    } else {
+                                                        selectedVideoIds - video.id
+                                                    }
+                                                },
+                                                onRemoveClick = { viewModel.removePreparedVideo(video) },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        selectedVideoIds = if (isSelected) {
+                                                            selectedVideoIds - video.id
+                                                        } else {
+                                                            selectedVideoIds + video.id
+                                                        }
+                                                    }
+                                            )
+                                        }
+                                    }
                                 }
                             }
 

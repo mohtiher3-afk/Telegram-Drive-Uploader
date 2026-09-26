@@ -67,6 +67,9 @@ import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
+import com.telegramdrive.uploader.core.ui.components.GlassCard
+import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
+import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -273,14 +276,14 @@ private fun TelegramConnectionCard(
     modifier: Modifier = Modifier
 ) {
     val tgAuthorized = telegramState == TelegramConnectionState.AUTHORIZED
+    val accent = if (tgAuthorized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
+    GlassCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(80.dp),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        emphasis = LiquidGlassEmphasis.Operational
     ) {
         Row(
             modifier = Modifier
@@ -292,8 +295,8 @@ private fun TelegramConnectionCard(
             Surface(
                 modifier = Modifier.size(48.dp),
                 shape = CircleShape,
-                color = if (tgAuthorized) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = if (tgAuthorized) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                color = accent.copy(alpha = 0.2f),
+                contentColor = accent
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
@@ -325,6 +328,30 @@ private fun TelegramConnectionCard(
             if (!tgAuthorized) {
                 FilledTonalButton(
                     onClick = onTelegramConnectClick,
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = accent.copy(alpha = 0.2f),
+                        contentColor = accent
+                    )
+                ) {
+                    Text(stringResource(R.string.connect))
+                }
+            } else {
+                IconButton(
+                    onClick = { /* Future: show disconnect dialog */ },
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = stringResource(R.string.settings),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        }
+    }
+}
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Text(stringResource(R.string.connect))
@@ -419,23 +446,27 @@ private fun StatCard(
     title: String,
     value: String,
     icon: ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    accent: Color = MaterialTheme.colorScheme.primary
 ) {
-    Card(
-        modifier = modifier,
+    GlassCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(100.dp),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        emphasis = LiquidGlassEmphasis.Operational
     ) {
         Column(
-            modifier = Modifier.padding(AppSpacing.medium),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(AppSpacing.medium),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.small)
         ) {
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                color = accent.copy(alpha = 0.2f),
+                contentColor = accent
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(

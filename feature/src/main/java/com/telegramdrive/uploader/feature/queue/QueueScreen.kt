@@ -51,6 +51,9 @@ import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.components.GlassCard
+import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
+import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,14 +88,23 @@ fun QueueScreen(
                 .padding(innerPadding)
         ) {
             if (uiState.queueItems.isEmpty() && uiState.selectedFilter == QueueFilter.ALL && uiState.query.isBlank()) {
-                EmptyState(
-                    icon = Icons.Default.HourglassEmpty,
-                    title = stringResource(com.telegramdrive.uploader.feature.R.string.queue_empty_title),
-                    supportingText = stringResource(com.telegramdrive.uploader.feature.R.string.queue_empty_supporting),
+                GlassCard(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneSection)
-                        .testTag("queue_empty_state")
-                )
+                        .height(200.dp),
+                    shape = MaterialTheme.shapes.large,
+                    emphasis = LiquidGlassEmphasis.Subtle
+                ) {
+                    EmptyState(
+                        icon = Icons.Default.HourglassEmpty,
+                        title = stringResource(com.telegramdrive.uploader.feature.R.string.queue_empty_title),
+                        supportingText = stringResource(com.telegramdrive.uploader.feature.R.string.queue_empty_supporting),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag("queue_empty_state")
+                    )
+                }
             } else {
                 LazyColumn(
                     modifier = Modifier
@@ -240,24 +252,44 @@ fun QueueScreen(
                             )
                         }
                     } else {
-                        items(uiState.queueItems, key = { it.id }) { video ->
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                            ) {
-                                VideoItem(
-                                    video = video,
-                                    onRemoveClick = { viewModel.removeUpload(video.id) }
-                                )
-                                UploadStatusIndicator(
-                                    video = video,
-                                    modifier = Modifier.padding(top = 4.dp),
-                                    onPauseClick = { viewModel.pauseUpload(video.id) },
-                                    onResumeClick = { viewModel.resumeUpload(video.id) },
-                                    onRetryClick = { viewModel.retryUpload(video.id) },
-                                    onCancelClick = { viewModel.cancelUpload(video.id) }
-                                )
+                        // Show shimmer placeholders while loading
+                        if (uiState.isLoading) {
+                            repeat(4) { index ->
+                                item {
+                                    ShimmerPlaceholder(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp, horizontal = AppSpacing.sm)
+                                            .height(92.dp)
+                                            .testTag("queue_shimmer_$index"),
+                                        shape = MaterialTheme.shapes.medium
+                                    )
+                                }
+                            }
+                        } else {
+                            items(uiState.queueItems, key = { it.id }) { video ->
+                                GlassCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                        .height(92.dp),
+                                    shape = MaterialTheme.shapes.medium,
+                                    emphasis = LiquidGlassEmphasis.Operational
+                                ) {
+                                    VideoItem(
+                                        video = video,
+                                        onRemoveClick = { viewModel.removeUpload(video.id) },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    UploadStatusIndicator(
+                                        video = video,
+                                        modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
+                                        onPauseClick = { viewModel.pauseUpload(video.id) },
+                                        onResumeClick = { viewModel.resumeUpload(video.id) },
+                                        onRetryClick = { viewModel.retryUpload(video.id) },
+                                        onCancelClick = { viewModel.cancelUpload(video.id) }
+                                    )
+                                }
                             }
                         }
                     }

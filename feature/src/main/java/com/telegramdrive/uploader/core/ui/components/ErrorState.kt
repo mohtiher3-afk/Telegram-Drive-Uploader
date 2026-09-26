@@ -25,12 +25,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.components.LottieAnimations
+import com.telegramdrive.uploader.core.ui.components.AnimatedEmptyStateIcon
+import com.telegramdrive.uploader.core.ui.components.LottieAnimation
 
 @Composable
 fun ErrorState(
     message: String,
     modifier: Modifier = Modifier,
-    onRetryClick: (() -> Unit)? = null
+    onRetryClick: (() -> Unit)? = null,
+    animation: LottieAnimation = LottieAnimations.uploadError
 ) {
     Card(
         modifier = modifier
@@ -51,11 +55,10 @@ fun ErrorState(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.ErrorOutline,
-                contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.error_icon),
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(40.dp)
+            AnimatedEmptyStateIcon(
+                animationType = animation,
+                size = 48.dp,
+                tint = MaterialTheme.colorScheme.error
             )
 
             Spacer(modifier = Modifier.height(AppSpacing.sm))

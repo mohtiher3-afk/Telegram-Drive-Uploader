@@ -40,23 +40,82 @@ import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
-@Composable
-fun RealUploadProgressGlow(
-    progressFraction: Float,
-    statusColor: Color,
-    pulseAlpha: Float,
-    modifier: Modifier = Modifier
-) {
-    // Deprecated decorative layer. Kept as a no-op so existing call sites
-    // compile unchanged; the Calm Material design removes glow circles.
-    return
-}
-
 internal fun uploadProgressFraction(percentage: Float): Float =
     (percentage / 100f).coerceIn(0f, 1f)
 
 internal fun uploadProgressPercent(percentage: Float): Int =
     percentage.coerceIn(0f, 100f).toInt()
+
+/**
+ * Glass progress indicator using real glassmorphism effects
+ * Shows animated progress with glow and reflection
+ */
+@Composable
+fun GlassProgressIndicator(
+    progressFraction: Float,
+    statusColor: Color = MaterialTheme.colorScheme.primary,
+    modifier: Modifier = Modifier,
+    showGlow: Boolean = true,
+    trackHeight: Dp = 6.dp
+) {
+    val pulseAlpha = remember { 
+        val infiniteTransition = rememberInfiniteTransition(label = "progressPulse")
+        infiniteTransition.animateFloat(
+            initialValue = 0.3f,
+            targetValue = 0.8f,
+            animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+                animation = androidx.compose.animation.core.tween(1500, easing = AppMotion.standardEasing),
+                repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+            ),
+            label = "progressPulse"
+        )
+    }
+    
+    val animatedProgress by animateFloatAsState(
+        targetValue = progressFraction.coerceIn(0f, 1f),
+        animationSpec = AppMotion.springTween(),
+        label = "glassProgress"
+    )
+    
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(trackHeight)
+            .clip(RoundedCornerShape(trackHeight / 2))
+    ) {
+        // Background track with glass effect
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .liquidGlassOverlay(
+                    shape = RoundedCornerShape(trackHeight / 2),
+                    accent = statusColor,
+                    emphasis = LiquidGlassEmphasis.Subtle
+                )
+        )
+        
+        // Progress fill with glass effect and glow
+        if (animatedProgress > 0f) {
+            Box(
+                modifier = Modifier
+                    .height(trackHeight)
+                    .width(animatedProgress * 1f)
+                    .clip(RoundedCornerShape(trackHeight / 2))
+                    .liquidGlassOverlay(
+                        shape = RoundedCornerShape(trackHeight / 2),
+                        accent = statusColor,
+                        emphasis = LiquidGlassEmphasis.FeatureLens,
+                        animate = true
+                    )
+                    .glowSignalRim(
+                        shape = RoundedCornerShape(trackHeight / 2),
+                        accent = statusColor,
+                        enabled = showGlow
+                    )
+            )
+        }
+    }
+}
 
 internal fun uploadStatusLabelRes(status: UploadStatus): Int = when (status) {
     UploadStatus.QUEUED -> com.telegramdrive.uploader.feature.R.string.status_queued

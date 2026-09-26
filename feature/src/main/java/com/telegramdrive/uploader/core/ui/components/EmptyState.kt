@@ -23,6 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.components.LottieAnimations
+import com.telegramdrive.uploader.core.ui.components.AnimatedEmptyStateIcon
+import com.telegramdrive.uploader.core.ui.components.LottieAnimation
 
 @Composable
 fun EmptyState(
@@ -31,7 +34,8 @@ fun EmptyState(
     supportingText: String,
     modifier: Modifier = Modifier,
     actionText: String? = null,
-    onActionClick: (() -> Unit)? = null
+    onActionClick: (() -> Unit)? = null,
+    animation: LottieAnimation = LottieAnimation.None
 ) {
     Card(
         modifier = modifier
@@ -52,11 +56,10 @@ fun EmptyState(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.72f),
-                modifier = Modifier.size(40.dp)
+            AnimatedEmptyStateIcon(
+                animationType = animation,
+                size = 48.dp,
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.72f)
             )
 
             Spacer(modifier = Modifier.height(AppSpacing.sm))
