@@ -4,6 +4,9 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +41,7 @@ class FrameRateOptimizer(private val refreshRateHz: Float) {
     /**
      * Returns a [Modifier] that adjusts rendering for optimal frame rate on the device.
      */
+    @Composable
     fun asModifier(): Modifier = Modifier.refreshRateOptimized(refreshRateHz)
 }
 
@@ -51,7 +55,7 @@ fun rememberFrameRateOptimizer(): FrameRateOptimizer {
 @Composable
 fun Modifier.refreshRateAware(): Modifier {
     val optimizer = rememberFrameRateOptimizer()
-    return this.then(Modifier.refreshRateOptimized(optimizer.refreshRateHz))
+    return this.then(optimizer.asModifier())
 }
 
 @Composable

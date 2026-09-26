@@ -6,6 +6,7 @@ import android.os.Build
 import android.view.Display
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.DisposableEffectResult
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,23 +18,30 @@ import androidx.compose.ui.platform.LocalContext
  */
 @Composable
 fun rememberRefreshRateState(context: Context = LocalContext.current): Float {
-    var refreshRate by remember { mutableStateOf(RefreshRateHelper.getRefreshRate(context)) }
+    val state = remember { mutableStateOf(RefreshRateHelper.getRefreshRate(context)) }
+    var refreshRate by state
 
-    DisposableEffect(Unit) {
+    DisposableEffect("RefreshRateMonitor") {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val displayManager = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
             val listener = object : DisplayManager.DisplayListener {
                 override fun onDisplayAdded(displayId: Int) {}
                 override fun onDisplayRemoved(displayId: Int) {}
                 override fun onDisplayChanged(displayId: Int) {
-                    if (displayId != Display.DEFAULT_DISPLAY) return
-                    refreshRate = RefreshRateHelper.getRefreshRate(context)
+                    if (displayId == Display.DEFAULT_DISPLAY) {
+                        refreshRate = RefreshRateHelper.getRefreshRate(context)
+                    }
                 }
             }
             displayManager.registerDisplayListener(listener, null)
             onDispose { displayManager.unregisterDisplayListener(listener) }
         }
-        return@DisposableEffect Unit
+        // Return a DisposableEffectResult instance
+        object : DisposableEffectResult {
+            override fun dispose() {
+                // No-op dispose
+            }
+        }
     }
 
     return refreshRate
