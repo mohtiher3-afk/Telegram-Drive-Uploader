@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun ModernProgressIndicator(
     value: Float,
-    color: Color = Color(0xFF636E72),
     modifier: Modifier = Modifier,
+    color: Color = Color(0xFF636E72),
     wifiStatus: String? = null
 ) {
     LinearProgressIndicator(
