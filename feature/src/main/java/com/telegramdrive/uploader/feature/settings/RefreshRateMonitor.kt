@@ -33,6 +33,7 @@ fun rememberRefreshRateState(context: Context = LocalContext.current): Float {
             displayManager.registerDisplayListener(listener, null)
             onDispose { displayManager.unregisterDisplayListener(listener) }
         }
+        return@DisposableEffect Unit
     }
 
     return refreshRate

@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
-import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 
 /**
  * Provides animation utilities optimized for the device's screen refresh rate.
@@ -52,14 +51,5 @@ object FrameRateAwareAnimation {
     fun getRefreshRateDescription(context: android.content.Context = LocalContext.current): String {
         val refreshRate = RefreshRateHelper.getRefreshRate(context)
         return formatRefreshRate(refreshRate)
-    }
-}
-
-fun formatRefreshRate(refreshRate: Float): String {
-    return when {
-        refreshRate >= 120 -> "120Hz"
-        refreshRate >= 90 -> "90Hz"
-        refreshRate >= 75 -> "75Hz"
-        else -> "60Hz"
     }
 }

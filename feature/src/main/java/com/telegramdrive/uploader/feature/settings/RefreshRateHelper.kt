@@ -77,9 +77,13 @@ object RefreshRateHelper {
     }
 
     private fun computeMaxRefreshRate(context: Context): Float {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return getRefreshRate(context)
+        }
         return try {
             val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             val display: Display = wm.defaultDisplay
+            // maximumRefreshRate is available from API 30+
             display.maximumRefreshRate
         } catch (_: Exception) {
             getRefreshRate(context)

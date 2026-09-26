@@ -4,33 +4,20 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 
 /**
  * Composable modifier and helpers for optimizing frame rate on high-refresh-rate displays.
- *
- * Provides:
- * - [Modifier.refreshRateAware] – adjusts rendering parameters based on the device's refresh rate
- * - [FrameRateOptimizer] configures the optimal frame duration for the current display
- * - Smooth animations tuned for 60/90/120 Hz displays
  */
 @Stable
 class FrameRateOptimizer(private val refreshRateHz: Float) {
 
     /** The optimal frame duration in milliseconds for the current refresh rate. */
     val optimalFrameDurationMs: Long
-        get() = (1000L / refreshRateHz).coerceAtLeast(8L)
+        get() = (1000f / refreshRateHz).toLong().coerceAtLeast(8L)
 
     /** Animation duration in milliseconds tuned for the current refresh rate. */
     val animationDurationMs: Int
@@ -51,7 +38,7 @@ class FrameRateOptimizer(private val refreshRateHz: Float) {
     /**
      * Returns a [Modifier] that adjusts rendering for optimal frame rate on the device.
      */
-    fun asModifier(): Modifier = Modifier.then(RefreshRateModifier(refreshRateHz))
+    fun asModifier(): Modifier = Modifier.refreshRateOptimized(refreshRateHz)
 }
 
 @Composable
@@ -64,7 +51,7 @@ fun rememberFrameRateOptimizer(): FrameRateOptimizer {
 @Composable
 fun Modifier.refreshRateAware(): Modifier {
     val optimizer = rememberFrameRateOptimizer()
-    return then(optimizer.asModifier())
+    return this.then(Modifier.refreshRateOptimized(optimizer.refreshRateHz))
 }
 
 @Composable
@@ -88,8 +75,7 @@ fun <T> animateRefreshRateAwareFloat(
 }
 
 @Composable
-private fun Modifier.refreshRateModifier(refreshRateHz: Float): Modifier {
-    val optimizer = remember { FrameRateOptimizer(refreshRateHz) }
+private fun Modifier.refreshRateOptimized(refreshRateHz: Float): Modifier {
     return this.graphicsLayer {
         if (refreshRateHz >= 120) {
             // On 120Hz displays, ensure smooth rendering
