@@ -218,7 +218,6 @@ class AndroidUploadEventNotifier @Inject constructor(
             ) == PackageManager.PERMISSION_GRANTED
 
     private fun createChannelIfNeeded() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val channel = NotificationChannel(
             CHANNEL_ID,
             context.getString(R.string.upload_notification_channel_name),

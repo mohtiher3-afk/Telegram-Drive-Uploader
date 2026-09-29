@@ -1,9 +1,19 @@
 package com.telegramdrive.uploader.core.ui.components
 
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CloudQueue
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.HourglassEmpty
+import androidx.compose.material.icons.filled.VideoLibrary
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.graphicsLayer
+
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
@@ -15,9 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import androidx.compose.runtime.remember
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 
 /**
  * Lottie animation types for empty/error states
@@ -30,6 +37,11 @@ sealed interface LottieAnimation {
     data class NoConnection(val resource: String, val speed: Float = 1f) : LottieAnimation
     object None : LottieAnimation
 }
+/** Fallback animation result used while real Lottie assets are unavailable. */
+data class LottieAnimationResult(
+    val progress: Float,
+    val isPlaying: Boolean
+)
 
 /**
  * Placeholder for Lottie animations - replace with actual LottieComposition when assets are available
@@ -53,7 +65,7 @@ fun rememberLottieAnimation(
                     is LottieAnimation.LoadingState -> (1000f / animation.speed).toInt()
                     is LottieAnimation.ErrorState -> (1500f / animation.speed).toInt()
                     is LottieAnimation.EmptyState -> (2000f / animation.speed).toInt()
-                    else -> (2500f / animation.speed).toInt()
+                    else -> 2500
                 },
                 easing = AppMotion.standardEasing
             ),

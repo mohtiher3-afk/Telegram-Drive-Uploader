@@ -42,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -69,8 +70,9 @@ fun QueueScreen(
                     Column {
                         Text(stringResource(com.telegramdrive.uploader.feature.R.string.upload_queue))
                         Text(
-                            text = stringResource(
-                                com.telegramdrive.uploader.feature.R.string.queue_count_summary,
+                            text = pluralStringResource(
+                                com.telegramdrive.uploader.feature.R.plurals.queue_count_summary,
+                                uiState.activeCount,
                                 uiState.activeCount,
                                 uiState.failedCount
                             ),

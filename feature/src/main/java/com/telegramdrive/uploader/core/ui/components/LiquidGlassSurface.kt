@@ -1,6 +1,6 @@
 package com.telegramdrive.uploader.core.ui.components
 
-import androidx.compose.animation.animateFloatAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,10 +34,19 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.px
+import androidx.compose.animation.core.animateFloat
 import com.telegramdrive.uploader.core.ui.theme.LiquidGlassTokens
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.layout.onGloballyPositioned
 import kotlin.math.max
 import kotlin.math.min
 
@@ -62,11 +72,9 @@ fun Modifier.liquidGlassReflection(
     shape: Shape = RoundedCornerShape(16.dp),
     accent: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary,
     intensity: Float = 1.0f
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo { name = "liquidGlassReflection" }
-) {
+): Modifier = composed {
     val density = androidx.compose.ui.platform.LocalDensity.current
-    val progress by remember { mutableStateOf(0f) }
+    val progress by remember { mutableFloatStateOf(0f) }
     val isPressed = remember { mutableStateOf(false) }
     
     Modifier
@@ -91,7 +99,7 @@ fun Modifier.liquidGlassReflection(
                         ),
                         start = Offset(sheenX - sheenWidth, -size.height),
                         end = Offset(sheenX, size.height * 2),
-                        tileMode = androidx.compose.ui.graphics.Shader.TileMode.Clamp
+                        tileMode = TileMode.Clamp
                     ),
                     topLeft = Offset.Zero,
                     size = Size(size.width, size.height * 2),
@@ -118,9 +126,7 @@ fun Modifier.liquidGlassOverlay(
     accent: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary,
     emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational,
     animate: Boolean = true
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo { name = "liquidGlassOverlay" }
-) {
+): Modifier = composed {
     val density = androidx.compose.ui.platform.LocalDensity.current
     val emphasisValue = emphasis
     val accentColor = accent
@@ -128,17 +134,17 @@ fun Modifier.liquidGlassOverlay(
     // Animate emphasis changes for smooth transitions
     val animatedBorderAlpha by animateFloatAsState(
         targetValue = emphasisValue.borderAlpha,
-        animationSpec = if (animate) AppMotion.mediumTween() else androidx.compose.animation.core.snap,
+        animationSpec = if (animate) AppMotion.mediumTween() else androidx.compose.animation.core.snap(),
         label = "glassBorderAlpha"
     )
     val animatedReflectionAlpha by animateFloatAsState(
         targetValue = emphasisValue.reflectionAlpha,
-        animationSpec = if (animate) AppMotion.shortTween() else androidx.compose.animation.core.snap,
+        animationSpec = if (animate) AppMotion.shortTween() else androidx.compose.animation.core.snap(),
         label = "glassReflectionAlpha"
     )
     val animatedAmbientAlpha by animateFloatAsState(
         targetValue = emphasisValue.ambientAlpha,
-        animationSpec = if (animate) AppMotion.shortTween() else androidx.compose.animation.core.snap,
+        animationSpec = if (animate) AppMotion.shortTween() else androidx.compose.animation.core.snap(),
         label = "glassAmbientAlpha"
     )
     
@@ -217,9 +223,7 @@ fun Modifier.glowSignalRim(
     accent: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary,
     enabled: Boolean = true,
     pulseSpeed: Float = 1.0f
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo { name = "glowSignalRim" }
-) {
+): Modifier = composed {
     val infiniteTransition = rememberInfiniteTransition(label = "glowSignalRim")
     val pulseAlpha by infiniteTransition.animateFloat(
         initialValue = 0.3f,
@@ -254,7 +258,7 @@ fun Modifier.glowSignalRim(
                     ),
                     start = Offset.Zero,
                     end = Offset(1f, 1f),
-                    tileMode = androidx.compose.ui.graphics.Shader.TileMode.Mirror
+                    tileMode = TileMode.Mirror
                 ),
                 shape = shape
             )
@@ -304,7 +308,7 @@ fun RealUploadProgressGlow(
     ) {
         // Background track
         androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeWidth = (4f * density.density).toFloat()
+            val strokeWidth = (4f * density).toFloat()
             val radius = min(size.width, size.height) / 2 - strokeWidth / 2
             val center = Offset(size.width / 2f, size.height / 2f)
             
@@ -318,6 +322,8 @@ fun RealUploadProgressGlow(
             
             // Progress arc with glow
             val sweepAngle = 360f * animatedProgress
+            val arcTopLeft = Offset(center.x - radius, center.y - radius)
+            val arcSize = Size(radius * 2f, radius * 2f)
             drawArc(
                 brush = Brush.sweepGradient(
                     center = center,
@@ -327,28 +333,26 @@ fun RealUploadProgressGlow(
                         statusColor.copy(alpha = 1f),
                         statusColor.copy(alpha = 0.8f),
                         statusColor.copy(alpha = 0.3f)
-                    ),
-                    startAngle = -90f + rotateAngle,
-                    endAngle = 270f + rotateAngle,
-                    tileMode = androidx.compose.ui.graphics.Shader.TileMode.Mirror
+                    )
                 ),
-                center = center,
-                radius = radius,
                 startAngle = -90f,
                 sweepAngle = sweepAngle,
                 useCenter = false,
+                topLeft = arcTopLeft,
+                size = arcSize,
                 style = Stroke(width = strokeWidth, cap = androidx.compose.ui.graphics.StrokeCap.Round)
             )
             
             // Glow effect behind progress
             if (animatedProgress > 0f) {
+                val glowRadius = radius + strokeWidth
                 drawArc(
                     color = statusColor.copy(alpha = pulseAlpha * 0.3f),
-                    center = center,
-                    radius = radius + strokeWidth,
                     startAngle = -90f,
                     sweepAngle = sweepAngle,
                     useCenter = false,
+                    topLeft = Offset(center.x - glowRadius, center.y - glowRadius),
+                    size = Size(glowRadius * 2f, glowRadius * 2f),
                     style = Stroke(width = strokeWidth * 2f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
                 )
             }
@@ -412,8 +416,6 @@ fun ShimmerPlaceholder(
         label = "shimmerTranslate"
     )
     
-    val density = androidx.compose.ui.platform.LocalDensity.current
-    val width = modifier.width?.calculate(density)?.toFloat() ?? 100.dp.toPx()
     
     Box(
         modifier = modifier
@@ -422,8 +424,8 @@ fun ShimmerPlaceholder(
             .background(baseColor)
     ) {
         androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-            val shimmerWidth = width * 0.6f
-            val startX = (width + shimmerWidth) * translateX - shimmerWidth
+            val shimmerWidth = size.width * 0.6f
+            val startX = (size.width + shimmerWidth) * translateX - shimmerWidth
             
             drawRect(
                 brush = Brush.linearGradient(
@@ -434,7 +436,7 @@ fun ShimmerPlaceholder(
                     ),
                     start = Offset(startX, 0f),
                     end = Offset(startX + shimmerWidth, size.height),
-                    tileMode = androidx.compose.ui.graphics.Shader.TileMode.Clamp
+                    tileMode = TileMode.Clamp
                 ),
                 topLeft = Offset.Zero,
                 size = Size(size.width, size.height)
@@ -451,57 +453,36 @@ fun ShimmerPlaceholder(
 fun Modifier.pressAnimation(
     scale: Float = 0.96f,
     motionEnabled: Boolean = rememberSystemMotionEnabled()
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo { name = "pressAnimation" }
-) {
+): Modifier {
     val interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
     val pressed = interactionSource.collectIsPressedAsState()
-    
-    this
-        .interactionSource(interactionSource)
+    val animatedScale by animateFloatAsState(
+        targetValue = if (pressed.value) scale else 1f,
+        animationSpec = if (motionEnabled) AppMotion.fastTween() else androidx.compose.animation.core.snap(),
+        label = "pressScale"
+    )
+    return this
         .graphicsLayer {
-            val targetScale = if (pressed.value) scale else 1f
-            scaleX = animateFloatAsState(
-                targetValue = targetScale,
-                animationSpec = if (motionEnabled) AppMotion.fastTween() else androidx.compose.animation.core.snap(),
-                label = "pressScale"
-            ).value
-            scaleY = animateFloatAsState(
-                targetValue = targetScale,
-                animationSpec = if (motionEnabled) AppMotion.fastTween() else androidx.compose.animation.core.snap(),
-                label = "pressScale"
-            ).value
+            scaleX = animatedScale
+            scaleY = animatedScale
         }
-        .combinedClickable(
-            onClick = {},
-            onLongClick = {},
-            onDoubleClick = {}
-        )
+        .clickable(interactionSource = interactionSource, indication = null) { }
 }
 
 @Composable
 fun Modifier.hoverScale(
     scale: Float = 1.02f,
     motionEnabled: Boolean = rememberSystemMotionEnabled()
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo { name = "hoverScale" }
-) {
+): Modifier {
     val interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
     val hovered = interactionSource.collectIsHoveredAsState()
-    
-    this
-        .interactionSource(interactionSource)
-        .graphicsLayer {
-            val targetScale = if (hovered.value) scale else 1f
-            scaleX = animateFloatAsState(
-                targetValue = targetScale,
-                animationSpec = if (motionEnabled) AppMotion.shortTween() else androidx.compose.animation.core.snap(),
-                label = "hoverScale"
-            ).value
-            scaleY = animateFloatAsState(
-                targetValue = targetScale,
-                animationSpec = if (motionEnabled) AppMotion.shortTween() else androidx.compose.animation.core.snap(),
-                label = "hoverScale"
-            ).value
-        }
+    val animatedScale by animateFloatAsState(
+        targetValue = if (hovered.value) scale else 1f,
+        animationSpec = if (motionEnabled) AppMotion.shortTween() else androidx.compose.animation.core.snap(),
+        label = "hoverScale"
+    )
+    return this.graphicsLayer {
+        scaleX = animatedScale
+        scaleY = animatedScale
+    }
 }

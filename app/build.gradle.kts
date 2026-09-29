@@ -143,6 +143,31 @@ android {
     buildConfig = true
   }
   testOptions { unitTests { isIncludeAndroidResources = true } }
+  lint {
+    // A lint warning that nobody acts on is a warning that becomes an error later.
+    // New warnings must be fixed or explicitly accepted, never silently merged.
+    // Version-currency detectors (newer SDK/Kotlin/Gradle available) are informational:
+    // upgrading is a deliberate, separately tested decision, not a reason to fail a build.
+    // Everything else is treated as an error so quality cannot silently regress.
+    disable += setOf(
+        "NewerVersionAvailable",
+        "AndroidGradlePluginVersion",
+        "OldTargetApi",
+        "GradleDependency",
+    )
+    // The app ships arm64-v8a, armeabi-v7a and x86_64; this detector only inspects the
+    // static abiFilters list and cannot see the CI -PtargetAbi overrides.
+    disable += "ChromeOsAbiSupport"
+    // The app module deliberately re-declares the same string names as :feature so the
+    // manifest and non-composable helpers can resolve them from the app namespace.
+    disable += "UnusedResources"
+    warningsAsErrors = true
+    abortOnError = true
+    checkDependencies = false
+    xmlReport = true
+    htmlReport = true
+    sarifReport = true
+  }
   dependenciesInfo {
     includeInApk = false
     includeInBundle = true

@@ -1,44 +1,12 @@
 <resources>
     <string name="app_name">محمل تيليجرام درايف</string>
-    <string name="connect_account">اربط حساب تيليجرام لرفع الفيديوهات إلى تيليجرام.</string>
-    <string name="user">المستخدم</string>
-    <string name="upload_videos">رفع الفيديوهات</string>
-    <string name="select_videos">اختيار الفيديوهات</string>
-    <string name="select_videos_description">اختر فيديو واحدًا أو أكثر لإضافته إلى قائمة التحضير المحلية.</string>
-    <string name="upload_cloud_icon">أيقونة الرفع السحابي</string>
-    <string name="local_statistics">الإحصاءات المحلية</string>
-    <string name="selected_destination_summary">الوجهة المحددة: %1$s</string>
-    <string name="retry">إعادة المحاولة</string>
-    <string name="pause">إيقاف مؤقت</string>
-    <string name="resume">استئناف</string>
-    <string name="cancel">إلغاء</string>
-    <string name="remove_video">إزالة الفيديو</string>
-    <string name="video_thumbnail">صورة مصغرة للفيديو</string>
-    <string name="video_icon">أيقونة الفيديو</string>
-    <string name="upload_speed">السرعة: %1$s</string>
-    <string name="upload_eta">الوقت المتبقي: %1$s</string>
-    <string name="upload_eta_calculating">جارٍ الحساب…</string>
-    <string name="upload_eta_stalled">بانتظار بيانات النقل…</string>
-    <string name="connected_status_description">متصل</string>
     <string name="nav_home">الرئيسية</string>
     <string name="nav_queue">قائمة الرفع</string>
     <string name="nav_history">السجل</string>
     <string name="nav_settings">الإعدادات</string>
-    <string name="error_occurred">حدث خطأ</string>
-    <string name="error_icon">خطأ</string>
-    <string name="upload_status">الحالة: %1$s</string>
+    <!--
+      Declared so the accessibility string stays resolvable from the app namespace.
+      :feature owns the real translated plural of the same name and renders it.
+    -->
     <string name="upload_progress_accessibility">تقدم الرفع: %1$d بالمئة</string>
-    <string name="status_queued">في قائمة الانتظار</string>
-    <string name="status_preparing">جارٍ التجهيز</string>
-    <string name="status_uploading">جارٍ الرفع</string>
-    <string name="status_paused">متوقف مؤقتًا</string>
-    <string name="status_retrying">جارٍ إعادة المحاولة</string>
-    <string name="status_completed">مكتمل</string>
-    <string name="status_failed">فشل</string>
-    <string name="status_cancelled">أُلغي</string>
-    <string name="mirror_link_title">رابط رسالة تيليجرام</string>
-    <string name="copy_link">نسخ الرابط</string>
-    <string name="view_detailed_log">عرض سجل التفاصيل</string>
-    <string name="upload_speed_desc">سرعة الرفع</string>
-    <string name="time_remaining_desc">الوقت المتبقي</string>
 </resources>

@@ -122,8 +122,9 @@ class QueueScreenComposeTest {
         setContent(tasks = listOf(task("1", UploadStatus.FAILED)))
 
         composeRule.waitForIdle()
-        val summary = ctx.getString(
-            com.telegramdrive.uploader.feature.R.string.queue_count_summary,
+        val summary = ctx.resources.getQuantityString(
+            com.telegramdrive.uploader.feature.R.plurals.queue_count_summary,
+            0,
             0,
             1
         )

@@ -250,8 +250,6 @@ class ForegroundUploadControlService : android.app.Service() {
     private val context: Context get() = this
 
     private fun createChannelIfNeeded() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-
         val name = "Upload Control"
         val description = "Controls for upload notifications"
         val importance = NotificationManager.IMPORTANCE_DEFAULT

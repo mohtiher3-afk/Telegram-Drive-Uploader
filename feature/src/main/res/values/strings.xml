@@ -90,7 +90,10 @@
     <string name="newest">Newest</string>
     <string name="largest">Largest</string>
     <string name="upload_queue">Upload queue</string>
-    <string name="queue_count_summary">%1$d active · %2$d failed</string>
+    <plurals name="queue_count_summary">
+        <item quantity="one">%1$d active · %2$d failed</item>
+        <item quantity="other">%1$d active · %2$d failed</item>
+    </plurals>
     <string name="queue_empty_title">Your queue is empty</string>
     <string name="queue_empty_supporting">Select videos from Home to start a reliable background upload.</string>
     <string name="queue_controls_title">Queue controls</string>
@@ -110,7 +113,10 @@
     <string name="onboarding_page_private_description">The app uses the official TDLib client and requests access only when a feature needs it.</string>
     <string name="schedule_choose">Choose</string>
     <string name="schedule_change">Change</string>
-    <string name="videos_selected_summary">%1$d videos selected</string>
+    <plurals name="videos_selected_summary">
+        <item quantity="one">%1$d video selected</item>
+        <item quantity="other">%1$d videos selected</item>
+    </plurals>
     <string name="total_size_summary">Total size: %1$s</string>
     <string name="add_to_queue">Add to Upload Queue (Telegram)</string>
     <string name="no_videos_selected">No videos selected</string>
@@ -205,7 +211,10 @@
     <string name="history_no_uploads_supporting">Completed uploads will appear here with searchable metadata.</string>
     <string name="history_no_matching">No matching uploads</string>
     <string name="history_no_matching_supporting">Try a different name or time range.</string>
-    <string name="history_matches_summary">%1$d matches · %2$s</string>
+    <plurals name="history_matches_summary">
+        <item quantity="one">%1$d match · %2$s</item>
+        <item quantity="other">%1$d matches · %2$s</item>
+    </plurals>
     <string name="history_period_all">All time</string>
     <string name="history_period_today">Today</string>
     <string name="history_period_7_days">7 days</string>
@@ -213,7 +222,10 @@
     <string name="error_occurred">An Error Occurred</string>
     <string name="error_icon">Error</string>
     <string name="upload_status">Status: %1$s</string>
-    <string name="upload_progress_accessibility">Upload progress: %1$d percent</string>
+    <plurals name="upload_progress_accessibility">
+        <item quantity="one">Upload progress: %1$d percent</item>
+        <item quantity="other">Upload progress: %1$d percent</item>
+    </plurals>
     <string name="status_queued">Queued</string>
     <string name="status_preparing">Preparing</string>
     <string name="status_uploading">Uploading</string>

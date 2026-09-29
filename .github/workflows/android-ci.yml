@@ -163,10 +163,13 @@ jobs:
       - name: Verify Android resource integrity
         run: ./scripts/check-resource-integrity.sh
 
+      - name: Compile every module's debug Kotlin
+        run: ./gradlew --no-daemon --max-workers=2 compileDebugKotlin
+
       - name: Run JVM unit tests
         env:
           MEMORY_TELEMETRY_DIR: ${{ runner.temp }}/ci-memory/${{ matrix.abi }}
-        run: ./scripts/measure-gradle-memory.sh jvm-unit-tests gradle --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test :data:testDebugUnitTest
+        run: ./scripts/measure-gradle-memory.sh jvm-unit-tests gradle --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test :data:testDebugUnitTest :feature:testDebugUnitTest
 
       - name: Run release lint
         env:

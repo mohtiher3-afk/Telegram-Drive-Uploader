@@ -3,6 +3,7 @@ package com.telegramdrive.uploader.core.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -125,15 +126,15 @@ private fun ColorScheme.withBrandAccents(
         tertiaryContainer = colors.primaryContainer,
         onTertiaryContainer = colors.onPrimaryContainer,
         // Subtle brand influence on surface variants
-        surfaceVariant = if (darkTheme) 
-            surfaceVariant.mix(colors.primary, 0.08f)
-            else surfaceVariant.mix(colors.primary, 0.05f),
+        surfaceVariant = if (darkTheme)
+            androidx.compose.ui.graphics.lerp(surfaceVariant, colors.primary, 0.08f)
+            else androidx.compose.ui.graphics.lerp(surfaceVariant, colors.primary, 0.05f),
         surfaceContainerHigh = if (darkTheme)
-            surfaceContainerHigh.mix(colors.primary, 0.05f)
-            else surfaceContainerHigh.mix(colors.primary, 0.03f),
+            androidx.compose.ui.graphics.lerp(surfaceContainerHigh, colors.primary, 0.05f)
+            else androidx.compose.ui.graphics.lerp(surfaceContainerHigh, colors.primary, 0.03f),
         surfaceContainerHighest = if (darkTheme)
-            surfaceContainerHighest.mix(colors.primary, 0.03f)
-            else surfaceContainerHighest.mix(colors.primary, 0.02f)
+            androidx.compose.ui.graphics.lerp(surfaceContainerHighest, colors.primary, 0.03f)
+            else androidx.compose.ui.graphics.lerp(surfaceContainerHighest, colors.primary, 0.02f)
     )
 }
 

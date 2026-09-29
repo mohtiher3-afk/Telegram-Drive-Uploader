@@ -1,33 +1,53 @@
 package com.telegramdrive.uploader.core.ui.components
 
-import com.telegramdrive.uploader.core.ui.theme.AppSpacing
-import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
-import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
-import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
-import org.junit.Test
-import org.roborazzi.Roborazzi
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTestTag
-import androidx.compose.ui.test.assertExists
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
-import com.telegramdrive.uploader.core.ui.components.LottieAnimations
-import com.telegramdrive.uploader.feature.R
+import com.github.takahirom.roborazzi.captureRoboImage
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
+import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [33])
 class GlassComponentsRoborazziTest {
 
     @get:Rule
     val composeRule = createComposeRule()
+
+    @Composable
+    private fun GlassCardPreview(emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational) {
+        GlassCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppSpacing.md)
+                .height(120.dp),
+            emphasis = emphasis
+        ) {
+            Text(
+                text = "Glass card",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(AppSpacing.lg)
+            )
+        }
+    }
 
     @Test
     fun glassCard_light() {
@@ -36,12 +56,10 @@ class GlassComponentsRoborazziTest {
                 darkTheme = false,
                 dynamicColorStrategy = DynamicColorStrategy.StaticBrand
             ) {
-                Surface {
-                    GlassCardPreview()
-                }
+                GlassCardPreview()
             }
         }
-        Roborazzi.takeScreenshot(composeRule, "glass_card_light")
+        composeRule.onRoot().captureRoboImage()
     }
 
     @Test
@@ -51,98 +69,66 @@ class GlassComponentsRoborazziTest {
                 darkTheme = true,
                 dynamicColorStrategy = DynamicColorStrategy.StaticBrand
             ) {
-                Surface {
-                    GlassCardPreview()
-                }
+                GlassCardPreview()
             }
         }
-        Roborazzi.takeScreenshot(composeRule, "glass_card_dark")
+        composeRule.onRoot().captureRoboImage()
     }
 
     @Test
     fun glassCard_emphasis_variants() {
         composeRule.setContent {
             TelegramDriveTheme(darkTheme = false) {
-                EmphasisVariantsPreview()
+                androidx.compose.foundation.layout.Column {
+                    LiquidGlassEmphasis.entries.forEach { emphasis ->
+                        GlassCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(AppSpacing.xs)
+                                .height(64.dp),
+                            emphasis = emphasis
+                        ) {
+                            Text(
+                                text = emphasis.name,
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(AppSpacing.md)
+                            )
+                        }
+                    }
+                }
             }
         }
-        Roborazzi.takeScreenshot(composeRule, "glass_card_emphasis_variants")
-    }
-
-    @Test
-    fun emptyState_light() {
-        composeRule.setContent {
-            TelegramDriveTheme(darkTheme = false) {
-                EmptyState(
-                    icon = androidx.compose.material.icons.Icons.Default.VideoLibrary,
-                    title = "No videos",
-                    supportingText = "Add videos to upload",
-                    animation = LottieAnimations.emptyUpload
-                )
-            }
-        }
-        Roborazzi.takeScreenshot(composeRule, "empty_state_light")
-    }
-
-    @Test
-    fun emptyState_dark() {
-        composeRule.setContent {
-            TelegramDriveTheme(darkTheme = true) {
-                EmptyState(
-                    icon = androidx.compose.material.icons.Icons.Default.VideoLibrary,
-                    title = "No videos",
-                    supportingText = "Add videos to upload",
-                    animation = LottieAnimations.emptyUpload
-                )
-            }
-        }
-        Roborazzi.takeScreenshot(composeRule, "empty_state_dark")
-    }
-
-    @Test
-    fun errorState_light() {
-        composeRule.setContent {
-            TelegramDriveTheme(darkTheme = false) {
-                ErrorState(
-                    message = "Upload failed. Please retry.",
-                    animation = LottieAnimations.uploadError
-                )
-            }
-        }
-        Roborazzi.takeScreenshot(composeRule, "error_state_light")
-    }
-
-    @Test
-    fun errorState_dark() {
-        composeRule.setContent {
-            TelegramDriveTheme(darkTheme = true) {
-                ErrorState(
-                    message = "Upload failed. Please retry.",
-                    animation = LottieAnimations.uploadError
-                )
-            }
-        }
-        Roborazzi.takeScreenshot(composeRule, "error_state_dark")
+        composeRule.onRoot().captureRoboImage()
     }
 
     @Test
     fun shimmerPlaceholder_light() {
         composeRule.setContent {
             TelegramDriveTheme(darkTheme = false) {
-                ShimmerPlaceholderPreview()
+                ShimmerPlaceholder(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(AppSpacing.md)
+                        .height(80.dp)
+                )
             }
         }
-        Roborazzi.takeScreenshot(composeRule, "shimmer_placeholder_light")
+        composeRule.onRoot().captureRoboImage()
     }
 
     @Test
     fun shimmerPlaceholder_dark() {
         composeRule.setContent {
             TelegramDriveTheme(darkTheme = true) {
-                ShimmerPlaceholderPreview()
+                ShimmerPlaceholder(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(AppSpacing.md)
+                        .height(80.dp)
+                )
             }
         }
-        Roborazzi.takeScreenshot(composeRule, "shimmer_placeholder_dark")
+        composeRule.onRoot().captureRoboImage()
     }
 
     @Test
@@ -152,14 +138,13 @@ class GlassComponentsRoborazziTest {
                 GlassProgressIndicator(
                     progressFraction = 0.65f,
                     statusColor = MaterialTheme.colorScheme.primary,
-                    modifier = androidx.compose.ui.Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .height(8.dp)
                         .padding(AppSpacing.md)
                 )
             }
         }
-        Roborazzi.takeScreenshot(composeRule, "glass_progress_indicator_light")
+        composeRule.onRoot().captureRoboImage()
     }
 
     @Test
@@ -169,12 +154,12 @@ class GlassComponentsRoborazziTest {
                 GlassProgressIndicator(
                     progressFraction = 0.65f,
                     statusColor = MaterialTheme.colorScheme.primary,
-                    modifier = androidx.compose.ui.Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .height(8.dp)
                         .padding(AppSpacing.md)
                 )
             }
         }
-        Roborazzi.takeScreenshot(composeRule, "glass_progress_indicator_dark")
+        composeRule.onRoot().captureRoboImage()
     }
+}

@@ -14,6 +14,14 @@ build/
 *.aab
 *.log
 
+# Stray Gradle/CI output written to the repository root by mistake.
+# (A leading "-" here would be parsed as a CLI flag, hence the explicit pattern.)
+/-test-failures
+/-test-failures*
+/lint*.log
+/help*.log
+/test.log
+
 # Built release binaries are distributed via GitHub Releases, never committed.
 releases/
 

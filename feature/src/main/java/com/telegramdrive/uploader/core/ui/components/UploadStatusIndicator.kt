@@ -9,6 +9,11 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
@@ -53,14 +59,13 @@ internal fun uploadProgressPercent(percentage: Float): Int =
 @Composable
 fun GlassProgressIndicator(
     progressFraction: Float,
-    statusColor: Color = MaterialTheme.colorScheme.primary,
     modifier: Modifier = Modifier,
+    statusColor: Color = MaterialTheme.colorScheme.primary,
     showGlow: Boolean = true,
     trackHeight: Dp = 6.dp
 ) {
-    val pulseAlpha = remember { 
-        val infiniteTransition = rememberInfiniteTransition(label = "progressPulse")
-        infiniteTransition.animateFloat(
+    val infiniteTransition = rememberInfiniteTransition(label = "progressPulse")
+    val pulseAlpha by infiniteTransition.animateFloat(
             initialValue = 0.3f,
             targetValue = 0.8f,
             animationSpec = androidx.compose.animation.core.infiniteRepeatable(
@@ -69,7 +74,6 @@ fun GlassProgressIndicator(
             ),
             label = "progressPulse"
         )
-    }
     
     val animatedProgress by animateFloatAsState(
         targetValue = progressFraction.coerceIn(0f, 1f),
@@ -99,7 +103,7 @@ fun GlassProgressIndicator(
             Box(
                 modifier = Modifier
                     .height(trackHeight)
-                    .width(animatedProgress * 1f)
+                    .fillMaxWidth(animatedProgress.coerceIn(0f, 1f))
                     .clip(RoundedCornerShape(trackHeight / 2))
                     .liquidGlassOverlay(
                         shape = RoundedCornerShape(trackHeight / 2),
@@ -170,8 +174,9 @@ fun UploadStatusIndicator(
         animationSpec = AppMotion.shortTween(motionEnabled),
         label = "upload_status_container"
     )
-    val progressDescription = stringResource(
-        com.telegramdrive.uploader.feature.R.string.upload_progress_accessibility,
+    val progressDescription = pluralStringResource(
+        com.telegramdrive.uploader.feature.R.plurals.upload_progress_accessibility,
+        progressPercent,
         progressPercent
     )
 

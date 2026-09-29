@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!--
+      mipmap-anydpi-v26 is the canonical location for an adaptive launcher icon. minSdk is
+      30, so the "-v26" qualifier is technically redundant, but AAPT will not link a plain
+      mipmap-anydpi folder for an adaptive-icon XML. Keep the standard layout and ignore
+      only this resource hint; the Kotlin SDK_INT checks remain active.
+    -->
+    <issue id="ObsoleteSdkInt">
+        <ignore path="src/main/res/mipmap-anydpi-v26" />
+    </issue>
+</lint>

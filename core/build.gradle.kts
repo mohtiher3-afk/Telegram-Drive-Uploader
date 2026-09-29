@@ -25,6 +25,11 @@ android {
       isIncludeAndroidResources = true
     }
   }
+  lint {
+    warningsAsErrors = true
+    abortOnError = true
+    checkDependencies = false
+  }
 }
 
 kotlin {

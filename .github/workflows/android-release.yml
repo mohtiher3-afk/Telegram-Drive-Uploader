@@ -160,7 +160,7 @@ jobs:
           echo "==GATE:check-tdlib-artifacts=="
           ./scripts/check-tdlib-artifacts.sh
           echo "==GATE:gradle-tests-and-lint=="
-          ./gradlew --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test :data:testDebugUnitTest :app:lintVitalRelease
+          ./gradlew --no-daemon --max-workers=2 :app:testDebugUnitTest :core:testDebugUnitTest :domain:test :data:testDebugUnitTest :feature:testDebugUnitTest :app:lintVitalRelease
 
       - name: Build signed Release APK for selected ABI
         env:

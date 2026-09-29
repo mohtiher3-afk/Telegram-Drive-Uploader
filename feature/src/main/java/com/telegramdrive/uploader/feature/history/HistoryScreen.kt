@@ -36,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -145,8 +146,9 @@ fun HistoryScreen(
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Text(
-                                    text = stringResource(
-                                        com.telegramdrive.uploader.feature.R.string.history_matches_summary,
+                                    text = pluralStringResource(
+                                        com.telegramdrive.uploader.feature.R.plurals.history_matches_summary,
+                                        uiState.totalMatches,
                                         uiState.totalMatches,
                                         formatFileSize(uiState.totalSize)
                                     ),

@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import com.telegramdrive.uploader.core.navigation.AppNavigation
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
+import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
 
             TelegramDriveTheme(
                 darkTheme = darkTheme,
-                dynamicColor = false,
+                dynamicColorStrategy = DynamicColorStrategy.BrandAccented,
                 glowColorPreset = GlowColorPreset.fromStorage(glowColorPreference),
                 customGlowHex = customGlowHex
             ) {

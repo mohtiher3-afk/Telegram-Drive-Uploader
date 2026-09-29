@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -442,7 +443,11 @@ fun UploadScreen(
                                     modifier = Modifier.padding(16.dp)
                                 ) {
                                     Text(
-                                        text = stringResource(com.telegramdrive.uploader.feature.R.string.videos_selected_summary, state.preparedVideos.size),
+                                        text = pluralStringResource(
+                    com.telegramdrive.uploader.feature.R.plurals.videos_selected_summary,
+                    state.preparedVideos.size,
+                    state.preparedVideos.size
+                ),
                                         style = MaterialTheme.typography.headlineSmall,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )

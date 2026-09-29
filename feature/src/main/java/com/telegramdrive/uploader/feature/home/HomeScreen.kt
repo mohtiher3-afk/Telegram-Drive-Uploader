@@ -68,8 +68,6 @@ import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.components.GlassCard
-import com.teledriveuploader.ui.UploadsChatBubbleList
-import com.teledriveuploader.ui.UploadsChatBubbleList
 import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
@@ -194,17 +192,13 @@ fun HomeScreen(
 
 
                 item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-// Replace active uploads StatusPill and list with chat-bubble interface
-UploadsChatBubbleList(
-    uploads = uiState.activeUploads,
-    onRetryClicked = { viewModel.retryUpload(it) },
-    onCancelClicked = { viewModel.cancelUpload(it) }
-)
+                    // Active uploads shown as Telegram-style chat bubbles
+                    UploadsChatBubbleList(
+                        uploads = uiState.activeUploads,
+                        onRetryClicked = { viewModel.retryUpload(it) },
+                        onCancelClicked = { viewModel.cancelUpload(it) }
                     )
+                }
                 
 
                 item { Spacer(modifier = Modifier.height(AppSpacing.largeSection)) }
@@ -294,21 +288,6 @@ private fun TelegramConnectionCard(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-            }
-        }
-    }
-}
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Text(stringResource(R.string.connect))
-                }
-            } else {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
             }
         }
     }

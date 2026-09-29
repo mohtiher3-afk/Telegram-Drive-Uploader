@@ -9,8 +9,8 @@ import kotlin.math.floor
 /** Curated and custom primary-signal choices; semantic success, warning, and error roles stay untouched. */
 enum class GlowColorPreset(
     val storageValue: String,
-    private val dark: GlowPrimaryColors?,
-    private val light: GlowPrimaryColors?
+    internal val dark: GlowPrimaryColors?,
+    internal val light: GlowPrimaryColors?
 ) {
     SEAFOAM(
         storageValue = "Seafoam",

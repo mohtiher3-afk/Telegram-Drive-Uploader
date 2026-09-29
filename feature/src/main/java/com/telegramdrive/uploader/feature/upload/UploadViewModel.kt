@@ -49,7 +49,8 @@ sealed interface UploadUiState {
         val invalidFilesWarning: String? = null,
         val compressionPreset: VideoQualityPreset = VideoQualityPreset.ORIGINAL,
         val isCompressing: Boolean = false,
-        val compressedIds: Set<String> = emptySet()
+        val compressedIds: Set<String> = emptySet(),
+        val isLoading: Boolean = false
     ) : UploadUiState
     data class Error(val message: String) : UploadUiState
 }
@@ -153,7 +154,7 @@ class UploadViewModel @Inject constructor(
         } else {
             // Restore all tasks to their pre-compression state from the cache.
             // The old firstOrNull() lookup was a no-op because it matched the
-            // same element it was iterating — originals were never actually restored.
+            // same element it was iterating ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â originals were never actually restored.
             _compressedIds.value = emptySet()
             _preparedList.forEach { task ->
                 if (task.id in _originalCache) {

@@ -15,10 +15,15 @@ Thank you for your interest in contributing. This document explains how to set u
    # fill in TELEGRAM_API_ID and TELEGRAM_API_HASH
    ```
 
-3. **Verify the project**:
+3. **Verify the project** — never commit without a green run:
    ```bash
-   ./scripts/verify-project.sh QUICK
+   ./scripts/verify-project.sh QUICK   # Linux / macOS
    ```
+   ```powershell
+   .\scripts\verify-project.ps1 -Mode QUICK   # Windows
+   ```
+   Both run the same gates: compile every module (main + test sources), run every
+   module's unit tests, lint with warnings treated as errors, and assemble the debug APK.
 
 ## Engineering Standards
 
@@ -37,10 +42,19 @@ This project enforces strict engineering rules (see [`AGENTS.md`](AGENTS.md)). T
 Run the full local verification and make sure everything is green:
 
 ```bash
-./gradlew testDebugUnitTest   # all unit tests must pass
-./gradlew lintDebug           # zero lint errors
+./scripts/verify-project.sh FULL              # or: .\scripts\verify-project.ps1 -Mode FULL
+./scripts/verify-project.sh RELEASE           # additionally assembles + R8-minifies the release APK
 ```
 
+The underlying Gradle gates, if you prefer to run them directly:
+
+```bash
+./gradlew compileDebugKotlin compileDebugUnitTestKotlin   # every module must compile, tests included
+./gradlew testDebugUnitTest                                # all modules: app, core, data, domain, feature
+./gradlew lintDebug                                        # zero lint warnings (warnings are errors)
+```
+
+- `:feature` is part of the test gate. A change that only compiles in `:app` will fail CI.
 - Keep the change focused; do not include unrelated refactoring.
 - Update documentation if behavior or setup changes.
 - Link the issue your PR addresses and describe how you verified the change.

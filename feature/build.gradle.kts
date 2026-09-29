@@ -28,6 +28,11 @@ android {
   }
 
   testOptions { unitTests { isIncludeAndroidResources = true } }
+  lint {
+    warningsAsErrors = true
+    abortOnError = true
+    checkDependencies = false
+  }
 }
 
 kotlin {

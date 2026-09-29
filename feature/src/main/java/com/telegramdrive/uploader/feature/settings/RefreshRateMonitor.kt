@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.DisposableEffectResult
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalContext
  */
 @Composable
 fun rememberRefreshRateState(context: Context = LocalContext.current): Float {
-    val state = remember { mutableStateOf(RefreshRateHelper.getRefreshRate(context)) }
+    val state = remember { mutableFloatStateOf(RefreshRateHelper.getRefreshRate(context)) }
     var refreshRate by state
 
     DisposableEffect("RefreshRateMonitor") {

@@ -18,6 +18,9 @@ import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 @Stable
 class FrameRateOptimizer(private val refreshRateHz: Float) {
 
+    /** Display refresh rate in Hz this optimizer was built for. */
+    val refreshRate: Float get() = refreshRateHz
+
     /** The optimal frame duration in milliseconds for the current refresh rate. */
     val optimalFrameDurationMs: Long
         get() = (1000f / refreshRateHz).toLong().coerceAtLeast(8L)
@@ -37,12 +40,6 @@ class FrameRateOptimizer(private val refreshRateHz: Float) {
             refreshRateHz >= 90 -> 200
             else -> 250
         }
-
-    /**
-     * Returns a [Modifier] that adjusts rendering for optimal frame rate on the device.
-     */
-    @Composable
-    fun asModifier(): Modifier = Modifier.refreshRateOptimized(refreshRateHz)
 }
 
 @Composable
@@ -55,7 +52,7 @@ fun rememberFrameRateOptimizer(): FrameRateOptimizer {
 @Composable
 fun Modifier.refreshRateAware(): Modifier {
     val optimizer = rememberFrameRateOptimizer()
-    return this.then(optimizer.asModifier())
+    return this.refreshRateOptimized(optimizer.refreshRate)
 }
 
 @Composable

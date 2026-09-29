@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.Canvas
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -24,12 +26,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.TileMode
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.animateFloatAsState
+
 
 /**
  * Skeleton screen placeholder for loading states
@@ -56,10 +63,9 @@ fun SkeletonScreen(
         label = "skeletonShimmer"
     )
     
-    val density = androidx.compose.ui.platform.LocalDensity.current
-    val width = modifier.width?.calculate(density)?.toFloat() ?? 100.dp.toPx()
-    val shimmerWidth = width * 0.6f
-    val startX = (width + shimmerWidth) * shimmerProgress - shimmerWidth
+    val baseWidthPx = with(androidx.compose.ui.platform.LocalDensity.current) { 240.dp.toPx() }
+    val shimmerWidth = baseWidthPx * 0.6f
+    val startX = (baseWidthPx + shimmerWidth) * shimmerProgress - shimmerWidth
     
     when (variant) {
         SkeletonVariant.ListItem -> {
@@ -100,7 +106,7 @@ fun SkeletonScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(20.dp)
-                                .width(0.6f * width)
+                                .fillMaxWidth(0.6f)
                                 .clip(RoundedCornerShape(4.dp)),
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
@@ -114,7 +120,7 @@ fun SkeletonScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(14.dp)
-                                .width(0.4f * width)
+                                .fillMaxWidth(0.4f)
                                 .clip(RoundedCornerShape(4.dp)),
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
@@ -128,7 +134,7 @@ fun SkeletonScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(14.dp)
-                                .width(0.3f * width)
+                                .fillMaxWidth(0.3f)
                                 .clip(RoundedCornerShape(4.dp)),
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
@@ -178,7 +184,7 @@ fun SkeletonScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(20.dp)
-                                .width(0.7f * width)
+                                .fillMaxWidth(0.7f)
                                 .clip(RoundedCornerShape(4.dp)),
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
@@ -195,7 +201,7 @@ fun SkeletonScreen(
                             SkeletonPlaceholder(
                                 modifier = Modifier
                                     .height(14.dp)
-                                    .width(0.3f * width)
+                                    .fillMaxWidth(0.3f)
                                     .clip(RoundedCornerShape(4.dp)),
                                 shimmerProgress = shimmerProgress,
                                 shimmerWidth = shimmerWidth,
@@ -208,7 +214,7 @@ fun SkeletonScreen(
                             SkeletonPlaceholder(
                                 modifier = Modifier
                                     .height(14.dp)
-                                    .width(0.2f * width)
+                                    .fillMaxWidth(0.2f)
                                     .clip(RoundedCornerShape(4.dp)),
                                 shimmerProgress = shimmerProgress,
                                 shimmerWidth = shimmerWidth,
@@ -222,6 +228,42 @@ fun SkeletonScreen(
                 }
             }
         }
+        SkeletonVariant.EmptyState -> {
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(AppSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+            ) {
+                SkeletonPlaceholder(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(24.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    shimmerProgress = shimmerProgress,
+                    shimmerWidth = shimmerWidth,
+                    startX = startX,
+                    baseColor = MaterialTheme.colorScheme.surfaceVariant,
+                    highlightColor = MaterialTheme.colorScheme.surface,
+                    motionEnabled = motionEnabled
+                )
+                SkeletonPlaceholder(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    shimmerProgress = shimmerProgress,
+                    shimmerWidth = shimmerWidth,
+                    startX = startX,
+                    baseColor = MaterialTheme.colorScheme.surfaceVariant,
+                    highlightColor = MaterialTheme.colorScheme.surface,
+                    motionEnabled = motionEnabled
+                )
+            }
+        }
+    }
+}
+
 
 /**
  * Individual shimmer placeholder for custom skeleton layouts
@@ -252,7 +294,7 @@ fun SkeletonPlaceholder(
                         ),
                         start = androidx.compose.ui.geometry.Offset(startX, 0f),
                         end = androidx.compose.ui.geometry.Offset(startX + shimmerWidth, size.height),
-                        tileMode = androidx.compose.ui.graphics.Shader.TileMode.Clamp
+                        tileMode = androidx.compose.ui.graphics.TileMode.Clamp
                     ),
                     topLeft = androidx.compose.ui.geometry.Offset.Zero,
                     size = androidx.compose.ui.geometry.Size(size.width, size.height)

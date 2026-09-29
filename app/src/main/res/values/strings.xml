@@ -1,44 +1,13 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Telegram Drive Uploader</string>
-    <string name="connect_account">Connect your Telegram account to upload videos to Telegram.</string>
-    <string name="user">User</string>
-    <string name="upload_videos">Upload Videos</string>
-    <string name="select_videos">Select Videos</string>
-    <string name="select_videos_description">Select one or more videos and add them to your local queue for background preparation.</string>
-    <string name="upload_cloud_icon">Upload Cloud Icon</string>
-    <string name="local_statistics">Local Statistics</string>
-    <string name="selected_destination_summary">Selected destination: %1$s</string>
-    <string name="retry">Retry</string>
-    <string name="pause">Pause</string>
-    <string name="resume">Resume</string>
-    <string name="cancel">Cancel</string>
-    <string name="remove_video">Remove video</string>
-    <string name="video_thumbnail">Video Thumbnail</string>
-    <string name="video_icon">Video Icon</string>
-    <string name="upload_speed">Speed: %1$s</string>
-    <string name="upload_eta">Remaining: %1$s</string>
-    <string name="upload_eta_calculating">Calculating…</string>
-    <string name="upload_eta_stalled">Waiting for transfer data…</string>
-    <string name="connected_status_description">Connected</string>
     <string name="nav_home">Home</string>
     <string name="nav_queue">Queue</string>
     <string name="nav_history">History</string>
     <string name="nav_settings">Settings</string>
-    <string name="error_occurred">An Error Occurred</string>
-    <string name="error_icon">Error</string>
-    <string name="upload_status">Status: %1$s</string>
-    <string name="upload_progress_accessibility">Upload progress: %1$d percent</string>
-    <string name="status_queued">Queued</string>
-    <string name="status_preparing">Preparing</string>
-    <string name="status_uploading">Uploading</string>
-    <string name="status_paused">Paused</string>
-    <string name="status_retrying">Retrying</string>
-    <string name="status_completed">Completed</string>
-    <string name="status_failed">Failed</string>
-    <string name="status_cancelled">Cancelled</string>
-    <string name="mirror_link_title">Telegram Message Link</string>
-    <string name="copy_link">Copy Link</string>
-    <string name="view_detailed_log">View Detailed Action Log</string>
-    <string name="upload_speed_desc">Upload Speed</string>
-    <string name="time_remaining_desc">Time Remaining</string>
+    <!--
+      Declared so the accessibility string stays resolvable from the app namespace.
+      :feature owns the real translated plural of the same name and renders it.
+    -->
+    <string name="upload_progress_accessibility" tools:ignore="PluralsCandidate">Upload progress: %1$d percent</string>
 </resources>
