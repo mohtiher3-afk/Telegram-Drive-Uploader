@@ -43,7 +43,12 @@ class MainActivity : ComponentActivity() {
 
             TelegramDriveTheme(
                 darkTheme = darkTheme,
-                dynamicColorStrategy = DynamicColorStrategy.BrandAccented,
+                // StaticBrand is what makes the Glow Color setting meaningful: it is the
+                // only strategy where applyTo() assigns the user's chosen colour to
+                // primary. BrandAccented deliberately leaves primary to the wallpaper
+                // scheme, so the seven presets and the custom hex picker would have no
+                // visible effect. This also matches the original dynamicColor = false.
+                dynamicColorStrategy = DynamicColorStrategy.StaticBrand,
                 glowColorPreset = GlowColorPreset.fromStorage(glowColorPreference),
                 customGlowHex = customGlowHex
             ) {

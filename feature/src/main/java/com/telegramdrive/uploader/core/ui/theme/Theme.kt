@@ -150,7 +150,12 @@ private val ExpressiveShapes = Shapes(
 @Composable
 fun TelegramDriveTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColorStrategy: DynamicColorStrategy = DynamicColorStrategy.BrandAccented,
+    // StaticBrand is the default because it is the only strategy that assigns the
+    // caller's glowColorPreset to primary. Defaulting to BrandAccented would leave
+    // glowColorPreset and customGlowHex affecting only secondary/tertiary/surface
+    // roles, so a caller that forgot this argument would render with an apparently
+    // ignored colour setting.
+    dynamicColorStrategy: DynamicColorStrategy = DynamicColorStrategy.StaticBrand,
     glowColorPreset: GlowColorPreset = GlowColorPreset.SEAFOAM,
     customGlowHex: String = GlowColorCodec.DEFAULT_HEX,
     content: @Composable () -> Unit
