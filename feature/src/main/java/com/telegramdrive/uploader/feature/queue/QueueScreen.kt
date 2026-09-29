@@ -53,7 +53,6 @@ import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.components.GlassCard
-import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -254,44 +253,30 @@ fun QueueScreen(
                             )
                         }
                     } else {
-                        // Show shimmer placeholders while loading
-                        if (uiState.isLoading) {
-                            repeat(4) { index ->
-                                item {
-                                    ShimmerPlaceholder(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp, horizontal = AppSpacing.sm)
-                                            .height(92.dp)
-                                            .testTag("queue_shimmer_$index"),
-                                        shape = MaterialTheme.shapes.medium
-                                    )
-                                }
-                            }
-                        } else {
-                            items(uiState.queueItems, key = { it.id }) { video ->
-                                GlassCard(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 4.dp)
-                                        .height(92.dp),
-                                    shape = MaterialTheme.shapes.medium,
-                                    emphasis = LiquidGlassEmphasis.Operational
-                                ) {
-                                    VideoItem(
-                                        video = video,
-                                        onRemoveClick = { viewModel.removeUpload(video.id) },
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                    UploadStatusIndicator(
-                                        video = video,
-                                        modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
-                                        onPauseClick = { viewModel.pauseUpload(video.id) },
-                                        onResumeClick = { viewModel.resumeUpload(video.id) },
-                                        onRetryClick = { viewModel.retryUpload(video.id) },
-                                        onCancelClick = { viewModel.cancelUpload(video.id) }
-                                    )
-                                }
+                        // The queue is backed by a Room Flow, so once a frame is emitted the
+                        // list is authoritative; there is no separate "loading" phase to show.
+                        items(uiState.queueItems, key = { it.id }) { video ->
+                            GlassCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .height(92.dp),
+                                shape = MaterialTheme.shapes.medium,
+                                emphasis = LiquidGlassEmphasis.Operational
+                            ) {
+                                VideoItem(
+                                    video = video,
+                                    onRemoveClick = { viewModel.removeUpload(video.id) },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                UploadStatusIndicator(
+                                    video = video,
+                                    modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
+                                    onPauseClick = { viewModel.pauseUpload(video.id) },
+                                    onResumeClick = { viewModel.resumeUpload(video.id) },
+                                    onRetryClick = { viewModel.retryUpload(video.id) },
+                                    onCancelClick = { viewModel.cancelUpload(video.id) }
+                                )
                             }
                         }
                     }

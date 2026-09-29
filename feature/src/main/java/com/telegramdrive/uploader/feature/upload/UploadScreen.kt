@@ -41,7 +41,6 @@ import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.util.media.VideoQualityPreset
 import com.telegramdrive.uploader.core.ui.components.GlassCard
-import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -467,53 +466,37 @@ fun UploadScreen(
                                     .testTag("prepared_video_list"),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                // Show shimmer placeholders while loading
-                                if (state.isLoading) {
-                                    repeat(3) { index ->
-                                        item {
-                                            ShimmerPlaceholder(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(vertical = 4.dp)
-                                                    .height(92.dp)
-                                                    .testTag("upload_shimmer_$index"),
-                                                shape = MaterialTheme.shapes.medium
-                                            )
-                                        }
-                                    }
-                                } else {
-                                    items(state.preparedVideos, key = { it.id }) { video ->
-                                        GlassCard(
+                                items(state.preparedVideos, key = { it.id }) { video ->
+                                    GlassCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp)
+                                            .height(92.dp),
+                                        shape = MaterialTheme.shapes.medium,
+                                        emphasis = LiquidGlassEmphasis.Operational
+                                    ) {
+                                        val isSelected = video.id in selectedVideoIds
+                                        VideoItem(
+                                            video = video,
+                                            isSelected = isSelected,
+                                            onSelectedChange = { checked ->
+                                                selectedVideoIds = if (checked) {
+                                                    selectedVideoIds + video.id
+                                                } else {
+                                                    selectedVideoIds - video.id
+                                                }
+                                            },
+                                            onRemoveClick = { viewModel.removePreparedVideo(video) },
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(vertical = 4.dp)
-                                                .height(92.dp),
-                                            shape = MaterialTheme.shapes.medium,
-                                            emphasis = LiquidGlassEmphasis.Operational
-                                        ) {
-                                            val isSelected = video.id in selectedVideoIds
-                                            VideoItem(
-                                                video = video,
-                                                isSelected = isSelected,
-                                                onSelectedChange = { checked ->
-                                                    selectedVideoIds = if (checked) {
-                                                        selectedVideoIds + video.id
-                                                    } else {
+                                                .clickable {
+                                                    selectedVideoIds = if (isSelected) {
                                                         selectedVideoIds - video.id
+                                                    } else {
+                                                        selectedVideoIds + video.id
                                                     }
-                                                },
-                                                onRemoveClick = { viewModel.removePreparedVideo(video) },
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .clickable {
-                                                        selectedVideoIds = if (isSelected) {
-                                                            selectedVideoIds - video.id
-                                                        } else {
-                                                            selectedVideoIds + video.id
-                                                        }
-                                                    }
-                                            )
-                                        }
+                                                }
+                                        )
                                     }
                                 }
                             }

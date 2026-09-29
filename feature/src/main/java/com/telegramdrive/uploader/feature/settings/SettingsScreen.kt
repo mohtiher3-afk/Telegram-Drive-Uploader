@@ -62,7 +62,6 @@ import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.components.GlassCard
-import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
 @OptIn(ExperimentalMaterial3Api::class)

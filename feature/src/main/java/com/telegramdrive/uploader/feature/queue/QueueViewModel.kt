@@ -31,8 +31,7 @@ data class QueueUiState(
     val totalMatches: Int = 0,
     val failedCount: Int = 0,
     val pausedCount: Int = 0,
-    val activeCount: Int = 0,
-    val isLoading: Boolean = false
+    val activeCount: Int = 0
 )
 
 @HiltViewModel

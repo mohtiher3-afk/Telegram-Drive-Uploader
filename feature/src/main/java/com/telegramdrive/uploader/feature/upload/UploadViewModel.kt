@@ -49,8 +49,7 @@ sealed interface UploadUiState {
         val invalidFilesWarning: String? = null,
         val compressionPreset: VideoQualityPreset = VideoQualityPreset.ORIGINAL,
         val isCompressing: Boolean = false,
-        val compressedIds: Set<String> = emptySet(),
-        val isLoading: Boolean = false
+        val compressedIds: Set<String> = emptySet()
     ) : UploadUiState
     data class Error(val message: String) : UploadUiState
 }

@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
@@ -174,9 +173,8 @@ fun UploadStatusIndicator(
         animationSpec = AppMotion.shortTween(motionEnabled),
         label = "upload_status_container"
     )
-    val progressDescription = pluralStringResource(
-        com.telegramdrive.uploader.feature.R.plurals.upload_progress_accessibility,
-        progressPercent,
+    val progressDescription = stringResource(
+        com.telegramdrive.uploader.feature.R.string.upload_progress_accessibility,
         progressPercent
     )
 

@@ -68,7 +68,6 @@ import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.components.GlassCard
-import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)

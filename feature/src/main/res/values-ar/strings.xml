@@ -234,14 +234,7 @@
     <string name="error_occurred">حدث خطأ</string>
     <string name="error_icon">خطأ</string>
     <string name="upload_status">الحالة: %1$s</string>
-    <plurals name="upload_progress_accessibility">
-        <item quantity="zero">تقدم الرفع: بالمئة %1$d</item>
-        <item quantity="one">تقدم الرفع: بالمئة %1$d</item>
-        <item quantity="two">تقدم الرفع: بالمئة %1$d</item>
-        <item quantity="few">تقدم الرفع: بالمئة %1$d</item>
-        <item quantity="many">تقدم الرفع: بالمئة %1$d</item>
-        <item quantity="other">تقدم الرفع: بالمئة %1$d</item>
-    </plurals>
+    <string name="upload_progress_accessibility">تقدم الرفع: %1$d بالمئة</string>
     <string name="status_queued">في قائمة الانتظار</string>
     <string name="status_preparing">جارٍ التجهيز</string>
     <string name="status_uploading">جارٍ الرفع</string>

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Telegram Drive Uploader</string>
     <string name="splash_logo_description">Telegram Drive Uploader mission control logo</string>
     <string name="splash_starting">Preparing secure uploads…</string>
@@ -222,10 +222,7 @@
     <string name="error_occurred">An Error Occurred</string>
     <string name="error_icon">Error</string>
     <string name="upload_status">Status: %1$s</string>
-    <plurals name="upload_progress_accessibility">
-        <item quantity="one">Upload progress: %1$d percent</item>
-        <item quantity="other">Upload progress: %1$d percent</item>
-    </plurals>
+    <string name="upload_progress_accessibility" tools:ignore="PluralsCandidate">Upload progress: %1$d percent</string>
     <string name="status_queued">Queued</string>
     <string name="status_preparing">Preparing</string>
     <string name="status_uploading">Uploading</string>
