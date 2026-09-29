@@ -68,6 +68,8 @@ import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.components.GlassCard
+import com.teledriveuploader.ui.UploadsChatBubbleList
+import com.teledriveuploader.ui.UploadsChatBubbleList
 import com.telegramdrive.uploader.core.ui.components.ShimmerPlaceholder
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
@@ -196,70 +198,14 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.active_uploads),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        StatusPill(
-                            activeCount = uiState.activeUploads.size,
-                            accent = connectionAccent
-                        )
-                    }
-                }
-
-                if (uiState.activeUploads.isEmpty()) {
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = MaterialTheme.shapes.medium,
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                            ),
-                            border = null
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(AppSpacing.md),
-                                horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Surface(
-                                    modifier = Modifier.size(40.dp),
-                                    shape = CircleShape,
-                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            imageVector = Icons.Default.CloudQueue,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                                Text(
-                                    text = stringResource(R.string.no_active_uploads),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .testTag("no_active_uploads_text")
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    items(uiState.activeUploads, key = { "active_${it.id}" }) { upload ->
-                        Column(modifier = Modifier.padding(vertical = AppSpacing.xs)) {
-                            VideoItem(video = upload)
-                            UploadStatusIndicator(
-                                video = upload,
-                                modifier = Modifier.padding(top = AppSpacing.xs)
-                            )
-                        }
-                    }
-                }
+// Replace active uploads StatusPill and list with chat-bubble interface
+UploadsChatBubbleList(
+    uploads = uiState.activeUploads,
+    onRetryClicked = { viewModel.retryUpload(it) },
+    onCancelClicked = { viewModel.cancelUpload(it) }
+)
+                    )
+                
 
                 item { Spacer(modifier = Modifier.height(AppSpacing.largeSection)) }
             }

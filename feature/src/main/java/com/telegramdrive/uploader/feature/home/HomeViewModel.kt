@@ -71,6 +71,21 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeUiState()
     )
+fun retryUpload(id: String) {
+        viewModelScope.launch {
+            val upload = uploadRepository.getUploadById(id)
+            if (upload != null) {
+                // Reset to QUEUED for retry
+                uploadRepository.updateStatus(id, UploadStatus.QUEUED)
+            }
+        }
+    }
+
+    fun cancelUpload(id: String) {
+        viewModelScope.launch {
+            uploadRepository.updateStatus(id, UploadStatus.CANCELLED)
+        }
+    }
 
 }
 
