@@ -13,7 +13,7 @@ WAITING_FOR_PHONE / WAITING_FOR_CODE / WAITING_FOR_PASSWORD / WAITING_FOR_QR
         ↓ successful TDLib authentication
 AUTHORIZED / AuthorizationStateReady
         ↓ user logout
-CLOSING / AuthorizationStateClosing
+CLOSING / AuthorizationStateLoggingOut → AuthorizationStateClosing
         ↓
 DISCONNECTED / AuthorizationStateClosed
         ↓ connect()
@@ -22,7 +22,7 @@ Re-authentication path
 
 ## Session Restoration
 
-TDLib is configured with app-private `filesDir/tdlib-database` and `filesDir/tdlib-files` directories. This indicates that session/database persistence is delegated to TDLib’s local storage rather than to plaintext credentials managed by the app. The application also writes a cached connection-state marker and cached user metadata to Android DataStore.
+TDLib is configured with app-private per-account `filesDir/tdlib-database-<dirKey>` and `filesDir/tdlib-files-<dirKey>` directories. The directory suffix actually used at parameter-send time is recorded on the account row (`TelegramAccountEntry.dirKey`, defaulting to the account key for rows stored before the field existed), so a process restart reopens the same directory instead of orphaning the saved session. This indicates that session/database persistence is delegated to TDLib's local storage rather than to plaintext credentials managed by the app. The application also writes a cached connection-state marker and cached user metadata to Android DataStore.
 
 The repository inspection supports the intended restoration mechanism, but no connected Android device or emulator with a previously authenticated test account was available for proof. Therefore, the following sequence remains **NOT VERIFIED**:
 

@@ -88,13 +88,13 @@ class SettingsDataStore @Inject constructor(
         decodeAccounts(accounts, active)
     }
 
-    suspend fun addAccount(phone: String, displayName: String) {
+    suspend fun addAccount(phone: String, displayName: String, dirKey: String) {
         context.dataStore.edit { preferences ->
             val current = decodeAccounts(preferences[ACCOUNTS_KEY], null)
             val key = normalizeAccountKey(phone)
             val existing = current.any { it.key == key }
             if (!existing) {
-                val updated = current + TelegramAccountEntry(key, phone, displayName)
+                val updated = current + TelegramAccountEntry(key, phone, displayName, dirKey = dirKey)
                 preferences[ACCOUNTS_KEY] = encodeAccounts(updated)
                 if (preferences[ACTIVE_ACCOUNT_KEY] == null) {
                     preferences[ACTIVE_ACCOUNT_KEY] = key
@@ -244,15 +244,25 @@ class SettingsDataStore @Inject constructor(
     companion object {
         fun normalizeAccountKey(value: String): String = value.trim().replace("+", "").replace(" ", "")
 
-        private fun encodeAccounts(accounts: List<TelegramAccountEntry>): String =
-            accounts.joinToString("|") { "${it.key}~${it.phone}~${it.displayName}" }
+        // internal: exercised directly by TelegramSessionDirectoryRegressionTest
+        // (round-trip + legacy-row fallback seams).
+        internal fun encodeAccounts(accounts: List<TelegramAccountEntry>): String =
+            accounts.joinToString("|") { "${it.key}~${it.phone}~${it.displayName}~${it.dirKey}" }
 
-        private fun decodeAccounts(raw: String?, activeKey: String?): List<TelegramAccountEntry> {
+        internal fun decodeAccounts(raw: String?, activeKey: String?): List<TelegramAccountEntry> {
             if (raw.isNullOrBlank()) return emptyList()
             return raw.split("|").mapNotNull { row ->
                 val parts = row.split("~")
                 if (parts.size < 3) return@mapNotNull null
-                TelegramAccountEntry(parts[0], parts[1], parts[2], activeKey == parts[0])
+                TelegramAccountEntry(
+                    key = parts[0],
+                    phone = parts[1],
+                    displayName = parts[2],
+                    isActive = activeKey == parts[0],
+                    // Legacy rows (3 fields, stored before dirKey existed) fall back
+                    // to the account key — the directory the pre-fix code used.
+                    dirKey = parts.getOrNull(3)?.takeIf { it.isNotBlank() } ?: parts[0]
+                )
             }
         }
     }

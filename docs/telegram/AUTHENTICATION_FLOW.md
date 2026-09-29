@@ -44,6 +44,7 @@ The application does not automatically route the app start destination from the 
 | `AuthorizationStateWaitPassword` | Sets `WAITING_FOR_PASSWORD`. | Masked two-step-verification password input is shown. |
 | `AuthorizationStateWaitOtherDeviceConfirmation` | Stores TDLib’s QR link and sets `WAITING_FOR_QR`. | QR-login information and copy behavior are shown when the link is present. |
 | `AuthorizationStateReady` | Sets `AUTHORIZED`, requests `GetMe`, and requests the initial chat list. | The auth screen calls its success callback and pops back to the previous route. |
+| `AuthorizationStateLoggingOut` | Sets `CLOSING`. | A routine logout in progress; no error is shown for this state. |
 | `AuthorizationStateClosing` | Sets `CLOSING`. | Closing/loading feedback is shown. |
 | `AuthorizationStateClosed` | Sets `DISCONNECTED`. | The user is no longer represented as connected. |
 | Any other authorization state | Sets `ERROR` with an unknown-state mapping. | An actionable generic error path is shown, but the exact unknown state is not exposed as the UI message. |

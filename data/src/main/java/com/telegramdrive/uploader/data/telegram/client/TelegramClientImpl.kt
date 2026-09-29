@@ -84,6 +84,14 @@ class TelegramClientImpl @Inject constructor(
     private var tdClient: Client? = null
     private var activeAccountKey: String? = null
 
+    /**
+     * The directory suffix actually handed to TDLib in `SetTdlibParameters`.
+     * Recorded at parameter-send time (not re-derived later) so `addAccount`
+     * truthfully stores where the session was created even if [activeAccountKey]
+     * changes while the login flow is still in progress.
+     */
+    private var tdlibDirKey: String = "default"
+
     override val connectionState: StateFlow<TelegramConnectionState> = _connectionState.asStateFlow()
     override val currentUser: StateFlow<TelegramUser?> = _currentUser.asStateFlow()
     override val error: StateFlow<TelegramError?> = _error.asStateFlow()
@@ -107,7 +115,7 @@ class TelegramClientImpl @Inject constructor(
         _error.value = null
         _qrLoginLink.value = null
         val accountList = settingsDataStore.accounts.firstOrNull() ?: emptyList()
-        activeAccountKey = accountList.firstOrNull { it.isActive }?.key ?: accountList.firstOrNull()?.key
+        activeAccountKey = resolveTdlibDirectoryKey(accountList)
 
         val existingClient = synchronized(clientLock) { tdClient }
         if (existingClient != null) {
@@ -238,7 +246,7 @@ class TelegramClientImpl @Inject constructor(
         if (!exists) return
         settingsDataStore.setActiveAccount(accountKey)
         closeClient()
-        activeAccountKey = accountKey
+        activeAccountKey = accountList.firstOrNull { it.key == accountKey }?.dirKey ?: accountKey
         _connectionState.value = TelegramConnectionState.DISCONNECTED
         connect()
     }
@@ -686,7 +694,12 @@ class TelegramClientImpl @Inject constructor(
     }
 
 
-    private fun handleAuthorizationState(state: TdApi.AuthorizationState) {
+    /**
+     * Test seam (visibility only — no behavior change): the logout regression
+     * test drives this handler directly with real `TdApi.AuthorizationState`
+     * instances, matching the repo's direct-construction test pattern.
+     */
+    internal fun handleAuthorizationState(state: TdApi.AuthorizationState) {
         when (state) {
             is TdApi.AuthorizationStateWaitTdlibParameters -> sendTdlibParameters()
             is TdApi.AuthorizationStateWaitPhoneNumber -> {
@@ -704,6 +717,10 @@ class TelegramClientImpl @Inject constructor(
                 tdClient?.send(TdApi.GetMe(), { result -> handleTdLibObject(result) }, null)
                 requestChats()
             }
+            // A routine logout emits LoggingOut between Ready and Closing. Without
+            // this branch it fell into `else -> fail(...)`, flashing a false ERROR
+            // ("Unsupported Telegram authorization state") mid-logout.
+            is TdApi.AuthorizationStateLoggingOut -> setState(TelegramConnectionState.CLOSING)
             is TdApi.AuthorizationStateClosing -> setState(TelegramConnectionState.CLOSING)
             is TdApi.AuthorizationStateClosed -> {
                 // The TDLib client is dead. Tear it down (and clear session-scoped
@@ -727,6 +744,7 @@ class TelegramClientImpl @Inject constructor(
             return
         }
         val accountKey = activeAccountKey ?: "default"
+        tdlibDirKey = accountKey
         val databaseDirectory = File(context.filesDir, "tdlib-database-$accountKey").apply { mkdirs() }
         val filesDirectory = File(context.filesDir, "tdlib-files-$accountKey").apply { mkdirs() }
         val parameters = TdApi.SetTdlibParameters(
@@ -878,7 +896,7 @@ class TelegramClientImpl @Inject constructor(
                 append(user.firstName)
                 if (!user.lastName.isNullOrBlank()) append(" ").append(user.lastName)
             }.ifBlank { user.phoneNumber }
-            settingsDataStore.addAccount(user.phoneNumber, displayName)
+            settingsDataStore.addAccount(user.phoneNumber, displayName, tdlibDirKey)
             settingsDataStore.saveTelegramUser(
                 user.id,
                 user.firstName,
@@ -983,6 +1001,21 @@ class TelegramClientImpl @Inject constructor(
     }
 }
 
+
+/**
+ * Resolves the TDLib database/files directory suffix for the next connection.
+ *
+ * The directory recorded at login ([TelegramAccountEntry.dirKey]) is
+ * authoritative. The pre-fix resolver derived the suffix from the account key,
+ * which is null on the very first login (no accounts stored yet → directory
+ * `tdlib-database-default`), so the first restart after login opened a
+ * DIFFERENT, empty directory (`tdlib-database-<phone>`) and TDLib forced a
+ * re-login — the saved session in `tdlib-database-default` was orphaned.
+ * Returns null when no account exists yet; `sendTdlibParameters()` then falls
+ * back to `"default"`, which is what gets recorded by `addAccount`.
+ */
+internal fun resolveTdlibDirectoryKey(accounts: List<TelegramAccountEntry>): String? =
+    (accounts.firstOrNull { it.isActive } ?: accounts.firstOrNull())?.dirKey
 
 internal fun buildUploadMessageContent(
     task: com.telegramdrive.uploader.domain.model.UploadTask,
