@@ -1,5 +1,9 @@
 .github/workflows/*.lock.yml linguist-generated=true
-* text=auto
+# Every text file is LF in the repo AND in the working tree, regardless of the
+# per-machine core.autocrlf (Git for Windows defaults to true, which used to
+# re-introduce CRLF and trigger "CRLF will be replaced by LF" warnings on every
+# add). Only *.ps1/*.bat opt back into CRLF below.
+* text=auto eol=lf
 *.sh text eol=lf
 *.ps1 text eol=crlf
 *.yml text eol=lf
