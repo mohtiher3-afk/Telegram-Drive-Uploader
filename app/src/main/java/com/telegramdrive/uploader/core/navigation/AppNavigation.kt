@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -99,7 +100,12 @@ fun AppNavigation(
 
     val uploadViewModel: UploadViewModel = hiltViewModel()
 
-    Row(modifier = Modifier.fillMaxSize()) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(DesignTokens.spacingM)
+            .background(DesignTokens.primaryContainer)
+    ) {
         if (isExpanded && showBottomBar) {
             NavigationRail {
                 bottomNavItems.forEach { screen ->

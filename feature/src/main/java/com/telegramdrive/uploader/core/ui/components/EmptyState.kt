@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.components.LottieAnimations
 import com.telegramdrive.uploader.core.ui.components.AnimatedEmptyStateIcon
 import com.telegramdrive.uploader.core.ui.components.LottieAnimation
@@ -42,9 +42,9 @@ fun EmptyState(
             .fillMaxWidth()
             .liquidGlassOverlay(
                 shape = MaterialTheme.shapes.medium,
-                accent = MaterialTheme.colorScheme.primary
+                accent = DesignTokens.AppColors.onPrimary
             ),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.primaryContainer),
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.72f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -52,39 +52,39 @@ fun EmptyState(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(AppSpacing.lg),
+                .padding(DesignTokens.AppSpacing.large),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             AnimatedEmptyStateIcon(
                 animationType = animation,
                 size = 48.dp,
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.72f)
+                tint = DesignTokens.AppColors.onPrimary.copy(alpha = 0.72f)
             )
 
-            Spacer(modifier = Modifier.height(AppSpacing.sm))
+            Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
 
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface
+                color = DesignTokens.AppColors.onSurface
             )
 
-            Spacer(modifier = Modifier.height(AppSpacing.xs))
+            Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.xs))
 
             Text(
                 text = supportingText,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
             )
 
             if (actionText != null && onActionClick != null) {
-                Spacer(modifier = Modifier.height(AppSpacing.md))
+                Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
                 Button(
                     onClick = onActionClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(containerColor = DesignTokens.AppColors.onPrimary)
                 ) {
                     Text(text = actionText)
                 }

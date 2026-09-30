@@ -34,7 +34,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.TileMode
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
-import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 
@@ -72,16 +72,16 @@ fun SkeletonScreen(
             Card(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm)
+                    .padding(horizontal = DesignTokens.AppSpacing.md, vertical = DesignTokens.AppSpacing.sm)
                     .height(92.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    containerColor = DesignTokens.AppColors.secondaryContainer
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxSize().padding(AppSpacing.md),
+                    modifier = Modifier.fillMaxSize().padding(DesignTokens.AppSpacing.md),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Thumbnail skeleton
@@ -90,17 +90,17 @@ fun SkeletonScreen(
                         shimmerProgress = shimmerProgress,
                         shimmerWidth = shimmerWidth,
                         startX = startX,
-                        baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                        highlightColor = MaterialTheme.colorScheme.surface,
+                        baseColor = DesignTokens.AppColors.secondaryContainer,
+                        highlightColor = DesignTokens.AppColors.surface,
                         motionEnabled = motionEnabled
                     )
                     
-                    Spacer(modifier = Modifier.width(AppSpacing.md))
+                    Spacer(modifier = Modifier.width(DesignTokens.AppSpacing.md))
                     
                     // Content skeleton
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
+                        verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.xs)
                     ) {
                         SkeletonPlaceholder(
                             modifier = Modifier
@@ -111,8 +111,8 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                            highlightColor = MaterialTheme.colorScheme.surface,
+                            baseColor = DesignTokens.AppColors.secondaryContainer,
+                            highlightColor = DesignTokens.AppColors.surface,
                             motionEnabled = motionEnabled
                         )
                         
@@ -125,8 +125,8 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                            highlightColor = MaterialTheme.colorScheme.surface,
+                            baseColor = DesignTokens.AppColors.secondaryContainer,
+                            highlightColor = DesignTokens.AppColors.surface,
                             motionEnabled = motionEnabled
                         )
                         
@@ -139,8 +139,8 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                            highlightColor = MaterialTheme.colorScheme.surface,
+                            baseColor = DesignTokens.AppColors.secondaryContainer,
+                            highlightColor = DesignTokens.AppColors.surface,
                             motionEnabled = motionEnabled
                         )
                     }
@@ -151,16 +151,16 @@ fun SkeletonScreen(
             Card(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm)
+                    .padding(horizontal = DesignTokens.AppSpacing.md, vertical = DesignTokens.AppSpacing.sm)
                     .height(92.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    containerColor = DesignTokens.AppColors.secondaryContainer
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxSize().padding(AppSpacing.md),
+                    modifier = Modifier.fillMaxSize().padding(DesignTokens.AppSpacing.md),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Video thumbnail skeleton
@@ -169,16 +169,16 @@ fun SkeletonScreen(
                         shimmerProgress = shimmerProgress,
                         shimmerWidth = shimmerWidth,
                         startX = startX,
-                        baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                        highlightColor = MaterialTheme.colorScheme.surface,
+                        baseColor = DesignTokens.AppColors.secondaryContainer,
+                        highlightColor = DesignTokens.AppColors.surface,
                         motionEnabled = motionEnabled
                     )
                     
-                    Spacer(modifier = Modifier.width(AppSpacing.md))
+                    Spacer(modifier = Modifier.width(DesignTokens.AppSpacing.md))
                     
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
+                        verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.xs)
                     ) {
                         SkeletonPlaceholder(
                             modifier = Modifier
@@ -189,14 +189,14 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                            highlightColor = MaterialTheme.colorScheme.surface,
+                            baseColor = DesignTokens.AppColors.secondaryContainer,
+                            highlightColor = DesignTokens.AppColors.surface,
                             motionEnabled = motionEnabled
                         )
                         
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)
                         ) {
                             SkeletonPlaceholder(
                                 modifier = Modifier
@@ -206,8 +206,8 @@ fun SkeletonScreen(
                                 shimmerProgress = shimmerProgress,
                                 shimmerWidth = shimmerWidth,
                                 startX = startX,
-                                baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                                highlightColor = MaterialTheme.colorScheme.surface,
+                                baseColor = DesignTokens.AppColors.secondaryContainer,
+                                highlightColor = DesignTokens.AppColors.surface,
                                 motionEnabled = motionEnabled
                             )
                             
@@ -219,8 +219,8 @@ fun SkeletonScreen(
                                 shimmerProgress = shimmerProgress,
                                 shimmerWidth = shimmerWidth,
                                 startX = startX,
-                                baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                                highlightColor = MaterialTheme.colorScheme.surface,
+                                baseColor = DesignTokens.AppColors.secondaryContainer,
+                                highlightColor = DesignTokens.AppColors.surface,
                                 motionEnabled = motionEnabled
                             )
                         }
@@ -232,8 +232,8 @@ fun SkeletonScreen(
             Column(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(AppSpacing.md),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                    .padding(DesignTokens.AppSpacing.md),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)
             ) {
                 SkeletonPlaceholder(
                     modifier = Modifier
@@ -243,8 +243,8 @@ fun SkeletonScreen(
                     shimmerProgress = shimmerProgress,
                     shimmerWidth = shimmerWidth,
                     startX = startX,
-                    baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                    highlightColor = MaterialTheme.colorScheme.surface,
+                    baseColor = DesignTokens.AppColors.secondaryContainer,
+                    highlightColor = DesignTokens.AppColors.surface,
                     motionEnabled = motionEnabled
                 )
                 SkeletonPlaceholder(
@@ -255,8 +255,8 @@ fun SkeletonScreen(
                     shimmerProgress = shimmerProgress,
                     shimmerWidth = shimmerWidth,
                     startX = startX,
-                    baseColor = MaterialTheme.colorScheme.surfaceVariant,
-                    highlightColor = MaterialTheme.colorScheme.surface,
+                    baseColor = DesignTokens.AppColors.secondaryContainer,
+                    highlightColor = DesignTokens.AppColors.surface,
                     motionEnabled = motionEnabled
                 )
             }
@@ -274,8 +274,8 @@ fun SkeletonPlaceholder(
     shimmerProgress: Float,
     shimmerWidth: Float,
     startX: Float,
-    baseColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.surfaceVariant,
-    highlightColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.surface,
+    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.secondaryContainer,
+    highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
     motionEnabled: Boolean = true
 ) {
     Box(
