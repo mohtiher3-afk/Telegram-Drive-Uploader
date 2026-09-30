@@ -153,7 +153,11 @@ fun Modifier.liquidGlassOverlay(
     
     this.then(
         Modifier
-            .fillMaxSize()
+            // No fillMaxSize() here: a decoration modifier must not resize its
+            // node. Forcing the size stretched the compact bottom bar in
+            // AppNavigation.kt to the whole available height and collapsed the
+            // Scaffold content area on phone widths. Callers needing full size
+            // pass Modifier.fillMaxSize() themselves.
             .clip(shape)
             .background(
                 Brush.linearGradient(
