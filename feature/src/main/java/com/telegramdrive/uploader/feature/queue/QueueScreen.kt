@@ -51,7 +51,7 @@ import com.telegramdrive.uploader.core.ui.components.EmptyState
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
-import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.components.GlassCard
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 
@@ -76,7 +76,7 @@ fun QueueScreen(
                                 uiState.failedCount
                             ),
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
@@ -92,7 +92,7 @@ fun QueueScreen(
                 GlassCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneSection)
+                        .padding(horizontal = DesignTokens.AppSpacing.phoneEdge, vertical = DesignTokens.AppSpacing.phoneSection)
                         .height(200.dp),
                     shape = MaterialTheme.shapes.large,
                     emphasis = LiquidGlassEmphasis.Subtle
@@ -110,9 +110,9 @@ fun QueueScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = AppSpacing.phoneEdge)
+                        .padding(horizontal = DesignTokens.AppSpacing.phoneEdge)
                         .testTag("queue_list"),
-                    verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)
                 ) {
                     item {
                         OutlinedTextField(
@@ -162,15 +162,15 @@ fun QueueScreen(
                                     .fillMaxWidth()
                                     .liquidGlassOverlay(
                                         shape = MaterialTheme.shapes.large,
-                                        accent = MaterialTheme.colorScheme.secondary
+                                        accent = DesignTokens.AppColors.onSecondary
                                     ),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                                    containerColor = DesignTokens.AppColors.secondaryContainer
                                 ),
                                 shape = MaterialTheme.shapes.large,
                                 border = BorderStroke(
                                     1.dp,
-                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.42f)
+                                    DesignTokens.AppColors.onSecondary.copy(alpha = 0.42f)
                                 ),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
@@ -183,12 +183,12 @@ fun QueueScreen(
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.feature.R.string.queue_controls_title),
                                         style = MaterialTheme.typography.titleSmall,
-                                        color = MaterialTheme.colorScheme.secondary
+                                        color = DesignTokens.AppColors.onSecondary
                                     )
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.feature.R.string.queue_controls_supporting),
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                                     )
                                     Row(
                                         modifier = Modifier
@@ -286,10 +286,10 @@ fun QueueScreen(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.queue_no_matching_title),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = AppSpacing.md)
+                                    .padding(vertical = DesignTokens.AppSpacing.md)
                                     .testTag("queue_no_results"),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                             )
                         }
                     }

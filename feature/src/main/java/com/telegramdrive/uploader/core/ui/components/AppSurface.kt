@@ -43,7 +43,7 @@ fun AppSurface(
     container: Color = DesignTokens.AppColors.surface,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val hairline = MaterialTheme.colorScheme.outlineVariant
+    val hairline = DesignTokens.AppColors.onSurface.copy(alpha = 0.4f)
     Box(
         modifier = modifier
             .clip(shape)

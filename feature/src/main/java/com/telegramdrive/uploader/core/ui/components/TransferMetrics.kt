@@ -47,7 +47,7 @@ fun TransferMetrics(
             .fillMaxWidth()
             .testTag("transfer_metrics_card"),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            containerColor = DesignTokens.AppColors.secondaryContainer
         ),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -72,7 +72,7 @@ fun TransferMetrics(
                     Icon(
                         imageVector = Icons.Default.Speed,
                         contentDescription = stringResource(R.string.upload_speed_desc),
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = DesignTokens.AppColors.onPrimary,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
@@ -82,7 +82,7 @@ fun TransferMetrics(
                         ),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = DesignTokens.AppColors.onSurface
                     )
                 }
 
@@ -93,8 +93,8 @@ fun TransferMetrics(
                         .fillMaxWidth()
                         .height(4.dp)
                         .clip(MaterialTheme.shapes.extraSmall),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                    color = DesignTokens.AppColors.onPrimary,
+                    trackColor = DesignTokens.AppColors.onPrimaryContainer.copy(alpha = 0.4f)
                 )
             }
 
@@ -112,7 +112,7 @@ fun TransferMetrics(
                     Icon(
                         imageVector = Icons.Default.Schedule,
                         contentDescription = stringResource(R.string.time_remaining_desc),
-                        tint = MaterialTheme.colorScheme.secondary,
+                        tint = DesignTokens.AppColors.onSecondary,
                         modifier = Modifier.size(16.dp)
                     )
 
@@ -127,7 +127,7 @@ fun TransferMetrics(
                         text = stringResource(R.string.upload_eta, etaLabel),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = DesignTokens.AppColors.onSurface
                     )
                 }
 
@@ -138,8 +138,8 @@ fun TransferMetrics(
                         .fillMaxWidth()
                         .height(4.dp)
                         .clip(MaterialTheme.shapes.extraSmall),
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)
+                    color = DesignTokens.AppColors.onSecondary,
+                    trackColor = DesignTokens.AppColors.onSecondaryContainer.copy(alpha = 0.4f)
                 )
             }
         }

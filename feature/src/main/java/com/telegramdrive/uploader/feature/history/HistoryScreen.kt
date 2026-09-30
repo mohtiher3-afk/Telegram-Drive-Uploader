@@ -47,7 +47,7 @@ import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
-import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,16 +85,16 @@ fun HistoryScreen(
                     title = stringResource(com.telegramdrive.uploader.feature.R.string.history_no_uploads),
                     supportingText = stringResource(com.telegramdrive.uploader.feature.R.string.history_no_uploads_supporting),
                     modifier = Modifier
-                        .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneSection)
+                        .padding(horizontal = DesignTokens.AppSpacing.phoneEdge, vertical = DesignTokens.AppSpacing.phoneSection)
                         .testTag("history_empty_state")
                 )
             } else {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = AppSpacing.phoneEdge)
+                        .padding(horizontal = DesignTokens.AppSpacing.phoneEdge)
                         .testTag("history_list"),
-                    verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(4.dp))
@@ -132,11 +132,11 @@ fun HistoryScreen(
                                 .fillMaxWidth()
                                 .liquidGlassOverlay(
                                     shape = MaterialTheme.shapes.large,
-                                    accent = MaterialTheme.colorScheme.primary
+                                    accent = DesignTokens.AppColors.onPrimary
                                 ),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                            colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.secondaryContainer),
                             shape = MaterialTheme.shapes.large,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
+                            border = BorderStroke(1.dp, DesignTokens.AppColors.onPrimary.copy(alpha = 0.35f)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             Column(
@@ -153,7 +153,7 @@ fun HistoryScreen(
                                         formatFileSize(uiState.totalSize)
                                     ),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = DesignTokens.AppColors.onPrimary
                                 )
                                 Row(
                                     modifier = Modifier
@@ -216,7 +216,7 @@ fun HistoryScreen(
                                                 formatElapsedUploadTime(video.uploadDurationMs)
                                             ),
                                             style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
                                             modifier = Modifier.padding(top = 4.dp)
                                         )
                                     }

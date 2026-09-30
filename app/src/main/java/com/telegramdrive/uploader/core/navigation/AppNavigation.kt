@@ -52,7 +52,7 @@ import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.feature.telegram.TelegramAuthScreen
 import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
 import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
-import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.components.MissionControlPage
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.R
@@ -143,17 +143,17 @@ fun AppNavigation(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
+                            .padding(horizontal = DesignTokens.AppSpacing.phoneEdge, vertical = DesignTokens.AppSpacing.phoneNavInset)
                     ) {
                         Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .liquidGlassOverlay(
                                     shape = MaterialTheme.shapes.extraLarge,
-                                    accent = MaterialTheme.colorScheme.primary
+                                    accent = DesignTokens.AppColors.onPrimary
                                 ),
                             shape = MaterialTheme.shapes.extraLarge,
-                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            color = DesignTokens.AppColors.secondaryContainer,
                             tonalElevation = 6.dp,
                             shadowElevation = 8.dp
                         ) {
@@ -186,11 +186,11 @@ fun AppNavigation(
                                         },
                                         label = { Text(stringResource(screen.titleRes)) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                            selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                            indicatorColor = MaterialTheme.colorScheme.primary,
-                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                            selectedIconColor = DesignTokens.AppColors.onPrimary,
+                                            selectedTextColor = DesignTokens.AppColors.onPrimary,
+                                            indicatorColor = DesignTokens.AppColors.onPrimary,
+                                            unselectedIconColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                                            unselectedTextColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                                         ),
                                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                                     )

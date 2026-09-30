@@ -82,7 +82,7 @@ fun TelegramDestinationScreen(
                         imageVector = Icons.Default.CloudOff,
                         contentDescription = null,
                         modifier = Modifier.size(72.dp),
-                        tint = MaterialTheme.colorScheme.outline
+                        tint = DesignTokens.AppColors.onSurface.copy(alpha = 0.4f)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
@@ -94,7 +94,7 @@ fun TelegramDestinationScreen(
                     Text(
                         text = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_disconnected_message),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -130,13 +130,13 @@ fun TelegramDestinationScreen(
 
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                        containerColor = DesignTokens.AppColors.secondaryContainerHighest
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .liquidGlassOverlay(
                             shape = MaterialTheme.shapes.medium,
-                            accent = MaterialTheme.colorScheme.secondary
+                            accent = DesignTokens.AppColors.onSecondary
                         ),
                     shape = MaterialTheme.shapes.medium
                 ) {
@@ -148,12 +148,12 @@ fun TelegramDestinationScreen(
                         Icon(
                             imageVector = Icons.Default.Info,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = DesignTokens.AppColors.onPrimary
                         )
                         Text(
                             text = stringResource(com.telegramdrive.uploader.feature.R.string.direct_upload_info),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
@@ -162,13 +162,13 @@ fun TelegramDestinationScreen(
                 selectedDestination?.let { dest ->
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            containerColor = DesignTokens.AppColors.onPrimaryContainer
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .liquidGlassOverlay(
                                 shape = MaterialTheme.shapes.large,
-                                accent = MaterialTheme.colorScheme.primary
+                                accent = DesignTokens.AppColors.onPrimary
                             )
                             .glowSignalRim(MaterialTheme.shapes.large)
                             .testTag("selected_destination_banner")
@@ -186,18 +186,18 @@ fun TelegramDestinationScreen(
                                 Text(
                                     text = stringResource(com.telegramdrive.uploader.feature.R.string.target_destination),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = DesignTokens.AppColors.onPrimary
                                 )
                                 Text(
                                     text = dest.title,
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    color = DesignTokens.AppColors.onPrimary
                                 )
                                 dest.username?.let {
                                     Text(
                                         text = "@$it",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        color = DesignTokens.AppColors.onPrimary
                                     )
                                 }
                             }
@@ -208,7 +208,7 @@ fun TelegramDestinationScreen(
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.remove_selection),
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    tint = DesignTokens.AppColors.onPrimary
                                 )
                             }
                         }
@@ -219,7 +219,7 @@ fun TelegramDestinationScreen(
                 Text(
                     text = stringResource(com.telegramdrive.uploader.feature.R.string.eligible_targets),
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.primary
+                    color = DesignTokens.AppColors.onPrimary
                 )
 
                 if (destinations.isEmpty()) {
@@ -238,7 +238,7 @@ fun TelegramDestinationScreen(
                                 }
                             ),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 } else {
@@ -302,16 +302,16 @@ fun DestinationRow(
     Card(
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.secondaryContainer
+                DesignTokens.AppColors.onSecondaryContainer
             } else {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                DesignTokens.AppColors.secondaryContainer.copy(alpha = 0.5f)
             }
         ),
         modifier = Modifier
             .fillMaxWidth()
             .liquidGlassOverlay(
                 shape = MaterialTheme.shapes.medium,
-                accent = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                accent = if (isSelected) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSecondary
             )
             .glowSignalRim(
                 shape = MaterialTheme.shapes.medium,
@@ -340,7 +340,7 @@ fun DestinationRow(
             ) {
                 Surface(
                     shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.surface,
+                    color = DesignTokens.AppColors.surface,
                     modifier = Modifier.size(40.dp)
                 ) {
                     Box(
@@ -350,7 +350,7 @@ fun DestinationRow(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = DesignTokens.AppColors.onPrimary
                         )
                     }
                 }
@@ -359,13 +359,13 @@ fun DestinationRow(
                     Text(
                         text = destination.title,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = DesignTokens.AppColors.onSurface
                     )
                     destination.username?.let {
                         Text(
                             text = "@$it",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
@@ -384,9 +384,9 @@ fun DestinationRow(
                         }
                     ),
                     tint = if (isPinned) {
-                        MaterialTheme.colorScheme.primary
+                        DesignTokens.AppColors.onPrimary
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                        DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                     }
                 )
             }
@@ -394,7 +394,7 @@ fun DestinationRow(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.selection_selected),
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = DesignTokens.AppColors.onPrimary,
                     modifier = Modifier.size(24.dp)
                 )
             }

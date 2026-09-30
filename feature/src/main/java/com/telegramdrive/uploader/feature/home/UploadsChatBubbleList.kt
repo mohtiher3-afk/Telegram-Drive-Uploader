@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
-import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 
@@ -46,7 +46,7 @@ fun UploadsChatBubbleList(
         modifier = modifier
             .fillMaxWidth()
             .animateContentSize(),
-        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)
     ) {
         uploads.forEach { upload ->
             UploadChatBubble(
@@ -79,12 +79,12 @@ private fun UploadChatBubble(
             bottomEnd = 18.dp,
             bottomStart = 18.dp
         ),
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.65f),
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        color = DesignTokens.AppColors.secondaryContainer.copy(alpha = 0.65f),
+        contentColor = DesignTokens.AppColors.onSecondary
     ) {
         Column(
-            modifier = Modifier.padding(AppSpacing.md),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
+            modifier = Modifier.padding(DesignTokens.AppSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.xs)
         ) {
             Text(
                 text = upload.fileName,
@@ -107,7 +107,7 @@ private fun UploadChatBubble(
                     append(formatFileSize(upload.fileSize))
                 },
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                color = DesignTokens.AppColors.onSecondary.copy(alpha = 0.8f)
             )
             if (upload.status == UploadStatus.FAILED) {
                 val err = upload.lastError
@@ -115,7 +115,7 @@ private fun UploadChatBubble(
                     Text(
                         text = err,
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
+                        color = DesignTokens.AppColors.error,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

@@ -88,7 +88,7 @@ fun AnimatedEmptyStateIcon(
     animationType: LottieAnimation,
     modifier: Modifier = Modifier,
     size: androidx.compose.ui.unit.Dp = 40.dp,
-    tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
+    tint: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary
 ) {
     val result = rememberLottieAnimation(animationType)
     val motionEnabled = rememberSystemMotionEnabled()

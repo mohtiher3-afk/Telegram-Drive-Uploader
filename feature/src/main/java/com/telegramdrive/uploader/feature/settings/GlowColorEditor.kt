@@ -87,12 +87,12 @@ fun GlowColorEditor(
         Text(
             text = stringResource(R.string.custom_glow_editor),
             style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurface
+            color = DesignTokens.AppColors.onSurface
         )
         Text(
             text = stringResource(R.string.custom_glow_editor_summary),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = DesignTokens.AppColors.onSurfaceVariant
         )
 
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -100,7 +100,7 @@ fun GlowColorEditor(
                 modifier = Modifier
                     .size(184.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                    .background(DesignTokens.AppColors.secondaryContainer, CircleShape)
                     .onSizeChanged { wheelSize = it }
                     .pointerInput(wheelSize) {
                         detectTapGestures(onTap = updateWheelColor)
@@ -150,7 +150,7 @@ fun GlowColorEditor(
         Text(
             text = "#$pendingHex",
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = DesignTokens.AppColors.onSurfaceVariant,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
@@ -179,7 +179,7 @@ fun GlowColorEditor(
         Text(
             text = stringResource(R.string.custom_glow_live_preview),
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = DesignTokens.AppColors.onSurfaceVariant
         )
         Surface(
             shape = MaterialTheme.shapes.medium,
@@ -191,7 +191,7 @@ fun GlowColorEditor(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(R.string.custom_glow_selected_control), color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.custom_glow_selected_control), color = DesignTokens.AppColors.onSurface)
                 Surface(
                     shape = RoundedCornerShape(14.dp),
                     color = pendingColor,
@@ -244,7 +244,7 @@ private fun GlowEditorSlider(
     val sliderState = stringResource(R.string.custom_glow_slider_value, percentage)
     var focused by remember { mutableStateOf(false) }
     Column {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(label, style = MaterialTheme.typography.labelMedium, color = DesignTokens.AppColors.onSurfaceVariant)
         Slider(
             value = value,
             onValueChange = onValueChange,

@@ -41,7 +41,7 @@ fun SplashScreen(onFinished: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(DesignTokens.AppColors.primaryContainer)
             .semantics { liveRegion = LiveRegionMode.Polite },
         contentAlignment = Alignment.Center
     ) {
@@ -57,12 +57,12 @@ fun SplashScreen(onFinished: () -> Unit) {
             Text(
                 text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onBackground
+                color = DesignTokens.AppColors.onPrimary
             )
             Text(
                 text = stringResource(R.string.splash_starting),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = DesignTokens.AppColors.onPrimary,
                 modifier = Modifier.alpha(0.86f)
             )
         }

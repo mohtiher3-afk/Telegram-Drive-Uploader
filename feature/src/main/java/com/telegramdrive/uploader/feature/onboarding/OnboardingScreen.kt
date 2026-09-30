@@ -86,19 +86,19 @@ fun OnboardingScreen(
                 title = stringResource(R.string.onboarding_page_upload_title),
                 description = stringResource(R.string.onboarding_page_upload_description),
                 icon = Icons.Default.CloudUpload,
-                accent = MaterialTheme.colorScheme.primaryContainer
+                accent = DesignTokens.AppColors.onPrimaryContainer
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_schedule_title),
                 description = stringResource(R.string.onboarding_page_schedule_description),
                 icon = Icons.Default.Schedule,
-                accent = MaterialTheme.colorScheme.tertiaryContainer
+                accent = DesignTokens.AppColors.secondaryContainer
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_private_title),
                 description = stringResource(R.string.onboarding_page_private_description),
                 icon = Icons.Default.Security,
-                accent = MaterialTheme.colorScheme.secondaryContainer
+                accent = DesignTokens.AppColors.secondaryContainer
             )
         )
 
@@ -129,7 +129,7 @@ fun OnboardingScreen(
         }
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+    Surface(modifier = Modifier.fillMaxSize(), color = DesignTokens.AppColors.primaryContainer) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -159,7 +159,7 @@ fun OnboardingScreen(
                     .size(176.dp)
                     .liquidGlassOverlay(
                         shape = MaterialTheme.shapes.extraLarge,
-                        accent = MaterialTheme.colorScheme.primary
+                        accent = DesignTokens.AppColors.onPrimary
                     ),
                 shape = MaterialTheme.shapes.extraLarge,
                 color = pages[page].accent,
@@ -203,14 +203,14 @@ fun OnboardingScreen(
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.ExtraBold,
                         textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = DesignTokens.AppColors.onPrimary
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = pages[targetPage].description,
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -226,7 +226,7 @@ fun OnboardingScreen(
                         label = "onboarding_dot_width_$index"
                     )
                     val dotColor by animateColorAsState(
-                        targetValue = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                        targetValue = if (active) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSurface.copy(alpha = 0.4f),
                         animationSpec = AppMotion.shortTween(motionEnabled),
                         label = "onboarding_dot_color_$index"
                     )

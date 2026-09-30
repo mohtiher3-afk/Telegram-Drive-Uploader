@@ -46,7 +46,7 @@ fun EmptyState(
             ),
         colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.primaryContainer),
         shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.72f)),
+        border = BorderStroke(1.dp, DesignTokens.AppColors.onSurface.copy(alpha = 0.4f).copy(alpha = 0.72f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(

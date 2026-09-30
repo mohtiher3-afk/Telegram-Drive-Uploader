@@ -59,7 +59,7 @@ internal fun uploadProgressPercent(percentage: Float): Int =
 fun GlassProgressIndicator(
     progressFraction: Float,
     modifier: Modifier = Modifier,
-    statusColor: Color = MaterialTheme.colorScheme.primary,
+    statusColor: Color = DesignTokens.AppColors.onPrimary,
     showGlow: Boolean = true,
     trackHeight: Dp = 6.dp
 ) {
@@ -150,12 +150,12 @@ fun UploadStatusIndicator(
     val progressPercent = uploadProgressPercent(video.progress)
     val statusLabel = stringResource(uploadStatusLabelRes(video.status))
     val targetStatusColor = when (video.status) {
-        UploadStatus.FAILED -> MaterialTheme.colorScheme.error
-        UploadStatus.UPLOADING -> MaterialTheme.colorScheme.primary
-        UploadStatus.PREPARING -> MaterialTheme.colorScheme.secondary
-        UploadStatus.PAUSED -> MaterialTheme.colorScheme.outline
-        UploadStatus.COMPLETED -> MaterialTheme.colorScheme.tertiary
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
+        UploadStatus.FAILED -> DesignTokens.AppColors.error
+        UploadStatus.UPLOADING -> DesignTokens.AppColors.onPrimary
+        UploadStatus.PREPARING -> DesignTokens.AppColors.onSecondary
+        UploadStatus.PAUSED -> DesignTokens.AppColors.onSurface.copy(alpha = 0.4f)
+        UploadStatus.COMPLETED -> DesignTokens.AppColors.onSecondary
+        else -> DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
     }
     val animatedStatusColor by animateColorAsState(
         targetValue = targetStatusColor,
@@ -163,10 +163,10 @@ fun UploadStatusIndicator(
         label = "upload_status_color"
     )
     val targetContainerColor = when (video.status) {
-        UploadStatus.UPLOADING, UploadStatus.PREPARING -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.20f)
-        UploadStatus.FAILED -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.20f)
-        UploadStatus.COMPLETED -> MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.18f)
-        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.30f)
+        UploadStatus.UPLOADING, UploadStatus.PREPARING -> DesignTokens.AppColors.onPrimaryContainer.copy(alpha = 0.20f)
+        UploadStatus.FAILED -> DesignTokens.AppColors.error.copy(alpha = 0.2f).copy(alpha = 0.20f)
+        UploadStatus.COMPLETED -> DesignTokens.AppColors.secondaryContainer.copy(alpha = 0.18f)
+        else -> DesignTokens.AppColors.secondaryContainer.copy(alpha = 0.30f)
     }
     val animatedContainerColor by animateColorAsState(
         targetValue = targetContainerColor,
@@ -229,7 +229,7 @@ fun UploadStatusIndicator(
                     LinearProgressIndicator(
                         progress = { animatedProgressFraction },
                         color = animatedStatusColor,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        trackColor = DesignTokens.AppColors.secondaryContainer,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(4.dp)
@@ -274,20 +274,20 @@ fun UploadStatusIndicator(
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
                         text = stringResource(com.telegramdrive.uploader.feature.R.string.view_detailed_log),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
                     )
                 }
                 Icon(
                     imageVector = if (isLogExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -316,9 +316,9 @@ fun UploadStatusIndicator(
                         val isDone = idx < currentStepIdx || (video.status == UploadStatus.COMPLETED && idx == 5)
                         val isCurrent = idx == currentStepIdx && video.status != UploadStatus.COMPLETED
                         val dotColor = when {
-                            isDone -> MaterialTheme.colorScheme.primary
-                            isCurrent -> MaterialTheme.colorScheme.secondary
-                            else -> MaterialTheme.colorScheme.outlineVariant
+                            isDone -> DesignTokens.AppColors.onPrimary
+                            isCurrent -> DesignTokens.AppColors.onSecondary
+                            else -> DesignTokens.AppColors.onSurface.copy(alpha = 0.4f)Variant
                         }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -334,7 +334,7 @@ fun UploadStatusIndicator(
                                 text = stepName,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isDone || isCurrent) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                color = if (isDone || isCurrent) DesignTokens.AppColors.onSurface else DesignTokens.AppColors.onSurface.copy(alpha = 0.6f).copy(alpha = 0.5f)
                             )
                         }
                     }
@@ -346,7 +346,7 @@ fun UploadStatusIndicator(
                 if (mirrorLink != null) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.secondaryContainerLow),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -362,12 +362,12 @@ fun UploadStatusIndicator(
                                     text = stringResource(com.telegramdrive.uploader.feature.R.string.mirror_link_title),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = DesignTokens.AppColors.onPrimary
                                 )
                                 Text(
                                     text = mirrorLink,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
                                     maxLines = 1
                                 )
                             }
@@ -378,7 +378,7 @@ fun UploadStatusIndicator(
                                 Icon(
                                     imageVector = Icons.Default.ContentCopy,
                                     contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.copy_link),
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = DesignTokens.AppColors.onPrimary,
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -426,7 +426,7 @@ fun UploadStatusIndicator(
                         onCancelClick?.let {
                             TextButton(
                                 onClick = it,
-                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                                colors = ButtonDefaults.textButtonColors(contentColor = DesignTokens.AppColors.error)
                             ) {
                                 Text(stringResource(com.telegramdrive.uploader.feature.R.string.cancel))
                             }
