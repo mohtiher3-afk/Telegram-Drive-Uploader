@@ -1,4 +1,4 @@
-﻿name: Android Multi-ABI CI
+name: Android Multi-ABI CI
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
       - name: Run redacted secret and signing-material scan
         run: ./scripts/check-repository-security.sh
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Verify documentation links resolve
