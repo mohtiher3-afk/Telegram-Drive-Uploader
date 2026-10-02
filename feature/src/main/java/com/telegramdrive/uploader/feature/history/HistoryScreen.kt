@@ -132,11 +132,11 @@ fun HistoryScreen(
                                 .fillMaxWidth()
                                 .liquidGlassOverlay(
                                     shape = MaterialTheme.shapes.large,
-                                    accent = DesignTokens.AppColors.onPrimary
+                                    accent = MaterialTheme.colorScheme.onPrimary
                                 ),
-                            colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.secondaryContainer),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                             shape = MaterialTheme.shapes.large,
-                            border = BorderStroke(1.dp, DesignTokens.AppColors.onPrimary.copy(alpha = 0.35f)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.35f)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             Column(
@@ -153,7 +153,7 @@ fun HistoryScreen(
                                         formatFileSize(uiState.totalSize)
                                     ),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = DesignTokens.AppColors.onPrimary
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                                 Row(
                                     modifier = Modifier
@@ -216,7 +216,7 @@ fun HistoryScreen(
                                                 formatElapsedUploadTime(video.uploadDurationMs)
                                             ),
                                             style = MaterialTheme.typography.labelMedium,
-                                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                             modifier = Modifier.padding(top = 4.dp)
                                         )
                                     }
