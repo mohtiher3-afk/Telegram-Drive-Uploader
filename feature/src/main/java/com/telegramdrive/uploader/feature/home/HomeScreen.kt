@@ -215,7 +215,7 @@ private fun TelegramConnectionCard(
     modifier: Modifier = Modifier
 ) {
     val tgAuthorized = telegramState == TelegramConnectionState.AUTHORIZED
-    val accent = if (tgAuthorized) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
+    val accent = if (tgAuthorized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
     GlassCard(
         modifier = modifier
