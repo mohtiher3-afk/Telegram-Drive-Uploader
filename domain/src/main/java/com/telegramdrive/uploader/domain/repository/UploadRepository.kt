@@ -21,6 +21,7 @@ interface UploadRepository {
     suspend fun reconcileInterruptedUploads(): Int
     suspend fun getInterruptedUploads(): List<UploadTask>
     suspend fun deleteUploadById(id: String)
+    suspend fun deleteCompletedUploadById(id: String): Boolean = false
     suspend fun deleteCompletedUploads()
     suspend fun clearAllUploads()
 }
