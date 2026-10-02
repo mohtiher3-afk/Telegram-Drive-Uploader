@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 data class SettingsUiState(
     val theme: String = "System",
-    val glowColor: String = GlowColorPreset.SEAFOAM.storageValue,
+    val glowColor: String = GlowColorPreset.LIME.storageValue,
     val customGlowHex: String = GlowColorCodec.DEFAULT_HEX,
     val cacheSize: String = "0 B",
     val telegramConnectionState: TelegramConnectionState = TelegramConnectionState.DISCONNECTED,
