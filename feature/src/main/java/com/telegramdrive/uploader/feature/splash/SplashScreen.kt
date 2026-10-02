@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.feature.R
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import kotlinx.coroutines.delay
 
 @Composable

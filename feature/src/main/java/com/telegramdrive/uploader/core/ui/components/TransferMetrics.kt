@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.feature.R
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 
 /**
  * A beautiful, Material 3 component designed to visualize upload speeds
