@@ -102,6 +102,7 @@ object AppColors {
     // docs/design/DESIGN_SYSTEM.md names the theme's semantic colour scheme as the
     // system of record, so restating hex values here is exactly what let this flat
     // palette drift away from the theme. Delegating makes that drift impossible.
+    val primary = LightColorScheme.primary
     val primaryContainer = LightColorScheme.primaryContainer
     val secondaryContainer = LightColorScheme.secondaryContainer
     val surface = LightColorScheme.surface
