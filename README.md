@@ -54,6 +54,18 @@ Log in securely using your Telegram phone number or a QR code. The app uses real
    ```bash
    ./scripts/verify-project.sh QUICK
    ```
+   On Windows use the PowerShell port of the same checks (it does not need Git Bash):
+   ```powershell
+   .\scripts\verify-project.ps1 -Mode QUICK
+   ```
+   Both run the same four gates: compile every module, unit tests, lint with
+   `warningsAsErrors`, and a debug APK assembly.
+
+   On Windows the `app` module writes its build output to
+   `%TEMP%\tdg-build\app\build` (a OneDrive reparse-point workaround, see
+   `app/build.gradle.kts`), so the debug APK lands at
+   `%TEMP%\tdg-build\app\build\outputs\apk\debug\app-debug.apk` rather than
+   `app/build/outputs`.
 3. **Device Validation**: A JVM build cannot prove native behavior. Validate native TDLib loading and authentication on a physical device or compatible emulator.
 
 ### Project Structure
