@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import androidx.compose.runtime.remember
 
 /**

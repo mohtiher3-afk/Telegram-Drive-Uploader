@@ -1,5 +1,6 @@
 package com.telegramdrive.uploader.core.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,7 +53,6 @@ import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.feature.telegram.TelegramAuthScreen
 import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
 import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.components.MissionControlPage
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.R
