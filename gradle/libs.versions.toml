@@ -42,7 +42,7 @@ googleServices = "4.5.0"
 credentials = "1.6.0"
 googleid = "1.2.1"
 sentry = "8.57.0"
-lottieCompose = "6.1.0"
+lottieCompose = "6.7.1"
 kover = "0.9.11"
 
 
