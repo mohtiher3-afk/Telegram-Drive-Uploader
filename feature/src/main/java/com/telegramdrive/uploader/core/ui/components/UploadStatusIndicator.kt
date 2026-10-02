@@ -66,7 +66,7 @@ fun GlassProgressIndicator(
     showGlow: Boolean = true,
     trackHeight: Dp = 6.dp
 ) {
-    val resolvedStatusColor = if (resolvedStatusColor == Color.Unspecified) MaterialTheme.colorScheme.primary else resolvedStatusColor
+    val resolvedStatusColor = if (statusColor == Color.Unspecified) MaterialTheme.colorScheme.primary else statusColor
     val infiniteTransition = rememberInfiniteTransition(label = "progressPulse")
     val pulseAlpha by infiniteTransition.animateFloat(
             initialValue = 0.3f,
