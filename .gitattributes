@@ -1,0 +1,20 @@
+.github/workflows/*.lock.yml linguist-generated=true
+# Every text file is LF in the repo AND in the working tree, regardless of the
+# per-machine core.autocrlf (Git for Windows defaults to true, which used to
+# re-introduce CRLF and trigger "CRLF will be replaced by LF" warnings on every
+# add). Only *.ps1/*.bat opt back into CRLF below.
+* text=auto eol=lf
+*.sh text eol=lf
+*.ps1 text eol=crlf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.kt text eol=lf
+*.kts text eol=lf
+*.xml text eol=lf
+*.md text eol=lf
+*.bat text eol=crlf
+data/src/main/java/org/drinkless/tdlib/** -text
+*.so binary
+*.jar binary
+*.jks binary
+*.keystore binary

@@ -1,0 +1,51 @@
+# Local credentials and machine-specific configuration
+.env
+local.properties
+*.jks
+*.keystore
+*.p12
+google-services.json
+# Service-account and OAuth credential material. A bare "credentials.json" is the
+# default name the Google Cloud SDK writes, so it is listed explicitly as well as
+# by pattern; otherwise it can be committed by accident and the key cannot be
+# reclaimed without rewriting history.
+credentials.json
+*credentials*.json
+
+# Gradle and Android build outputs
+.gradle/
+.kotlin/
+build/
+**/build/
+*.apk
+*.aab
+*.log
+
+# Stray Gradle/CI output written to the repository root by mistake.
+# (A leading "-" here would be parsed as a CLI flag, hence the explicit pattern.)
+/-test-failures
+/-test-failures*
+/lint*.log
+/help*.log
+/test.log
+
+# Built release binaries are distributed via GitHub Releases, never committed.
+releases/
+
+# Runtime artifacts produced by smoke/diagnostics scripts (kept out of VCS)
+artifacts/
+
+# IDE metadata
+.idea/
+*.iml
+.DS_Store
+
+# Generated native/build intermediates
+.externalNativeBuild/
+.cxx/
+.native-build/
+__pycache__/
+*.pyc
+
+# Git worktrees
+.worktrees/

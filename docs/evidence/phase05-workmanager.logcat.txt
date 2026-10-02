@@ -1,0 +1,44 @@
+﻿09-18 18:49:39.138 24959 16405 I UploaderDiagnostics: [UPLOAD_PREPARING] [INFO] Staged content source into app storage: [REDACTED_PHONE] bytes
+09-18 18:49:39.139 24959 24959 I UploaderDiagnostics: [UPLOAD_CREATED] [INFO] Prepared video metadata. Bytes size: [REDACTED_PHONE]
+09-18 18:50:12.085 24959 24959 I UploaderDiagnostics: [WORKER_ENQUEUED] [INFO] WorkManager accepted upload work request.
+09-18 18:50:12.086 24959 24959 I UploaderDiagnostics: [UPLOAD_CREATED] [INFO] Upload task inserted in Local DB and enqueued successfully.
+09-18 18:50:12.347 24959 29992 I UploaderDiagnostics: [WORKER_ENQUEUED] [INFO] WorkManager state after enqueue: ENQUEUED; runAttemptCount=0.
+09-18 18:50:12.450 24959 16405 I UploaderDiagnostics: [WORKER_STARTED] [INFO] Background upload worker has started execution.
+09-18 18:50:12.466 24959 16405 I UploaderDiagnostics: [UPLOAD_PREPARING] [INFO] Upload task entered preflight; waiting for TDLib handoff.
+09-18 18:50:12.668 24959 16405 I UploaderDiagnostics: [UPLOAD_STARTED] [INFO] Readable file source handed off to TDLib without staging.
+09-18 18:50:48.216 24959 30055 I UploaderDiagnostics: [UPLOAD_STARTED] [INFO] Handing off video message to Telegram TDLib client for delivery.
+09-18 18:57:44.900 24959 29985 I UploaderDiagnostics: [UPLOAD_COMPLETED] [INFO] Upload task completed successfully.
+09-18 18:57:44.912 24959 29985 I UploaderDiagnostics: [WORKER_STOPPED] [INFO] Background upload worker has finished execution with status: Success {mOutputData=Data {}}
+09-18 18:59:00.627 24959 14565 I UploaderDiagnostics: [UPLOAD_PREPARING] [INFO] Staged content source into app storage: [REDACTED_PHONE] bytes
+09-18 18:59:00.641 24959 24959 I UploaderDiagnostics: [UPLOAD_CREATED] [INFO] Prepared video metadata. Bytes size: [REDACTED_PHONE]
+09-18 18:59:10.969 24959 24959 I UploaderDiagnostics: [WORKER_ENQUEUED] [INFO] WorkManager accepted upload work request.
+09-18 18:59:10.970 24959 24959 I UploaderDiagnostics: [UPLOAD_CREATED] [INFO] Upload task inserted in Local DB and enqueued successfully.
+09-18 18:59:11.284 24959 29993 I UploaderDiagnostics: [WORKER_ENQUEUED] [INFO] WorkManager state after enqueue: ENQUEUED; runAttemptCount=0.
+09-18 18:59:11.572 24959 14565 I UploaderDiagnostics: [WORKER_STARTED] [INFO] Background upload worker has started execution.
+09-18 18:59:11.709 24959 14565 I UploaderDiagnostics: [UPLOAD_PREPARING] [INFO] Upload task entered preflight; waiting for TDLib handoff.
+09-18 18:59:11.974 24959 14565 I UploaderDiagnostics: [UPLOAD_STARTED] [INFO] Readable file source handed off to TDLib without staging.
+09-18 18:59:12.043 24959 30055 I UploaderDiagnostics: [UPLOAD_STARTED] [INFO] Handing off video message to Telegram TDLib client for delivery.
+09-18 19:01:22.101 24959 16406 I UploaderDiagnostics: [UPLOAD_PREPARING] [INFO] Staged content source into app storage: 1943504 bytes
+09-18 19:01:22.102 24959 24959 I UploaderDiagnostics: [UPLOAD_CREATED] [INFO] Prepared video metadata. Bytes size: 1943504
+09-18 19:01:39.961 24959 24959 I UploaderDiagnostics: [WORKER_ENQUEUED] [INFO] WorkManager accepted upload work request.
+09-18 19:01:39.962 24959 24959 I UploaderDiagnostics: [UPLOAD_CREATED] [INFO] Upload task inserted in Local DB and enqueued successfully.
+09-18 19:01:40.292 24959 29993 I UploaderDiagnostics: [WORKER_ENQUEUED] [INFO] WorkManager state after enqueue: ENQUEUED; runAttemptCount=0.
+09-18 19:01:40.543 24959 30003 I UploaderDiagnostics: [WORKER_STARTED] [INFO] Background upload worker has started execution.
+09-18 19:01:40.566 24959 30003 I UploaderDiagnostics: [UPLOAD_PREPARING] [INFO] Upload task entered preflight; waiting for TDLib handoff.
+09-18 19:01:40.746 24959 30003 I UploaderDiagnostics: [UPLOAD_STARTED] [INFO] Readable file source handed off to TDLib without staging.
+09-18 19:01:40.768 24959 30055 I UploaderDiagnostics: [UPLOAD_STARTED] [INFO] Handing off video message to Telegram TDLib client for delivery.
+09-18 19:02:08.284 24959 24867 I UploaderDiagnostics: [UPLOAD_PREPARING] [INFO] Staged content source into app storage: 1619221 bytes
+09-18 19:02:08.285 24959 24959 I UploaderDiagnostics: [UPLOAD_CREATED] [INFO] Prepared video metadata. Bytes size: 1619221
+09-18 19:02:16.030 24959 24959 I UploaderDiagnostics: [WORKER_ENQUEUED] [INFO] WorkManager accepted upload work request.
+09-18 19:02:16.031 24959 24959 I UploaderDiagnostics: [UPLOAD_CREATED] [INFO] Upload task inserted in Local DB and enqueued successfully.
+09-18 19:02:16.213 24959 29982 I UploaderDiagnostics: [WORKER_ENQUEUED] [INFO] WorkManager state after enqueue: ENQUEUED; runAttemptCount=0.
+09-18 19:02:16.424 24959 17487 I UploaderDiagnostics: [WORKER_STARTED] [INFO] Background upload worker has started execution.
+09-18 19:02:16.500 24959 17487 I UploaderDiagnostics: [UPLOAD_PREPARING] [INFO] Upload task entered preflight; waiting for TDLib handoff.
+09-18 19:02:16.784 24959 17487 I UploaderDiagnostics: [UPLOAD_STARTED] [INFO] Readable file source handed off to TDLib without staging.
+09-18 19:02:16.826 24959 30055 I UploaderDiagnostics: [UPLOAD_STARTED] [INFO] Handing off video message to Telegram TDLib client for delivery.
+09-18 19:06:42.840 24959 26551 I UploaderDiagnostics: [UPLOAD_COMPLETED] [INFO] Upload task completed successfully.
+09-18 19:06:42.846 24959 26551 I UploaderDiagnostics: [WORKER_STOPPED] [INFO] Background upload worker has finished execution with status: Success {mOutputData=Data {}}
+09-18 19:06:44.818 24959 25697 I UploaderDiagnostics: [UPLOAD_COMPLETED] [INFO] Upload task completed successfully.
+09-18 19:06:44.819 24959 25697 I UploaderDiagnostics: [WORKER_STOPPED] [INFO] Background upload worker has finished execution with status: Success {mOutputData=Data {}}
+09-18 19:06:44.937 24959 25697 I UploaderDiagnostics: [UPLOAD_COMPLETED] [INFO] Upload task completed successfully.
+09-18 19:06:44.949 24959 25697 I UploaderDiagnostics: [WORKER_STOPPED] [INFO] Background upload worker has finished execution with status: Success {mOutputData=Data {}}

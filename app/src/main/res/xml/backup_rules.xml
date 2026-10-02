@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <exclude domain="database" path="telegram_drive_db" />
+    <exclude domain="database" path="telegram_drive_db-shm" />
+    <exclude domain="database" path="telegram_drive_db-wal" />
+    <exclude domain="file" path="datastore/" />
+</full-backup-content>

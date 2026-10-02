@@ -1,0 +1,6 @@
+{
+  "name": "Telegram Drive Uploader",
+  "description": "Android application for managing and uploading files and videos directly to Telegram destinations with queue management, diagnostics, and smart assistance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

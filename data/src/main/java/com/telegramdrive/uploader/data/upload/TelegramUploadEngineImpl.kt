@@ -1,0 +1,315 @@
+package com.telegramdrive.uploader.data.upload
+
+import android.os.SystemClock
+import androidx.core.net.toUri
+import com.telegramdrive.uploader.data.local.database.UploadDao
+import com.telegramdrive.uploader.data.telegram.client.SendConfirmation
+import com.telegramdrive.uploader.data.telegram.client.TelegramClient
+import com.telegramdrive.uploader.data.telegram.client.TelegramUploadEvent
+import com.telegramdrive.uploader.domain.repository.UploadRepository
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
+import com.telegramdrive.uploader.data.upload.reader.StreamingFileReader
+import com.telegramdrive.uploader.domain.model.TelegramConnectionState
+import com.telegramdrive.uploader.domain.model.UploadProgress
+import com.telegramdrive.uploader.domain.model.UploadTask
+import com.telegramdrive.uploader.domain.upload.SpeedCalculator
+import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
+import com.telegramdrive.uploader.domain.upload.UploadEngineResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class TelegramUploadEngineImpl @Inject constructor(
+    private val streamingFileReader: StreamingFileReader,
+    private val telegramClient: TelegramClient,
+    private val uploadRepository: UploadRepository,
+    private val uploadDao: UploadDao
+) : TelegramUploadEngine {
+
+    companion object {
+        private const val AUTH_WAIT_TIMEOUT_MS = 30_000L
+        private const val CONFIRM_WAIT_TIMEOUT_MS = 60_000L
+    }
+
+    override fun uploadFile(task: UploadTask): Flow<UploadEngineResult> = flow {
+        // Idempotency fast-path: a previous attempt already CONFIRMED delivery (final
+        // message id / link persisted durably). Re-emit Success so the worker completes
+        // the task without touching TDLib again — no duplicate send, no confirmation wait.
+        val persistedState = runCatching { uploadDao.getUploadById(task.id) }.getOrNull()
+        if (persistedState?.finalMessageId != null || persistedState?.messageLink != null) {
+            emit(UploadEngineResult.Success(uploadDurationMs = 0L, messageLink = persistedState.messageLink))
+            return@flow
+        }
+        if (!telegramClient.isConfigured) {
+            emit(UploadEngineResult.Error("Telegram TDLib credentials are not configured", false))
+            return@flow
+        }
+        // Wait (bounded) for the TDLib session to reach AUTHORIZED. Background workers can
+        // be resumed by WorkManager before the client finishes bootstrapping at cold start;
+        // failing instantly on "not authorized yet" would burn a retry attempt on every
+        // queued task at once. Instead wait up to AUTH_WAIT_TIMEOUT_MS, then fail
+        // non-retryable on timeout or a terminal/error state so the loop cannot spin forever.
+        val authState = try {
+            withTimeout(AUTH_WAIT_TIMEOUT_MS) {
+                telegramClient.connectionState.first { state ->
+                    state != TelegramConnectionState.DISCONNECTED &&
+                        state != TelegramConnectionState.CONNECTING
+                }
+            }
+        } catch (e: TimeoutCancellationException) {
+            emit(
+                UploadEngineResult.Error(
+                    "Timed out waiting for Telegram authorization; re-authenticate to continue.",
+                    false
+                )
+            )
+            return@flow
+        }
+        if (authState != TelegramConnectionState.AUTHORIZED) {
+            emit(
+                UploadEngineResult.Error(
+                    "Telegram account is not authorized (state: ${authState}); re-authenticate to continue.",
+                    false
+                )
+            )
+            return@flow
+        }
+        if (task.destinationId == 0L) {
+            emit(UploadEngineResult.Error("A Telegram destination is required", false))
+            return@flow
+        }
+        // Idempotency: a previous attempt already called SendMessage for this task
+        // (send dispatched + provisional id persisted at send time). Resending here
+        // would deliver the video to Telegram TWICE. Instead, await the outstanding
+        // confirmation. The persisted row is the source of truth — the worker's task
+        // snapshot may predate a client-side confirm persist.
+        val provisionalId = persistedState?.provisionalMessageId ?: task.provisionalMessageId
+        if (provisionalId != null) {
+            if (telegramClient.connectionState.value != TelegramConnectionState.AUTHORIZED) {
+                emit(
+                    UploadEngineResult.Error(
+                        "Telegram account is not authorized (state: ${telegramClient.connectionState.value}); re-authenticate to continue.",
+                        false
+                    )
+                )
+                return@flow
+            }
+            val buffered = telegramClient.takeBufferedSendSuccess(provisionalId)
+            if (buffered != null) {
+                persistSendConfirmed(task.id, buffered)
+                emit(UploadEngineResult.Success(uploadDurationMs = 0L, messageLink = buffered.messageLink))
+                return@flow
+            }
+            val confirmed = telegramClient.awaitSendConfirmation(
+                chatId = task.destinationId,
+                oldMessageId = provisionalId,
+                timeoutMs = CONFIRM_WAIT_TIMEOUT_MS
+            )
+            if (confirmed != null) {
+                // Durable bookkeeping BEFORE emitting Success: after this write, any
+                // retry sees a resolved send and can never re-send the same message.
+                persistSendConfirmed(task.id, confirmed)
+                emit(UploadEngineResult.Success(uploadDurationMs = 0L, messageLink = confirmed.messageLink))
+            } else {
+                emit(
+                    UploadEngineResult.Error(
+                        "Message was sent but Telegram confirmation was not observed within timeout. " +
+                            "Verify delivery in Telegram before retrying to avoid a duplicate send.",
+                        false
+                    )
+                )
+            }
+            return@flow
+        }
+
+        val source = task.sourceUri.toUri()
+        val speedCalculator = SpeedCalculator()
+        var stagedFile: File? = null
+        try {
+            // Fast path: a readable file:// source is handed straight to TDLib, skipping a
+            // full read+write staging copy (roughly halves time-to-first-byte for on-disk
+            // files). content:// sources and file:// paths the process cannot read fall back
+            // to staging, so scoped-storage grants keep working via the content resolver.
+            val directPath: String? = if (source.scheme == "file") {
+                source.path?.let { p -> File(p).takeIf { it.isFile && it.canRead() }?.absolutePath }
+            } else {
+                null
+            }
+
+            val localPath: String
+            val totalBytes: Long
+            if (directPath != null) {
+                localPath = directPath
+                totalBytes = File(directPath).length().takeIf { it > 0L } ?: task.fileSize
+            } else {
+                val tmp = File.createTempFile("tdlib-upload-", "-${safeName(task.fileName)}")
+                stagedFile = tmp
+                // copyToFile is a blocking full-file read/write; keep it off the worker's
+                // compute dispatcher so the upload coroutine does not tie up a shared thread.
+                val copiedBytes = withContext(Dispatchers.IO) {
+                    streamingFileReader.copyToFile(source, tmp)
+                }
+                localPath = tmp.absolutePath
+                totalBytes = copiedBytes.takeIf { it > 0L } ?: task.fileSize
+            }
+
+            if (totalBytes <= 0L) {
+                emit(UploadEngineResult.Error("Unable to determine source file size", false))
+                return@flow
+            }
+
+            // Partial-resume checkpoint: seed the display (and the speed baseline)
+            // from the progress persisted before the previous attempt was paused or
+            // retried, so a resumed attempt starts at the last confirmed percentage
+            // instead of flashing 0% until TDLib reports its first UpdateFile tick.
+            // TDLib itself re-reports authoritative remote.uploadedSize on resume;
+            // this checkpoint only closes the gap before that first tick arrives.
+            val checkpointBytes = (persistedState?.uploadedBytes ?: 0L).coerceIn(0L, totalBytes)
+            if (checkpointBytes > 0L) {
+                speedCalculator.update(checkpointBytes) // seeds lastBytes/lastTime at 0 speed
+                emit(progress(checkpointBytes, totalBytes, speedCalculator))
+            } else {
+                emit(progress(0L, totalBytes, speedCalculator))
+            }
+            val uploadStartedAt = SystemClock.elapsedRealtime()
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_STARTED,
+                severity = DiagnosticSeverity.INFO,
+                message = if (directPath != null) {
+                    "Readable file source handed off to TDLib without staging."
+                } else {
+                    "Staged source is ready; handing off to TDLib upload."
+                },
+                uploadId = task.id
+            )
+            telegramClient.uploadLocalDocument(task, localPath).collect { event ->
+                when (event) {
+                    is TelegramUploadEvent.MessageSent -> {
+                        // Persist immediately: if this worker dies before confirmation,
+                        // the retry must await THIS send instead of sending again. Do
+                        // NOT swallow write failures: an unpersisted provisional id
+                        // would let a retry blind-resend and duplicate the message, so
+                        // fail the attempt non-retryably to keep idempotency consistent.
+                        try {
+                            uploadRepository.updateProvisionalMessageId(task.id, event.provisionalMessageId)
+                        } catch (failure: Throwable) {
+                            throw SendBookkeepingException(
+                                "Could not persist the provisional send id; aborting so retries stay idempotent.",
+                                failure
+                            )
+                        }
+                    }
+                    is TelegramUploadEvent.Progress -> {
+                        val uploaded = event.uploadedBytes.coerceIn(0L, totalBytes)
+                        emit(progress(uploaded, totalBytes, speedCalculator))
+                    }
+                    is TelegramUploadEvent.Completed -> emit(
+                        UploadEngineResult.Success(
+                            uploadDurationMs = (SystemClock.elapsedRealtime() - uploadStartedAt).coerceAtLeast(0L),
+                            messageLink = event.messageLink
+                        )
+                    )
+                    is TelegramUploadEvent.Failed -> emit(
+                        UploadEngineResult.Error(event.message, event.retryable)
+                    )
+                }
+            }
+        } catch (bookkeeping: SendBookkeepingException) {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_FAILED,
+                severity = DiagnosticSeverity.ERROR,
+                message = bookkeeping.message ?: "Send bookkeeping persist failed.",
+                uploadId = task.id,
+                exception = bookkeeping
+            )
+            emit(UploadEngineResult.Error(bookkeeping.message ?: "Could not persist send bookkeeping", false))
+        } catch (error: Throwable) {
+            // Surface the real cause at the point it is thrown. Background workers retry
+            // transient failures without logging the reason (see UploadWorker), so without
+            // this the diagnostics export never shows why a retrying task actually failed.
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_FAILED,
+                severity = DiagnosticSeverity.ERROR,
+                message = "Upload engine failed (retryable=${isRetryable(error)}).",
+                uploadId = task.id,
+                errorCode = DiagnosticsManager.mapExceptionToCode(error),
+                exception = error
+            )
+            emit(UploadEngineResult.Error(error.message ?: "TDLib upload failed", isRetryable(error)))
+        } finally {
+            stagedFile?.delete()
+        }
+    }
+
+    override fun cancelActiveUploads() {
+        telegramClient.cancelActiveUploads()
+    }
+
+    private suspend fun persistSendConfirmed(uploadId: String, confirmation: SendConfirmation) {
+        runCatching {
+            uploadDao.markSendConfirmed(uploadId, confirmation.messageId, confirmation.messageLink)
+        }.onFailure { failure ->
+            // Non-fatal: the worker also persists the link on Success, and the retry
+            // path can still resolve via the provisional-id confirmation flow.
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.DATABASE_ERROR,
+                severity = DiagnosticSeverity.WARN,
+                message = "Could not persist send-confirmation bookkeeping for a resolved upload.",
+                uploadId = uploadId,
+                exception = failure
+            )
+        }
+    }
+
+    private fun progress(
+        uploadedBytes: Long,
+        totalBytes: Long,
+        speedCalculator: SpeedCalculator
+    ): UploadEngineResult.Progress {
+        val speed = speedCalculator.update(uploadedBytes)
+        val percentage = (uploadedBytes * 100f / totalBytes).coerceIn(0f, 100f)
+        val eta = if (speed.currentSpeed > 0) {
+            (totalBytes - uploadedBytes) / speed.currentSpeed
+        } else 0L
+        return UploadEngineResult.Progress(
+            UploadProgress(
+                uploadedBytes = uploadedBytes,
+                totalBytes = totalBytes,
+                percentage = percentage,
+                speedBytesPerSecond = speed.currentSpeed,
+                averageSpeedBytesPerSecond = speed.averageSpeed,
+                etaSeconds = eta
+            )
+        )
+    }
+
+    private fun safeName(name: String): String =
+        name.replace(Regex("[^A-Za-z0-9._-]"), "_").take(80).ifBlank { "file" }
+
+    private fun isRetryable(error: Throwable): Boolean =
+        when (error) {
+            is java.io.FileNotFoundException -> false
+            is java.io.IOException -> true
+            is java.net.SocketException -> true
+            is java.net.UnknownHostException -> true
+            is java.util.concurrent.TimeoutException -> true
+            else -> false
+        }
+}
+
+/**
+ * Thrown when the provisional send id cannot be persisted. The send may already be
+ * in flight, so retrying blindly could duplicate the Telegram message — the attempt
+ * must fail non-retryably instead.
+ */
+private class SendBookkeepingException(message: String, cause: Throwable) : RuntimeException(message, cause)

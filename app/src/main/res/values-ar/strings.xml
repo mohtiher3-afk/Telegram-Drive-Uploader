@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">محمل تيليجرام درايف</string>
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_queue">قائمة الرفع</string>
+    <string name="nav_history">السجل</string>
+    <string name="nav_settings">الإعدادات</string>
+    <!--
+      Declared so the accessibility string stays resolvable from the app namespace.
+      :feature owns the real translated plural of the same name and renders it.
+    -->
+    <string name="upload_progress_accessibility">تقدم الرفع: %1$d بالمئة</string>
+</resources>

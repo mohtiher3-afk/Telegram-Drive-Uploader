@@ -1,0 +1,31 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+[*.{java,xml,gradle}]
+indent_style = space
+indent_size = 4
+
+[*.{yml,yaml,json,md}]
+indent_style = space
+indent_size = 2
+
+[*.{sh,bat,ps1}]
+indent_style = space
+indent_size = 4
+
+# Keep Windows-native scripts CRLF to match .gitattributes (eol=crlf)
+[*.{bat,ps1}]
+end_of_line = crlf
+
+[*.md]
+trim_trailing_whitespace = false

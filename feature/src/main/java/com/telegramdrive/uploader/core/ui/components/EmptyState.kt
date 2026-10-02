@@ -1,0 +1,106 @@
+package com.telegramdrive.uploader.core.ui.components
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import com.telegramdrive.uploader.core.ui.components.LottieAnimations
+import com.telegramdrive.uploader.core.ui.components.AnimatedEmptyStateIcon
+import com.telegramdrive.uploader.core.ui.components.LottieAnimation
+
+@Composable
+fun EmptyState(
+    icon: ImageVector,
+    title: String,
+    supportingText: String,
+    modifier: Modifier = Modifier,
+    actionText: String? = null,
+    onActionClick: (() -> Unit)? = null,
+    animation: LottieAnimation = LottieAnimation.None
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .liquidGlassOverlay(
+                shape = MaterialTheme.shapes.medium,
+                accent = DesignTokens.AppColors.onPrimaryContainer
+            ),
+        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.primaryContainer),
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, DesignTokens.AppColors.onSurface.copy(alpha = 0.4f).copy(alpha = 0.72f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(DesignTokens.AppSpacing.large),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            AnimatedEmptyStateIcon(
+                animationType = animation,
+                size = 48.dp,
+                tint = DesignTokens.AppColors.onPrimaryContainer.copy(alpha = 0.72f)
+            )
+
+            Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
+
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                textAlign = TextAlign.Center,
+                color = DesignTokens.AppColors.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.xs))
+
+            Text(
+                text = supportingText,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+            )
+
+            if (actionText != null && onActionClick != null) {
+                Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
+                Button(
+                    onClick = onActionClick,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        // Inverted against the primaryContainer card: a container of
+                        // primaryContainer would sit at 1:1 and disappear. Measured
+                        // 13.4:1 against the card and 11.89:1 for the label.
+                        containerColor = DesignTokens.AppColors.onPrimaryContainer,
+                        contentColor = DesignTokens.AppColors.primaryContainer
+                    )
+                ) {
+                    Text(
+                        text = actionText,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,35 @@
+# Maintenance Index
+
+| Topic | Document |
+|---|---|
+| Maintenance policy | [MAINTENANCE_POLICY.md](MAINTENANCE_POLICY.md) |
+| Official Material 3 modernization | [../design/M3_OFFICIAL_REVIEW.md](../design/M3_OFFICIAL_REVIEW.md), [../design/OFFICIAL_M3_DESIGN_SYSTEM.md](../design/OFFICIAL_M3_DESIGN_SYSTEM.md), [../design/M3_COMPONENT_MAP.md](../design/M3_COMPONENT_MAP.md), [../design/M3_SCREEN_DESIGN_MATRIX.md](../design/M3_SCREEN_DESIGN_MATRIX.md), [../design/M3_ADAPTIVE_UI.md](../design/M3_ADAPTIVE_UI.md), and [../design/M3_EXPRESSIVE_USAGE.md](../design/M3_EXPRESSIVE_USAGE.md) |
+| Bug workflow | [BUG_FIX_WORKFLOW.md](BUG_FIX_WORKFLOW.md) and [BUG_TEMPLATE.md](BUG_TEMPLATE.md) |
+| Regression policy | [REGRESSION_POLICY.md](REGRESSION_POLICY.md) |
+| Dependency policy | [DEPENDENCY_POLICY.md](DEPENDENCY_POLICY.md) |
+| TDLib policy | [TDLIB_UPDATE_POLICY.md](TDLIB_UPDATE_POLICY.md) |
+| Telegram authentication and session lifecycle | [../telegram/AUTHENTICATION_ARCHITECTURE.md](../telegram/AUTHENTICATION_ARCHITECTURE.md), [../telegram/AUTHENTICATION_FLOW.md](../telegram/AUTHENTICATION_FLOW.md), [../telegram/SESSION_LIFECYCLE.md](../telegram/SESSION_LIFECYCLE.md), and [../archive/reports/telegram/FINAL_AUTHENTICATION_REPORT.md](../HISTORICAL_AUDITS.md) |
+| Telegram destination and file routing | [../telegram/DESTINATION_ARCHITECTURE.md](../telegram/DESTINATION_ARCHITECTURE.md), [../telegram/DESTINATION_FLOW.md](../telegram/DESTINATION_FLOW.md), [../telegram/DESTINATION_TEST_MATRIX.md](../telegram/DESTINATION_TEST_MATRIX.md), and [../archive/reports/telegram/FINAL_DESTINATION_REPORT.md](../HISTORICAL_AUDITS.md) |
+| Upload state and queue consistency | [../upload/ACTUAL_UPLOAD_STATE_MACHINE.md](../upload/ACTUAL_UPLOAD_STATE_MACHINE.md), [../upload/QUEUE_CONSISTENCY.md](../upload/QUEUE_CONSISTENCY.md), [../upload/UPLOAD_RECOVERY.md](../upload/UPLOAD_RECOVERY.md), [../upload/UPLOAD_STATE_TESTING.md](../upload/UPLOAD_STATE_TESTING.md), and [../archive/reports/upload/FINAL_UPLOAD_STATE_REPORT.md](../HISTORICAL_AUDITS.md) |
+| End-to-end upload transaction reliability | [../upload/END_TO_END_UPLOAD_FLOW.md](../upload/END_TO_END_UPLOAD_FLOW.md), [../archive/reports/upload/END_TO_END_TRANSACTION_AUDIT.md](../HISTORICAL_AUDITS.md), [../upload/END_TO_END_UPLOAD_TEST_MATRIX.md](../upload/END_TO_END_UPLOAD_TEST_MATRIX.md), and [../archive/reports/upload/FINAL_END_TO_END_UPLOAD_REPORT.md](../HISTORICAL_AUDITS.md) |
+| Application lifecycle and crash recovery | [../archive/reports/lifecycle/LIFECYCLE_INVENTORY.md](../HISTORICAL_AUDITS.md), [../lifecycle/APP_LIFECYCLE.md](../lifecycle/APP_LIFECYCLE.md), [../lifecycle/STATE_RESTORATION_MATRIX.md](../lifecycle/STATE_RESTORATION_MATRIX.md), [../lifecycle/CRASH_RECOVERY.md](../lifecycle/CRASH_RECOVERY.md), [../lifecycle/LIFECYCLE_TEST_MATRIX.md](../lifecycle/LIFECYCLE_TEST_MATRIX.md), and [../archive/reports/lifecycle/FINAL_LIFECYCLE_REPORT.md](../HISTORICAL_AUDITS.md) |
+| Accessibility and adaptive UI | [../archive/reports/accessibility/ACCESSIBILITY_INVENTORY.md](../HISTORICAL_AUDITS.md), [../accessibility/ACCESSIBILITY_GUIDE.md](../accessibility/ACCESSIBILITY_GUIDE.md), [../accessibility/ADAPTIVE_UI_GUIDE.md](../accessibility/ADAPTIVE_UI_GUIDE.md), [../accessibility/ACCESSIBILITY_TEST_MATRIX.md](../accessibility/ACCESSIBILITY_TEST_MATRIX.md), [../accessibility/KNOWN_ACCESSIBILITY_LIMITATIONS.md](../accessibility/KNOWN_ACCESSIBILITY_LIMITATIONS.md), and [../archive/reports/accessibility/FINAL_ACCESSIBILITY_REPORT.md](../HISTORICAL_AUDITS.md) |
+| Internationalization and locale edge cases | [../archive/reports/i18n/LOCALE_INVENTORY.md](../HISTORICAL_AUDITS.md), [../i18n/I18N_GUIDE.md](../i18n/I18N_GUIDE.md), [../i18n/TIMEZONE_POLICY.md](../i18n/TIMEZONE_POLICY.md), [../i18n/I18N_TEST_MATRIX.md](../i18n/I18N_TEST_MATRIX.md), and [../archive/reports/i18n/FINAL_I18N_REPORT.md](../HISTORICAL_AUDITS.md) |
+| Error handling and failure recovery | [../archive/reports/errors/ERROR_INVENTORY.md](../HISTORICAL_AUDITS.md), [../errors/ERROR_FLOW_ARCHITECTURE.md](../errors/ERROR_FLOW_ARCHITECTURE.md), [../errors/ERROR_TEST_MATRIX.md](../errors/ERROR_TEST_MATRIX.md), and [../archive/reports/errors/FINAL_ERROR_HANDLING_REPORT.md](../HISTORICAL_AUDITS.md) |
+| Database policy | [DATABASE_POLICY.md](DATABASE_POLICY.md) |
+| Security policy | [../security/ONGOING_SECURITY_POLICY.md](../security/ONGOING_SECURITY_POLICY.md) |
+| Pull requests | [PULL_REQUEST_POLICY.md](PULL_REQUEST_POLICY.md) |
+| Code review | [CODE_REVIEW_CHECKLIST.md](CODE_REVIEW_CHECKLIST.md) |
+| Hotfix | [HOTFIX_PROCEDURE.md](HOTFIX_PROCEDURE.md) |
+| Rollback | [ROLLBACK_PLAN.md](ROLLBACK_PLAN.md) |
+| Incidents | [INCIDENT_RESPONSE.md](INCIDENT_RESPONSE.md) |
+| Performance baseline | [../performance/PRODUCTION_BASELINE.md](../performance/PRODUCTION_BASELINE.md) |
+| Monitoring | [POST_RELEASE_MONITORING.md](POST_RELEASE_MONITORING.md) |
+| Support | [SUPPORT_GUIDE.md](SUPPORT_GUIDE.md) |
+| Diagnostics | [DIAGNOSTIC_GUIDE.md](DIAGNOSTIC_GUIDE.md) |
+| Technical debt | [TECHNICAL_DEBT.md](TECHNICAL_DEBT.md) |
+| Automated self-check | [FINAL_SELF_CHECK_REPORT.md](../HISTORICAL_AUDITS.md) |
+| Pre-push checklist | [PRE_PUSH_CHECKLIST.md](PRE_PUSH_CHECKLIST.md) |
+| Change risk matrix | [CHANGE_RISK_MATRIX.md](CHANGE_RISK_MATRIX.md) |
+| Verification command | `../../scripts/verify-project.sh` |
+| Repository cleanup | [../maintenance/README.md](../maintenance/README.md), inventory, duplicate audit, cleanup report, and certification |
