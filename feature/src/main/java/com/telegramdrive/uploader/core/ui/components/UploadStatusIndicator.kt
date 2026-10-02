@@ -66,6 +66,7 @@ fun GlassProgressIndicator(
     showGlow: Boolean = true,
     trackHeight: Dp = 6.dp
 ) {
+    val resolvedStatusColor = if (resolvedStatusColor == Color.Unspecified) MaterialTheme.colorScheme.primary else resolvedStatusColor
     val infiniteTransition = rememberInfiniteTransition(label = "progressPulse")
     val pulseAlpha by infiniteTransition.animateFloat(
             initialValue = 0.3f,
@@ -95,7 +96,7 @@ fun GlassProgressIndicator(
                 .fillMaxSize()
                 .liquidGlassOverlay(
                     shape = RoundedCornerShape(trackHeight / 2),
-                    accent = statusColor,
+                    accent = resolvedStatusColor,
                     emphasis = LiquidGlassEmphasis.Subtle
                 )
         )
@@ -109,13 +110,13 @@ fun GlassProgressIndicator(
                     .clip(RoundedCornerShape(trackHeight / 2))
                     .liquidGlassOverlay(
                         shape = RoundedCornerShape(trackHeight / 2),
-                        accent = statusColor,
+                        accent = resolvedStatusColor,
                         emphasis = LiquidGlassEmphasis.FeatureLens,
                         animate = true
                     )
                     .glowSignalRim(
                         shape = RoundedCornerShape(trackHeight / 2),
-                        accent = statusColor,
+                        accent = resolvedStatusColor,
                         enabled = showGlow
                     )
             )
