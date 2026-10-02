@@ -1,0 +1,108 @@
+# .clinerules
+
+Project-specific operating knowledge for AI coding agents. `AGENTS.md` holds the
+standing policy; this file holds the facts that are easy to get wrong and cost
+real time to rediscover.
+
+## This is an Android app, not a bot
+
+Despite the repository name, this is a **native Android application**: Kotlin,
+Jetpack Compose, Room, WorkManager, TDLib via JNI. There is no `bot.py`, no
+`requirements.txt`, and no Google Drive integration. Do not scaffold Python.
+
+## Verify on Windows
+
+`verify-project.sh` needs Git Bash, which is often absent. Use the PowerShell port:
+
+```powershell
+$env:ANDROID_HOME="$env:LOCALAPPDATA\Android\Sdk"
+.\scripts\verify-project.ps1 -Mode QUICK
+```
+
+It clears every module's `build/test-results` first, so the run always reports
+outcomes it produced. Do not "optimise" that away.
+
+## Build output location
+
+On Windows the `app` module redirects `buildDir` to
+`%TEMP%\tdg-build\app\build` as a documented OneDrive reparse-point workaround.
+The debug APK is **not** under `app/build`:
+
+```
+%TEMP%\tdg-build\app\build\outputs\apk\debug\app-debug.apk
+```
+
+The same redirect is expected for `android-release.yml` and is documented in
+`docs/architecture/adr-001-tdlib-binaries.md`.
+
+## Coverage
+
+Kover is applied to `:feature` only. `:data` deliberately has no coverage plugin
+and is **unmeasured**, not zero. Do not quote a number for `:data`.
+
+```powershell
+.\gradlew.bat :feature:koverHtmlReport :feature:koverXmlReport --rerun-tasks
+```
+
+`--rerun-tasks` is required. Without it Gradle reports `FROM-CACHE` and hands
+back a stale artifact. Measured `:feature`: **38.6% line** (2067/5349),
+**25.8% branch**.
+
+## Colour tokens
+
+`AppColors` delegates to `LightColorScheme` in `Theme.kt`; it does not restate
+hex values. Read the role before using it:
+
+- `onPrimary` is `Color.White` in the light scheme. It means "content placed on
+  top of `primary`", and it is currently **white on a pale container**, which is
+  why NavigationBar selection and `EmptyState` buttons look invisible. Prefer
+  `onPrimaryContainer` (11.9:1 on `primaryContainer`) or `onSurface` (16.6:1).
+- `secondaryContainerLow/High/Highest` were renamed to the real Material roles
+  `surfaceContainerLow/High/Highest`.
+
+Do not reintroduce literal colours into `AppColors`; that is what allowed the
+palette to drift out of sync with the theme in the first place.
+
+## Native binaries
+
+69.4 MB of TDLib and OpenSSL `.so` files are committed on purpose, for bounded
+offline reproducible builds. `AGENTS.md` forbids committing build products of
+*this* project; third-party prebuilt libraries are the documented exception.
+
+## Windows PowerShell traps
+
+These have all caused false conclusions in this repository:
+
+- `@{}` hashtables, `Group-Object`, `-eq`, `-match` and `-notmatch` are **case
+  insensitive**. Treating `flow.Flow` and `flow.flow` as duplicates deleted a
+  required import and broke `:data:compileDebugKotlin`. Use
+  `StringComparer.Ordinal` or `-ceq` / `-clike` / `-cmatch`.
+- `Remove-Item` on a path relative to the shell can resolve against
+  `[Environment]::CurrentDirectory`, which PowerShell does not update when you
+  `cd`. Use absolute paths.
+- `Select-Object -Last N` at the end of a pipeline buffers the whole stream, so a
+  long build shows nothing until it finishes. Write to a log file and read that.
+
+## Reading results honestly
+
+- A task reported `UP-TO-DATE` or `FROM-CACHE` is **not** evidence. Check the
+  artifact timestamp.
+- Gradle reads cached test outcomes through `SerializableTestResult` before
+  running anything. A corrupt cache there fails with
+  `IllegalArgumentException: Illegal Capacity: <negative>` and looks exactly like
+  a real failure. It is not caused by your change.
+- A test count read from files that predate your change proves nothing about
+  today.
+
+## Device work
+
+```powershell
+adb devices                       # list serials
+$env:ANDROID_SERIAL='<serial>'    # always target explicitly when more than one device is attached
+.\gradlew.bat :app:installDebug
+```
+
+Confirm the ABI matches: this APK ships `arm64-v8a`, `armeabi-v7a`, `x86_64`.
+TDLib loads successfully on a physical device; the bundled x86_64 AVD may not
+boot on a machine without GPU/GL support, which is an emulator limitation and not
+an application fault.
