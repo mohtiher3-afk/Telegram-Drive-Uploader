@@ -94,14 +94,15 @@ object AppType {
 }
 
 /**
- * Unified color palette. All surfaces, text, and accents must reference these
- * instead of hardcoding hex values or relying on MaterialTheme.colorScheme.
+ * Compatibility and status roles.
+ *
+ * Composables should use MaterialTheme.colorScheme for Material roles. These
+ * aliases remain only for compatibility and for non-Material status/decorative
+ * roles that need a shared token surface.
  */
 object AppColors {
-    // Every role Material defines delegates to the light scheme in Theme.kt.
-    // docs/design/DESIGN_SYSTEM.md names the theme's semantic colour scheme as the
-    // system of record, so restating hex values here is exactly what let this flat
-    // palette drift away from the theme. Delegating makes that drift impossible.
+    // Material roles are kept as compatibility aliases only. New UI should use
+    // MaterialTheme.colorScheme directly so light/dark themes remain truthful.
     val primaryContainer = LightColorScheme.primaryContainer
     val secondaryContainer = LightColorScheme.secondaryContainer
     val surface = LightColorScheme.surface
