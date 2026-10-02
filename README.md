@@ -14,7 +14,7 @@ Telegram Drive Uploader provides a high-reliability, offline-first interface for
 
 Telegram Drive Uploader uses a **Mission Control** visual language: a dark control-room surface, luminous orbital accents, and a high-visibility upload action. The identity reinforces upload state and destination context while preserving Material 3 semantic roles and adaptive Compose layouts.
 
-The current mark is the **Mission Control orbital upload logo**: a Lime upward arrow and tray enclosed by a Violet orbital form with Mint highlights. The canonical asset is [`feature/src/main/res/drawable-nodpi/mission_control_logo.png`](feature/src/main/res/drawable-nodpi/mission_control_logo.png). It is used by the launcher foreground, first-run onboarding hero, opening animation, and repository preview at [`design/app_icon_concept.png`](design/app_icon_concept.png).
+The current mark is the **Mission Control orbital upload logo**: a flat VectorDrawable with an Electric Lime upload arrow/tray, Orbit Violet ring, and Signal Cyan nodes. The live Android asset is [`feature/src/main/res/drawable/mission_control_mark.xml`](feature/src/main/res/drawable/mission_control_mark.xml). It is used by the launcher foreground, first-run onboarding, and splash experience; the repository preview remains [`design/app_icon_concept.png`](design/app_icon_concept.png).
 
 ### Design Previews
 The following images show the current Material 3 Expressive direction, the Mission Control visual system, and the destination-selection and video-preparation flow.

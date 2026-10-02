@@ -1,5 +1,7 @@
 package com.telegramdrive.uploader.core.navigation
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -102,9 +104,9 @@ fun AppNavigation(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(DesignTokens.spacingM)
-            .background(DesignTokens.primaryContainer)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         if (isExpanded && showBottomBar) {
             NavigationRail {
@@ -150,10 +152,10 @@ fun AppNavigation(
                                 .fillMaxWidth()
                                 .liquidGlassOverlay(
                                     shape = MaterialTheme.shapes.extraLarge,
-                                    accent = DesignTokens.AppColors.onPrimary
+                                    accent = MaterialTheme.colorScheme.primary
                                 ),
                             shape = MaterialTheme.shapes.extraLarge,
-                            color = DesignTokens.AppColors.secondaryContainer,
+                            color = MaterialTheme.colorScheme.surfaceContainer,
                             tonalElevation = 6.dp,
                             shadowElevation = 8.dp
                         ) {
@@ -186,11 +188,11 @@ fun AppNavigation(
                                         },
                                         label = { Text(stringResource(screen.titleRes)) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = DesignTokens.AppColors.onPrimary,
-                                            selectedTextColor = DesignTokens.AppColors.onPrimary,
-                                            indicatorColor = DesignTokens.AppColors.onPrimary,
-                                            unselectedIconColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
-                                            unselectedTextColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                            selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                            indicatorColor = MaterialTheme.colorScheme.onPrimary,
+                                            unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                            unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                         ),
                                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                                     )

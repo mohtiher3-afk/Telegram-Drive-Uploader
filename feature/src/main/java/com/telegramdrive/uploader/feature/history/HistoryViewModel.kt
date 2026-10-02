@@ -84,7 +84,7 @@ class HistoryViewModel @Inject constructor(
     fun setSort(value: HistorySort) { sort.value = value }
 
     fun deleteUpload(id: String) {
-        viewModelScope.launch { uploadRepository.deleteUploadById(id) }
+        viewModelScope.launch { uploadRepository.deleteCompletedUploadById(id) }
     }
 
     fun clearHistory() {

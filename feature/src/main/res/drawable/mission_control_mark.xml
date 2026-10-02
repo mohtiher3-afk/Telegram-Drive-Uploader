@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Primary violet orbital ring -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M54,13 C31.36,13 13,31.36 13,54 C13,76.64 31.36,95 54,95 C76.64,95 95,76.64 95,54 C95,31.36 76.64,13 54,13 Z"
+        android:strokeColor="#7C3AED"
+        android:strokeWidth="4.5"
+        android:strokeAlpha="0.9" />
+    <!-- Secondary tilted orbit -->
+    <group
+        android:rotation="65"
+        android:pivotX="54"
+        android:pivotY="54">
+        <path
+            android:fillColor="@android:color/transparent"
+            android:pathData="M54,20 C36.33,20 22,35.22 22,54 C22,72.78 36.33,88 54,88 C71.67,88 86,72.78 86,54 C86,35.22 71.67,20 54,20 Z"
+            android:strokeColor="#22D3EE"
+            android:strokeWidth="2.5"
+            android:strokeAlpha="0.42" />
+    </group>
+    <!-- Lime upload arrow -->
+    <path
+        android:fillColor="#A3E635"
+        android:pathData="M49,62 L49,43 L41,43 L54,29 L67,43 L59,43 L59,62 Z" />
+    <!-- Upload tray -->
+    <path
+        android:fillColor="#A3E635"
+        android:pathData="M27,65 L37,65 L37,73 L71,73 L71,65 L81,65 L81,82 C81,84.76 78.76,87 76,87 L32,87 C29.24,87 27,84.76 27,82 Z" />
+    <!-- Signal node -->
+    <path
+        android:fillColor="#22D3EE"
+        android:pathData="M84,18 L89,23 L84,28 L79,23 Z" />
+    <!-- Small violet orbit node -->
+    <path
+        android:fillColor="#7C3AED"
+        android:pathData="M21,50 L24,53 L21,56 L18,53 Z" />
+</vector>

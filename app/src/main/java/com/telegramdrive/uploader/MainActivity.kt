@@ -18,7 +18,6 @@ import com.telegramdrive.uploader.core.navigation.AppNavigation
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,8 +33,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val themePreference by settingsDataStore.themePreference.collectAsStateWithLifecycle(initialValue = "System")
-            val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Seafoam")
-            val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "69D6B5")
+            val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Lime")
+            val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "A3E635")
             val darkTheme = when (themePreference) {
                 "Dark" -> true
                 "Light" -> false
@@ -55,7 +54,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = DesignTokens.AppColors.primaryContainer
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavigation(settingsDataStore)
                 }

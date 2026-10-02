@@ -87,19 +87,19 @@ fun OnboardingScreen(
                 title = stringResource(R.string.onboarding_page_upload_title),
                 description = stringResource(R.string.onboarding_page_upload_description),
                 icon = Icons.Default.CloudUpload,
-                accent = DesignTokens.AppColors.onPrimaryContainer
+                accent = MaterialTheme.colorScheme.primaryContainer
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_schedule_title),
                 description = stringResource(R.string.onboarding_page_schedule_description),
                 icon = Icons.Default.Schedule,
-                accent = DesignTokens.AppColors.secondaryContainer
+                accent = MaterialTheme.colorScheme.secondaryContainer
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_private_title),
                 description = stringResource(R.string.onboarding_page_private_description),
                 icon = Icons.Default.Security,
-                accent = DesignTokens.AppColors.secondaryContainer
+                accent = MaterialTheme.colorScheme.secondaryContainer
             )
         )
 
@@ -130,7 +130,7 @@ fun OnboardingScreen(
         }
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = DesignTokens.AppColors.primaryContainer) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -160,7 +160,7 @@ fun OnboardingScreen(
                     .size(176.dp)
                     .liquidGlassOverlay(
                         shape = MaterialTheme.shapes.extraLarge,
-                        accent = DesignTokens.AppColors.onPrimary
+                        accent = MaterialTheme.colorScheme.onPrimary
                     ),
                 shape = MaterialTheme.shapes.extraLarge,
                 color = pages[page].accent,
@@ -169,7 +169,7 @@ fun OnboardingScreen(
                 Box(contentAlignment = Alignment.Center) {
                     if (page == 0) {
                         androidx.compose.foundation.Image(
-                            painter = painterResource(R.drawable.mission_control_logo),
+                            painter = painterResource(R.drawable.mission_control_mark),
                             contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_drive),
                             modifier = Modifier
                                 .size(128.dp)
@@ -204,14 +204,14 @@ fun OnboardingScreen(
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.ExtraBold,
                         textAlign = TextAlign.Center,
-                        color = DesignTokens.AppColors.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = pages[targetPage].description,
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -227,7 +227,7 @@ fun OnboardingScreen(
                         label = "onboarding_dot_width_$index"
                     )
                     val dotColor by animateColorAsState(
-                        targetValue = if (active) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSurface.copy(alpha = 0.4f),
+                        targetValue = if (active) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                         animationSpec = AppMotion.shortTween(motionEnabled),
                         label = "onboarding_dot_color_$index"
                     )

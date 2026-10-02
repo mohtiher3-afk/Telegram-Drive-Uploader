@@ -264,7 +264,7 @@
     <string name="clear_selection">مسح التحديد</string>
     <string name="remove_selected">إزالة المحدد</string>
     <string name="new_upload">رفع جديد</string>
-    <string name="select_files_from_telegram">اختر ملفات من تيليجرام</string>
+    <string name="select_files_from_telegram">اختر الملفات من جهازك</string>
     <string name="select">تحديد</string>
     <string name="upload_speed_desc">سرعة الرفع</string>
     <string name="time_remaining_desc">الوقت المتبقي</string>

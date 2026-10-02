@@ -133,6 +133,24 @@ class UploadDaoTest {
     }
 
     @Test
+    fun deleteCompletedUploadById_doesNotDeleteActiveUpload() = runBlocking {
+        uploadDao.insertUploads(
+            listOf(
+                createTestUpload("history_active", "UPLOADING"),
+                createTestUpload("history_done", "COMPLETED")
+            )
+        )
+
+        val activeDeleted = uploadDao.deleteCompletedUploadById("history_active")
+        val completedDeleted = uploadDao.deleteCompletedUploadById("history_done")
+
+        assertEquals(0, activeDeleted)
+        assertEquals(1, completedDeleted)
+        assertNotNull(uploadDao.getUploadById("history_active"))
+        assertNull(uploadDao.getUploadById("history_done"))
+    }
+
+    @Test
     fun clearAllUploads() = runBlocking {
         val upload1 = createTestUpload("upload_4", "QUEUED")
         val upload2 = createTestUpload("upload_5", "COMPLETED")

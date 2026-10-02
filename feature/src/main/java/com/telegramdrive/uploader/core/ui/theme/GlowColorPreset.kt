@@ -14,8 +14,8 @@ enum class GlowColorPreset(
 ) {
     SEAFOAM(
         storageValue = "Seafoam",
-        dark = GlowPrimaryColors(Color(0xFFFFB1D2), Color(0xFF5D0031), Color(0xFF821A4D), Color(0xFFFFD9E7)),
-        light = GlowPrimaryColors(Color(0xFFB02772), Color.White, Color(0xFFFFD9E7), Color(0xFF3E0024))
+        dark = GlowPrimaryColors(Color(0xFF5EEAD4), Color(0xFF002C27), Color(0xFF005A50), Color(0xFFB8FFF4)),
+        light = GlowPrimaryColors(Color(0xFF00796B), Color.White, Color(0xFFB2DFDB), Color(0xFF00332D))
     ),
     ORCHID(
         storageValue = "Orchid",
@@ -65,13 +65,13 @@ enum class GlowColorPreset(
 
     companion object {
         fun fromStorage(value: String?): GlowColorPreset =
-            entries.firstOrNull { it.storageValue == value } ?: SEAFOAM
+            entries.firstOrNull { it.storageValue == value } ?: LIME
     }
 }
 
 /** Storage-safe hex parsing and primary-role derivation for a user-supplied Glow color. */
 object GlowColorCodec {
-    const val DEFAULT_HEX = "E1458C"
+    const val DEFAULT_HEX = "A3E635"
 
     fun normalizeHex(value: String?): String {
         val normalized = value.orEmpty().trim().removePrefix("#")

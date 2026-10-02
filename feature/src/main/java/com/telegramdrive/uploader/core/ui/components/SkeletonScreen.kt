@@ -76,7 +76,7 @@ fun SkeletonScreen(
                     .height(92.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = DesignTokens.AppColors.secondaryContainer
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
@@ -90,8 +90,8 @@ fun SkeletonScreen(
                         shimmerProgress = shimmerProgress,
                         shimmerWidth = shimmerWidth,
                         startX = startX,
-                        baseColor = DesignTokens.AppColors.secondaryContainer,
-                        highlightColor = DesignTokens.AppColors.surface,
+                        baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                        highlightColor = MaterialTheme.colorScheme.surface,
                         motionEnabled = motionEnabled
                     )
                     
@@ -111,8 +111,8 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = DesignTokens.AppColors.secondaryContainer,
-                            highlightColor = DesignTokens.AppColors.surface,
+                            baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                            highlightColor = MaterialTheme.colorScheme.surface,
                             motionEnabled = motionEnabled
                         )
                         
@@ -125,8 +125,8 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = DesignTokens.AppColors.secondaryContainer,
-                            highlightColor = DesignTokens.AppColors.surface,
+                            baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                            highlightColor = MaterialTheme.colorScheme.surface,
                             motionEnabled = motionEnabled
                         )
                         
@@ -139,8 +139,8 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = DesignTokens.AppColors.secondaryContainer,
-                            highlightColor = DesignTokens.AppColors.surface,
+                            baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                            highlightColor = MaterialTheme.colorScheme.surface,
                             motionEnabled = motionEnabled
                         )
                     }
@@ -155,7 +155,7 @@ fun SkeletonScreen(
                     .height(92.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = DesignTokens.AppColors.secondaryContainer
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
@@ -169,8 +169,8 @@ fun SkeletonScreen(
                         shimmerProgress = shimmerProgress,
                         shimmerWidth = shimmerWidth,
                         startX = startX,
-                        baseColor = DesignTokens.AppColors.secondaryContainer,
-                        highlightColor = DesignTokens.AppColors.surface,
+                        baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                        highlightColor = MaterialTheme.colorScheme.surface,
                         motionEnabled = motionEnabled
                     )
                     
@@ -189,8 +189,8 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = DesignTokens.AppColors.secondaryContainer,
-                            highlightColor = DesignTokens.AppColors.surface,
+                            baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                            highlightColor = MaterialTheme.colorScheme.surface,
                             motionEnabled = motionEnabled
                         )
                         
@@ -206,8 +206,8 @@ fun SkeletonScreen(
                                 shimmerProgress = shimmerProgress,
                                 shimmerWidth = shimmerWidth,
                                 startX = startX,
-                                baseColor = DesignTokens.AppColors.secondaryContainer,
-                                highlightColor = DesignTokens.AppColors.surface,
+                                baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                                highlightColor = MaterialTheme.colorScheme.surface,
                                 motionEnabled = motionEnabled
                             )
                             
@@ -219,8 +219,8 @@ fun SkeletonScreen(
                                 shimmerProgress = shimmerProgress,
                                 shimmerWidth = shimmerWidth,
                                 startX = startX,
-                                baseColor = DesignTokens.AppColors.secondaryContainer,
-                                highlightColor = DesignTokens.AppColors.surface,
+                                baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                                highlightColor = MaterialTheme.colorScheme.surface,
                                 motionEnabled = motionEnabled
                             )
                         }
@@ -243,8 +243,8 @@ fun SkeletonScreen(
                     shimmerProgress = shimmerProgress,
                     shimmerWidth = shimmerWidth,
                     startX = startX,
-                    baseColor = DesignTokens.AppColors.secondaryContainer,
-                    highlightColor = DesignTokens.AppColors.surface,
+                    baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                    highlightColor = MaterialTheme.colorScheme.surface,
                     motionEnabled = motionEnabled
                 )
                 SkeletonPlaceholder(
@@ -255,8 +255,8 @@ fun SkeletonScreen(
                     shimmerProgress = shimmerProgress,
                     shimmerWidth = shimmerWidth,
                     startX = startX,
-                    baseColor = DesignTokens.AppColors.secondaryContainer,
-                    highlightColor = DesignTokens.AppColors.surface,
+                    baseColor = MaterialTheme.colorScheme.secondaryContainer,
+                    highlightColor = MaterialTheme.colorScheme.surface,
                     motionEnabled = motionEnabled
                 )
             }
@@ -274,23 +274,25 @@ fun SkeletonPlaceholder(
     shimmerProgress: Float,
     shimmerWidth: Float,
     startX: Float,
-    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.secondaryContainer,
-    highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
+    baseColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
+    highlightColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
     motionEnabled: Boolean = true
 ) {
+    val resolvedBaseColor = if (baseColor == Color.Unspecified) MaterialTheme.colorScheme.surfaceContainer else baseColor
+    val resolvedHighlightColor = if (highlightColor == Color.Unspecified) MaterialTheme.colorScheme.surface else highlightColor
     Box(
         modifier = modifier
             .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
-            .background(baseColor)
+            .background(resolvedBaseColor)
     ) {
         if (motionEnabled) {
             androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                 drawRect(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            baseColor,
-                            highlightColor.copy(alpha = 0.4f),
-                            baseColor
+                            resolvedBaseColor,
+                            resolvedHighlightColor.copy(alpha = 0.4f),
+                            resolvedBaseColor
                         ),
                         start = androidx.compose.ui.geometry.Offset(startX, 0f),
                         end = androidx.compose.ui.geometry.Offset(startX + shimmerWidth, size.height),

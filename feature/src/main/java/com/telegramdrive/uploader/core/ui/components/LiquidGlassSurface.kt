@@ -71,15 +71,15 @@ enum class LiquidGlassEmphasis(
 @Composable
 fun Modifier.liquidGlassReflection(
     shape: Shape = RoundedCornerShape(16.dp),
-    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = Color.Unspecified,
     intensity: Float = 1.0f
-): Modifier = composed {
+ ): Modifier = composed {
+    val resolvedAccent = if (accent == Color.Unspecified) MaterialTheme.colorScheme.primary else accent
     val density = androidx.compose.ui.platform.LocalDensity.current
     val progress by remember { mutableFloatStateOf(0f) }
     val isPressed = remember { mutableStateOf(false) }
     
     Modifier
-        .fillMaxSize()
         .clip(shape)
         .drawWithContent {
             drawContent()
@@ -93,9 +93,9 @@ fun Modifier.liquidGlassReflection(
                     brush = Brush.linearGradient(
                         colors = listOf(
                             Color.Transparent,
-                            accent.copy(alpha = 0.08f * intensity),
+                            resolvedAccent.copy(alpha = 0.08f * intensity),
                             Color.White.copy(alpha = 0.12f * intensity),
-                            accent.copy(alpha = 0.08f * intensity),
+                            resolvedAccent.copy(alpha = 0.08f * intensity),
                             Color.Transparent
                         ),
                         start = Offset(sheenX - sheenWidth, -size.height),
@@ -124,13 +124,13 @@ fun Modifier.liquidGlassReflection(
 @Composable
 fun Modifier.liquidGlassOverlay(
     shape: Shape = RoundedCornerShape(16.dp),
-    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = Color.Unspecified,
     emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational,
     animate: Boolean = true
 ): Modifier = composed {
     val density = androidx.compose.ui.platform.LocalDensity.current
     val emphasisValue = emphasis
-    val accentColor = accent
+    val accentColor = if (accent == Color.Unspecified) MaterialTheme.colorScheme.primary else accent
     
     // Animate emphasis changes for smooth transitions
     val animatedBorderAlpha by animateFloatAsState(
@@ -150,7 +150,7 @@ fun Modifier.liquidGlassOverlay(
     )
     
     // Dark theme detection for adaptive colors
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = MaterialTheme.colorScheme.primaryContainer.luminance() < 0.5f
     
     this.then(
         Modifier
@@ -168,7 +168,7 @@ fun Modifier.liquidGlassOverlay(
                             Color.White.copy(alpha = animatedReflectionAlpha * 0.3f)
                             else Color.White.copy(alpha = animatedReflectionAlpha * 0.15f),
                         // Main surface - frosted glass
-                        DesignTokens.AppColors.surface.copy(alpha = 0.75f),
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
                         // Bottom shadow
                         if (isDark)
                             Color.Black.copy(alpha = animatedAmbientAlpha * 0.4f)
@@ -199,7 +199,6 @@ fun Modifier.liquidGlassOverlay(
             // Ambient glow for elevated surfaces
             .then(if (emphasisValue.elevation > 2) {
                 Modifier
-                    .fillMaxSize()
                     .clip(shape)
                     .background(
                         Brush.radialGradient(
@@ -225,10 +224,11 @@ fun Modifier.liquidGlassOverlay(
 @Composable
 fun Modifier.glowSignalRim(
     shape: Shape = RoundedCornerShape(28.dp),
-    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = Color.Unspecified,
     enabled: Boolean = true,
     pulseSpeed: Float = 1.0f
 ): Modifier = composed {
+    val resolvedAccent = if (accent == Color.Unspecified) MaterialTheme.colorScheme.primary else accent
     val infiniteTransition = rememberInfiniteTransition(label = "glowSignalRim")
     val pulseAlpha by infiniteTransition.animateFloat(
         initialValue = 0.3f,
@@ -243,22 +243,21 @@ fun Modifier.glowSignalRim(
         label = "glowPulseAlpha"
     )
     
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = MaterialTheme.colorScheme.primaryContainer.luminance() < 0.5f
     
     if (!enabled) return@composed this
     
     this.then(
         Modifier
-            .fillMaxSize()
             .clip(shape)
             .border(
                 width = (2f * androidx.compose.ui.platform.LocalDensity.current.density).dp,
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        accent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f)),
+                        resolvedAccent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f)),
                         if (isDark)
-                            DesignTokens.AppColors.onSecondary.copy(alpha = (pulseAlpha * 0.4f).coerceIn(0.1f, 0.5f))
-                            else DesignTokens.AppColors.onSecondary.copy(alpha = (pulseAlpha * 0.3f).coerceIn(0.1f, 0.4f)),
+                            MaterialTheme.colorScheme.onSecondary.copy(alpha = (pulseAlpha * 0.4f).coerceIn(0.1f, 0.5f))
+                            else MaterialTheme.colorScheme.onSecondary.copy(alpha = (pulseAlpha * 0.3f).coerceIn(0.1f, 0.4f)),
                         accent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f))
                     ),
                     start = Offset.Zero,
@@ -375,7 +374,7 @@ fun GlassCard(
     emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = MaterialTheme.colorScheme.primaryContainer.luminance() < 0.5f
     
     Surface(
         modifier = modifier
@@ -384,7 +383,7 @@ fun GlassCard(
             .shadow(emphasis.elevation.dp, shape = shape),
         shape = shape,
         color = Color.Transparent,
-        contentColor = DesignTokens.AppColors.onSurface
+        contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Box(
             modifier = Modifier
@@ -403,10 +402,12 @@ fun GlassCard(
 fun ShimmerPlaceholder(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(12.dp),
-    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.secondaryContainer,
-    highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
+    baseColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
+    highlightColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
     animationDuration: Int = 1500
 ) {
+    val resolvedBaseColor = if (baseColor == Color.Unspecified) MaterialTheme.colorScheme.surfaceContainer else baseColor
+    val resolvedHighlightColor = if (highlightColor == Color.Unspecified) MaterialTheme.colorScheme.surface else highlightColor
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
     val translateX by infiniteTransition.animateFloat(
         initialValue = -1f,
@@ -426,7 +427,7 @@ fun ShimmerPlaceholder(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(baseColor)
+            .background(resolvedBaseColor)
     ) {
         androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
             val shimmerWidth = size.width * 0.6f
@@ -435,9 +436,9 @@ fun ShimmerPlaceholder(
             drawRect(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        baseColor,
-                        highlightColor.copy(alpha = 0.4f),
-                        baseColor
+                        resolvedBaseColor,
+                        resolvedHighlightColor.copy(alpha = 0.4f),
+                        resolvedBaseColor
                     ),
                     start = Offset(startX, 0f),
                     end = Offset(startX + shimmerWidth, size.height),

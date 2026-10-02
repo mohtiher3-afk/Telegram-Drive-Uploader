@@ -83,9 +83,9 @@ fun HomeScreen(
     val authorized = uiState.telegramConnectionState == TelegramConnectionState.AUTHORIZED
     val connectionAccent by animateColorAsState(
         targetValue = if (authorized) {
-            DesignTokens.AppColors.onPrimary
+            MaterialTheme.colorScheme.onPrimary
         } else {
-            DesignTokens.AppColors.onSecondary
+            MaterialTheme.colorScheme.onSecondary
         },
         animationSpec = AppMotion.shortTween(motionEnabled),
         label = "connection_accent"
@@ -102,7 +102,7 @@ fun HomeScreen(
     )
 
     Scaffold(
-        containerColor = DesignTokens.AppColors.primaryContainer,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -114,7 +114,7 @@ fun HomeScreen(
                         },
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = DesignTokens.AppColors.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 },
                 actions = {
@@ -130,8 +130,8 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
-                    titleContentColor = DesignTokens.AppColors.onPrimary,
-                    actionIconContentColor = DesignTokens.AppColors.onPrimary
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }
@@ -139,7 +139,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DesignTokens.AppColors.primaryContainer)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -163,7 +163,7 @@ fun HomeScreen(
                 item {
                     UploadFeatureCard(
                         onSelectVideos = {
-                            pickerLauncher.launch(arrayOf("*/*"))
+                            pickerLauncher.launch(arrayOf("video/*"))
                         },
                         modifier = Modifier
                             .animateContentSize(animationSpec = AppMotion.shortTween(motionEnabled))
@@ -175,7 +175,7 @@ fun HomeScreen(
                         text = stringResource(R.string.home_upload_snapshot),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold,
-                        color = DesignTokens.AppColors.onSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
                     GlowBentoGrid(
@@ -215,7 +215,7 @@ private fun TelegramConnectionCard(
     modifier: Modifier = Modifier
 ) {
     val tgAuthorized = telegramState == TelegramConnectionState.AUTHORIZED
-    val accent = if (tgAuthorized) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSecondary
+    val accent = if (tgAuthorized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
 
     GlassCard(
         modifier = modifier
@@ -251,7 +251,7 @@ private fun TelegramConnectionCard(
                     text = stringResource(R.string.telegram_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = DesignTokens.AppColors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = if (tgAuthorized) {
@@ -260,7 +260,7 @@ private fun TelegramConnectionCard(
                         stringResource(R.string.telegram_not_connected)
                     },
                     style = MaterialTheme.typography.bodyMedium,
-                    color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
 
@@ -276,16 +276,27 @@ private fun TelegramConnectionCard(
                     Text(stringResource(R.string.connect))
                 }
             } else {
-                IconButton(
-                    onClick = { /* Future: show disconnect dialog */ },
-                    modifier = Modifier.size(40.dp)
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                    contentColor = MaterialTheme.colorScheme.primary
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.settings),
-                        tint = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Row(
+                        modifier = Modifier.padding(horizontal = DesignTokens.AppSpacing.sm, vertical = DesignTokens.AppSpacing.xs),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.xs)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.connected),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
             }
         }
@@ -301,7 +312,7 @@ private fun UploadFeatureCard(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = DesignTokens.AppColors.primaryContainer
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -317,21 +328,21 @@ private fun UploadFeatureCard(
                     text = stringResource(R.string.new_upload),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = DesignTokens.AppColors.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 Text(
                     text = stringResource(R.string.select_files_from_telegram),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = DesignTokens.AppColors.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
             FilledTonalButton(
                 onClick = onSelectVideos,
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = DesignTokens.AppColors.onPrimary,
-                    contentColor = DesignTokens.AppColors.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                    contentColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
                 Icon(
@@ -354,7 +365,7 @@ private fun StatusPill(
     Surface(
         shape = MaterialTheme.shapes.small,
         color = accent.copy(alpha = 0.16f),
-        contentColor = DesignTokens.AppColors.onSurface
+        contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Text(
             text = activeCount.toString(),
@@ -371,8 +382,9 @@ private fun StatCard(
     value: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    accent: Color = DesignTokens.AppColors.onPrimary
+    accent: Color = Color.Unspecified
 ) {
+    val resolvedAccent = if (accent == Color.Unspecified) MaterialTheme.colorScheme.primary else accent
     GlassCard(
         modifier = modifier
             .fillMaxWidth()
@@ -389,8 +401,8 @@ private fun StatCard(
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
-                color = accent.copy(alpha = 0.2f),
-                contentColor = accent
+                color = resolvedAccent.copy(alpha = 0.2f),
+                contentColor = resolvedAccent
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
@@ -404,14 +416,14 @@ private fun StatCard(
                 text = value,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = DesignTokens.AppColors.onSurface,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelMedium,
-                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

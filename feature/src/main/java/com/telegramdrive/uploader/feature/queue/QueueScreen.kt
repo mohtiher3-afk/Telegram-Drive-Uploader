@@ -76,7 +76,7 @@ fun QueueScreen(
                                 uiState.failedCount
                             ),
                             style = MaterialTheme.typography.labelMedium,
-                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
@@ -162,15 +162,15 @@ fun QueueScreen(
                                     .fillMaxWidth()
                                     .liquidGlassOverlay(
                                         shape = MaterialTheme.shapes.large,
-                                        accent = DesignTokens.AppColors.onSecondary
+                                        accent = MaterialTheme.colorScheme.onSecondary
                                     ),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = DesignTokens.AppColors.secondaryContainer
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
                                 ),
                                 shape = MaterialTheme.shapes.large,
                                 border = BorderStroke(
                                     1.dp,
-                                    DesignTokens.AppColors.onSecondary.copy(alpha = 0.42f)
+                                    MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.42f)
                                 ),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
@@ -183,12 +183,12 @@ fun QueueScreen(
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.feature.R.string.queue_controls_title),
                                         style = MaterialTheme.typography.titleSmall,
-                                        color = DesignTokens.AppColors.onSecondary
+                                        color = MaterialTheme.colorScheme.onSecondary
                                     )
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.feature.R.string.queue_controls_supporting),
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                     )
                                     Row(
                                         modifier = Modifier
@@ -289,7 +289,7 @@ fun QueueScreen(
                                     .padding(vertical = DesignTokens.AppSpacing.md)
                                     .testTag("queue_no_results"),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                         }
                     }
