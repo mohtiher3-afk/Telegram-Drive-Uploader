@@ -62,7 +62,7 @@ internal fun uploadProgressPercent(percentage: Float): Int =
 fun GlassProgressIndicator(
     progressFraction: Float,
     modifier: Modifier = Modifier,
-    statusColor: Color = DesignTokens.AppColors.onPrimary,
+    statusColor: Color = Color.Unspecified,
     showGlow: Boolean = true,
     trackHeight: Dp = 6.dp
 ) {
