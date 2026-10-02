@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -115,26 +116,50 @@ class UploadManagerImpl @Inject constructor(
     }
 
     override suspend fun reconcileInterruptedUploads(): Int {
-        val interruptedUploads = repository.getInterruptedUploads()
+        // Recover every persisted state that requires a WorkManager chain.
+        // This also covers the crash window between Room insertion and enqueue,
+        // which can otherwise leave a durable QUEUED row with no runnable work.
+        val recoverableStatuses = setOf(
+            UploadStatus.QUEUED,
+            UploadStatus.PREPARING,
+            UploadStatus.UPLOADING,
+            UploadStatus.RETRYING
+        )
+        val recoverableUploads = repository.getAllUploads().first()
+            .filter { it.status in recoverableStatuses }
+
         var reconciledCount = 0
-        
-        for (task in interruptedUploads) {
-            // Check if there is an active worker for this task
+
+        for (task in recoverableUploads) {
             val workInfos = workManager.getWorkInfosForUniqueWork(task.id).await()
-            val isTaskActive = workInfos.any { it.state == WorkInfo.State.RUNNING || it.state == WorkInfo.State.ENQUEUED }
-            
+            val isTaskActive = workInfos.any {
+                it.state == WorkInfo.State.RUNNING ||
+                    it.state == WorkInfo.State.ENQUEUED ||
+                    it.state == WorkInfo.State.BLOCKED
+            }
+
             if (!isTaskActive) {
-                repository.updateStatus(task.id, UploadStatus.QUEUED)
-                enqueueUpload(task)
+                if (task.status != UploadStatus.QUEUED) {
+                    repository.updateStatusIf(
+                        id = task.id,
+                        status = UploadStatus.QUEUED,
+                        allowedStatuses = listOf(
+                            UploadStatus.PREPARING,
+                            UploadStatus.UPLOADING,
+                            UploadStatus.RETRYING
+                        )
+                    )
+                }
+                enqueueUpload(task.copy(status = UploadStatus.QUEUED))
                 reconciledCount++
             }
         }
-        
+
         if (reconciledCount > 0) {
             DiagnosticsManager.log(
                 category = DiagnosticCategory.APP_START,
                 severity = DiagnosticSeverity.INFO,
-                message = "Reconciled $reconciledCount interrupted upload tasks back to queued state."
+                message = "Reconciled $reconciledCount recoverable upload records without active WorkManager work."
             )
         }
         return reconciledCount
