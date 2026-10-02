@@ -181,7 +181,10 @@ class QueueViewModel @Inject constructor(
                         UploadStatus.PAUSED,
                         listOf(UploadStatus.QUEUED, UploadStatus.PREPARING, UploadStatus.UPLOADING, UploadStatus.RETRYING)
                     )
-                    if (changed) uploadManager.pauseUpload(task.id)
+                    if (changed) {
+                        uploadRepository.bumpExecutionGeneration(task.id, listOf(UploadStatus.PAUSED))
+                        uploadManager.pauseUpload(task.id)
+                    }
                 }
         }
     }
