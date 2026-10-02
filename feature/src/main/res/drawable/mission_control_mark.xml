@@ -34,9 +34,9 @@
     <!-- Signal node -->
     <path
         android:fillColor="#22D3EE"
-        android:pathData="M79,23 A5,5 0,1 0,89,23 A5,5 0,1 0,79,23" />
+        android:pathData="M84,18 L89,23 L84,28 L79,23 Z" />
     <!-- Small violet orbit node -->
     <path
         android:fillColor="#7C3AED"
-        android:pathData="M18,53 A3,3 0,1 0,24,53 A3,3 0,1 0,18,53" />
+        android:pathData="M21,50 L24,53 L21,56 L18,53 Z" />
 </vector>
