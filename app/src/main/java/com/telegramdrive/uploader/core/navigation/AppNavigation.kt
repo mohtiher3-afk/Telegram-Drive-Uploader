@@ -186,11 +186,14 @@ fun AppNavigation(
                                         },
                                         label = { Text(stringResource(screen.titleRes)) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = DesignTokens.AppColors.onPrimary,
-                                            selectedTextColor = DesignTokens.AppColors.onPrimary,
-                                            indicatorColor = DesignTokens.AppColors.onPrimary,
-                                            unselectedIconColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
-                                            unselectedTextColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                            // onPrimaryContainer on primaryContainer is 11.89:1;
+                                            // the previous onPrimary (white) pairing was 1.24:1,
+                                            // i.e. invisible. See docs/architecture/adr-001.
+                                            selectedIconColor = DesignTokens.AppColors.onPrimaryContainer,
+                                            selectedTextColor = DesignTokens.AppColors.onPrimaryContainer,
+                                            indicatorColor = DesignTokens.AppColors.primaryContainer,
+                                            unselectedIconColor = DesignTokens.AppColors.onSurfaceVariant,
+                                            unselectedTextColor = DesignTokens.AppColors.onSurfaceVariant
                                         ),
                                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                                     )
