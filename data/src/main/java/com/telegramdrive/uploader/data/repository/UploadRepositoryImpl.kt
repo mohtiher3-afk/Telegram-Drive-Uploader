@@ -86,6 +86,10 @@ class UploadRepositoryImpl @Inject constructor(
         uploadDao.deleteUploadById(id)
     }
 
+    override suspend fun deleteCompletedUploadById(id: String): Boolean {
+        return uploadDao.deleteCompletedUploadById(id) > 0
+    }
+
     override suspend fun deleteCompletedUploads() {
         uploadDao.deleteCompletedUploads()
     }
