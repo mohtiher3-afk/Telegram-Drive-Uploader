@@ -156,7 +156,7 @@ fun TelegramDriveTheme(
     // roles, so a caller that forgot this argument would render with an apparently
     // ignored colour setting.
     dynamicColorStrategy: DynamicColorStrategy = DynamicColorStrategy.StaticBrand,
-    glowColorPreset: GlowColorPreset = GlowColorPreset.SEAFOAM,
+    glowColorPreset: GlowColorPreset = GlowColorPreset.LIME,
     customGlowHex: String = GlowColorCodec.DEFAULT_HEX,
     content: @Composable () -> Unit
 ) {
