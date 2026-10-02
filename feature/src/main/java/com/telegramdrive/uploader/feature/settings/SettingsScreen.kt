@@ -1,6 +1,8 @@
 @file:Suppress("DEPRECATION")
 package com.telegramdrive.uploader.feature.settings
 
+import androidx.compose.material3.MaterialTheme
+
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -156,7 +158,7 @@ fun SettingsScreen(
                         Text(
                             text = stringResource(themeLabelRes),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = DesignTokens.AppColors.onSurface
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         RadioButton(
                             selected = uiState.theme == themeKey,
@@ -165,18 +167,18 @@ fun SettingsScreen(
                     }
                 }
 
-                HorizontalDivider(color = DesignTokens.AppColors.onSurface.copy(alpha = 0.4f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = stringResource(com.telegramdrive.uploader.feature.R.string.glow_colors),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = DesignTokens.AppColors.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = stringResource(com.telegramdrive.uploader.feature.R.string.glow_colors_summary),
                     style = MaterialTheme.typography.bodySmall,
-                    color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 GlowColorPreset.entries.forEach { preset ->
@@ -206,7 +208,7 @@ fun SettingsScreen(
                             Text(
                                 text = stringResource(glowColorLabelRes(preset)),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = DesignTokens.AppColors.onSurface
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                         RadioButton(selected = selected, onClick = null)
@@ -243,20 +245,20 @@ fun SettingsScreen(
                         Text(
                             text = stringResource(com.telegramdrive.uploader.feature.R.string.thumbnail_cache_size),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = DesignTokens.AppColors.onSurface
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = uiState.cacheSize,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             modifier = Modifier.testTag("cache_size_text")
                         )
                     }
                     Button(
                         onClick = { viewModel.clearCache() },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = DesignTokens.AppColors.errorContainer,
-                            contentColor = DesignTokens.AppColors.error
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.error
                         ),
                         modifier = Modifier.testTag("clear_cache_button")
                     ) {
@@ -283,12 +285,12 @@ fun SettingsScreen(
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.auto_retry_failed_uploads),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.auto_retry_failed_uploads_summary),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f).copy(alpha = 0.5f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f).copy(alpha = 0.5f)
                             )
                         }
                         Switch(
@@ -307,12 +309,12 @@ fun SettingsScreen(
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.upload_only_wifi),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.preserve_cellular_data),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f).copy(alpha = 0.5f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f).copy(alpha = 0.5f)
                             )
                         }
                         Switch(
@@ -335,7 +337,7 @@ fun SettingsScreen(
                     Text(
                         text = stringResource(com.telegramdrive.uploader.feature.R.string.upload_notifications_summary),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                     Text(
                         text = stringResource(
@@ -347,9 +349,9 @@ fun SettingsScreen(
                         ),
                         style = MaterialTheme.typography.labelLarge,
                         color = if (notificationsEnabled) {
-                            DesignTokens.AppColors.onPrimary
+                            MaterialTheme.colorScheme.onPrimary
                         } else {
-                            DesignTokens.AppColors.error
+                            MaterialTheme.colorScheme.error
                         }
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -400,7 +402,7 @@ fun SettingsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(stringResource(com.telegramdrive.uploader.feature.R.string.status), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-                            Text(stringResource(com.telegramdrive.uploader.feature.R.string.connected), color = DesignTokens.AppColors.onPrimary, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                            Text(stringResource(com.telegramdrive.uploader.feature.R.string.connected), color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                         }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -431,8 +433,8 @@ fun SettingsScreen(
                         Button(
                             onClick = { showLogoutConfirmation = true },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = DesignTokens.AppColors.error,
-                                contentColor = DesignTokens.AppColors.error
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.error
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -459,7 +461,7 @@ fun SettingsScreen(
                             Text(
                                 stringResource(com.telegramdrive.uploader.feature.R.string.disconnected),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.error
+                                color = MaterialTheme.colorScheme.error
                             )
                         }
                         TextButton(onClick = onConnectClick) {
@@ -492,12 +494,12 @@ fun SettingsScreen(
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.developer_logging),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = DesignTokens.AppColors.onSurface
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.show_sanitized_logs),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                         }
                         Switch(
@@ -522,8 +524,8 @@ fun SettingsScreen(
                                 },
                                 modifier = Modifier.weight(1f).testTag("copy_logs_button"),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = DesignTokens.AppColors.onPrimaryContainer,
-                                    contentColor = DesignTokens.AppColors.onPrimary
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 )
                             ) {
                                 Text(stringResource(com.telegramdrive.uploader.feature.R.string.copy_logs))
@@ -536,8 +538,8 @@ fun SettingsScreen(
                                 },
                                 modifier = Modifier.weight(1f).testTag("clear_logs_button"),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = DesignTokens.AppColors.errorContainer,
-                                    contentColor = DesignTokens.AppColors.error
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.error
                                 )
                             ) {
                                 Text(stringResource(com.telegramdrive.uploader.feature.R.string.clear_logs))
@@ -549,8 +551,8 @@ fun SettingsScreen(
                                 },
                                 modifier = Modifier.weight(1f).testTag("share_logs_button"),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = DesignTokens.AppColors.secondaryContainer,
-                                    contentColor = DesignTokens.AppColors.onSurface
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
                                 )
                             ) {
                                 Text(stringResource(com.telegramdrive.uploader.feature.R.string.share_logs))
@@ -563,9 +565,9 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(250.dp),
-                            border = BorderStroke(1.dp, DesignTokens.AppColors.onSurface.copy(alpha = 0.4f)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)),
                             colors = CardDefaults.cardColors(
-                                containerColor = DesignTokens.AppColors.surface
+                                containerColor = MaterialTheme.colorScheme.surface
                             )
                         ) {
                             if (diagnosticEvents.isEmpty()) {
@@ -576,7 +578,7 @@ fun SettingsScreen(
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.feature.R.string.no_logs_recorded),
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                     )
                                 }
                             } else {
@@ -587,14 +589,14 @@ fun SettingsScreen(
                                 ) {
                                     items(latestEvents) { event ->
                                         val color = when (event.severity) {
-                                            "ERROR" -> DesignTokens.AppColors.error
-                                            "WARN" -> DesignTokens.AppColors.onSecondary
-                                            else -> DesignTokens.AppColors.onPrimary
+                                            "ERROR" -> MaterialTheme.colorScheme.error
+                                            "WARN" -> MaterialTheme.colorScheme.onSecondary
+                                            else -> MaterialTheme.colorScheme.onPrimary
                                         }
                                         val bgColor = when (event.severity) {
-                                            "ERROR" -> DesignTokens.AppColors.errorContainer
-                                            "WARN" -> DesignTokens.AppColors.secondaryContainer
-                                            else -> DesignTokens.AppColors.onPrimaryContainer
+                                            "ERROR" -> MaterialTheme.colorScheme.errorContainer
+                                            "WARN" -> MaterialTheme.colorScheme.secondaryContainer
+                                            else -> MaterialTheme.colorScheme.onPrimaryContainer
                                         }
                                         val locale = LocalConfiguration.current.locales[0]
                                         val formattedTime = remember(event.timestamp, locale) {
@@ -611,7 +613,7 @@ fun SettingsScreen(
                                             Text(
                                                 text = formattedTime,
                                                 style = MaterialTheme.typography.labelSmall.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace),
-                                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                             )
                                             Text(
                                                 text = "[${event.severity}]",
@@ -622,14 +624,14 @@ fun SettingsScreen(
                                                 Text(
                                                     text = event.message,
                                                     style = MaterialTheme.typography.bodySmall,
-                                                    color = DesignTokens.AppColors.onSurface
+                                                    color = MaterialTheme.colorScheme.onSurface
                                                 )
                                                 val incidentId = event.incidentId
                                                 if (incidentId != null) {
                                                     Text(
                                                         text = stringResource(com.telegramdrive.uploader.feature.R.string.incident_id, incidentId),
                                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                        color = DesignTokens.AppColors.error
+                                                        color = MaterialTheme.colorScheme.error
                                                     )
                                                 }
                                             }
@@ -662,13 +664,13 @@ fun SettingsScreen(
                         Text(
                             text = BuildConfig.VERSION_NAME,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = DesignTokens.AppColors.onPrimary
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     Text(
                         text = stringResource(com.telegramdrive.uploader.feature.R.string.built_with_compose),
                         style = MaterialTheme.typography.bodySmall,
-                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -735,21 +737,21 @@ fun SettingsSection(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = DesignTokens.AppColors.onPrimary,
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(DesignTokens.AppSpacing.sm))
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = DesignTokens.AppColors.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
         
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = DesignTokens.AppColors.secondaryContainer
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
             ),
             shape = MaterialTheme.shapes.large,
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
