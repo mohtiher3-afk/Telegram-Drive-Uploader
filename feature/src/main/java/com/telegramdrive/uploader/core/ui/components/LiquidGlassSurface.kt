@@ -124,13 +124,13 @@ fun Modifier.liquidGlassReflection(
 @Composable
 fun Modifier.liquidGlassOverlay(
     shape: Shape = RoundedCornerShape(16.dp),
-    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = Color.Unspecified,
     emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational,
     animate: Boolean = true
 ): Modifier = composed {
     val density = androidx.compose.ui.platform.LocalDensity.current
     val emphasisValue = emphasis
-    val accentColor = accent
+    val accentColor = if (accent == Color.Unspecified) MaterialTheme.colorScheme.primary else accent
     
     // Animate emphasis changes for smooth transitions
     val animatedBorderAlpha by animateFloatAsState(
@@ -224,10 +224,11 @@ fun Modifier.liquidGlassOverlay(
 @Composable
 fun Modifier.glowSignalRim(
     shape: Shape = RoundedCornerShape(28.dp),
-    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = Color.Unspecified,
     enabled: Boolean = true,
     pulseSpeed: Float = 1.0f
 ): Modifier = composed {
+    val resolvedAccent = if (accent == Color.Unspecified) MaterialTheme.colorScheme.primary else accent
     val infiniteTransition = rememberInfiniteTransition(label = "glowSignalRim")
     val pulseAlpha by infiniteTransition.animateFloat(
         initialValue = 0.3f,
@@ -253,7 +254,7 @@ fun Modifier.glowSignalRim(
                 width = (2f * androidx.compose.ui.platform.LocalDensity.current.density).dp,
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        accent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f)),
+                        resolvedAccent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f)),
                         if (isDark)
                             MaterialTheme.colorScheme.onSecondary.copy(alpha = (pulseAlpha * 0.4f).coerceIn(0.1f, 0.5f))
                             else MaterialTheme.colorScheme.onSecondary.copy(alpha = (pulseAlpha * 0.3f).coerceIn(0.1f, 0.4f)),
@@ -401,8 +402,8 @@ fun GlassCard(
 fun ShimmerPlaceholder(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(12.dp),
-    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.secondaryContainer,
-    highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
+    baseColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
+    highlightColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
     animationDuration: Int = 1500
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
