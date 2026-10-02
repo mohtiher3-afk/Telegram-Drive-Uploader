@@ -722,6 +722,13 @@ class TelegramClientImpl @Inject constructor(
      * instances, matching the repo's direct-construction test pattern.
      */
     internal fun handleAuthorizationState(state: TdApi.AuthorizationState) {
+        // Keep authorization transitions observable without recording phone numbers,
+        // codes, passwords, session data, or raw TDLib payloads.
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.TELEGRAM_AUTH_STATE,
+            severity = DiagnosticSeverity.INFO,
+            message = "TDLib authorization state: " + state.javaClass.simpleName
+        )
         when (state) {
             is TdApi.AuthorizationStateWaitTdlibParameters -> sendTdlibParameters()
             is TdApi.AuthorizationStateWaitPhoneNumber -> {
