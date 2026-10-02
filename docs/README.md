@@ -4,9 +4,9 @@ This index lists the **living documentation** — the documents that describe ho
 project works today and that must be updated when behavior changes.
 
 Point-in-time records (inventories, final reports, audits, dated maintenance records, and
-per-version release records) live under [`archive/reports/`](archive/reports/), which
+per-version release records) live under [`archive/reports/`](HISTORICAL_AUDITS.md), which
 mirrors the area names used below. Earlier superseded material lives under
-[`archive/`](archive/).
+[`archive/`](HISTORICAL_AUDITS.md).
 
 All relative links in this documentation tree are verified by
 [`scripts/check-doc-links.py`](../scripts/check-doc-links.py), which runs in CI.
@@ -76,8 +76,8 @@ that define each workflow:
 
 | Location | Content |
 |---|---|
-| [`archive/reports/`](archive/reports/) | Point-in-time inventories, final reports, audits, dated maintenance records, and per-version release records, grouped by area |
-| [`archive/`](archive/) | Earlier superseded audits, SPRINT/MANUS reports, and dated one-off documents |
+| [`archive/reports/`](HISTORICAL_AUDITS.md) | Point-in-time inventories, final reports, audits, dated maintenance records, and per-version release records, grouped by area |
+| [`archive/`](HISTORICAL_AUDITS.md) | Earlier superseded audits, SPRINT/MANUS reports, and dated one-off documents |
 
 ## Adding documentation
 

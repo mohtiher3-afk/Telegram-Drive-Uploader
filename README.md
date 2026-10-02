@@ -14,7 +14,7 @@ Telegram Drive Uploader provides a high-reliability, offline-first interface for
 
 Telegram Drive Uploader uses a **Mission Control** visual language: a dark control-room surface, luminous orbital accents, and a high-visibility upload action. The identity reinforces upload state and destination context while preserving Material 3 semantic roles and adaptive Compose layouts.
 
-The current mark is the **Mission Control orbital upload logo**: a Lime upward arrow and tray enclosed by a Violet orbital form with Mint highlights. The canonical asset is [`app/src/main/res/drawable-nodpi/mission_control_logo.png`](app/src/main/res/drawable-nodpi/mission_control_logo.png). It is used by the launcher foreground, first-run onboarding hero, opening animation, and repository preview at [`design/app_icon_concept.png`](design/app_icon_concept.png).
+The current mark is the **Mission Control orbital upload logo**: a Lime upward arrow and tray enclosed by a Violet orbital form with Mint highlights. The canonical asset is [`feature/src/main/res/drawable-nodpi/mission_control_logo.png`](feature/src/main/res/drawable-nodpi/mission_control_logo.png). It is used by the launcher foreground, first-run onboarding hero, opening animation, and repository preview at [`design/app_icon_concept.png`](design/app_icon_concept.png).
 
 ### Design Previews
 The following images show the current Material 3 Expressive direction, the Mission Control visual system, and the destination-selection and video-preparation flow.
@@ -110,7 +110,7 @@ The project includes strict R8 keep rules for `org.drinkless.tdlib.**` required 
 ### Release & CI
 The `Android Multi-ABI CI` workflow runs on Pull Requests and pushes to `main`. It executes repository security and artifact gates, JVM unit tests, release lint, and a Debug APK build for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, then stores each APK as a temporary artifact.
 
-The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs, verifies signatures and SHA-256 checksums, and creates a GitHub Release. The complete setup, required secrets, tag flow, and troubleshooting steps are documented in [`docs/archive/github-actions-android-ci-cd-ar.md`](docs/archive/github-actions-android-ci-cd-ar.md) and [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
+The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs, verifies signatures and SHA-256 checksums, and creates a GitHub Release. The complete setup, required secrets, tag flow, and troubleshooting steps are documented in [`docs/archive/github-actions-android-ci-cd-ar.md`](docs/HISTORICAL_AUDITS.md) and [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
 
 ---
 
@@ -140,7 +140,7 @@ The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds
 - **Security Policy**: [`SECURITY.md`](SECURITY.md)
 - **Changelog**: [`CHANGELOG.md`](CHANGELOG.md)
 - **License**: [`LICENSE`](LICENSE) (MIT)
-- **Audit Records**: [`docs/archive/PROJECT_AUDIT_2026-08-21.md`](docs/archive/PROJECT_AUDIT_2026-08-21.md)
+- **Audit Records**: [`docs/archive/PROJECT_AUDIT_2026-08-21.md`](docs/HISTORICAL_AUDITS.md)
 - **Maintenance Guide**: [`docs/maintenance/README.md`](docs/maintenance/README.md)
 - **Resource Reviews**: [`docs/resources/`](docs/resources/)
 
