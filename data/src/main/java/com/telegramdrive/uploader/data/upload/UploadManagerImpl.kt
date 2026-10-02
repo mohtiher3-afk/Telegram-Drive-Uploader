@@ -139,9 +139,15 @@ class UploadManagerImpl @Inject constructor(
             }
 
             if (!isTaskActive) {
-                if (task.status != UploadStatus.QUEUED) {
-                    repository.updateStatusIf(
-                        id = task.id,
+                // Re-read immediately before enqueue. Cancellation/deletion can race
+                // with startup reconciliation; never resurrect a task from a stale
+                // Flow snapshot.
+                val latestTask = repository.getUploadById(task.id) ?: continue
+                if (latestTask.status !in recoverableStatuses) continue
+
+                if (latestTask.status != UploadStatus.QUEUED) {
+                    val changed = repository.updateStatusIf(
+                        id = latestTask.id,
                         status = UploadStatus.QUEUED,
                         allowedStatuses = listOf(
                             UploadStatus.PREPARING,
@@ -149,8 +155,12 @@ class UploadManagerImpl @Inject constructor(
                             UploadStatus.RETRYING
                         )
                     )
+                    if (!changed) continue
                 }
-                enqueueUpload(task.copy(status = UploadStatus.QUEUED))
+
+                // ExistingWorkPolicy.KEEP prevents duplicate chains if another
+                // reconciler/user action wins the race after the final read.
+                enqueueUpload(latestTask.copy(status = UploadStatus.QUEUED))
                 reconciledCount++
             }
         }
