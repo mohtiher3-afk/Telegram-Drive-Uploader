@@ -65,6 +65,7 @@ import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 
 private data class OnboardingPage(
     val title: String,

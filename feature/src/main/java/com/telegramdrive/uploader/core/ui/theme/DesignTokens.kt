@@ -114,6 +114,21 @@ object AppColors {
     val glowPrimary = Color(0xFFFFFFFF).copy(alpha = 0.15f)
     val glowSecondary = Color(0xFF00E5FF).copy(alpha = 0.12f)
     val glowAccent = Color(0xFF00C853).copy(alpha = 0.20f)
+
+    // Container roles referenced by screens during the DesignTokens migration.
+    // Values mirror the light scheme in Theme.kt so the flat palette and the
+    // theme's semantic roles stay in agreement instead of drifting apart.
+    val onPrimaryContainer = Color(0xFF0A1A68)
+    val onSecondaryContainer = Color(0xFF181849)
+    val onSurfaceVariant = Color(0xFF46464F)
+    val errorContainer = Color(0xFFFFDAD6)
+
+    // Tonally ordered container steps (Low < secondaryContainer < High < Highest).
+    // These mirror Theme.kt's surfaceContainer* roles, named here for the
+    // secondary container family that the card call sites read.
+    val secondaryContainerLow = Color(0xFFF8F6FA)
+    val secondaryContainerHigh = Color(0xFFECE9F0)
+    val secondaryContainerHighest = Color(0xFFE6E3EA)
 }
 
 /**
@@ -130,6 +145,33 @@ object AppTypography {
 }
 
 data class FontSpec(
-    val fontSize: androidx.compose.ui.unit.Sp,
+    val fontSize: androidx.compose.ui.unit.TextUnit,
     val fontWeight: FontWeight
 )
+
+/**
+ * Namespace container for the token groups.
+ *
+ * Screens read tokens as `DesignTokens.AppColors.*` and `DesignTokens.AppSpacing.*`.
+ * The groups themselves are top-level objects in this package, so both access
+ * styles resolve: a direct `import ...theme.AppColors` and the grouped
+ * `DesignTokens.AppColors`. Without this container every grouped call site fails
+ * with "Unresolved reference 'DesignTokens'".
+ */
+object DesignTokens {
+    val AppColors = com.telegramdrive.uploader.core.ui.theme.AppColors
+    val AppSpacing = com.telegramdrive.uploader.core.ui.theme.AppSpacing
+    val AppRadius = com.telegramdrive.uploader.core.ui.theme.AppRadius
+    val AppElevation = com.telegramdrive.uploader.core.ui.theme.AppElevation
+    val AppType = com.telegramdrive.uploader.core.ui.theme.AppType
+    val AppTypography = com.telegramdrive.uploader.core.ui.theme.AppTypography
+    val AppContentWidth = com.telegramdrive.uploader.core.ui.theme.AppContentWidth
+    val SafeGlowTokens = com.telegramdrive.uploader.core.ui.theme.SafeGlowTokens
+    val LiquidGlassTokens = com.telegramdrive.uploader.core.ui.theme.LiquidGlassTokens
+
+    /** Flat alias retained for call sites that predate the grouped names. */
+    val primaryContainer = AppColors.primaryContainer
+
+    /** Flat alias retained for call sites that predate the `AppSpacing` name. */
+    val spacingM = AppSpacing.medium
+}

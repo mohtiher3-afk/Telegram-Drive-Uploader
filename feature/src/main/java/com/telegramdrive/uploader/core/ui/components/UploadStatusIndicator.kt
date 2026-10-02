@@ -44,6 +44,7 @@ import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 
 internal fun uploadProgressFraction(percentage: Float): Float =
     (percentage / 100f).coerceIn(0f, 1f)
@@ -318,7 +319,7 @@ fun UploadStatusIndicator(
                         val dotColor = when {
                             isDone -> DesignTokens.AppColors.onPrimary
                             isCurrent -> DesignTokens.AppColors.onSecondary
-                            else -> DesignTokens.AppColors.onSurface.copy(alpha = 0.4f)Variant
+                            else -> DesignTokens.AppColors.onSurfaceVariant.copy(alpha = 0.4f)
                         }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
