@@ -51,7 +51,7 @@ fun SplashScreen(onFinished: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Image(
-                painter = painterResource(R.drawable.mission_control_logo),
+                painter = painterResource(R.drawable.mission_control_mark),
                 contentDescription = stringResource(R.string.splash_logo_description),
                 modifier = Modifier.size(120.dp)
             )
