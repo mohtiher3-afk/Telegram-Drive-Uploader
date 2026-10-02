@@ -12,6 +12,7 @@ import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.repository.TelegramRepository
 import com.telegramdrive.uploader.domain.repository.UploadRepository
+import com.telegramdrive.uploader.domain.upload.UploadManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -62,6 +63,16 @@ class HomeViewModelUiStateTest {
         override suspend fun clearAllUploads() {}
     }
 
+    private val fakeUploadManager = object : UploadManager {
+        override fun enqueueUpload(task: UploadTask) {}
+        override fun pauseUpload(id: String) {}
+        override fun resumeUpload(task: UploadTask) {}
+        override fun cancelUpload(id: String) {}
+        override fun retryUpload(task: UploadTask) {}
+        override fun observeUpload(id: String): Flow<UploadTask?> = emptyFlow()
+        override fun observeUploads(): Flow<List<UploadTask>> = emptyFlow()
+    }
+
     private val fakeTelegramRepository = object : TelegramRepository {
         override val connectionState: StateFlow<TelegramConnectionState> = connectionFlow
         override val currentUser: StateFlow<TelegramUser?> = currentUserFlow
@@ -104,7 +115,7 @@ class HomeViewModelUiStateTest {
     fun uiStateReflectsUploadAggregationsAndConnection() = runTest(testDispatcher) {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val settingsDataStore = SettingsDataStore(context)
-        val viewModel = HomeViewModel(fakeUploadRepository, fakeTelegramRepository, settingsDataStore)
+        val viewModel = HomeViewModel(fakeUploadRepository, fakeTelegramRepository, settingsDataStore, fakeUploadManager)
 
         val collectJob = launch { viewModel.uiState.collect {} }
 
