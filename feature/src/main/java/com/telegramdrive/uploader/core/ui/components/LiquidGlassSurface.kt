@@ -150,7 +150,7 @@ fun Modifier.liquidGlassOverlay(
     )
     
     // Dark theme detection for adaptive colors
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = MaterialTheme.colorScheme.primaryContainer.luminance() < 0.5f
     
     this.then(
         Modifier
@@ -168,7 +168,7 @@ fun Modifier.liquidGlassOverlay(
                             Color.White.copy(alpha = animatedReflectionAlpha * 0.3f)
                             else Color.White.copy(alpha = animatedReflectionAlpha * 0.15f),
                         // Main surface - frosted glass
-                        DesignTokens.AppColors.surface.copy(alpha = 0.75f),
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
                         // Bottom shadow
                         if (isDark)
                             Color.Black.copy(alpha = animatedAmbientAlpha * 0.4f)
@@ -243,7 +243,7 @@ fun Modifier.glowSignalRim(
         label = "glowPulseAlpha"
     )
     
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = MaterialTheme.colorScheme.primaryContainer.luminance() < 0.5f
     
     if (!enabled) return@composed this
     
@@ -257,8 +257,8 @@ fun Modifier.glowSignalRim(
                     colors = listOf(
                         accent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f)),
                         if (isDark)
-                            DesignTokens.AppColors.onSecondary.copy(alpha = (pulseAlpha * 0.4f).coerceIn(0.1f, 0.5f))
-                            else DesignTokens.AppColors.onSecondary.copy(alpha = (pulseAlpha * 0.3f).coerceIn(0.1f, 0.4f)),
+                            MaterialTheme.colorScheme.onSecondary.copy(alpha = (pulseAlpha * 0.4f).coerceIn(0.1f, 0.5f))
+                            else MaterialTheme.colorScheme.onSecondary.copy(alpha = (pulseAlpha * 0.3f).coerceIn(0.1f, 0.4f)),
                         accent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f))
                     ),
                     start = Offset.Zero,
@@ -375,7 +375,7 @@ fun GlassCard(
     emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = MaterialTheme.colorScheme.primaryContainer.luminance() < 0.5f
     
     Surface(
         modifier = modifier
@@ -384,7 +384,7 @@ fun GlassCard(
             .shadow(emphasis.elevation.dp, shape = shape),
         shape = shape,
         color = Color.Transparent,
-        contentColor = DesignTokens.AppColors.onSurface
+        contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Box(
             modifier = Modifier
