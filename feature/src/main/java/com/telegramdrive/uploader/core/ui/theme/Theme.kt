@@ -55,7 +55,7 @@ private val DarkColorScheme = darkColorScheme(
     outlineVariant = Color(0xFF363943)
 )
 
-private val LightColorScheme = lightColorScheme(
+internal val LightColorScheme = lightColorScheme(
     primary = Color(0xFF3E56C8),
     onPrimary = Color.White,
     primaryContainer = Color(0xFFDEE0FF),

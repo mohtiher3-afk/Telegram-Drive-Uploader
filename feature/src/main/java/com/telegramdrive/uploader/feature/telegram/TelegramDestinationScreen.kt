@@ -131,7 +131,7 @@ fun TelegramDestinationScreen(
 
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = DesignTokens.AppColors.secondaryContainerHighest
+                        containerColor = DesignTokens.AppColors.surfaceContainerHighest
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
