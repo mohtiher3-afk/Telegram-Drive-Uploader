@@ -163,7 +163,7 @@ fun HomeScreen(
                 item {
                     UploadFeatureCard(
                         onSelectVideos = {
-                            pickerLauncher.launch(arrayOf("*/*"))
+                            pickerLauncher.launch(arrayOf("video/*"))
                         },
                         modifier = Modifier
                             .animateContentSize(animationSpec = AppMotion.shortTween(motionEnabled))
@@ -276,16 +276,27 @@ private fun TelegramConnectionCard(
                     Text(stringResource(R.string.connect))
                 }
             } else {
-                IconButton(
-                    onClick = { /* Future: show disconnect dialog */ },
-                    modifier = Modifier.size(40.dp)
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                    contentColor = MaterialTheme.colorScheme.primary
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.settings),
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Row(
+                        modifier = Modifier.padding(horizontal = DesignTokens.AppSpacing.sm, vertical = DesignTokens.AppSpacing.xs),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.xs)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.connected),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
             }
         }
