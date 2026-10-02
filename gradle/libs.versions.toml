@@ -41,7 +41,7 @@ secretsGradlePlugin = "2.0.1"
 googleServices = "4.5.0"
 credentials = "1.6.0"
 googleid = "1.2.1"
-sentry = "8.57.0"
+sentry = "8.58.0"
 lottieCompose = "6.1.0"
 kover = "0.9.11"
 
