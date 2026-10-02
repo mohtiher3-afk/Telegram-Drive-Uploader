@@ -1,6 +1,5 @@
 package com.telegramdrive.uploader.core.ui.theme
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import org.junit.Assert.assertEquals
@@ -15,8 +14,8 @@ import org.junit.Test
  * grouped objects existed but the `DesignTokens` container did not, the whole
  * `:feature` module failed to compile with "Unresolved reference 'DesignTokens'" and
  * no screen could be built at all. These assertions keep the container and the flat
- * aliases present, and pin the container roles to the light scheme in Theme.kt so the
- * duplicated palette cannot drift away from the theme unnoticed.
+ * aliases present, and assert that the flat palette stays bound to the light scheme
+ * in Theme.kt so the two can never drift apart again.
  */
 class DesignTokensTest {
 
@@ -34,23 +33,34 @@ class DesignTokensTest {
     }
 
     @Test
-    fun `container roles mirror the light scheme values`() {
-        // Only Theme.kt defines these roles; the screens read the AppColors copy,
-        // so the copy has to match the light scheme exactly.
-        assertEquals(Color(0xFF0A1A68), AppColors.onPrimaryContainer)
-        assertEquals(Color(0xFF181849), AppColors.onSecondaryContainer)
-        assertEquals(Color(0xFF46464F), AppColors.onSurfaceVariant)
-        assertEquals(Color(0xFFFFDAD6), AppColors.errorContainer)
+    fun `flat palette never drifts from the theme scheme`() {
+        // AppColors delegates every Material role to the light scheme, so the two
+        // cannot diverge. This guards the defect where AppColors restated its own
+        // hex values and quietly disagreed with the theme.
+        assertEquals(LightColorScheme.primaryContainer, AppColors.primaryContainer)
+        assertEquals(LightColorScheme.secondaryContainer, AppColors.secondaryContainer)
+        assertEquals(LightColorScheme.surface, AppColors.surface)
+        assertEquals(LightColorScheme.onPrimary, AppColors.onPrimary)
+        assertEquals(LightColorScheme.onSecondary, AppColors.onSecondary)
+        assertEquals(LightColorScheme.onSurface, AppColors.onSurface)
+        assertEquals(LightColorScheme.onPrimaryContainer, AppColors.onPrimaryContainer)
+        assertEquals(LightColorScheme.onSecondaryContainer, AppColors.onSecondaryContainer)
+        assertEquals(LightColorScheme.onSurfaceVariant, AppColors.onSurfaceVariant)
+        assertEquals(LightColorScheme.error, AppColors.error)
+        assertEquals(LightColorScheme.errorContainer, AppColors.errorContainer)
+        assertEquals(LightColorScheme.surfaceContainerLow, AppColors.surfaceContainerLow)
+        assertEquals(LightColorScheme.surfaceContainerHigh, AppColors.surfaceContainerHigh)
+        assertEquals(LightColorScheme.surfaceContainerHighest, AppColors.surfaceContainerHighest)
     }
 
     @Test
-    fun `secondary container steps stay tonally ordered`() {
+    fun `surface container ladder stays tonally ordered`() {
         // Low < base < High < Highest is the ladder the card call sites rely on, so
         // assert the relationship instead of pinning duplicate literals here.
-        val low = AppColors.secondaryContainerLow.luminance()
-        val base = AppColors.secondaryContainer.luminance()
-        val high = AppColors.secondaryContainerHigh.luminance()
-        val highest = AppColors.secondaryContainerHighest.luminance()
+        val low = AppColors.surfaceContainerLow.luminance()
+        val base = LightColorScheme.surfaceContainer.luminance()
+        val high = AppColors.surfaceContainerHigh.luminance()
+        val highest = AppColors.surfaceContainerHighest.luminance()
         assertTrue(
             "low > base > high > highest",
             low > base && base > high && high > highest
