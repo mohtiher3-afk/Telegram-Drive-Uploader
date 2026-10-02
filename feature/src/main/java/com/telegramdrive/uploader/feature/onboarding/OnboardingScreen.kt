@@ -169,7 +169,7 @@ fun OnboardingScreen(
                 Box(contentAlignment = Alignment.Center) {
                     if (page == 0) {
                         androidx.compose.foundation.Image(
-                            painter = painterResource(R.drawable.mission_control_logo),
+                            painter = painterResource(R.drawable.mission_control_mark),
                             contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_drive),
                             modifier = Modifier
                                 .size(128.dp)
