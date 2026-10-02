@@ -21,6 +21,12 @@ interface UploadRepository {
     suspend fun reconcileInterruptedUploads(): Int
     suspend fun getInterruptedUploads(): List<UploadTask>
     suspend fun deleteUploadById(id: String)
+    /** Deletes a history item only when it is still terminal. */
+    suspend fun deleteCompletedUploadById(id: String) {
+        if (getUploadById(id)?.status == UploadStatus.COMPLETED) {
+            deleteUploadById(id)
+        }
+    }
     suspend fun deleteCompletedUploads()
     suspend fun clearAllUploads()
 }
