@@ -43,6 +43,7 @@ credentials = "1.6.0"
 googleid = "1.2.1"
 sentry = "8.57.0"
 lottieCompose = "6.1.0"
+kover = "0.9.11"
 
 
 [libraries]
@@ -115,5 +116,6 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "googleDevtoolsKsp" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

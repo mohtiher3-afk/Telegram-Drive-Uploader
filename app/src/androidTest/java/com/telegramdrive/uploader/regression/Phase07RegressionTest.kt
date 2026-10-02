@@ -35,8 +35,8 @@ import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
 import com.telegramdrive.uploader.domain.upload.UploadEngineResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.data.upload
+package com.telegramdrive.uploader.data.upload
 
 import android.net.Uri
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
@@ -24,9 +24,9 @@ import java.io.IOException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

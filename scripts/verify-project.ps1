@@ -31,6 +31,31 @@ function Invoke-Step {
     }
 }
 
+# Gradle caches previous test outcomes under <module>/build/test-results and
+# reads them back through SerializableTestResult before it runs anything. A
+# corrupt or truncated file there aborts the task with
+#   java.lang.IllegalArgumentException: Illegal Capacity: <negative>
+# before a single test executes, which looks exactly like a real test failure
+# and silently invalidates any "tests passed" claim made from stale results.
+#
+# Clear those cached results first so every run reports outcomes it actually
+# produced. The cost is that :data and :feature re-run their tests even when
+# Gradle would have marked them up-to-date, which is the point: up-to-date test
+# results are not evidence.
+if ($Mode -eq 'CLEAN' -or $Mode -eq 'FULL' -or $Mode -eq 'RELEASE' -or $Mode -eq 'QUICK') {
+    $stale = @()
+    foreach ($module in 'app', 'core', 'data', 'domain', 'feature') {
+        $results = Join-Path $RootDir "$module\build\test-results"
+        if (Test-Path $results) {
+            Remove-Item -Recurse -Force $results -ErrorAction SilentlyContinue
+            $stale += $module
+        }
+    }
+    if ($stale.Count -gt 0) {
+        Write-Host ("[clean] Cleared cached test results: " + ($stale -join ', ')) -ForegroundColor Cyan
+    }
+}
+
 if ($Mode -eq 'CLEAN') {
     Write-Host '[clean] Clearing project build outputs' -ForegroundColor Cyan
     & (Join-Path $RootDir 'gradlew.bat') clean

@@ -14,6 +14,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -34,12 +35,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
@@ -347,7 +347,7 @@ fun UploadStatusIndicator(
                 if (mirrorLink != null) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.secondaryContainerLow),
+                        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.surfaceContainerLow),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier.fillMaxWidth()
                     ) {

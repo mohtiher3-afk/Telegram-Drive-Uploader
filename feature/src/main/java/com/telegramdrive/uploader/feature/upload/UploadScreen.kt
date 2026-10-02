@@ -245,7 +245,7 @@ fun UploadScreen(
                                     .fillMaxWidth()
                                     .padding(bottom = 12.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = DesignTokens.AppColors.secondaryContainerHighest
+                                    containerColor = DesignTokens.AppColors.surfaceContainerHighest
                                 ),
                                 shape = MaterialTheme.shapes.medium,
                                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -368,7 +368,7 @@ fun UploadScreen(
                                     .padding(bottom = 12.dp)
                                     .testTag("compression_selector_card"),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = DesignTokens.AppColors.secondaryContainerHigh
+                                    containerColor = DesignTokens.AppColors.surfaceContainerHigh
                                 ),
                                 shape = MaterialTheme.shapes.large,
                                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)

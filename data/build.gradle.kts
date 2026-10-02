@@ -40,6 +40,16 @@ kotlin {
   }
 }
 
+// Kover is intentionally NOT applied to this module. TdApi.java (vendored TDLib
+// bindings, ~137k lines and several hundred nested classes) overflows the JVM's
+// bytecode probe arrays during instrumentation, which kills the test worker with
+// "OutOfMemoryError: Illegal Capacity: -96150052" before any assertion runs.
+// Report-level filters cannot prevent this because they apply after collection.
+//
+// Until TdApi moves to its own module, :data is excluded from coverage by design,
+// not by accident. Do not report a coverage number for :data, and do not re-add the
+// plugin here without that split. See docs/architecture/adr-001-tdlib-binaries.md.
+
 // TDLib API credentials are injected from .env / .env.example as BuildConfig fields.
 secrets {
   propertiesFileName = ".env"

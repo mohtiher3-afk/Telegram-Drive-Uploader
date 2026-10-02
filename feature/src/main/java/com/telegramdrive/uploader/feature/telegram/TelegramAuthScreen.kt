@@ -562,7 +562,7 @@ private fun AccountSwitcher(
             .fillMaxWidth()
             .testTag("account_switcher"),
         colors = CardDefaults.cardColors(
-            containerColor = DesignTokens.AppColors.secondaryContainerHigh
+            containerColor = DesignTokens.AppColors.surfaceContainerHigh
         ),
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
