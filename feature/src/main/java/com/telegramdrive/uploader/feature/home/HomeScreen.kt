@@ -371,8 +371,9 @@ private fun StatCard(
     value: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    accent: Color = MaterialTheme.colorScheme.onPrimary
+    accent: Color = Color.Unspecified
 ) {
+    val resolvedAccent = if (accent == Color.Unspecified) MaterialTheme.colorScheme.primary else accent
     GlassCard(
         modifier = modifier
             .fillMaxWidth()
@@ -389,8 +390,8 @@ private fun StatCard(
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
-                color = accent.copy(alpha = 0.2f),
-                contentColor = accent
+                color = resolvedAccent.copy(alpha = 0.2f),
+                contentColor = resolvedAccent
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
