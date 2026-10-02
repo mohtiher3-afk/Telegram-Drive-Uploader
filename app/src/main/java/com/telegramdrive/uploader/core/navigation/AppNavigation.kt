@@ -104,8 +104,7 @@ fun AppNavigation(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(DesignTokens.spacingM)
+             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
         if (isExpanded && showBottomBar) {
