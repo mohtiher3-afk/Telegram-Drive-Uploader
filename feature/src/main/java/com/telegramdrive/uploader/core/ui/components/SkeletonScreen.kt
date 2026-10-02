@@ -274,10 +274,12 @@ fun SkeletonPlaceholder(
     shimmerProgress: Float,
     shimmerWidth: Float,
     startX: Float,
-    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.secondaryContainer,
-    highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
+    baseColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
+    highlightColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
     motionEnabled: Boolean = true
 ) {
+    val resolvedBaseColor = if (baseColor == Color.Unspecified) MaterialTheme.colorScheme.surfaceContainer else baseColor
+    val resolvedHighlightColor = if (highlightColor == Color.Unspecified) MaterialTheme.colorScheme.surface else highlightColor
     Box(
         modifier = modifier
             .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
