@@ -98,14 +98,31 @@ object AppType {
  * instead of hardcoding hex values or relying on MaterialTheme.colorScheme.
  */
 object AppColors {
-    // Primary surface colors
-    val primaryContainer = Color(0xFFE8F5E9)
-    val secondaryContainer = Color(0xFFF5F5F5)
-    val surface = Color(0xFFFFFFFF)
-    val onPrimary = Color(0xFF1A237E)
-    val onSecondary = Color(0xFF212121)
-    val onSurface = Color(0xFF212121)
-    val error = Color(0xFFFF5252)
+    // Every role Material defines delegates to the light scheme in Theme.kt.
+    // docs/design/DESIGN_SYSTEM.md names the theme's semantic colour scheme as the
+    // system of record, so restating hex values here is exactly what let this flat
+    // palette drift away from the theme. Delegating makes that drift impossible.
+    val primaryContainer = LightColorScheme.primaryContainer
+    val secondaryContainer = LightColorScheme.secondaryContainer
+    val surface = LightColorScheme.surface
+    val onPrimary = LightColorScheme.onPrimary
+    val onSecondary = LightColorScheme.onSecondary
+    val onSurface = LightColorScheme.onSurface
+    val onPrimaryContainer = LightColorScheme.onPrimaryContainer
+    val onSecondaryContainer = LightColorScheme.onSecondaryContainer
+    val onSurfaceVariant = LightColorScheme.onSurfaceVariant
+    val error = LightColorScheme.error
+    val errorContainer = LightColorScheme.errorContainer
+
+    // Container ladder, tonally ordered:
+    // surfaceContainerLow < surfaceContainer < surfaceContainerHigh < surfaceContainerHighest.
+    // Card and sheet call sites read these steps.
+    val surfaceContainerLow = LightColorScheme.surfaceContainerLow
+    val surfaceContainerHigh = LightColorScheme.surfaceContainerHigh
+    val surfaceContainerHighest = LightColorScheme.surfaceContainerHighest
+
+    // Status and decorative roles have no Material counterpart, so they keep their
+    // own values.
     val warning = Color(0xFFFFA726)
     val success = Color(0xFF4CAF50)
     val info = Color(0xFF2196F3)
@@ -114,21 +131,6 @@ object AppColors {
     val glowPrimary = Color(0xFFFFFFFF).copy(alpha = 0.15f)
     val glowSecondary = Color(0xFF00E5FF).copy(alpha = 0.12f)
     val glowAccent = Color(0xFF00C853).copy(alpha = 0.20f)
-
-    // Container roles referenced by screens during the DesignTokens migration.
-    // Values mirror the light scheme in Theme.kt so the flat palette and the
-    // theme's semantic roles stay in agreement instead of drifting apart.
-    val onPrimaryContainer = Color(0xFF0A1A68)
-    val onSecondaryContainer = Color(0xFF181849)
-    val onSurfaceVariant = Color(0xFF46464F)
-    val errorContainer = Color(0xFFFFDAD6)
-
-    // Tonally ordered container steps (Low < secondaryContainer < High < Highest).
-    // These mirror Theme.kt's surfaceContainer* roles, named here for the
-    // secondary container family that the card call sites read.
-    val secondaryContainerLow = Color(0xFFF8F6FA)
-    val secondaryContainerHigh = Color(0xFFECE9F0)
-    val secondaryContainerHighest = Color(0xFFE6E3EA)
 }
 
 /**
