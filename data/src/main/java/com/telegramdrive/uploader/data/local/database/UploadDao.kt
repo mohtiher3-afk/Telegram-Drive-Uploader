@@ -81,6 +81,9 @@ interface UploadDao {
     @Query("DELETE FROM uploads WHERE id = :id")
     suspend fun deleteUploadById(id: String)
 
+    @Query("DELETE FROM uploads WHERE id = :id AND status = 'COMPLETED'")
+    suspend fun deleteCompletedUploadById(id: String): Int
+
     @Query("DELETE FROM uploads WHERE status = 'COMPLETED'")
     suspend fun deleteCompletedUploads()
 
