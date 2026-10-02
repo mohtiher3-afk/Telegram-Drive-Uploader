@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.primaryContainer
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavigation(settingsDataStore)
                 }
