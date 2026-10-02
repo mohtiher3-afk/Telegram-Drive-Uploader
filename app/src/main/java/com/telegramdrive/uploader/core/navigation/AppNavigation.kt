@@ -106,7 +106,7 @@ fun AppNavigation(
         modifier = Modifier
             .fillMaxWidth()
             .padding(DesignTokens.spacingM)
-            .background(DesignTokens.primaryContainer)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         if (isExpanded && showBottomBar) {
             NavigationRail {
@@ -152,10 +152,10 @@ fun AppNavigation(
                                 .fillMaxWidth()
                                 .liquidGlassOverlay(
                                     shape = MaterialTheme.shapes.extraLarge,
-                                    accent = MaterialTheme.colorScheme.onPrimary
+                                    accent = MaterialTheme.colorScheme.primary
                                 ),
                             shape = MaterialTheme.shapes.extraLarge,
-                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            color = MaterialTheme.colorScheme.surfaceContainer,
                             tonalElevation = 6.dp,
                             shadowElevation = 8.dp
                         ) {
