@@ -42,11 +42,11 @@ fun EmptyState(
             .fillMaxWidth()
             .liquidGlassOverlay(
                 shape = MaterialTheme.shapes.medium,
-                accent = DesignTokens.AppColors.onPrimary
+                accent = MaterialTheme.colorScheme.onPrimary
             ),
-        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.primaryContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, DesignTokens.AppColors.onSurface.copy(alpha = 0.4f).copy(alpha = 0.72f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f).copy(alpha = 0.72f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
@@ -59,7 +59,7 @@ fun EmptyState(
             AnimatedEmptyStateIcon(
                 animationType = animation,
                 size = 48.dp,
-                tint = DesignTokens.AppColors.onPrimary.copy(alpha = 0.72f)
+                tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.72f)
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
@@ -68,7 +68,7 @@ fun EmptyState(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                 textAlign = TextAlign.Center,
-                color = DesignTokens.AppColors.onSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.xs))
@@ -77,14 +77,14 @@ fun EmptyState(
                 text = supportingText,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
 
             if (actionText != null && onActionClick != null) {
                 Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
                 Button(
                     onClick = onActionClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = DesignTokens.AppColors.onPrimary)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
                 ) {
                     Text(text = actionText)
                 }
