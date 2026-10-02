@@ -50,11 +50,11 @@ class SettingsDataStore @Inject constructor(
     }
 
     val glowColorPreference: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[GLOW_COLOR_KEY] ?: "Cobalt"
+        preferences[GLOW_COLOR_KEY] ?: "Lime"
     }
 
     val customGlowHex: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[CUSTOM_GLOW_HEX_KEY] ?: "B8C4FF"
+        preferences[CUSTOM_GLOW_HEX_KEY] ?: "A3E635"
     }
 
     val telegramConnectionState: Flow<String> = context.dataStore.data.map { preferences ->
@@ -196,8 +196,8 @@ class SettingsDataStore @Inject constructor(
 
     suspend fun resetGlowColorPreferences() {
         context.dataStore.edit { preferences ->
-            preferences[GLOW_COLOR_KEY] = "Cobalt"
-            preferences[CUSTOM_GLOW_HEX_KEY] = "B8C4FF"
+            preferences[GLOW_COLOR_KEY] = "Lime"
+            preferences[CUSTOM_GLOW_HEX_KEY] = "A3E635"
         }
     }
 
