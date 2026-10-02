@@ -41,11 +41,11 @@ fun ErrorState(
             .fillMaxWidth()
             .liquidGlassOverlay(
                 shape = MaterialTheme.shapes.medium,
-                accent = DesignTokens.AppColors.error
+                accent = MaterialTheme.colorScheme.error
             ),
-        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.primaryContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, DesignTokens.AppColors.error.copy(alpha = 0.48f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.48f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
@@ -58,7 +58,7 @@ fun ErrorState(
             AnimatedEmptyStateIcon(
                 animationType = animation,
                 size = 48.dp,
-                tint = DesignTokens.AppColors.error
+                tint = MaterialTheme.colorScheme.error
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
@@ -67,7 +67,7 @@ fun ErrorState(
                 text = stringResource(com.telegramdrive.uploader.feature.R.string.error_occurred),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                 textAlign = TextAlign.Center,
-                color = DesignTokens.AppColors.onSurface
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.xs))
@@ -76,14 +76,14 @@ fun ErrorState(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
 
             if (onRetryClick != null) {
                 Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
                 Button(
                     onClick = onRetryClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = DesignTokens.AppColors.error)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
                     Text(text = stringResource(com.telegramdrive.uploader.feature.R.string.retry))
                 }
