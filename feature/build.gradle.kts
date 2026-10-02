@@ -6,6 +6,20 @@ plugins {
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.hilt)
   alias(libs.plugins.roborazzi)
+  alias(libs.plugins.kover)
+}
+
+// JVM test coverage for this module.
+//   ./gradlew :feature:koverHtmlReport   -> feature/build/reports/kover/html/index.html
+//   ./gradlew :feature:koverXmlReport    -> feature/build/reports/kover/report.xml
+// onCheck makes koverVerify emit both formats alongside its rule check.
+kover {
+  reports {
+    total {
+      html { onCheck.set(true) }
+      xml { onCheck.set(true) }
+    }
+  }
 }
 
 android {
