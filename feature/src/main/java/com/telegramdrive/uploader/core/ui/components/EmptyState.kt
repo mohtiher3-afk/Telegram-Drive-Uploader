@@ -42,7 +42,7 @@ fun EmptyState(
             .fillMaxWidth()
             .liquidGlassOverlay(
                 shape = MaterialTheme.shapes.medium,
-                accent = DesignTokens.AppColors.onPrimary
+                accent = DesignTokens.AppColors.onPrimaryContainer
             ),
         colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.primaryContainer),
         shape = MaterialTheme.shapes.medium,
@@ -59,7 +59,7 @@ fun EmptyState(
             AnimatedEmptyStateIcon(
                 animationType = animation,
                 size = 48.dp,
-                tint = DesignTokens.AppColors.onPrimary.copy(alpha = 0.72f)
+                tint = DesignTokens.AppColors.onPrimaryContainer.copy(alpha = 0.72f)
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
@@ -84,7 +84,10 @@ fun EmptyState(
                 Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
                 Button(
                     onClick = onActionClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = DesignTokens.AppColors.onPrimary)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DesignTokens.AppColors.primary,
+                        contentColor = DesignTokens.AppColors.onPrimary
+                    )
                 ) {
                     Text(text = actionText)
                 }
