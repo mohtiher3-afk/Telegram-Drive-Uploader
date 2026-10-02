@@ -18,7 +18,6 @@ import com.telegramdrive.uploader.core.navigation.AppNavigation
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import javax.inject.Inject
 
 @AndroidEntryPoint
