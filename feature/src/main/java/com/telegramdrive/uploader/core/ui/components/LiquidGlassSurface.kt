@@ -406,6 +406,8 @@ fun ShimmerPlaceholder(
     highlightColor: androidx.compose.ui.graphics.Color = Color.Unspecified,
     animationDuration: Int = 1500
 ) {
+    val resolvedBaseColor = if (baseColor == Color.Unspecified) MaterialTheme.colorScheme.surfaceContainer else baseColor
+    val resolvedHighlightColor = if (highlightColor == Color.Unspecified) MaterialTheme.colorScheme.surface else highlightColor
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
     val translateX by infiniteTransition.animateFloat(
         initialValue = -1f,
@@ -425,7 +427,7 @@ fun ShimmerPlaceholder(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(baseColor)
+            .background(resolvedBaseColor)
     ) {
         androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
             val shimmerWidth = size.width * 0.6f
@@ -434,9 +436,9 @@ fun ShimmerPlaceholder(
             drawRect(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        baseColor,
-                        highlightColor.copy(alpha = 0.4f),
-                        baseColor
+                        resolvedBaseColor,
+                        resolvedHighlightColor.copy(alpha = 0.4f),
+                        resolvedBaseColor
                     ),
                     start = Offset(startX, 0f),
                     end = Offset(startX + shimmerWidth, size.height),
