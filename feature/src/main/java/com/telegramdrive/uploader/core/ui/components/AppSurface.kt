@@ -40,10 +40,10 @@ fun AppSurface(
     shape: Shape = RoundedCornerShape(AppRadius.card),
     accent: Color? = null,
     accentAlpha: Float = 0.14f,
-    container: Color = DesignTokens.AppColors.surface,
+    container: Color = MaterialTheme.colorScheme.surface,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val hairline = DesignTokens.AppColors.onSurface.copy(alpha = 0.4f)
+    val hairline = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
     Box(
         modifier = modifier
             .clip(shape)
@@ -79,7 +79,7 @@ fun AppCard(
     shape: Shape = RoundedCornerShape(AppRadius.card),
     accent: Color? = null,
     accentAlpha: Float = 0.14f,
-    container: Color = DesignTokens.AppColors.surface,
+    container: Color = MaterialTheme.colorScheme.surface,
     content: @Composable ColumnScope.() -> Unit
 ) {
     AppSurface(
