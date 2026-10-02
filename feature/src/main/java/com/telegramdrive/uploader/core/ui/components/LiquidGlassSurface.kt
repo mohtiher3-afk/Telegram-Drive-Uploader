@@ -71,15 +71,15 @@ enum class LiquidGlassEmphasis(
 @Composable
 fun Modifier.liquidGlassReflection(
     shape: Shape = RoundedCornerShape(16.dp),
-    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = Color.Unspecified,
     intensity: Float = 1.0f
-): Modifier = composed {
+ ): Modifier = composed {
+    val resolvedAccent = if (accent == Color.Unspecified) MaterialTheme.colorScheme.primary else accent
     val density = androidx.compose.ui.platform.LocalDensity.current
     val progress by remember { mutableFloatStateOf(0f) }
     val isPressed = remember { mutableStateOf(false) }
     
     Modifier
-        .fillMaxSize()
         .clip(shape)
         .drawWithContent {
             drawContent()
@@ -93,9 +93,9 @@ fun Modifier.liquidGlassReflection(
                     brush = Brush.linearGradient(
                         colors = listOf(
                             Color.Transparent,
-                            accent.copy(alpha = 0.08f * intensity),
+                            resolvedAccent.copy(alpha = 0.08f * intensity),
                             Color.White.copy(alpha = 0.12f * intensity),
-                            accent.copy(alpha = 0.08f * intensity),
+                            resolvedAccent.copy(alpha = 0.08f * intensity),
                             Color.Transparent
                         ),
                         start = Offset(sheenX - sheenWidth, -size.height),
@@ -199,7 +199,6 @@ fun Modifier.liquidGlassOverlay(
             // Ambient glow for elevated surfaces
             .then(if (emphasisValue.elevation > 2) {
                 Modifier
-                    .fillMaxSize()
                     .clip(shape)
                     .background(
                         Brush.radialGradient(
@@ -249,7 +248,6 @@ fun Modifier.glowSignalRim(
     
     this.then(
         Modifier
-            .fillMaxSize()
             .clip(shape)
             .border(
                 width = (2f * androidx.compose.ui.platform.LocalDensity.current.density).dp,
