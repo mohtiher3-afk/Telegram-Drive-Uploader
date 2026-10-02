@@ -6,6 +6,36 @@ plugins {
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.hilt)
   alias(libs.plugins.roborazzi)
+  alias(libs.plugins.kover)
+}
+
+// JVM test coverage for this module.
+//   ./gradlew :feature:koverHtmlReport   -> feature/build/reports/kover/html/index.html
+//   ./gradlew :feature:koverXmlReport    -> feature/build/reports/kover/report.xml
+// onCheck makes koverVerify emit both formats alongside its rule check.
+kover {
+  reports {
+    filters {
+      excludes {
+        // DI and build-generated code only. Note that *_Impl is deliberately NOT
+        // excluded: in this project the *Impl classes are hand-written production
+        // code, and measuring them is the point of collecting coverage.
+        classes(
+          "*_Factory",
+          "*_HiltModules*",
+          "*.BuildConfig",
+          "*.Hilt_*",
+          "*.Dagger*",
+          "*_Provide*Factory",
+          "*_MembersInjector"
+        )
+      }
+    }
+    total {
+      html { onCheck.set(true) }
+      xml { onCheck.set(true) }
+    }
+  }
 }
 
 android {
