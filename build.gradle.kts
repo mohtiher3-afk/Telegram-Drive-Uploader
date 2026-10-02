@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.google.devtools.ksp) apply false
   alias(libs.plugins.roborazzi) apply false
+  alias(libs.plugins.kover) apply false
   alias(libs.plugins.secrets) apply false
   alias(libs.plugins.google.services) apply false
   alias(libs.plugins.hilt) apply false

@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.secrets)
   alias(libs.plugins.hilt)
+  alias(libs.plugins.kover)
 }
 
 android {
@@ -37,6 +38,41 @@ kotlin {
   compilerOptions {
     jvmTarget.set(JvmTarget.JVM_17)
     freeCompilerArgs.add("-Xannotation-default-target=param-property")
+  }
+}
+
+// JVM test coverage for this module.
+//   ./gradlew :data:koverHtmlReport   -> data/build/reports/kover/html/index.html
+//   ./gradlew :data:koverXmlReport    -> data/build/reports/kover/report.xml
+// onCheck makes koverVerify emit both formats alongside its rule check.
+kover {
+  reports {
+    filters {
+      excludes {
+        // Vendored generated TDLib bindings. TdApi.java alone is ~137k lines, and
+        // instrumenting its several hundred nested classes overflows Kover's
+        // coverage data structure ("Illegal Capacity: -96150052").
+        classes("org.drinkless.tdlib.*")
+
+        // DI and build-generated code only. Note that *_Impl is deliberately NOT
+        // excluded: in this project the *Impl classes are hand-written production
+        // code (TelegramClientImpl, TelegramUploadEngineImpl, ...), and measuring
+        // them is the point of collecting coverage.
+        classes(
+          "*_Factory",
+          "*_HiltModules*",
+          "*.BuildConfig",
+          "*.Hilt_*",
+          "*.Dagger*",
+          "*_Provide*Factory",
+          "*_MembersInjector"
+        )
+      }
+    }
+    total {
+      html { onCheck.set(true) }
+      xml { onCheck.set(true) }
+    }
   }
 }
 
