@@ -469,6 +469,28 @@ class TelegramClientImpl @Inject constructor(
             close()
             return@callbackFlow
         }
+        // Validate the destination immediately before starting a potentially expensive
+        // preliminary upload. A chat can be deleted, become inaccessible, or lose
+        // send permissions after it was selected in the UI.
+        if (task.destinationId == 0L) {
+            trySend(TelegramUploadEvent.Failed("Telegram destination is invalid", false))
+            close()
+            return@callbackFlow
+        }
+        val destinationCheck = runCatching {
+            sendAwaitObject(client, TdApi.GetChat(task.destinationId))
+        }.getOrElse {
+            trySend(TelegramUploadEvent.Failed("Unable to verify Telegram destination", true))
+            close()
+            return@callbackFlow
+        }
+        if (destinationCheck !is TdApi.Chat) {
+            val message = (destinationCheck as? TdApi.Error)?.message ?: "Telegram destination is unavailable"
+            trySend(TelegramUploadEvent.Failed(message, false))
+            close()
+            return@callbackFlow
+        }
+
         // The send was dispatched earlier but the provisional id was lost (process
         // death between SendMessage dispatch and its persist). Resolve via chat
         // history: a delivered message completes the task; nothing found means the
