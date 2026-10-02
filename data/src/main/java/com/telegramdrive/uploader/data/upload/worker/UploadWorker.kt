@@ -248,9 +248,14 @@ class UploadWorker @AssistedInject constructor(
                             result = Result.success()
                         } else {
                             val canRetry = engineResult.isRetryable && runAttemptCount < MAX_RETRY_ATTEMPTS
-                            repository.updateStatus(
-                                uploadId,
-                                if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
+                            repository.updateStatusIf(
+                                id = uploadId,
+                                status = if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED,
+                                allowedStatuses = listOf(
+                                    UploadStatus.PREPARING,
+                                    UploadStatus.UPLOADING,
+                                    UploadStatus.RETRYING
+                                )
                             )
                             result = if (canRetry) {
                                 DiagnosticsManager.log(
@@ -286,14 +291,30 @@ class UploadWorker @AssistedInject constructor(
                     runCatching { uploadEngine.cancelActiveUploads() }
                     Result.success()
                 } else {
-                    repository.updateStatus(uploadId, UploadStatus.RETRYING)
+                    repository.updateStatusIf(
+                        id = uploadId,
+                        status = UploadStatus.RETRYING,
+                        allowedStatuses = listOf(
+                            UploadStatus.PREPARING,
+                            UploadStatus.UPLOADING,
+                            UploadStatus.RETRYING
+                        )
+                    )
                     Result.retry()
                 }
             }
             if (UploadCompletionPolicy.decide(terminalEventReceived) == UploadCompletionPolicy.Decision.UNCONFIRMED) {
                 val latestTask = repository.getUploadById(uploadId)
                 if (latestTask?.status != UploadStatus.CANCELLED && latestTask?.status != UploadStatus.PAUSED) {
-                    repository.updateStatus(uploadId, UploadStatus.FAILED)
+                    repository.updateStatusIf(
+                        id = uploadId,
+                        status = UploadStatus.FAILED,
+                        allowedStatuses = listOf(
+                            UploadStatus.PREPARING,
+                            UploadStatus.UPLOADING,
+                            UploadStatus.RETRYING
+                        )
+                    )
                     notifyTerminalStatus(uploadId, UploadStatus.FAILED)
                     DiagnosticsManager.log(
                         category = DiagnosticCategory.UPLOAD_FAILED,
@@ -319,9 +340,14 @@ class UploadWorker @AssistedInject constructor(
                 result = Result.success()
             } else {
                 val canRetry = runAttemptCount < MAX_RETRY_ATTEMPTS
-                repository.updateStatus(
-                    uploadId,
-                    if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED
+                repository.updateStatusIf(
+                    id = uploadId,
+                    status = if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED,
+                    allowedStatuses = listOf(
+                        UploadStatus.PREPARING,
+                        UploadStatus.UPLOADING,
+                        UploadStatus.RETRYING
+                    )
                 )
                 if (!canRetry) notifyTerminalStatus(uploadId, UploadStatus.FAILED)
                 result = if (canRetry) Result.retry() else Result.failure()
