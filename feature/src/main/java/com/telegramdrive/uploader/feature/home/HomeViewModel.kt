@@ -9,6 +9,7 @@ import com.telegramdrive.uploader.domain.model.UploadTask
 import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.repository.TelegramRepository
 import com.telegramdrive.uploader.domain.repository.UploadRepository
+import com.telegramdrive.uploader.domain.upload.UploadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +33,8 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val uploadRepository: UploadRepository,
     private val telegramRepository: TelegramRepository,
-    private val settingsDataStore: SettingsDataStore
+    private val settingsDataStore: SettingsDataStore,
+    private val uploadManager: UploadManager
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = combine(
@@ -71,19 +73,39 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeUiState()
     )
-fun retryUpload(id: String) {
+    fun retryUpload(id: String) {
         viewModelScope.launch {
-            val upload = uploadRepository.getUploadById(id)
-            if (upload != null) {
-                // Reset to QUEUED for retry
-                uploadRepository.updateStatus(id, UploadStatus.QUEUED)
+            val upload = uploadRepository.getUploadById(id) ?: return@launch
+            val changed = uploadRepository.updateStatusIf(
+                id,
+                UploadStatus.QUEUED,
+                listOf(UploadStatus.FAILED, UploadStatus.PAUSED)
+            )
+            if (changed) {
+                uploadRepository.bumpExecutionGeneration(id, listOf(UploadStatus.QUEUED))
+                uploadManager.retryUpload(upload.copy(status = UploadStatus.QUEUED))
             }
         }
     }
 
     fun cancelUpload(id: String) {
         viewModelScope.launch {
-            uploadRepository.updateStatus(id, UploadStatus.CANCELLED)
+            val changed = uploadRepository.updateStatusIf(
+                id,
+                UploadStatus.CANCELLED,
+                listOf(
+                    UploadStatus.QUEUED,
+                    UploadStatus.PREPARING,
+                    UploadStatus.UPLOADING,
+                    UploadStatus.PAUSED,
+                    UploadStatus.RETRYING,
+                    UploadStatus.FAILED
+                )
+            )
+            if (changed) {
+                uploadRepository.bumpExecutionGeneration(id, listOf(UploadStatus.CANCELLED))
+                uploadManager.cancelUpload(id)
+            }
         }
     }
 
