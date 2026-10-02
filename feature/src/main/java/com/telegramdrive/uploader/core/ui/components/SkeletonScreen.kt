@@ -283,16 +283,16 @@ fun SkeletonPlaceholder(
     Box(
         modifier = modifier
             .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
-            .background(baseColor)
+            .background(resolvedBaseColor)
     ) {
         if (motionEnabled) {
             androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                 drawRect(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            baseColor,
-                            highlightColor.copy(alpha = 0.4f),
-                            baseColor
+                            resolvedBaseColor,
+                            resolvedHighlightColor.copy(alpha = 0.4f),
+                            resolvedBaseColor
                         ),
                         start = androidx.compose.ui.geometry.Offset(startX, 0f),
                         end = androidx.compose.ui.geometry.Offset(startX + shimmerWidth, size.height),
