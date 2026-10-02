@@ -3,7 +3,14 @@
 local.properties
 *.jks
 *.keystore
+*.p12
 google-services.json
+# Service-account and OAuth credential material. A bare "credentials.json" is the
+# default name the Google Cloud SDK writes, so it is listed explicitly as well as
+# by pattern; otherwise it can be committed by accident and the key cannot be
+# reclaimed without rewriting history.
+credentials.json
+*credentials*.json
 
 # Gradle and Android build outputs
 .gradle/
