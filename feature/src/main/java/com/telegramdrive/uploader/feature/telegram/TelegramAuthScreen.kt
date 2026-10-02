@@ -3,6 +3,8 @@
 
 package com.telegramdrive.uploader.feature.telegram
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -121,32 +123,32 @@ fun TelegramAuthScreen(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.connect_telegram),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = DesignTokens.AppColors.onPrimary,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 textAlign = TextAlign.Center
                             )
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_auth_description),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 textAlign = TextAlign.Center
                             )
                             if (!viewModel.isConfigured) {
                                 Card(
                                     colors = CardDefaults.cardColors(
-                                        containerColor = DesignTokens.AppColors.error.copy(alpha = 0.2f)
+                                        containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
                                     ),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .liquidGlassOverlay(
                                             shape = MaterialTheme.shapes.large,
-                                            accent = DesignTokens.AppColors.error
+                                            accent = MaterialTheme.colorScheme.error
                                         ),
                                     shape = MaterialTheme.shapes.large
                                 ) {
                                     Text(
                                         text = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_api_not_configured),
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = DesignTokens.AppColors.error,
+                                        color = MaterialTheme.colorScheme.error,
                                         modifier = Modifier.padding(12.dp),
                                         textAlign = TextAlign.Center
                                     )
@@ -171,7 +173,7 @@ fun TelegramAuthScreen(
                                 if (isProcessing) {
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(24.dp),
-                                        color = DesignTokens.AppColors.onPrimary,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         strokeWidth = 2.dp
                                     )
                                 } else {
@@ -187,7 +189,7 @@ fun TelegramAuthScreen(
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.connecting_telegram),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                         }
 
@@ -196,12 +198,12 @@ fun TelegramAuthScreen(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_phone_number),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = DesignTokens.AppColors.onPrimary
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.phone_number_help),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 textAlign = TextAlign.Center
                             )
 
@@ -237,7 +239,7 @@ fun TelegramAuthScreen(
                                 if (isProcessing) {
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(24.dp),
-                                        color = DesignTokens.AppColors.onPrimary
+                                        color = MaterialTheme.colorScheme.onPrimary
                                     )
                                 } else {
                                     Text(stringResource(com.telegramdrive.uploader.feature.R.string.continue_action))
@@ -260,12 +262,12 @@ fun TelegramAuthScreen(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.enter_verification_code),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = DesignTokens.AppColors.onPrimary
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.verification_code_sent),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 textAlign = TextAlign.Center
                             )
 
@@ -299,7 +301,7 @@ fun TelegramAuthScreen(
                                 if (isProcessing) {
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(24.dp),
-                                        color = DesignTokens.AppColors.onPrimary
+                                        color = MaterialTheme.colorScheme.onPrimary
                                     )
                                 } else {
                                     Text(stringResource(com.telegramdrive.uploader.feature.R.string.continue_action))
@@ -312,32 +314,32 @@ fun TelegramAuthScreen(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.scan_qr_title),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = DesignTokens.AppColors.onPrimary,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 textAlign = TextAlign.Center
                             )
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.scan_qr_instructions),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 textAlign = TextAlign.Center
                             )
                             qrLoginLink?.let { link ->
                                 Card(
                                     colors = CardDefaults.cardColors(
-                                        containerColor = DesignTokens.AppColors.onSecondaryContainer
+                                        containerColor = MaterialTheme.colorScheme.onSecondaryContainer
                                     ),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .liquidGlassOverlay(
                                             shape = MaterialTheme.shapes.large,
-                                            accent = DesignTokens.AppColors.onSecondary
+                                            accent = MaterialTheme.colorScheme.onSecondary
                                         ),
                                     shape = MaterialTheme.shapes.large
                                 ) {
                                     Text(
                                         text = link,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = DesignTokens.AppColors.onSecondary,
+                                        color = MaterialTheme.colorScheme.onSecondary,
                                         modifier = Modifier.padding(12.dp),
                                         textAlign = TextAlign.Center
                                     )
@@ -359,31 +361,31 @@ fun TelegramAuthScreen(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.two_step_verification),
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = DesignTokens.AppColors.onPrimary
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.enter_cloud_password),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 textAlign = TextAlign.Center
                             )
 
                             Card(
                                 colors = CardDefaults.cardColors(
-                                    containerColor = DesignTokens.AppColors.onSecondaryContainer
+                                    containerColor = MaterialTheme.colorScheme.onSecondaryContainer
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .liquidGlassOverlay(
                                         shape = MaterialTheme.shapes.large,
-                                        accent = DesignTokens.AppColors.onSecondary
+                                        accent = MaterialTheme.colorScheme.onSecondary
                                     ),
                                 shape = MaterialTheme.shapes.large
                             ) {
                                 Text(
                                     text = stringResource(com.telegramdrive.uploader.feature.R.string.enter_two_step_password),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = DesignTokens.AppColors.onSecondary,
+                                    color = MaterialTheme.colorScheme.onSecondary,
                                     modifier = Modifier.padding(12.dp)
                                 )
                             }
@@ -428,7 +430,7 @@ fun TelegramAuthScreen(
                                 if (isProcessing) {
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(24.dp),
-                                        color = DesignTokens.AppColors.onPrimary
+                                        color = MaterialTheme.colorScheme.onPrimary
                                     )
                                 } else {
                                     Text(stringResource(com.telegramdrive.uploader.feature.R.string.continue_action))
@@ -447,10 +449,10 @@ fun TelegramAuthScreen(
                                         .fillMaxWidth()
                                         .liquidGlassOverlay(
                                             shape = MaterialTheme.shapes.medium,
-                                            accent = DesignTokens.AppColors.error
+                                            accent = MaterialTheme.colorScheme.error
                                         ),
                                     colors = CardDefaults.cardColors(
-                                        containerColor = DesignTokens.AppColors.error.copy(alpha = 0.2f)
+                                        containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
                                     ),
                                     shape = MaterialTheme.shapes.medium
                                 ) {
@@ -462,18 +464,18 @@ fun TelegramAuthScreen(
                                         Icon(
                                             imageVector = Icons.Default.ErrorOutline,
                                             contentDescription = null,
-                                            tint = DesignTokens.AppColors.error
+                                            tint = MaterialTheme.colorScheme.error
                                         )
                                         Text(
                                             text = stringResource(com.telegramdrive.uploader.feature.R.string.authentication_error),
                                             style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.Bold,
-                                            color = DesignTokens.AppColors.error
+                                            color = MaterialTheme.colorScheme.error
                                         )
                                         Text(
                                             text = error?.let { stringResource(it.messageResId()) } ?: "",
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = DesignTokens.AppColors.error,
+                                            color = MaterialTheme.colorScheme.error,
                                             textAlign = TextAlign.Center,
                                             modifier = Modifier.testTag("error_text")
                                         )
@@ -516,7 +518,7 @@ fun TelegramAuthScreen(
                 Snackbar(
                     action = {
                         TextButton(onClick = { viewModel.clearError() }) {
-                            Text(stringResource(com.telegramdrive.uploader.feature.R.string.dismiss), color = DesignTokens.AppColors.onPrimary)
+                            Text(stringResource(com.telegramdrive.uploader.feature.R.string.dismiss), color = MaterialTheme.colorScheme.onPrimary)
                         }
                     },
                     modifier = Modifier
@@ -534,7 +536,7 @@ fun TelegramAuthScreen(
 fun TelegramLogo() {
     Surface(
         shape = MaterialTheme.shapes.extraLarge,
-        color = DesignTokens.AppColors.onPrimaryContainer,
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
         modifier = Modifier.size(72.dp)
     ) {
         Box(
@@ -544,7 +546,7 @@ fun TelegramLogo() {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Send,
                 contentDescription = null,
-                tint = DesignTokens.AppColors.onPrimary,
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(40.dp)
             )
         }
@@ -562,7 +564,7 @@ private fun AccountSwitcher(
             .fillMaxWidth()
             .testTag("account_switcher"),
         colors = CardDefaults.cardColors(
-            containerColor = DesignTokens.AppColors.surfaceContainerHigh
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ),
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -584,9 +586,9 @@ private fun AccountSwitcher(
                     enabled = !account.isActive && !isProcessing,
                     shape = MaterialTheme.shapes.medium,
                     color = if (account.isActive) {
-                        DesignTokens.AppColors.onPrimaryContainer
+                        MaterialTheme.colorScheme.onPrimaryContainer
                     } else {
-                        DesignTokens.AppColors.onSecondaryContainer
+                        MaterialTheme.colorScheme.onSecondaryContainer
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -606,20 +608,20 @@ private fun AccountSwitcher(
                             Text(
                                 text = account.phone,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                         }
                         if (account.isActive) {
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.active),
                                 style = MaterialTheme.typography.labelMedium,
-                                color = DesignTokens.AppColors.onPrimary
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         } else {
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.switch_now),
                                 style = MaterialTheme.typography.labelMedium,
-                                color = DesignTokens.AppColors.onPrimary
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
