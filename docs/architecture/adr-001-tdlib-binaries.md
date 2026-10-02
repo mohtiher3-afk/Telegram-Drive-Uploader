@@ -84,6 +84,80 @@ every future clone and fetch carries it.
 | Download once in CI, pass between jobs | Works only in CI. Local and offline builds lose the guarantee that this ADR exists to provide. |
 | Commit a single `universal` lib | Removes the per-ABI entries but still commits binaries, so it costs repository size without buying reproducibility. |
 
+## Consequence: `:data` is not covered, and why
+
+Committing `TdApi.java` here is not what broke anything, but this is where the
+investigation that found that out is recorded.
+
+### The `Illegal Capacity` failures were a corrupt Gradle cache
+
+Several `:data` test tasks failed with:
+
+```
+Execution failed for task ':data:testDebugUnitTest'
+> java.lang.IllegalArgumentException: Illegal Capacity: -96150052
+```
+
+This was initially attributed to coverage instrumentation of `TdApi.java`
+(136,572 lines, 3,169 nested classes) and to the JVM bytecode probe arrays. **That
+attribution was wrong.** The stack trace shows where it actually originates:
+
+```
+Caused by: java.lang.IllegalArgumentException: Illegal Capacity: -96150052
+  at org.gradle.api.internal.tasks.testing.results.serializable.SerializableTestResult$Serializer.deserializeFailure
+  at org.gradle.api.internal.tasks.testing.results.serializable.SerializableTestResult$Serializer.deserialize
+  at org.gradle.api.internal.tasks.testing.Test.getPreviousFailedTestClasses
+  at com.android.build.gradle.tasks.factory.AndroidUnitTest.executeTests
+```
+
+Gradle deserialises **previously cached** test outcomes from
+`<module>/build/test-results` *before* it runs any test. A truncated or corrupt
+file there aborts the task. Evidence that this is the cause and not the tests:
+
+- The negative value is byte-identical across every failure.
+- It occurs with any `--tests` filter, including a single plain non-Robolectric class.
+- Raising the test-worker heap to 2 GB changed nothing.
+- It still occurred at a clean checkout, with Kover removed from `:data`
+  entirely, and with over 3 GB free on disk.
+- Clearing the cached results directory makes the task pass immediately.
+
+**Nothing about TDLib, Kover, Robolectric, memory, or disk caused it.** The
+hypotheses were tested and falsified rather than assumed.
+
+### The fix that shipped
+
+`scripts/verify-project.ps1` now clears every module's `build/test-results`
+before running, so no run can be decided by a corrupt or stale cache, and a
+`PASS` can only mean outcomes this run actually produced. This costs a re-run of
+`:data` and `:feature` tests that Gradle might otherwise mark up-to-date, which is
+the intended trade: an up-to-date test result is not evidence.
+
+### Coverage scope
+
+Kover is applied to `:feature` only. `:data` has no coverage plugin and must not
+be reported as a measured 0% or as "not applicable" - it is unmeasured.
+
+```
+./gradlew :feature:koverHtmlReport :feature:koverXmlReport
+  -> feature/build/reports/kover/html/index.html
+  -> feature/build/reports/kover/report.xml
+```
+
+`:feature` measures **47.9%** line coverage, with 18 namespaces under 5%. Any
+figure quoted from this repository must come from an artifact written by the same
+run.
+
+### Permanent fix for the `:data` gap
+
+Coverage of `:data` needs the generated binding out of the instrumented module:
+
+| Module | Contents | Coverage |
+|---|---|---|
+| `:tdlib-bindings` | `org.drinkless.tdlib.**` (generated, vendored) | excluded by design |
+| `:data` | repositories, TDLib client, upload engine, Room DAO | measurable |
+
+That split is independent of the cache bug above and is still outstanding.
+
 ## Rule text
 
 This is the exception that the `AGENTS.md` prohibition does not cover. The rule
