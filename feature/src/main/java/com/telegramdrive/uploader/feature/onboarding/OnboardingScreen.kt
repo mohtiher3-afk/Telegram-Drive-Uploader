@@ -87,7 +87,7 @@ fun OnboardingScreen(
                 title = stringResource(R.string.onboarding_page_upload_title),
                 description = stringResource(R.string.onboarding_page_upload_description),
                 icon = Icons.Default.CloudUpload,
-                accent = MaterialTheme.colorScheme.onPrimaryContainer
+                accent = MaterialTheme.colorScheme.primaryContainer
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_schedule_title),
@@ -130,7 +130,7 @@ fun OnboardingScreen(
         }
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primaryContainer) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
