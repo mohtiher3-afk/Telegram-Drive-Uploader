@@ -1,5 +1,7 @@
 package com.telegramdrive.uploader.core.ui.components
 
+import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -48,7 +50,7 @@ fun TransferMetrics(
             .fillMaxWidth()
             .testTag("transfer_metrics_card"),
         colors = CardDefaults.cardColors(
-            containerColor = DesignTokens.AppColors.secondaryContainer
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
         ),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -73,7 +75,7 @@ fun TransferMetrics(
                     Icon(
                         imageVector = Icons.Default.Speed,
                         contentDescription = stringResource(R.string.upload_speed_desc),
-                        tint = DesignTokens.AppColors.onPrimary,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
@@ -83,7 +85,7 @@ fun TransferMetrics(
                         ),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = DesignTokens.AppColors.onSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -94,8 +96,8 @@ fun TransferMetrics(
                         .fillMaxWidth()
                         .height(4.dp)
                         .clip(MaterialTheme.shapes.extraSmall),
-                    color = DesignTokens.AppColors.onPrimary,
-                    trackColor = DesignTokens.AppColors.onPrimaryContainer.copy(alpha = 0.4f)
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    trackColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.4f)
                 )
             }
 
@@ -113,7 +115,7 @@ fun TransferMetrics(
                     Icon(
                         imageVector = Icons.Default.Schedule,
                         contentDescription = stringResource(R.string.time_remaining_desc),
-                        tint = DesignTokens.AppColors.onSecondary,
+                        tint = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.size(16.dp)
                     )
 
@@ -128,7 +130,7 @@ fun TransferMetrics(
                         text = stringResource(R.string.upload_eta, etaLabel),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = DesignTokens.AppColors.onSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -139,8 +141,8 @@ fun TransferMetrics(
                         .fillMaxWidth()
                         .height(4.dp)
                         .clip(MaterialTheme.shapes.extraSmall),
-                    color = DesignTokens.AppColors.onSecondary,
-                    trackColor = DesignTokens.AppColors.onSecondaryContainer.copy(alpha = 0.4f)
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    trackColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.4f)
                 )
             }
         }
