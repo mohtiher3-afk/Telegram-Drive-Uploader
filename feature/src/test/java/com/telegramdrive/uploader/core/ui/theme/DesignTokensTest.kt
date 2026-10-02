@@ -14,7 +14,7 @@ import org.junit.Test
  * grouped objects existed but the `DesignTokens` container did not, the whole
  * `:feature` module failed to compile with "Unresolved reference 'DesignTokens'" and
  * no screen could be built at all. These assertions keep the container and the flat
- * aliases present, and assert that the flat palette stays bound to the light scheme
+ * aliases present, and assert that the flat palette stays bound to the dark scheme
  * in Theme.kt so the two can never drift apart again.
  */
 class DesignTokensTest {
@@ -34,36 +34,40 @@ class DesignTokensTest {
 
     @Test
     fun `flat palette never drifts from the theme scheme`() {
-        // AppColors delegates every Material role to the light scheme, so the two
+        // AppColors delegates every Material role to the dark scheme, so the two
         // cannot diverge. This guards the defect where AppColors restated its own
         // hex values and quietly disagreed with the theme.
-        assertEquals(LightColorScheme.primaryContainer, AppColors.primaryContainer)
-        assertEquals(LightColorScheme.secondaryContainer, AppColors.secondaryContainer)
-        assertEquals(LightColorScheme.surface, AppColors.surface)
-        assertEquals(LightColorScheme.onPrimary, AppColors.onPrimary)
-        assertEquals(LightColorScheme.onSecondary, AppColors.onSecondary)
-        assertEquals(LightColorScheme.onSurface, AppColors.onSurface)
-        assertEquals(LightColorScheme.onPrimaryContainer, AppColors.onPrimaryContainer)
-        assertEquals(LightColorScheme.onSecondaryContainer, AppColors.onSecondaryContainer)
-        assertEquals(LightColorScheme.onSurfaceVariant, AppColors.onSurfaceVariant)
-        assertEquals(LightColorScheme.error, AppColors.error)
-        assertEquals(LightColorScheme.errorContainer, AppColors.errorContainer)
-        assertEquals(LightColorScheme.surfaceContainerLow, AppColors.surfaceContainerLow)
-        assertEquals(LightColorScheme.surfaceContainerHigh, AppColors.surfaceContainerHigh)
-        assertEquals(LightColorScheme.surfaceContainerHighest, AppColors.surfaceContainerHighest)
+        assertEquals(DarkColorScheme.primaryContainer, AppColors.primaryContainer)
+        assertEquals(DarkColorScheme.secondaryContainer, AppColors.secondaryContainer)
+        assertEquals(DarkColorScheme.surface, AppColors.surface)
+        assertEquals(DarkColorScheme.onPrimary, AppColors.onPrimary)
+        assertEquals(DarkColorScheme.onSecondary, AppColors.onSecondary)
+        assertEquals(DarkColorScheme.onSurface, AppColors.onSurface)
+        assertEquals(DarkColorScheme.onPrimaryContainer, AppColors.onPrimaryContainer)
+        assertEquals(DarkColorScheme.onSecondaryContainer, AppColors.onSecondaryContainer)
+        assertEquals(DarkColorScheme.onSurfaceVariant, AppColors.onSurfaceVariant)
+        assertEquals(DarkColorScheme.error, AppColors.error)
+        assertEquals(DarkColorScheme.errorContainer, AppColors.errorContainer)
+        assertEquals(DarkColorScheme.surfaceContainerLow, AppColors.surfaceContainerLow)
+        assertEquals(DarkColorScheme.surfaceContainerHigh, AppColors.surfaceContainerHigh)
+        assertEquals(DarkColorScheme.surfaceContainerHighest, AppColors.surfaceContainerHighest)
     }
 
     @Test
     fun `surface container ladder stays tonally ordered`() {
         // Low < base < High < Highest is the ladder the card call sites rely on, so
         // assert the relationship instead of pinning duplicate literals here.
+        //
+        // Luminance rises with the step index in the dark scheme and falls with it in
+        // the light one. The ordering below is the dark-scheme direction; asserting
+        // the light direction here is exactly what this change had to correct.
         val low = AppColors.surfaceContainerLow.luminance()
-        val base = LightColorScheme.surfaceContainer.luminance()
+        val base = DarkColorScheme.surfaceContainer.luminance()
         val high = AppColors.surfaceContainerHigh.luminance()
         val highest = AppColors.surfaceContainerHighest.luminance()
         assertTrue(
-            "low > base > high > highest",
-            low > base && base > high && high > highest
+            "low < base < high < highest",
+            low < base && base < high && high < highest
         )
     }
 

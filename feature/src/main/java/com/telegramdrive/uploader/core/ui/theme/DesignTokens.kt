@@ -98,29 +98,33 @@ object AppType {
  * instead of hardcoding hex values or relying on MaterialTheme.colorScheme.
  */
 object AppColors {
-    // Every role Material defines delegates to the light scheme in Theme.kt.
+    // Every role Material defines delegates to the dark scheme in Theme.kt.
+    // The app is dark-only by product decision (2026-10-02): the home experience
+    // is authored against the near-black reference. Pinning to LightColorScheme
+    // made onPrimary resolve to white on a pale primaryContainer canvas, which
+    // measured 1.30:1 on the physical device.
     // docs/design/DESIGN_SYSTEM.md names the theme's semantic colour scheme as the
     // system of record, so restating hex values here is exactly what let this flat
     // palette drift away from the theme. Delegating makes that drift impossible.
-    val primary = LightColorScheme.primary
-    val primaryContainer = LightColorScheme.primaryContainer
-    val secondaryContainer = LightColorScheme.secondaryContainer
-    val surface = LightColorScheme.surface
-    val onPrimary = LightColorScheme.onPrimary
-    val onSecondary = LightColorScheme.onSecondary
-    val onSurface = LightColorScheme.onSurface
-    val onPrimaryContainer = LightColorScheme.onPrimaryContainer
-    val onSecondaryContainer = LightColorScheme.onSecondaryContainer
-    val onSurfaceVariant = LightColorScheme.onSurfaceVariant
-    val error = LightColorScheme.error
-    val errorContainer = LightColorScheme.errorContainer
+    val primary = DarkColorScheme.primary
+    val primaryContainer = DarkColorScheme.primaryContainer
+    val secondaryContainer = DarkColorScheme.secondaryContainer
+    val surface = DarkColorScheme.surface
+    val onPrimary = DarkColorScheme.onPrimary
+    val onSecondary = DarkColorScheme.onSecondary
+    val onSurface = DarkColorScheme.onSurface
+    val onPrimaryContainer = DarkColorScheme.onPrimaryContainer
+    val onSecondaryContainer = DarkColorScheme.onSecondaryContainer
+    val onSurfaceVariant = DarkColorScheme.onSurfaceVariant
+    val error = DarkColorScheme.error
+    val errorContainer = DarkColorScheme.errorContainer
 
     // Container ladder, tonally ordered:
     // surfaceContainerLow < surfaceContainer < surfaceContainerHigh < surfaceContainerHighest.
     // Card and sheet call sites read these steps.
-    val surfaceContainerLow = LightColorScheme.surfaceContainerLow
-    val surfaceContainerHigh = LightColorScheme.surfaceContainerHigh
-    val surfaceContainerHighest = LightColorScheme.surfaceContainerHighest
+    val surfaceContainerLow = DarkColorScheme.surfaceContainerLow
+    val surfaceContainerHigh = DarkColorScheme.surfaceContainerHigh
+    val surfaceContainerHighest = DarkColorScheme.surfaceContainerHighest
 
     // Status and decorative roles have no Material counterpart, so they keep their
     // own values.
