@@ -79,8 +79,8 @@ private fun UploadChatBubble(
             bottomEnd = 18.dp,
             bottomStart = 18.dp
         ),
-        color = DesignTokens.AppColors.secondaryContainer.copy(alpha = 0.65f),
-        contentColor = DesignTokens.AppColors.onSecondary
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.65f),
+        contentColor = MaterialTheme.colorScheme.onSecondary
     ) {
         Column(
             modifier = Modifier.padding(DesignTokens.AppSpacing.md),
@@ -107,7 +107,7 @@ private fun UploadChatBubble(
                     append(formatFileSize(upload.fileSize))
                 },
                 style = MaterialTheme.typography.labelMedium,
-                color = DesignTokens.AppColors.onSecondary.copy(alpha = 0.8f)
+                color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
             )
             if (upload.status == UploadStatus.FAILED) {
                 val err = upload.lastError
@@ -115,7 +115,7 @@ private fun UploadChatBubble(
                     Text(
                         text = err,
                         style = MaterialTheme.typography.labelSmall,
-                        color = DesignTokens.AppColors.error,
+                        color = MaterialTheme.colorScheme.error,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
