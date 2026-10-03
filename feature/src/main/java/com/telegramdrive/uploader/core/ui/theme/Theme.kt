@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
  * - GlowColorPreset applies to secondary/tertiary/surface roles, NOT primary
  * - Fallback to Calm Material schemes on older Android or when disabled
  */
-private val DarkColorScheme = darkColorScheme(
+internal val DarkColorScheme = darkColorScheme(
     primary = Color(0xFFA9B4FF),
     onPrimary = Color(0xFF0D1B5B),
     primaryContainer = Color(0xFF2B3C9E),
@@ -147,6 +147,7 @@ private val ExpressiveShapes = Shapes(
     extraLarge = androidx.compose.foundation.shape.RoundedCornerShape(28.dp)
 )
 
+@Suppress("UNUSED_PARAMETER")
 @Composable
 fun TelegramDriveTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -160,24 +161,33 @@ fun TelegramDriveTheme(
     customGlowHex: String = GlowColorCodec.DEFAULT_HEX,
     content: @Composable () -> Unit
 ) {
+    // Dark-only by product decision (2026-10-02). The home experience is authored
+    // against the near-black reference, and DesignTokens.AppColors now delegates to
+    // DarkColorScheme, so the light scheme produced white-on-pale pairs that were
+    // unreadable on device.
+    //
+    // `darkTheme` is deliberately retained so MainActivity keeps compiling and can
+    // keep collecting the theme preference; the preference is now inert. Removing
+    // the parameter would require editing MainActivity, out of scope here.
+    val useDarkScheme = true
     val baseColorScheme = when {
         dynamicColorStrategy == DynamicColorStrategy.Full && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (useDarkScheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         dynamicColorStrategy == DynamicColorStrategy.BrandAccented && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            val dynamicScheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            dynamicScheme.withBrandAccents(darkTheme, glowColorPreset, customGlowHex)
+            val dynamicScheme = if (useDarkScheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            dynamicScheme.withBrandAccents(useDarkScheme, glowColorPreset, customGlowHex)
         }
-        darkTheme -> DarkColorScheme
+        useDarkScheme -> DarkColorScheme
         else -> LightColorScheme
     }
-    
+
     val finalColorScheme = when (dynamicColorStrategy) {
         DynamicColorStrategy.Full -> baseColorScheme // Pure dynamic, no brand override
         DynamicColorStrategy.BrandAccented -> baseColorScheme // Already has brand accents applied
-        DynamicColorStrategy.StaticBrand -> glowColorPreset.applyTo(baseColorScheme, darkTheme, customGlowHex)
+        DynamicColorStrategy.StaticBrand -> glowColorPreset.applyTo(baseColorScheme, useDarkScheme, customGlowHex)
     }
 
     MaterialTheme(
