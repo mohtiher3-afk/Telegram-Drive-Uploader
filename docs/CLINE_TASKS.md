@@ -31,7 +31,6 @@ OnPurple/Purple، Teal/Background، Error/Background.
 ثم أضف في وحدة core مكونات: MissionBackground (شبكة خافتة وتوهج بنفسجي
 متحرك بـ Brush.radialGradient داخل drawBehind)، GlassCard، Eyebrow، LimeButton،
 ShimmerProgressBar، PulseFab، SettingToggle، باستخدام AppColors فقط ودون blur.
-(مرجع إن توفر: MissionComponents.kt المرفق، وإلا ابنها من الوصف.)
 شغّل ./gradlew :core:compileDebugKotlin وأخبرني بأي أخطاء قبل إصلاحها.
 اعرض الخطة والملفات المتأثرة أولاً ولا تنفذ قبل موافقتي.
 ```
