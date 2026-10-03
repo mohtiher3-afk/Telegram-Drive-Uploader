@@ -31,7 +31,17 @@ class HistoryViewModelUiStateTest {
     private val fakeRepo = object : UploadRepository {
         override fun getAllUploads(): Flow<List<UploadTask>> = uploadsFlow
         override fun getActiveUploads(): Flow<List<UploadTask>> = emptyFlow()
-        override suspend fun getUploadById(id: String): UploadTask? = null
+        // The repository's deleteCompletedUploadById contract refuses to delete anything
+        // whose status is not COMPLETED, so the fake must report a terminal task.
+        // Returning null here made the real deletion path silently skip and the
+        // delegation assertion below could never hold.
+        override suspend fun getUploadById(id: String): UploadTask? = UploadTask(
+            id = id,
+            sourceUri = "content://$id",
+            fileName = "$id.mp4",
+            fileSize = 0L,
+            status = UploadStatus.COMPLETED
+        )
         override fun observeUploadById(id: String): Flow<UploadTask?> = emptyFlow()
         override suspend fun insertUpload(upload: UploadTask) {}
         override suspend fun updateStatus(id: String, status: UploadStatus) {}
