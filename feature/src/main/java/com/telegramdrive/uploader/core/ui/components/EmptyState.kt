@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,7 +43,7 @@ fun EmptyState(
             .fillMaxWidth()
             .liquidGlassOverlay(
                 shape = MaterialTheme.shapes.medium,
-                accent = DesignTokens.AppColors.onPrimary
+                accent = DesignTokens.AppColors.onPrimaryContainer
             ),
         colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.primaryContainer),
         shape = MaterialTheme.shapes.medium,
@@ -59,7 +60,7 @@ fun EmptyState(
             AnimatedEmptyStateIcon(
                 animationType = animation,
                 size = 48.dp,
-                tint = DesignTokens.AppColors.onPrimary.copy(alpha = 0.72f)
+                tint = DesignTokens.AppColors.onPrimaryContainer.copy(alpha = 0.72f)
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
@@ -84,9 +85,20 @@ fun EmptyState(
                 Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
                 Button(
                     onClick = onActionClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = DesignTokens.AppColors.onPrimary)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        // Inverted against the primaryContainer card: a container of
+                        // primaryContainer would sit at 1:1 and disappear. Measured
+                        // 13.4:1 against the card and 11.89:1 for the label.
+                        containerColor = DesignTokens.AppColors.onPrimaryContainer,
+                        contentColor = DesignTokens.AppColors.primaryContainer
+                    )
                 ) {
-                    Text(text = actionText)
+                    Text(
+                        text = actionText,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
