@@ -63,6 +63,9 @@ class ThemeStrategyRoutingTest {
      * Same, but omits the strategy argument to exercise the declared default.
      * darkTheme is pinned so the assertion compares like with like: swatchColor()
      * returns the dark variant, and Robolectric's default is light mode.
+     *
+     * `darkTheme` no longer selects a scheme — the app is dark-only — so the
+     * argument is accepted and ignored.
      */
     private fun primaryWithDefaultStrategy(
         preset: GlowColorPreset = GlowColorPreset.COBALT
@@ -88,9 +91,52 @@ class ThemeStrategyRoutingTest {
 
     @Test
     fun `static brand honours the custom hex through primary`() {
+        // The theme is dark-only, so the expected value comes from the dark path and
+        // the darkTheme argument below is deliberately false: it is accepted and
+        // ignored, and the routing contract is what is under test here, not the
+        // literal hex. A preset may darken a colour to reach readable contrast.
+        val expected = GlowColorPreset.CUSTOM
+            .applyTo(DarkColorScheme, darkTheme = true, customHex = CUSTOM_HEX)
+            .primary
         assertEquals(
-            GlowColorCodec.colorFromHex(CUSTOM_HEX),
+            expected,
             primaryUnder(DynamicColorStrategy.StaticBrand, preset = GlowColorPreset.CUSTOM, darkTheme = false)
+        )
+    }
+
+    @Test
+    fun `the darkTheme argument no longer selects a scheme`() {
+        // Regression guard for the dark-only decision. Before it, darkTheme = false
+        // produced the light scheme; now both arguments resolve to the same primary.
+        //
+        // Both themes are rendered inside one composition: createComposeRule permits a
+        // single setContent per test, so calling primaryUnder twice would not produce
+        // two observations to compare.
+        var fromDarkArgument = Color.Unspecified
+        var fromLightArgument = Color.Unspecified
+        composeRule.setContent {
+            TelegramDriveTheme(
+                darkTheme = true,
+                dynamicColorStrategy = DynamicColorStrategy.StaticBrand,
+                glowColorPreset = GlowColorPreset.COBALT,
+                customGlowHex = CUSTOM_HEX
+            ) {
+                fromDarkArgument = MaterialTheme.colorScheme.primary
+            }
+            TelegramDriveTheme(
+                darkTheme = false,
+                dynamicColorStrategy = DynamicColorStrategy.StaticBrand,
+                glowColorPreset = GlowColorPreset.COBALT,
+                customGlowHex = CUSTOM_HEX
+            ) {
+                fromLightArgument = MaterialTheme.colorScheme.primary
+            }
+        }
+        composeRule.waitForIdle()
+        assertEquals(
+            "darkTheme = true and darkTheme = false must resolve to the same primary",
+            fromDarkArgument,
+            fromLightArgument
         )
     }
 
