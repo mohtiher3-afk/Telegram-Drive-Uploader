@@ -1,0 +1,65 @@
+package com.telegramdrive.uploader
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
+import dagger.hilt.android.AndroidEntryPoint
+import com.telegramdrive.uploader.core.navigation.AppNavigation
+import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
+import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
+import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
+
+    // Trigger rebuild to ensure correct app is installed on the emulator
+    @Inject
+    lateinit var settingsDataStore: SettingsDataStore
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            val themePreference by settingsDataStore.themePreference.collectAsStateWithLifecycle(initialValue = "System")
+            val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Seafoam")
+            val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "69D6B5")
+            val darkTheme = when (themePreference) {
+                "Dark" -> true
+                "Light" -> false
+                else -> isSystemInDarkTheme()
+            }
+
+            TelegramDriveTheme(
+                darkTheme = darkTheme,
+                // StaticBrand is what makes the Glow Color setting meaningful: it is the
+                // only strategy where applyTo() assigns the user's chosen colour to
+                // primary. BrandAccented deliberately leaves primary to the wallpaper
+                // scheme, so the seven presets and the custom hex picker would have no
+                // visible effect. This also matches the original dynamicColor = false.
+                dynamicColorStrategy = DynamicColorStrategy.StaticBrand,
+                glowColorPreset = GlowColorPreset.fromStorage(glowColorPreference),
+                customGlowHex = customGlowHex
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = DesignTokens.AppColors.primaryContainer
+                ) {
+                    AppNavigation(settingsDataStore)
+                }
+            }
+        }
+    }
+}

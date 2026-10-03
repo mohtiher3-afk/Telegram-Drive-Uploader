@@ -1,0 +1,402 @@
+package com.telegramdrive.uploader.data.upload.worker
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.ServiceInfo
+import androidx.core.app.NotificationCompat
+import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
+import androidx.work.WorkerParameters
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
+import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
+import com.telegramdrive.uploader.core.diagnostics.ErrorCode
+import com.telegramdrive.uploader.core.util.OwnedStagedFileStore
+import com.telegramdrive.uploader.domain.model.UploadStatus
+import com.telegramdrive.uploader.domain.repository.UploadRepository
+import com.telegramdrive.uploader.domain.upload.TelegramUploadEngine
+import com.telegramdrive.uploader.domain.upload.UploadCompletionPolicy
+import com.telegramdrive.uploader.domain.upload.UploadEngineResult
+import com.telegramdrive.uploader.data.upload.notifications.UploadEventNotifier
+import com.telegramdrive.uploader.domain.upload.UploadEventNotificationPolicy
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.collect
+
+@HiltWorker
+class UploadWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted params: WorkerParameters,
+    private val repository: UploadRepository,
+    private val uploadEngine: TelegramUploadEngine,
+    private val uploadEventNotifier: UploadEventNotifier,
+    private val ownedStagedFileStore: OwnedStagedFileStore
+) : CoroutineWorker(context, params) {
+
+    companion object {
+        private const val MAX_RETRY_ATTEMPTS = 5
+
+        // The constant value is compile-time inlined, so it is safe on API < 29; the
+        // foreground-service type is only honoured on API 29+ devices (documented in
+        // docs/archive/BASELINE_V2_STAGE1.md).
+        @SuppressLint("InlinedApi")
+        private const val FOREGROUND_SERVICE_TYPE_DATA_SYNC =
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+    }
+
+    override suspend fun doWork(): Result {
+        val uploadId = inputData.getString("upload_id") ?: return Result.failure()
+        
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.WORKER_STARTED,
+            severity = DiagnosticSeverity.INFO,
+            message = "Background upload worker has started execution.",
+            uploadId = uploadId
+        )
+        
+        val uploadTask = repository.getUploadById(uploadId) ?: run {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.WORKER_STOPPED,
+                severity = DiagnosticSeverity.ERROR,
+                message = "Background upload worker aborted: upload task not found in database.",
+                uploadId = uploadId,
+                errorCode = ErrorCode.SOURCE_FILE_UNAVAILABLE
+            )
+            return Result.failure()
+        }
+
+        if (uploadTask.status == UploadStatus.COMPLETED) {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.WORKER_STOPPED,
+                severity = DiagnosticSeverity.INFO,
+                message = "Background upload worker skipped execution: upload task is already completed.",
+                uploadId = uploadId
+            )
+            return Result.success()
+        }
+
+        if (uploadTask.status == UploadStatus.CANCELLED || uploadTask.status == UploadStatus.PAUSED) {
+            if (uploadTask.status == UploadStatus.CANCELLED) {
+                ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+            }
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.WORKER_STOPPED,
+                severity = DiagnosticSeverity.INFO,
+                message = "Background upload worker skipped execution: upload task is ${uploadTask.status.name.lowercase()}.",
+                uploadId = uploadId
+            )
+            return Result.success()
+        }
+
+        val wasAlreadyUploading = uploadTask.status == UploadStatus.UPLOADING
+        if (!wasAlreadyUploading) {
+            repository.updateStatusIf(
+                id = uploadId,
+                status = UploadStatus.PREPARING,
+                allowedStatuses = listOf(UploadStatus.QUEUED, UploadStatus.RETRYING)
+            )
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_PREPARING,
+                severity = DiagnosticSeverity.INFO,
+                message = "Upload task entered preflight; waiting for TDLib handoff.",
+                uploadId = uploadId
+            )
+        } else {
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.UPLOAD_PREPARING,
+                severity = DiagnosticSeverity.INFO,
+                message = "Upload task resuming from UPLOADING state.",
+                uploadId = uploadId
+            )
+        }
+
+        val executionGeneration = uploadTask.executionGeneration
+        var result: Result = Result.failure()
+        var terminalEventReceived = false
+        val startTime = System.currentTimeMillis()
+        var lastProgressUpdateAt = 0L
+
+        try {
+            // Run this worker as a foreground service so that uploads survive the app
+            // being backgrounded on Android 12+. The notification is also used for
+            // subsequent progress updates without recreating the foreground service.
+            runCatching {
+                // Resume-aware first frame: seed the notification from the persisted
+                // checkpoint (uploadedBytes/progress) instead of flashing 0% when a
+                // paused or retried upload restarts.
+                val checkpointBytes = uploadTask.uploadedBytes.coerceAtLeast(0L)
+                val checkpointTotal = uploadTask.totalBytes.takeIf { it > 0L } ?: uploadTask.fileSize
+                val checkpointPercent = if (checkpointBytes > 0L && checkpointTotal > 0L) {
+                    ((checkpointBytes * 100L) / checkpointTotal).toInt().coerceIn(0, 100)
+                } else {
+                    0
+                }
+                setForeground(
+                    buildForegroundInfo(
+                        uploadId,
+                        uploadTask.fileName,
+                        checkpointPercent,
+                        checkpointBytes,
+                        checkpointTotal
+                    )
+                )
+            }.onFailure { failure ->
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.WORKER_STARTED,
+                    severity = DiagnosticSeverity.WARN,
+                    message = "Failed to start foreground service: ${failure.message ?: "unknown error"}.",
+                    uploadId = uploadId
+                )
+            }
+
+            uploadEngine.uploadFile(uploadTask).collect { engineResult ->
+                if (isStopped) {
+                    // Stop TDLib-side bytes too, not just this worker: cancellation must
+                    // cancel the actual preliminary upload where possible.
+                    runCatching { uploadEngine.cancelActiveUploads() }
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.WORKER_STOPPED,
+                        severity = DiagnosticSeverity.INFO,
+                        message = "Upload worker stopping: cancellation or pause signal received.",
+                        uploadId = uploadId
+                    )
+                    return@collect
+                }
+                when (engineResult) {
+                    is UploadEngineResult.Progress -> {
+                        val p = engineResult.progress
+                        // TDLib emits progress many times per second. Persisting to Room,
+                        // posting a notification, and calling setForeground on every tick
+                        // causes DB contention and Android notification throttling, which can
+                        // stall the upload loop and jeopardise the foreground service. Coalesce
+                        // to ~1 Hz, but always flush the terminal (>=99.5%) value.
+                        val now = android.os.SystemClock.elapsedRealtime()
+                        if (now - lastProgressUpdateAt >= 1_000L || p.percentage >= 99.5f) {
+                            lastProgressUpdateAt = now
+                            if (repository.updateProgressIfGeneration(
+                                    id = uploadId,
+                                    uploadedBytes = p.uploadedBytes,
+                                    totalBytes = p.totalBytes,
+                                    progress = p.percentage,
+                                    speed = p.speedBytesPerSecond,
+                                    averageSpeed = p.averageSpeedBytesPerSecond,
+                                    eta = p.etaSeconds,
+                                    generation = executionGeneration
+                                )
+                            ) {
+                                // Update the progress notification with real-time percentage
+                                uploadEventNotifier.showProgressNotification(
+                                    uploadId = uploadId,
+                                    fileName = uploadTask.fileName,
+                                    progress = p.percentage.toInt(),
+                                    uploadedBytes = p.uploadedBytes,
+                                    totalBytes = p.totalBytes
+                                )
+                                runCatching {
+                                    setForeground(buildForegroundInfo(uploadId, uploadTask.fileName, p.percentage.toInt(), p.uploadedBytes, p.totalBytes))
+                                }
+                            }
+                        }
+                    }
+                    is UploadEngineResult.Success -> {
+                        terminalEventReceived = true
+                        val latestTask = repository.getUploadById(uploadId)
+                        if (latestTask?.status != UploadStatus.CANCELLED && latestTask?.status != UploadStatus.PAUSED) {
+                            val completed = repository.updateStatusIf(
+                                id = uploadId,
+                                status = UploadStatus.COMPLETED,
+                                allowedStatuses = listOf(
+                                    UploadStatus.PREPARING,
+                                    UploadStatus.UPLOADING
+                                )
+                            )
+                            if (completed) {
+                                repository.updateUploadDuration(uploadId, engineResult.uploadDurationMs)
+                                engineResult.messageLink?.let { repository.updateMessageLink(uploadId, it) }
+                                ownedStagedFileStore.deleteOwnedFilesFor(latestTask ?: uploadTask)
+                                notifyTerminalStatus(uploadId, UploadStatus.COMPLETED)
+                                result = Result.success()
+                                val duration = System.currentTimeMillis() - startTime
+                                DiagnosticsManager.log(
+                                    category = DiagnosticCategory.UPLOAD_COMPLETED,
+                                    severity = DiagnosticSeverity.INFO,
+                                    message = "Upload task completed successfully.",
+                                    uploadId = uploadId,
+                                    durationMs = duration
+                                )
+                            } else {
+                                if (latestTask?.status == UploadStatus.CANCELLED) {
+                                    ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                                }
+                                result = Result.success()
+                            }
+                        } else {
+                            if (latestTask.status == UploadStatus.CANCELLED) {
+                                ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                            }
+                            result = Result.success()
+                        }
+                    }
+                    is UploadEngineResult.Error -> {
+                        terminalEventReceived = true
+                        val latestTask = repository.getUploadById(uploadId)
+                        if (latestTask?.status == UploadStatus.CANCELLED) {
+                            ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                            result = Result.success()
+                        } else if (latestTask?.status == UploadStatus.PAUSED) {
+                            result = Result.success()
+                        } else {
+                            val canRetry = engineResult.isRetryable && runAttemptCount < MAX_RETRY_ATTEMPTS
+                            repository.updateStatusIf(
+                                id = uploadId,
+                                status = if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED,
+                                allowedStatuses = listOf(
+                                    UploadStatus.PREPARING,
+                                    UploadStatus.UPLOADING,
+                                    UploadStatus.RETRYING
+                                )
+                            )
+                            result = if (canRetry) {
+                                DiagnosticsManager.log(
+                                    category = DiagnosticCategory.UPLOAD_RETRY,
+                                    severity = DiagnosticSeverity.WARN,
+                                    message = "Upload task failed transiently (${runAttemptCount + 1}/$MAX_RETRY_ATTEMPTS): ${engineResult.message}. WorkManager will retry it.",
+                                    uploadId = uploadId,
+                                    errorCode = ErrorCode.UPLOAD_FAILED
+                                )
+                                Result.retry()
+                            } else {
+                                notifyTerminalStatus(uploadId, UploadStatus.FAILED)
+                                DiagnosticsManager.log(
+                                    category = DiagnosticCategory.UPLOAD_FAILED,
+                                    severity = DiagnosticSeverity.ERROR,
+                                    message = "Upload task failed permanently after ${runAttemptCount + 1} attempts: ${engineResult.message}.",
+                                    uploadId = uploadId,
+                                    errorCode = ErrorCode.UPLOAD_FAILED
+                                )
+                                Result.failure()
+                            }
+                        }
+                    }
+                }
+            }
+            if (isStopped) {
+                val latestTask = repository.getUploadById(uploadId)
+                return if (latestTask?.status == UploadStatus.CANCELLED) {
+                    ownedStagedFileStore.deleteOwnedFilesFor(latestTask)
+                    runCatching { uploadEngine.cancelActiveUploads() }
+                    Result.success()
+                } else if (latestTask?.status == UploadStatus.PAUSED) {
+                    runCatching { uploadEngine.cancelActiveUploads() }
+                    Result.success()
+                } else {
+                    repository.updateStatusIf(
+                        id = uploadId,
+                        status = UploadStatus.RETRYING,
+                        allowedStatuses = listOf(
+                            UploadStatus.PREPARING,
+                            UploadStatus.UPLOADING,
+                            UploadStatus.RETRYING
+                        )
+                    )
+                    Result.retry()
+                }
+            }
+            if (UploadCompletionPolicy.decide(terminalEventReceived) == UploadCompletionPolicy.Decision.UNCONFIRMED) {
+                val latestTask = repository.getUploadById(uploadId)
+                if (latestTask?.status != UploadStatus.CANCELLED && latestTask?.status != UploadStatus.PAUSED) {
+                    repository.updateStatusIf(
+                        id = uploadId,
+                        status = UploadStatus.FAILED,
+                        allowedStatuses = listOf(
+                            UploadStatus.PREPARING,
+                            UploadStatus.UPLOADING,
+                            UploadStatus.RETRYING
+                        )
+                    )
+                    notifyTerminalStatus(uploadId, UploadStatus.FAILED)
+                    DiagnosticsManager.log(
+                        category = DiagnosticCategory.UPLOAD_FAILED,
+                        severity = DiagnosticSeverity.ERROR,
+                        message = "TDLib upload stream ended without confirmed Telegram delivery.",
+                        uploadId = uploadId,
+                        errorCode = ErrorCode.UPLOAD_FAILED
+                    )
+                    result = Result.failure()
+                } else {
+                    if (latestTask.status == UploadStatus.CANCELLED) {
+                        ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                    }
+                    result = Result.success()
+                }
+            }
+        } catch (e: Exception) {
+            val latestTask = repository.getUploadById(uploadId)
+            if (latestTask?.status == UploadStatus.CANCELLED) {
+                ownedStagedFileStore.deleteOwnedFilesFor(uploadTask)
+                result = Result.success()
+            } else if (latestTask?.status == UploadStatus.PAUSED || isStopped) {
+                result = Result.success()
+            } else {
+                val canRetry = runAttemptCount < MAX_RETRY_ATTEMPTS
+                repository.updateStatusIf(
+                    id = uploadId,
+                    status = if (canRetry) UploadStatus.RETRYING else UploadStatus.FAILED,
+                    allowedStatuses = listOf(
+                        UploadStatus.PREPARING,
+                        UploadStatus.UPLOADING,
+                        UploadStatus.RETRYING
+                    )
+                )
+                if (!canRetry) notifyTerminalStatus(uploadId, UploadStatus.FAILED)
+                result = if (canRetry) Result.retry() else Result.failure()
+                val mappedCategory = DiagnosticsManager.mapException(e)
+                val mappedCode = DiagnosticsManager.mapExceptionToCode(e)
+                DiagnosticsManager.log(
+                    category = DiagnosticCategory.UPLOAD_FAILED,
+                    severity = DiagnosticSeverity.ERROR,
+                    message = "Upload worker crashed due to an unhandled exception.",
+                    uploadId = uploadId,
+                    errorCode = mappedCode,
+                    exception = e
+                )
+            }
+        }
+
+        DiagnosticsManager.log(
+            category = DiagnosticCategory.WORKER_STOPPED,
+            severity = DiagnosticSeverity.INFO,
+            message = "Background upload worker has finished execution with status: $result",
+            uploadId = uploadId
+        )
+
+        return result
+    }
+
+    private fun notifyTerminalStatus(uploadId: String, status: UploadStatus) {
+        UploadEventNotificationPolicy.eventFor(status)?.let { event ->
+            uploadEventNotifier.notify(event, uploadId)
+        }
+        // Remove the transient progress notification now that we have a terminal state
+        uploadEventNotifier.dismissProgressNotification(uploadId)
+    }
+
+    // The dataSync foreground-service type is declared in the app manifest
+    // (androidx.work.impl.foreground.SystemForegroundService) and the
+    // FOREGROUND_SERVICE_DATA_SYNC permission is granted; the explicit type is passed
+    // through ForegroundInfo so it is applied on API 29+ devices. This library module
+    // has no manifest of its own, so the WorkManager lint check cannot see the
+    // declaration that lives in the consuming app module.
+    @SuppressLint("MissingForegroundServiceType", "SpecifyForegroundServiceType")
+    private fun buildForegroundInfo(uploadId: String, fileName: String, progress: Int, uploadedBytes: Long, totalBytes: Long): ForegroundInfo {
+        val notification = uploadEventNotifier.buildForegroundNotification(
+            uploadId = uploadId,
+            fileName = fileName,
+            progress = progress,
+            uploadedBytes = uploadedBytes,
+            totalBytes = totalBytes
+        )
+        return ForegroundInfo(id.hashCode(), notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+    }
+}

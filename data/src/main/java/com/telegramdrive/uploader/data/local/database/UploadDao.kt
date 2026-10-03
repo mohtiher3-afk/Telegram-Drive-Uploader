@@ -1,0 +1,89 @@
+package com.telegramdrive.uploader.data.local.database
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface UploadDao {
+    @Query("SELECT * FROM uploads ORDER BY createdAt DESC")
+    fun getAllUploads(): Flow<List<UploadEntity>>
+
+    @Query("SELECT * FROM uploads WHERE status IN ('PREPARING', 'UPLOADING')")
+    suspend fun getInterruptedUploads(): List<UploadEntity>
+
+    @Query("SELECT * FROM uploads WHERE status IN ('QUEUED', 'PREPARING', 'UPLOADING', 'RETRYING') ORDER BY createdAt ASC")
+    fun getActiveUploads(): Flow<List<UploadEntity>>
+
+    @Query("SELECT * FROM uploads WHERE id = :id")
+    suspend fun getUploadById(id: String): UploadEntity?
+
+    @Query("SELECT * FROM uploads WHERE id = :id AND executionGeneration = :generation")
+    suspend fun getUploadByIdAndGeneration(id: String, generation: Long): UploadEntity?
+
+    @Query("SELECT * FROM uploads WHERE id = :id")
+    fun observeUploadById(id: String): Flow<UploadEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUpload(upload: UploadEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUploads(uploads: List<UploadEntity>)
+
+    @Query("UPDATE uploads SET executionGeneration = executionGeneration + 1 WHERE id = :id AND status IN (:allowedStatuses)")
+    suspend fun bumpExecutionGeneration(id: String, allowedStatuses: List<String>): Int
+
+    @Query("UPDATE uploads SET status = :status WHERE id = :id AND status IN (:allowedStatuses)")
+    suspend fun updateStatusIf(id: String, status: String, allowedStatuses: List<String>): Int
+
+
+    @Query("UPDATE uploads SET status = :status WHERE id = :id")
+    suspend fun updateStatus(id: String, status: String): Int
+
+    @Query("UPDATE uploads SET uploadedBytes = :uploadedBytes, totalBytes = :totalBytes, progress = :progress, speed = :speed, averageSpeed = :averageSpeed, eta = :eta, status = 'UPLOADING' WHERE id = :id AND status IN ('PREPARING', 'UPLOADING')")
+    suspend fun updateProgress(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long): Int
+
+    @Query("UPDATE uploads SET uploadedBytes = :uploadedBytes, totalBytes = :totalBytes, progress = :progress, speed = :speed, averageSpeed = :averageSpeed, eta = :eta, status = 'UPLOADING' WHERE id = :id AND executionGeneration = :generation AND status IN ('PREPARING', 'UPLOADING')")
+    suspend fun updateProgressIfGeneration(id: String, uploadedBytes: Long, totalBytes: Long, progress: Float, speed: Long, averageSpeed: Long, eta: Long, generation: Long): Int
+
+    @Query("UPDATE uploads SET uploadDurationMs = :durationMs WHERE id = :id")
+    suspend fun updateUploadDuration(id: String, durationMs: Long)
+
+    @Query("UPDATE uploads SET messageLink = :messageLink WHERE id = :id")
+    suspend fun updateMessageLink(id: String, messageLink: String)
+
+    @Query("UPDATE uploads SET provisionalMessageId = :messageId WHERE id = :id")
+    suspend fun updateProvisionalMessageId(id: String, messageId: Long)
+
+    /** Marks a SendMessage as handed to TDLib; must be persisted BEFORE dispatch. */
+    @Query("UPDATE uploads SET sendDispatched = 1 WHERE id = :id")
+    suspend fun markSendDispatched(id: String)
+
+    /** Clears a stale dispatch flag once history lookup proved the send never left. */
+    @Query("UPDATE uploads SET sendDispatched = 0 WHERE id = :id")
+    suspend fun clearSendDispatched(id: String)
+
+    /**
+     * Records confirmed delivery: final message id + link become durable, and the
+     * provisional id / dispatch flag are cleared so no retry can re-send the message.
+     */
+    @Query(
+        "UPDATE uploads SET finalMessageId = :messageId, messageLink = :messageLink, " +
+            "provisionalMessageId = NULL, sendDispatched = 0 WHERE id = :id"
+    )
+    suspend fun markSendConfirmed(id: String, messageId: Long, messageLink: String?)
+
+    @Query("UPDATE uploads SET status = 'QUEUED' WHERE status IN ('PREPARING', 'UPLOADING')")
+    suspend fun reconcileInterruptedUploads(): Int
+
+    @Query("DELETE FROM uploads WHERE id = :id")
+    suspend fun deleteUploadById(id: String)
+
+    @Query("DELETE FROM uploads WHERE status = 'COMPLETED'")
+    suspend fun deleteCompletedUploads()
+
+    @Query("DELETE FROM uploads")
+    suspend fun clearAllUploads()
+}

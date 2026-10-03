@@ -1,0 +1,7 @@
+# TDLib v1.8.66 prebuilt Android artifacts — Git blob SHA-256, regenerated 2026-09-24
+f26e1dcb1a44d8d2c7eecca0f600b11bdacff660c9cc0b121f6171e31b598aab  data/src/main/jniLibs/arm64-v8a/libtdjni.so
+aada91bdf245906185291637e3f288dd8e02c4c0fe6937ab9809ef28709c10e5  data/src/main/jniLibs/armeabi-v7a/libtdjni.so
+d0aea943947c1050210801a15cb0b45fceb8e40a7f5c3e7340d0f6ec0db6bede  data/src/main/jniLibs/x86_64/libtdjni.so
+ea37f5c3f2cb894ad14381a22e1c6ca22affbaa25346669ff117e0b489e6eabe  data/src/main/java/org/drinkless/tdlib/Client.java
+e162d82cd9b88f89668ba83451d600f578de205ceaf90625f062aad757173a36  data/src/main/java/org/drinkless/tdlib/Log.java
+7e814d8085f847a3d95ba2655065fc3ba973a350f9f653dff2a3f35db7c52d41  data/src/main/java/org/drinkless/tdlib/TdApi.java
