@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.feature.queue
+package com.telegramdrive.uploader.feature.queue
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

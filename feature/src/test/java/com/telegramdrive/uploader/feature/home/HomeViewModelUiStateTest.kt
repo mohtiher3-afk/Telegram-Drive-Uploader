@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.feature.home
+package com.telegramdrive.uploader.feature.home
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

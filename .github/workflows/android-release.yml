@@ -1,4 +1,4 @@
-﻿name: Android Signed Multi-ABI Release
+name: Android Signed Multi-ABI Release
 
 on:
   push:

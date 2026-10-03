@@ -1,4 +1,4 @@
-﻿name: Android Multi-ABI CI
+name: Android Multi-ABI CI
 
 on:
   push:
