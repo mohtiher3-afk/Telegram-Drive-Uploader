@@ -1,8 +1,8 @@
 # Baseline Failures and Environment Limits
 
-The supplied QA phase requires a clean compile, unit tests, debug APK, and lint baseline. The temporary checkout cannot execute those Gradle commands locally because it does not contain `gradlew` and the sandbox does not provide a standalone Gradle executable. This is classified as an **ENVIRONMENT ISSUE**, not a production failure.
+The QA phase originally required a clean compile, unit tests, debug APK, and lint baseline. That phase ran in a sandboxed checkout that had no `gradlew` and no standalone Gradle executable, so those Gradle commands could not be executed there. This was classified as an **ENVIRONMENT ISSUE**, not a production failure. That sandbox constraint no longer applies: this repository ships the Gradle Wrapper, and `scripts/verify-project.ps1` (or `scripts/verify-project.sh`) runs the full gate locally.
 
-The repository CI workflow is therefore the authoritative build path. It provisions JDK 17, Android SDK/API 36, build tools 36.0.0, NDK 26.3.11579264, Gradle 8.9, official OpenSSL dependencies, and the required CI configuration. A previous resource-phase CI run was still in progress at the time of this phase audit; its final result must be recorded separately when available.
+The repository CI workflow is therefore not the only build path, though it remains authoritative for platform-specific coverage. It provisions JDK 21, Android SDK/API 34, build tools 34.0.0, NDK 26.3.11579264, and uses the committed Gradle Wrapper (9.6.0) via `gradle/actions/setup-gradle`.
 
 The local TDLib artifact checker found the native libraries and generated Java bindings but reported `TDLIB_ARTIFACTS_PRESENT=false` because exact ELF architecture validation requires `readelf`, which is unavailable in the temporary environment. This is classified as a **TDLIB ARTIFACT TOOLING / ENVIRONMENT ISSUE**. No native artifact was fabricated or replaced.
 

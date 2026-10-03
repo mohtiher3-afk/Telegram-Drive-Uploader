@@ -6,7 +6,7 @@ Telegram Drive Uploader selects local media, authenticates through the official 
 
 ## How to Build
 
-Use JDK 17, the committed Gradle Wrapper (8.9), Android API 36, Build Tools 36.0.0, and NDK 26.3.11579264. Run `./gradlew :app:assembleDebug` for a debug APK and use the manual Release workflow for signed multi-ABI artifacts.
+Use JDK 21, the committed Gradle Wrapper (9.6.0), Android API 37 (compileSdk) with targetSdk 36, and NDK 26.3.11579264. Run `./gradlew :app:assembleDebug` for a debug APK and use the manual Release workflow for signed multi-ABI artifacts.
 
 ## Telegram and TDLib
 

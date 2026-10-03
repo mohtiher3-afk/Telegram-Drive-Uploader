@@ -4,14 +4,14 @@
 
 | Component | Current value | Evidence |
 |---|---|---|
-| Java/JDK | JDK 17 used for local Android validation | Local validation environment; Gradle requires a complete JDK with `jlink`. |
-| Gradle | 8.9 | `gradle/wrapper/gradle-wrapper.properties` |
-| Android Gradle Plugin | 8.7.3 | `gradle/libs.versions.toml` |
-| Kotlin | 2.2.10 | `gradle/libs.versions.toml` |
-| Compose BOM | 2024.09.00 | `gradle/libs.versions.toml` |
-| compileSdk | 36 | `app/build.gradle.kts` |
+| Java/JDK | JDK 21 (Temurin 21.0.12) drives the build; Java 17 bytecode target | `app/build.gradle.kts` sets `sourceCompatibility`/`targetCompatibility` 17 and `jvmTarget` JVM_17 |
+| Gradle | 9.6.0 | `gradle/wrapper/gradle-wrapper.properties` (`distributionUrl`) |
+| Android Gradle Plugin | 9.4.1 | `gradle/libs.versions.toml` (`agp`) |
+| Kotlin | 2.3.21 | `gradle/libs.versions.toml` (`kotlin`) |
+| Compose BOM | 2026.09.00 | `gradle/libs.versions.toml` (`composeBom`) |
+| compileSdk | 37 | `app/build.gradle.kts` |
 | targetSdk | 36 | `app/build.gradle.kts` |
-| minSdk | 24 | `app/build.gradle.kts` |
+| minSdk | 30 in `:app`; 24 in the library modules | `app/build.gradle.kts` and the `core`/`data`/`feature` build files |
 | NDK | 26.3.11579264 in the existing native artifact workflow | TDLib artifact/build documentation |
 | TDLib | 1.8.66 | TDLib artifact manifest and validation script |
 | Supported ABIs | arm64-v8a, armeabi-v7a, x86_64 | `app/build.gradle.kts` and TDLib artifact validation |
