@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.data.telegram.client
+package com.telegramdrive.uploader.data.telegram.client
 
 import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
