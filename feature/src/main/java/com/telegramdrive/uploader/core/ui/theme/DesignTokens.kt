@@ -127,6 +127,67 @@ object AppColors {
     val success = Color(0xFF4CAF50)
     val info = Color(0xFF2196F3)
 
+    // Mission Control surface (dark only)
+    //
+    // These roles describe a fixed dark control-room surface rather than a
+    // per-theme Material scheme, so unlike the roles above they are declared
+    // here with literal values and nothing re-derives them. AppColorsContrastTest
+    // gates every foreground/background pairing below at WCAG AA 4.5:1, so a
+    // future edit to one of these hex values fails the build if it would make
+    // text unreadable.
+    //
+    // Naming: `onSurface` and `error` above are already bound to
+    // LightColorScheme and DesignTokensTest pins that binding, so they cannot
+    // also describe the dark canvas -- onSurface (#1C1B20) scores 1.11:1 against
+    // [background] and would be unreadable. The dark-surface text and danger
+    // roles therefore get their own names. Do not add a parallel palette file or
+    // a second color object: extend this block instead.
+    // ---------------------------------------------------------------------
+
+    /** The control-room canvas every screen draws behind its content. */
+    val background = Color(0xFF0E110A)
+
+    /** Primary body text and headings drawn on [background]. */
+    val contentPrimary = Color(0xFFF2F5EC)
+
+    /** Muted body text and secondary labels drawn on [background]. */
+    val contentMuted = Color(0xFFAEB6A4)
+
+    /**
+     * The single action color: primary buttons, progress fills, and the active
+     * navigation tab. Reserved for actions only, never for long body text.
+     */
+    val lime = Color(0xFFA3E635)
+
+    /** Lifted highlight of [lime], used for glow and shimmer peaks. */
+    val limeLight = Color(0xFFD9F79A)
+
+    /** Text and icons drawn on a solid [lime] fill. */
+    val onLime = Color(0xFF11160A)
+
+    /** Telemetry and live-signal accent drawn on [background]. */
+    val teal = Color(0xFF39D8C2)
+
+    /** Orbital glow and small headings only; not for long text. */
+    val purple = Color(0xFF863FFD)
+
+    /** Text and icons drawn on a solid [purple] fill. */
+    val onPurple = Color(0xFFFFFFFF)
+
+    /** Failure and destructive-action accent drawn on [background]. */
+    val danger = Color(0xFFFF7B7B)
+
+    // Faint structure drawn over [background]. Alphas live on the color itself so
+    // a screen never composes its own translucency.
+    /** Hairline grid overlay, one step above [background]. */
+    val gridLine = Color(0xFFFFFFFF).copy(alpha = 0.03f)
+
+    /** Translucent fill of a glass surface sitting on [background]. */
+    val glassFill = Color(0xFFFFFFFF).copy(alpha = 0.055f)
+
+    /** Border of a glass surface; defines the edge without a shadow. */
+    val glassBorder = Color(0xFFFFFFFF).copy(alpha = 0.10f)
+
     // Glow presets (used by liquidGlassOverlay, glowBento, etc.)
     val glowPrimary = Color(0xFFFFFFFF).copy(alpha = 0.15f)
     val glowSecondary = Color(0xFF00E5FF).copy(alpha = 0.12f)

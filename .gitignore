@@ -33,6 +33,11 @@ artifacts/
 *.iml
 .DS_Store
 
+# Local Python virtualenv. This repository's scripts only need a system Python 3
+# (scripts/*.py run under plain `python3`), so a per-repo .venv is never required and
+# was previously untracked-but-unignored, which showed up as noise in `git status`.
+.venv/
+
 # Generated native/build intermediates
 .externalNativeBuild/
 .cxx/
