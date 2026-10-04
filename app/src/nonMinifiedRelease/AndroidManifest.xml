@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Release-variant overlay for the :benchmark module.
+
+  androidx.benchmark.macro cannot profile an activity that is not marked
+  <profileable>. Declaring it in src/main/AndroidManifest.xml is rejected by AAPT
+  ("unexpected element <profileable> found in <manifest><application><activity>"),
+  because a profileable release build would also ship to users.
+
+  Scoping it to src/release keeps the marker on exactly the variant the benchmark
+  records against — the release build, which is the one with isMinifyEnabled, and
+  therefore the one that actually consumes the generated baseline-prof.txt.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      <profileable> is a child of <application>, not of <activity>: AAPT rejects it
+      with "unexpected element <profileable> found in
+      <manifest><application><activity>" when nested under the activity. Declaring
+      it at application level marks every activity, including MainActivity, which is
+      what MacrobenchmarkRule needs to collect a profile.
+    -->
+    <application>
+        <profileable android:shell="true" />
+    </application>
+</manifest>

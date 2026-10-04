@@ -32,6 +32,10 @@ artifacts/
 .idea/
 *.iml
 .DS_Store
+# Editor config was deliberately untracked in bae2a4d ("stop tracking ... personal
+# editor config"), but the rule was never added, so a local .vscode/ keeps showing up
+# as untracked noise in `git status`.
+.vscode/
 
 # Local Python virtualenv. This repository's scripts only need a system Python 3
 # (scripts/*.py run under plain `python3`), so a per-repo .venv is never required and

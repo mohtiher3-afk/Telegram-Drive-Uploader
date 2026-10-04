@@ -126,6 +126,23 @@ android {
         signingConfig = signingConfigs.getByName("release")
       }
     }
+    // The variant the :benchmark module records against. It must be debuggable and
+    // profileable, and it must be signed so the test runner can install it, but it
+    // must NOT be minified: the baseline profile describes the unminified code paths
+    // that R8 then consumes. Falls back to the debug key when no release keystore is
+    // configured, so profile collection works on a developer machine without secrets.
+    create("nonMinifiedRelease") {
+      initWith(buildTypes.getByName("release"))
+      isDebuggable = true
+      isMinifyEnabled = false
+      isShrinkResources = false
+      signingConfig = if (releaseSigningConfigured) {
+        signingConfigs.getByName("release")
+      } else {
+        signingConfigs.getByName("debugConfig")
+      }
+      matchingFallbacks += listOf("release")
+    }
     debug { signingConfig = signingConfigs.getByName("debugConfig") }
   }
   compileOptions {
