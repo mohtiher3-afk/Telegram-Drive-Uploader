@@ -26,16 +26,6 @@ android {
     targetCompatibility = JavaVersion.VERSION_17
   }
 
-  buildTypes {
-    // The Baseline Profiles plugin drives this variant. It needs a debuggable,
-    // profileable, debug-signed build of :app to record against.
-    create("benchmark") {
-      isDebuggable = true
-      signingConfig = signingConfigs.getByName("debug")
-      matchingFallbacks += listOf("debug")
-    }
-  }
-
   // Required by AGP for com.android.test modules.
   experimentalProperties["android.experimental.self-instrumenting"] = true
 
