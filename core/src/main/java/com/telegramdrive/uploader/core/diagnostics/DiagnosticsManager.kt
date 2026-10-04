@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.core.diagnostics
+package com.telegramdrive.uploader.core.diagnostics
 
 import android.os.Build
 import com.telegramdrive.uploader.core.BuildConfig

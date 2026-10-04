@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.data.telegram.client
+package com.telegramdrive.uploader.data.telegram.client
 
 import android.content.Context
 import android.os.Build

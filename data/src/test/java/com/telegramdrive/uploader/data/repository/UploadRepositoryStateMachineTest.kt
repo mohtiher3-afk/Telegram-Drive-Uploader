@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.data.repository
+package com.telegramdrive.uploader.data.repository
 
 import android.content.Context
 import androidx.room.Room

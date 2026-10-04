@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.domain.repository
+package com.telegramdrive.uploader.domain.repository
 
 import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState

@@ -1,4 +1,4 @@
-﻿name: tdlib-upgrade
+name: tdlib-upgrade
 
 # Builds TDLib native JNI libraries for Android from the official upstream
 # source and opens a PR with the resulting artifacts. Trigger manually after

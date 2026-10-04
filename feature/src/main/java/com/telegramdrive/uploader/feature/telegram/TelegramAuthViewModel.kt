@@ -1,4 +1,4 @@
-﻿package com.telegramdrive.uploader.feature.telegram
+package com.telegramdrive.uploader.feature.telegram
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

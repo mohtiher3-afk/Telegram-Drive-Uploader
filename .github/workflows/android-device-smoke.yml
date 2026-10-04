@@ -1,4 +1,4 @@
-﻿name: Android TDLib Device Smoke Test
+name: Android TDLib Device Smoke Test
 
 on:
   workflow_dispatch:

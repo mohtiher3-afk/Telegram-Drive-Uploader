@@ -10,6 +10,8 @@ plugins {
   alias(libs.plugins.secrets) apply false
   alias(libs.plugins.google.services) apply false
   alias(libs.plugins.hilt) apply false
+  alias(libs.plugins.android.test) apply false
+  alias(libs.plugins.androidx.baselineprofile) apply false
 }
 
 extra["appVersionName"] = "1.0.25"

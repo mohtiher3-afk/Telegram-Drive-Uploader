@@ -30,8 +30,12 @@ artifacts/
 
 # IDE metadata
 .idea/
+.vscode/
 *.iml
 .DS_Store
+
+# IDE build output (Eclipse / VSCode Java language server writes *.class trees here)
+bin/
 
 # Generated native/build intermediates
 .externalNativeBuild/
