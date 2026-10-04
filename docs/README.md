@@ -4,9 +4,11 @@ This index lists the **living documentation** — the documents that describe ho
 project works today and that must be updated when behavior changes.
 
 Point-in-time records (inventories, final reports, audits, dated maintenance records, and
-per-version release records) live under [`archive/reports/`](HISTORICAL_AUDITS.md), which
-mirrors the area names used below. Earlier superseded material lives under
-[`archive/`](HISTORICAL_AUDITS.md).
+per-version release records) are kept alongside the living documentation in the area
+directories listed below, under the same area names.
+
+Earlier superseded audits and one-off documents were removed during the documentation
+cleanup; they remain in the git history under commit `9d44e10`.
 
 All relative links in this documentation tree are verified by
 [`scripts/check-doc-links.py`](../scripts/check-doc-links.py), which runs in CI.
@@ -41,7 +43,6 @@ All relative links in this documentation tree are verified by
 | Area | Location | Entry points |
 |---|---|---|
 | Testing | [`testing/`](testing/) | [QA_GUIDE.md](testing/QA_GUIDE.md), [TEST_COVERAGE_MAP.md](testing/TEST_COVERAGE_MAP.md), [SMOKE_TEST_SUITE.md](testing/SMOKE_TEST_SUITE.md), [REGRESSION_MATRIX.md](testing/REGRESSION_MATRIX.md), [CRITICAL_PATHS.md](testing/CRITICAL_PATHS.md), [FLAKY_TESTS.md](testing/FLAKY_TESTS.md) |
-| Runtime evidence | [`evidence/`](evidence/) | [PHASE07_EVIDENCE.md](evidence/PHASE07_EVIDENCE.md) and the earlier phase evidence records |
 | Security | [`security/`](security/) | [THREAT_MODEL.md](security/THREAT_MODEL.md), [SECURITY_ARCHITECTURE.md](security/SECURITY_ARCHITECTURE.md), [BACKUP_SECURITY.md](security/BACKUP_SECURITY.md), [ONGOING_SECURITY_POLICY.md](security/ONGOING_SECURITY_POLICY.md) |
 | Privacy and data governance | [`privacy/`](privacy/) | [README.md](privacy/README.md), [DATA_FLOW_MAP.md](privacy/DATA_FLOW_MAP.md), [DATA_RETENTION_POLICY.md](privacy/DATA_RETENTION_POLICY.md), [PRIVACY_GOVERNANCE.md](privacy/PRIVACY_GOVERNANCE.md) |
 | Observability and diagnostics | [`observability/`](observability/) | [OBSERVABILITY_ARCHITECTURE.md](observability/OBSERVABILITY_ARCHITECTURE.md), [EVENT_CATALOG.md](observability/EVENT_CATALOG.md), [PRIVACY_LOGGING_POLICY.md](observability/PRIVACY_LOGGING_POLICY.md) |
@@ -68,16 +69,16 @@ that define each workflow:
 
 | Workflow | Location | Entry points |
 |---|---|---|
-| Feature development | [`features/`](features/) | [PINNED_CHANNELS.md](features/PINNED_CHANNELS.md) (most recent record) and the templates in [`features/_template/`](features/_template/README.md) |
-| Bug fixing | [`bugs/_template/`](bugs/_template/README.md) | Templates: [BUG_REPORT.md](bugs/_template/BUG_REPORT.md), [ROOT_CAUSE.md](bugs/_template/ROOT_CAUSE.md), [HIGH_RISK_PLAN.md](bugs/_template/HIGH_RISK_PLAN.md), [BUG_FIX_REPORT.md](bugs/_template/BUG_FIX_REPORT.md) |
-| Dependency updates | [`dependencies/`](dependencies/) | [CURRENT_TOOLCHAIN.md](dependencies/CURRENT_TOOLCHAIN.md) and the templates in [`dependencies/_template/`](dependencies/_template/README.md) |
+| Feature development | [`features/`](features/) | [PINNED_CHANNELS.md](features/PINNED_CHANNELS.md) (most recent record) |
+| Bug fixing | [`operations/`](operations/) | [BUG_TEMPLATE.md](operations/BUG_TEMPLATE.md), [BUG_FIX_WORKFLOW.md](operations/BUG_FIX_WORKFLOW.md) |
+| Dependency updates | [`dependencies/`](dependencies/) | [CURRENT_TOOLCHAIN.md](dependencies/CURRENT_TOOLCHAIN.md), [../operations/DEPENDENCY_POLICY.md](operations/DEPENDENCY_POLICY.md) |
 
 ## History
 
-| Location | Content |
-|---|---|
-| [`archive/reports/`](HISTORICAL_AUDITS.md) | Point-in-time inventories, final reports, audits, dated maintenance records, and per-version release records, grouped by area |
-| [`archive/`](HISTORICAL_AUDITS.md) | Earlier superseded audits, SPRINT/MANUS reports, and dated one-off documents |
+Earlier superseded audits, SPRINT/MANUS reports, and dated one-off documents were removed
+during the documentation cleanup. They remain in the git history, and were last present
+before commit `9d44e10` (`docs: reorganize point-in-time records into archive, add doc-link
+gate and CI quality gates`).
 
 ## Adding documentation
 

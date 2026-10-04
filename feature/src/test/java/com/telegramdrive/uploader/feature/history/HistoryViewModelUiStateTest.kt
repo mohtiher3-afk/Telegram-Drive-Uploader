@@ -28,10 +28,20 @@ class HistoryViewModelUiStateTest {
     private val deletedIds = mutableListOf<String>()
     private var completedCleared = false
 
+    /**
+     * Rows returned by [getUploadById].
+     *
+     * `deleteCompletedUploadById` is a default interface method that only deletes when
+     * the row it reads back is still COMPLETED, so the fake has to model the lookup or
+     * every delete silently no-ops. This was the defect in
+     * `repositoryActionsTriggerCorrectDelegations`.
+     */
+    private val rowsById = mutableMapOf<String, UploadTask>()
+
     private val fakeRepo = object : UploadRepository {
         override fun getAllUploads(): Flow<List<UploadTask>> = uploadsFlow
         override fun getActiveUploads(): Flow<List<UploadTask>> = emptyFlow()
-        override suspend fun getUploadById(id: String): UploadTask? = null
+        override suspend fun getUploadById(id: String): UploadTask? = rowsById[id]
         override fun observeUploadById(id: String): Flow<UploadTask?> = emptyFlow()
         override suspend fun insertUpload(upload: UploadTask) {}
         override suspend fun updateStatus(id: String, status: UploadStatus) {}
@@ -54,6 +64,7 @@ class HistoryViewModelUiStateTest {
         Dispatchers.setMain(testDispatcher)
         deletedIds.clear()
         completedCleared = false
+        rowsById.clear()
     }
 
     @After
@@ -109,6 +120,11 @@ class HistoryViewModelUiStateTest {
 
     @Test
     fun repositoryActionsTriggerCorrectDelegations() = runTest(testDispatcher) {
+        // The row must be COMPLETED: the repository contract refuses to delete a
+        // history item that is no longer terminal.
+        rowsById["task-99"] = task(
+            "task-99", "done.pdf", 1000L, UploadStatus.COMPLETED, System.currentTimeMillis()
+        )
         val viewModel = HistoryViewModel(fakeRepo)
         viewModel.deleteUpload("task-99")
         advanceUntilIdle()
@@ -117,5 +133,25 @@ class HistoryViewModelUiStateTest {
         viewModel.clearHistory()
         advanceUntilIdle()
         assertTrue(completedCleared)
+    }
+
+    /**
+     * Regression guard for the terminal-only deletion contract.
+     *
+     * `deleteCompletedUploadById` re-reads the row and skips the delete when the
+     * status is no longer COMPLETED, which protects a history row that an in-flight
+     * upload has already moved off COMPLETED. The delegation test above only covers
+     * the happy path, so without this case the guard itself could be deleted and the
+     * suite would stay green.
+     */
+    @Test
+    fun inProgressRowIsNotDeleted() = runTest(testDispatcher) {
+        rowsById["task-7"] = task("task-7", "live.mp4", 2000L, UploadStatus.UPLOADING, null)
+        val viewModel = HistoryViewModel(fakeRepo)
+
+        viewModel.deleteUpload("task-7")
+        advanceUntilIdle()
+
+        assertEquals(emptyList<String>(), deletedIds)
     }
 }

@@ -58,7 +58,7 @@ See [TECHNICAL_DEBT.md](../operations/TECHNICAL_DEBT.md) for confirmed gaps in r
 
 ## Post-Release Backlog
 
-Review [POST_RELEASE_BACKLOG.md](../HISTORICAL_AUDITS.md) and classify work as P0 through P3 before implementation. No backlog item is implemented by this handoff.
+Review [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) and [../operations/TECHNICAL_DEBT.md](../operations/TECHNICAL_DEBT.md), and classify work as P0 through P3 before implementation. No backlog item is implemented by this handoff.
 
 ## Certification Status
 

@@ -110,7 +110,7 @@ The project includes strict R8 keep rules for `org.drinkless.tdlib.**` required 
 ### Release & CI
 The `Android Multi-ABI CI` workflow runs on Pull Requests and pushes to `main`. It executes repository security and artifact gates, JVM unit tests, release lint, and a Debug APK build for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, then stores each APK as a temporary artifact.
 
-The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs, verifies signatures and SHA-256 checksums, and creates a GitHub Release. The complete setup, required secrets, tag flow, and troubleshooting steps are documented in [`docs/archive/github-actions-android-ci-cd-ar.md`](docs/HISTORICAL_AUDITS.md) and [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
+The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs, verifies signatures and SHA-256 checksums, and creates a GitHub Release. The complete setup, required secrets, tag flow, and troubleshooting steps are documented in [`docs/ci/CI_GUIDE.md`](docs/ci/CI_GUIDE.md) and [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
 
 ---
 
@@ -140,7 +140,7 @@ The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds
 - **Security Policy**: [`SECURITY.md`](SECURITY.md)
 - **Changelog**: [`CHANGELOG.md`](CHANGELOG.md)
 - **License**: [`LICENSE`](LICENSE) (MIT)
-- **Audit Records**: [`docs/archive/PROJECT_AUDIT_2026-08-21.md`](docs/HISTORICAL_AUDITS.md)
+- **Audit Records**: [`docs/maintenance/REPOSITORY_CERTIFICATION.md`](docs/maintenance/REPOSITORY_CERTIFICATION.md), [`docs/operations/MAINTENANCE_CERTIFICATION.md`](docs/operations/MAINTENANCE_CERTIFICATION.md)
 - **Maintenance Guide**: [`docs/maintenance/README.md`](docs/maintenance/README.md)
 - **Resource Reviews**: [`docs/resources/`](docs/resources/)
 
