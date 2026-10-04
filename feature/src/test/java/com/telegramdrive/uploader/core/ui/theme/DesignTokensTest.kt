@@ -38,6 +38,8 @@ class DesignTokensTest {
         // cannot diverge. This guards the defect where AppColors restated its own
         // hex values and quietly disagreed with the theme.
         assertEquals(LightColorScheme.primaryContainer, AppColors.primaryContainer)
+        assertEquals(LightColorScheme.primary, AppColors.primary)
+        assertEquals(LightColorScheme.secondary, AppColors.secondary)
         assertEquals(LightColorScheme.secondaryContainer, AppColors.secondaryContainer)
         assertEquals(LightColorScheme.surface, AppColors.surface)
         assertEquals(LightColorScheme.onPrimary, AppColors.onPrimary)

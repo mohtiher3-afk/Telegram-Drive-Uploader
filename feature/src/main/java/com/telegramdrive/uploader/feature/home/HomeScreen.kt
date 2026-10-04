@@ -83,9 +83,9 @@ fun HomeScreen(
     val authorized = uiState.telegramConnectionState == TelegramConnectionState.AUTHORIZED
     val connectionAccent by animateColorAsState(
         targetValue = if (authorized) {
-            DesignTokens.AppColors.onPrimary
+            DesignTokens.AppColors.onPrimaryContainer
         } else {
-            DesignTokens.AppColors.onSecondary
+            DesignTokens.AppColors.onSecondaryContainer
         },
         animationSpec = AppMotion.shortTween(motionEnabled),
         label = "connection_accent"
@@ -114,7 +114,7 @@ fun HomeScreen(
                         },
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = DesignTokens.AppColors.onPrimary
+                        color = DesignTokens.AppColors.onPrimaryContainer
                     )
                 },
                 actions = {
@@ -130,8 +130,8 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
-                    titleContentColor = DesignTokens.AppColors.onPrimary,
-                    actionIconContentColor = DesignTokens.AppColors.onPrimary
+                    titleContentColor = DesignTokens.AppColors.onPrimaryContainer,
+                    actionIconContentColor = DesignTokens.AppColors.onPrimaryContainer
                 )
             )
         }
@@ -215,7 +215,7 @@ private fun TelegramConnectionCard(
     modifier: Modifier = Modifier
 ) {
     val tgAuthorized = telegramState == TelegramConnectionState.AUTHORIZED
-    val accent = if (tgAuthorized) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSecondary
+    val accent = if (tgAuthorized) DesignTokens.AppColors.onPrimaryContainer else DesignTokens.AppColors.onSecondaryContainer
 
     GlassCard(
         modifier = modifier
@@ -317,21 +317,21 @@ private fun UploadFeatureCard(
                     text = stringResource(R.string.new_upload),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = DesignTokens.AppColors.onPrimary
+                    color = DesignTokens.AppColors.onPrimaryContainer
                 )
                 Text(
                     text = stringResource(R.string.select_files_from_telegram),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = DesignTokens.AppColors.onPrimary
+                    color = DesignTokens.AppColors.onPrimaryContainer
                 )
             }
             FilledTonalButton(
                 onClick = onSelectVideos,
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = DesignTokens.AppColors.onPrimary,
-                    contentColor = DesignTokens.AppColors.primaryContainer
+                    containerColor = DesignTokens.AppColors.primary,
+                    contentColor = DesignTokens.AppColors.onPrimary
                 )
             ) {
                 Icon(
@@ -371,7 +371,7 @@ private fun StatCard(
     value: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    accent: Color = DesignTokens.AppColors.onPrimary
+    accent: Color = DesignTokens.AppColors.onPrimaryContainer
 ) {
     GlassCard(
         modifier = modifier

@@ -103,7 +103,16 @@ object AppColors {
     // system of record, so restating hex values here is exactly what let this flat
     // palette drift away from the theme. Delegating makes that drift impossible.
     val primaryContainer = LightColorScheme.primaryContainer
+    /**
+     * The solid action colour. Needed by any filled control painted on a
+     * [primaryContainer] canvas: Material's sanctioned filled pair is
+     * `onPrimary` on `primary`, and without this role a screen has no reachable
+     * fill that keeps its label readable.
+     */
+    val primary = LightColorScheme.primary
     val secondaryContainer = LightColorScheme.secondaryContainer
+    /** Solid secondary action colour. Counterpart to [primary]; see [primary]. */
+    val secondary = LightColorScheme.secondary
     val surface = LightColorScheme.surface
     val onPrimary = LightColorScheme.onPrimary
     val onSecondary = LightColorScheme.onSecondary
