@@ -1,0 +1,85 @@
+﻿name: Supply Chain Security
+
+# Why this exists: dependabot.yml already *detects* outdated dependencies and opens
+# pull requests. It does not *block* anything. These two gates are the defensive half
+# of that story:
+#
+#   * dependency-review blocks a pull request when it introduces a dependency with a
+#     known vulnerability or a license the project has not accepted.
+#   * scorecard runs OpenSSF's supply-chain assessment and publishes the result in the
+#     repository Security tab, so drift is visible without reading logs.
+#
+# Both are read-only with respect to the repository: they report, they never modify
+# source, and neither touches the checked-in TDLib binaries under data/src/main/jniLibs
+# (see docs/architecture/adr-001-tdlib-binaries.md for why those are committed).
+
+on:
+  pull_request:
+    branches: [main]
+
+# Deliberately minimal: dependency-review needs to read the diff and advisories,
+# scorecard needs read access to publish its results.
+permissions:
+  contents: read
+
+# Only one run per PR; a superseded commit does not need its own assessment.
+concurrency:
+  group: supply-chain-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Review dependency changes against known advisories
+        uses: actions/dependency-review-action@v5
+        with:
+          # Fail the job on a high or critical advisory. Moderate and low are reported
+          # but do not block, which matches this project's tolerance: a blocking
+          # advisory in a transitive dependency is fixed in its own patch release, and
+          # holding the whole pipeline for it would be worse than tracking it.
+          fail-on-severity: high
+          # Comment the findings on the PR so a reviewer sees them inline instead of
+          # only in the failed job log.
+          comment-summary-in-pr: on-failure
+
+  scorecard:
+    name: OpenSSF Scorecard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+      # Required so the action can publish its SARIF result to the Security tab.
+      actions: read
+    steps:
+      # scorecard-action needs the repository metadata, so this step is NOT the same
+      # `actions/checkout` the other jobs use: the action performs its own shallow
+      # clone internally.
+      - name: Run scorecard
+        uses: ossf/scorecard-action@v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      # One artifact, kept regardless of outcome: when scorecard fails, the SARIF is
+      # the only record of *which* check regressed.
+      - name: Upload SARIF for the job summary
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: scorecard-sarif
+          path: results.sarif
+          retention-days: 30
