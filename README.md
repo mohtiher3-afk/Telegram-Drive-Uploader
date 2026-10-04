@@ -117,6 +117,21 @@ For native dependency details, see [`docs/dependencies/TDLIB_NATIVE_DEPENDENCIES
 ```
 The project includes strict R8 keep rules for `org.drinkless.tdlib.**` required for JNI stability in minified builds.
 
+### Performance & Baseline Profile
+A committed baseline profile lives at [`app/src/main/baseline-prof.txt`](app/src/main/baseline-prof.txt) and is consumed by R8 on every release build. It matters here because the app loads `libtdjni.so` through JNI and initialises a TDLib client before Compose draws, so cold start is the expensive path.
+
+Regenerate it after changing startup code — this **requires a connected device or emulator**:
+```bash
+./gradlew :benchmark:collectNonMinifiedReleaseBaselineProfile
+```
+
+Measure cold and warm startup:
+```bash
+./scripts/measure-startup.sh
+```
+
+> **A physical device is required for startup measurements.** `androidx MacrobenchmarkRule` deliberately skips emulators — emulator timings measure the host rather than the app, so the rule raises `AssumptionViolatedException` instead of publishing a meaningless number. Profile *generation* does run on an emulator; only the timings need real hardware.
+
 ### Release & CI
 The `Android Multi-ABI CI` workflow runs on Pull Requests and pushes to `main`. It executes repository security and artifact gates, JVM unit tests, release lint, and a Debug APK build for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, then stores each APK as a temporary artifact.
 
