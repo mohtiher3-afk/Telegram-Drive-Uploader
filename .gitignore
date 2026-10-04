@@ -38,6 +38,11 @@ artifacts/
 # was previously untracked-but-unignored, which showed up as noise in `git status`.
 .venv/
 
+# IDE build output (Eclipse / VSCode Java language server, and the plain
+# `javac` output dir Gradle writes for :domain) writes *.class trees here.
+bin/
+**/bin/
+
 # Generated native/build intermediates
 .externalNativeBuild/
 .cxx/
