@@ -12,7 +12,9 @@ Telegram Drive Uploader provides a high-reliability, offline-first interface for
 
 ## Mission Control visual identity
 
-Telegram Drive Uploader uses a **Mission Control** visual language: a dark control-room surface, luminous orbital accents, and a high-visibility upload action. The identity reinforces upload state and destination context while preserving Material 3 semantic roles and adaptive Compose layouts.
+Telegram Drive Uploader uses a **Mission Control** visual language: a control-room surface, luminous orbital accents, and a high-visibility upload action. The identity reinforces upload state and destination context while preserving Material 3 semantic roles and adaptive Compose layouts.
+
+The Mission Control surface ships as a full light and dark theme set rather than a single dark-only skin. **Settings → Appearance** selects `System`, `Light`, or `Dark`, and **Glow Color** picks one of six accent presets (Seafoam, Orchid, Cobalt, Lime, Cyan, Violet) or a custom hex value. `System` follows the device setting, which is the default. See [`docs/design/DESIGN_SYSTEM.md`](docs/design/DESIGN_SYSTEM.md) for the theme architecture.
 
 The current mark is the **Mission Control orbital upload logo**: a Lime upward arrow and tray enclosed by a Violet orbital form with Mint highlights. The canonical asset is [`feature/src/main/res/drawable-nodpi/mission_control_logo.png`](feature/src/main/res/drawable-nodpi/mission_control_logo.png). It is used by the launcher foreground, first-run onboarding hero, opening animation, and repository preview at [`design/app_icon_concept.png`](design/app_icon_concept.png).
 
@@ -32,7 +34,15 @@ On first launch, follow the Mission Control onboarding flow. Grant only the medi
 ### 2. Authentication
 Log in securely using your Telegram phone number or a QR code. The app uses real TDLib authentication; your credentials and session data are stored only on your device.
 
-### 3. Uploading Files
+### 3. Appearance
+Open **Settings → Appearance** to choose how the app looks:
+
+- **Theme**: `System` (follows the device, the default), `Light`, or `Dark`.
+- **Glow Color**: the accent colour used for primary actions and progress. Pick one of the six presets — Seafoam, Orchid, Cobalt, Lime, Cyan, Violet — or choose `Custom` and enter your own hex value.
+
+Both choices are stored on the device and applied immediately.
+
+### 4. Uploading Files
 - **Select Destination**: Search for a chat, group, or channel.
 - **Queue Management**: Add multiple files; the app manages the queue in the background.
 - **Reliability**: Uploads resume automatically after network loss or device restart thanks to WorkManager integration.
