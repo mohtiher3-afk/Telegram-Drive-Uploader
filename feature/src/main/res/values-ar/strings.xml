@@ -103,6 +103,7 @@
     <string name="queue_controls_title">التحكم في القائمة</string>
     <string name="queue_controls_supporting">إدارة عمليات الرفع دون فتح كل عنصر.</string>
     <string name="queue_no_matching_title">لا توجد عمليات رفع مطابقة</string>
+    <string name="queue_filtered_empty_title">لا يوجد شيء في هذا التصنيف</string>
     <string name="queue_no_matching_supporting">جرّب مرشحًا آخر لعرض المزيد من عناصر القائمة.</string>
     <string name="queue_filter_all">الكل</string>
     <string name="queue_filter_active">نشطة</string>

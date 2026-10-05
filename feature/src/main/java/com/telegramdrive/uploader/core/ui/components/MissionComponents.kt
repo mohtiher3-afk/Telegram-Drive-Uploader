@@ -3,6 +3,8 @@ package com.telegramdrive.uploader.core.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,8 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,7 +31,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -293,4 +300,140 @@ fun MissionProgressBar(
 @Composable
 fun MissionSectionGap(height: Dp = AppSpacing.extraLarge) {
     Box(modifier = Modifier.height(height))
+}
+
+/**
+ * Horizontal segmented control, matching the design's `.tabs`: a dark inset track with
+ * the selected segment lifted in violet.
+ *
+ * Scrolls horizontally when the options do not fit, which is what keeps six filters
+ * usable on a narrow phone instead of squeezing them into unreadable slivers.
+ */
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@Composable
+fun MissionSegmentedTabs(
+    options: List<String>,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    /**
+     * Optional per-option tag prefix, so a caller whose tests address an individual tab
+     * (for example `queue_filter_failed`) does not lose that hook when it adopts this
+     * component. Pair it with [optionTags]; when both are given the emitted tag is
+     * `"${testTagPrefix}_${optionTags[index]}"`.
+     */
+    testTagPrefix: String? = null,
+    /** Stable names for each option, used to build the test tags above. */
+    optionTags: List<String>? = null,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .clip(RoundedCornerShape(10.dp))
+            .background(DesignTokens.AppColors.surfaceCard)
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        options.forEachIndexed { index, label ->
+            val selected = index == selectedIndex
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (selected) {
+                            DesignTokens.AppColors.purple.copy(alpha = 0.22f)
+                        } else {
+                            Color.Transparent
+                        }
+                    )
+                    .clickable { onSelect(index) }
+                    .padding(horizontal = AppSpacing.medium, vertical = 10.dp)
+                    .then(
+                        if (testTagPrefix != null) {
+                            val suffix = optionTags?.getOrNull(index) ?: index.toString()
+                            Modifier.testTag("${testTagPrefix}_$suffix")
+                        } else {
+                            Modifier
+                        }
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (selected) {
+                        DesignTokens.AppColors.purpleHot
+                    } else {
+                        DesignTokens.AppColors.contentMuted
+                    },
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Compact search field with a leading magnifier, matching the design's
+ * `.search-field`.
+ *
+ * [modifier] is applied to the outer row so a caller can constrain the width; the
+ * design caps it at 240px, which is why the caller usually does
+ * `Modifier.widthIn(max = 240.dp)`.
+ */
+@Composable
+fun MissionSearchField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    /**
+     * Applied to the editable node itself, not the decorative row.
+     *
+     * This matters: `performTextInput` resolves the node carrying `SetText` and
+     * `RequestFocus` semantics, which only the text field provides. Tagging the
+     * surrounding Row (the obvious reading of "the search field") makes
+     * `performTextInput` fail with "Failed to perform text input", because a plain
+     * Row has neither. So the tag follows the field.
+     */
+    textFieldModifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(DesignTokens.AppColors.surfaceCard)
+            .border(1.dp, DesignTokens.AppColors.glassBorder, RoundedCornerShape(10.dp))
+            .padding(horizontal = AppSpacing.small + AppSpacing.xSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = null,
+            tint = DesignTokens.AppColors.contentMuted,
+            modifier = Modifier.size(18.dp),
+        )
+        androidx.compose.foundation.text.BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                color = DesignTokens.AppColors.contentPrimary,
+            ),
+            cursorBrush = SolidColor(DesignTokens.AppColors.lime),
+            modifier = textFieldModifier
+                .weight(1f)
+                .padding(horizontal = AppSpacing.small, vertical = 12.dp),
+            decorationBox = { inner ->
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = DesignTokens.AppColors.contentMuted,
+                    )
+                }
+                inner()
+            },
+        )
+    }
 }

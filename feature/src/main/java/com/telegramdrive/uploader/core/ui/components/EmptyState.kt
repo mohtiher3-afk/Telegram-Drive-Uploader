@@ -42,11 +42,11 @@ fun EmptyState(
             .fillMaxWidth()
             .liquidGlassOverlay(
                 shape = MaterialTheme.shapes.medium,
-                accent = DesignTokens.AppColors.onPrimary
+                accent = DesignTokens.AppColors.purpleHot
             ),
-        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.primaryContainer),
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, DesignTokens.AppColors.onSurface.copy(alpha = 0.4f).copy(alpha = 0.72f)),
+        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.surfaceCard),
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(1.dp, DesignTokens.AppColors.glassBorder),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
@@ -59,7 +59,7 @@ fun EmptyState(
             AnimatedEmptyStateIcon(
                 animationType = animation,
                 size = 48.dp,
-                tint = DesignTokens.AppColors.onPrimary.copy(alpha = 0.72f)
+                tint = DesignTokens.AppColors.purpleHot.copy(alpha = 0.85f)
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
@@ -68,7 +68,7 @@ fun EmptyState(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                 textAlign = TextAlign.Center,
-                color = DesignTokens.AppColors.onSurface
+                color = DesignTokens.AppColors.contentPrimary
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.xs))
@@ -77,7 +77,7 @@ fun EmptyState(
                 text = supportingText,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                color = DesignTokens.AppColors.contentMuted
             )
 
             if (actionText != null && onActionClick != null) {
