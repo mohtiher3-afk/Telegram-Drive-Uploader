@@ -100,6 +100,7 @@
     <string name="queue_controls_supporting">Manage uploads without opening each item.</string>
     <string name="queue_no_matching_title">No matching uploads</string>
     <string name="queue_filtered_empty_title">Nothing in this filter</string>
+    <string name="history_banner_supporting">Your files are right where they belong.</string>
     <string name="queue_no_matching_supporting">Try another filter to see more queue items.</string>
     <string name="queue_filter_all">All</string>
     <string name="queue_filter_active">Active</string>

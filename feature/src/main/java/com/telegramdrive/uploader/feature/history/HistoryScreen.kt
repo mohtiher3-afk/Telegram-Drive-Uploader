@@ -49,6 +49,17 @@ import com.telegramdrive.uploader.core.ui.components.formatFileSize
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import java.util.Locale
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import com.telegramdrive.uploader.core.ui.components.MissionBanner
+import com.telegramdrive.uploader.core.ui.components.MissionSearchField
+import com.telegramdrive.uploader.core.ui.components.MissionSegmentedTabs
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,9 +69,20 @@ fun HistoryScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
+        containerColor = DesignTokens.AppColors.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.upload_history)) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DesignTokens.AppColors.background,
+                    titleContentColor = DesignTokens.AppColors.contentPrimary,
+                    actionIconContentColor = DesignTokens.AppColors.contentMuted,
+                ),
+                title = {
+                    Text(
+                        text = stringResource(com.telegramdrive.uploader.feature.R.string.upload_history),
+                        color = DesignTokens.AppColors.contentPrimary
+                    )
+                },
                 actions = {
                     if (uiState.totalMatches > 0) {
                         IconButton(
@@ -88,6 +110,16 @@ fun HistoryScreen(
                         .padding(horizontal = DesignTokens.AppSpacing.phoneEdge, vertical = DesignTokens.AppSpacing.phoneSection)
                         .testTag("history_empty_state")
                 )
+                // Same reasoning as the queue screen: the search box and the period tabs
+                // belong to the screen, not to the list. Hiding them on an empty history
+                // left the filters unreachable on a fresh install.
+                SearchAndPeriods(
+                    query = uiState.query,
+                    onQueryChange = viewModel::onQueryChanged,
+                    period = uiState.period,
+                    onPeriodChange = viewModel::setPeriod,
+                    modifier = Modifier.padding(horizontal = DesignTokens.AppSpacing.phoneEdge)
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier
@@ -98,100 +130,33 @@ fun HistoryScreen(
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(4.dp))
-                        OutlinedTextField(
-                            value = uiState.query,
-                            onValueChange = viewModel::onQueryChanged,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("history_search_field"),
-                            singleLine = true,
-                            label = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.search_file_names)) },
-                            placeholder = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.filter_completed_uploads)) }
+                        SearchAndPeriods(
+                            query = uiState.query,
+                            onQueryChange = viewModel::onQueryChanged,
+                            period = uiState.period,
+                            onPeriodChange = viewModel::setPeriod
                         )
                     }
                     item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .horizontalScroll(rememberScrollState()),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            HistoryPeriod.values().forEach { option ->
-                                FilterChip(
-                                    selected = uiState.period == option,
-                                    onClick = { viewModel.setPeriod(option) },
-                                    label = { Text(periodLabel(option)) },
-                                    modifier = Modifier.testTag("history_period_${option.name.lowercase()}")
-                                )
-                            }
-                        }
+                        MissionBanner(
+                            headline = pluralStringResource(
+                                com.telegramdrive.uploader.feature.R.plurals.history_matches_summary,
+                                uiState.totalMatches,
+                                uiState.totalMatches,
+                                formatFileSize(uiState.totalSize)
+                            ),
+                            supporting = stringResource(com.telegramdrive.uploader.feature.R.string.history_banner_supporting),
+                            icon = Icons.Default.History,
+                            modifier = Modifier.testTag("history_banner"),
+                            action = null
+                        )
                     }
                     item {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .liquidGlassOverlay(
-                                    shape = MaterialTheme.shapes.large,
-                                    accent = DesignTokens.AppColors.onPrimary
-                                ),
-                            colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.secondaryContainer),
-                            shape = MaterialTheme.shapes.large,
-                            border = BorderStroke(1.dp, DesignTokens.AppColors.onPrimary.copy(alpha = 0.35f)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                                verticalArrangement = Arrangement.spacedBy(2.dp)
-                            ) {
-                                Text(
-                                    text = pluralStringResource(
-                                        com.telegramdrive.uploader.feature.R.plurals.history_matches_summary,
-                                        uiState.totalMatches,
-                                        uiState.totalMatches,
-                                        formatFileSize(uiState.totalSize)
-                                    ),
-                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = DesignTokens.AppColors.onPrimary
-                                )
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 4.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    AssistChip(
-                                        onClick = { viewModel.setSort(HistorySort.NEWEST) },
-                                        label = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.newest)) },
-                                        leadingIcon = {
-                                            if (uiState.sort == HistorySort.NEWEST) {
-                                                Icon(
-                                                    Icons.Default.Check,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(18.dp)
-                                                )
-                                            }
-                                        },
-                                        modifier = Modifier.testTag("sort_newest")
-                                    )
-                                    AssistChip(
-                                        onClick = { viewModel.setSort(HistorySort.LARGEST) },
-                                        label = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.largest)) },
-                                        leadingIcon = {
-                                            if (uiState.sort == HistorySort.LARGEST) {
-                                                Icon(
-                                                    Icons.Default.Check,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(18.dp)
-                                                )
-                                            }
-                                        },
-                                        modifier = Modifier.testTag("sort_largest")
-                                    )
-                                }
-                            }
-                        }
+                        MissionSortToggle(
+                            sort = uiState.sort,
+                            onSortChange = viewModel::setSort,
+                            modifier = Modifier.testTag("history_sort")
+                        )
                     }
                     if (uiState.historyItems.isEmpty()) {
                         item {
@@ -229,6 +194,105 @@ fun HistoryScreen(
                     }
                     item { Spacer(modifier = Modifier.height(12.dp)) }
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Search field plus the period tabs, shared by the empty and populated branches.
+ *
+ * Extracted so the two call sites cannot drift, which is the same reason the queue screen
+ * has its own `SearchAndFilters`.
+ */
+@Composable
+private fun SearchAndPeriods(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    period: HistoryPeriod,
+    onPeriodChange: (HistoryPeriod) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        MissionSearchField(
+            value = query,
+            onValueChange = onQueryChange,
+            placeholder = stringResource(com.telegramdrive.uploader.feature.R.string.filter_completed_uploads),
+            modifier = Modifier.fillMaxWidth(),
+            textFieldModifier = Modifier.testTag("history_search_field")
+        )
+        MissionSegmentedTabs(
+            options = HistoryPeriod.entries.map { periodLabel(it) },
+            selectedIndex = HistoryPeriod.entries.indexOf(period),
+            onSelect = { onPeriodChange(HistoryPeriod.entries[it]) },
+            modifier = Modifier.testTag("history_periods"),
+            testTagPrefix = "history_period",
+            optionTags = HistoryPeriod.entries.map { it.name.lowercase() }
+        )
+    }
+}
+
+/**
+ * Newest / Largest toggle, rendered as a two-segment control so it reads as one choice
+ * rather than two independent chips. Selecting the active option is a no-op rather than
+ * an error, which keeps the toggle usable by screen readers and by tests that click both.
+ */
+@Composable
+private fun MissionSortToggle(
+    sort: HistorySort,
+    onSortChange: (HistorySort) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val options = listOf(HistorySort.NEWEST, HistorySort.LARGEST)
+    val labels = mapOf(
+        HistorySort.NEWEST to stringResource(com.telegramdrive.uploader.feature.R.string.newest),
+        HistorySort.LARGEST to stringResource(com.telegramdrive.uploader.feature.R.string.largest),
+    )
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(DesignTokens.AppColors.surfaceCard)
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        options.forEach { option ->
+            val selected = option == sort
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (selected) {
+                            DesignTokens.AppColors.purple.copy(alpha = 0.22f)
+                        } else {
+                            Color.Transparent
+                        }
+                    )
+                    .clickable { onSortChange(option) }
+                    .padding(vertical = 10.dp)
+                    .testTag("sort_${option.name.lowercase()}"),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (selected) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = DesignTokens.AppColors.purpleHot,
+                        modifier = Modifier.size(16.dp),
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                }
+                Text(
+                    text = labels.getValue(option),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (selected) {
+                        DesignTokens.AppColors.purpleHot
+                    } else {
+                        DesignTokens.AppColors.contentMuted
+                    },
+                )
             }
         }
     }

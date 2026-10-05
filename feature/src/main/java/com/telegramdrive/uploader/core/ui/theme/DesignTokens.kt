@@ -199,7 +199,26 @@ object AppColors {
     val purpleHot = Color(0xFFA855F7)
 
     /** Failure and destructive-action accent drawn on [background]. */
-    val danger = Color(0xFFEF4444)
+    
+    /**
+     * Muted violet for icons and accents that must stay readable on a dark card without
+     * competing with [purpleHot]. Carries the design's `#b49ad5`.
+     */
+    val purpleSoft = Color(0xFFB49AD5)
+
+    /**
+     * The two stops of the banner's `linear-gradient(130deg, #21192b, #17151d)`.
+     *
+     * Kept as named roles rather than a gradient defined at the call site, because both
+     * the queue and history screens use this banner and a literal written twice would
+     * inevitably drift.
+     */
+    val bannerStart = Color(0xFF21192B)
+    val bannerEnd = Color(0xFF17151D)
+
+    /** The banner's `#a775d624` border, i.e. the brand violet at 14% over the canvas. */
+    val bannerBorder = Color(0x1FA775D6)
+val danger = Color(0xFFEF4444)
 
     /**
      * Raised panel surface: stat cards, list rows, and the hero block.

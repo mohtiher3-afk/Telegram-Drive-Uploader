@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -300,6 +301,77 @@ fun MissionProgressBar(
 @Composable
 fun MissionSectionGap(height: Dp = AppSpacing.extraLarge) {
     Box(modifier = Modifier.height(height))
+}
+
+/**
+ * The design's `.queue-banner`: a violet-tinted gradient card that heads the queue and
+ * history screens, summarising what the list below contains.
+ *
+ * The gradient is built in the modifier so the card stays a single draw and does not
+ * allocate a brush on every recomposition.
+ *
+ * @param action optional trailing slot; the queue screen puts its pause/resume control
+ *   here and the history screen passes nothing.
+ */
+@Composable
+fun MissionBanner(
+    headline: String,
+    supporting: String,
+    modifier: Modifier = Modifier,
+    icon: ImageVector = Icons.Default.ListAlt,
+    action: @Composable (() -> Unit)? = null,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(AppRadius.card))
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        DesignTokens.AppColors.bannerStart,
+                        DesignTokens.AppColors.bannerEnd,
+                    )
+                )
+            )
+            .border(1.dp, DesignTokens.AppColors.bannerBorder, RoundedCornerShape(AppRadius.card))
+            .padding(AppSpacing.extraLarge),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(AppRadius.control))
+                .background(DesignTokens.AppColors.purple.copy(alpha = 0.08f))
+                .border(1.dp, DesignTokens.AppColors.purple.copy(alpha = 0.15f), RoundedCornerShape(AppRadius.control)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = DesignTokens.AppColors.purpleSoft,
+                modifier = Modifier.size(24.dp),
+            )
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = AppSpacing.medium),
+        ) {
+            Text(
+                text = headline,
+                style = MaterialTheme.typography.titleSmall,
+                color = DesignTokens.AppColors.contentPrimary,
+            )
+            Text(
+                text = supporting,
+                style = MaterialTheme.typography.bodySmall,
+                color = DesignTokens.AppColors.contentMuted,
+            )
+        }
+        if (action != null) {
+            Box(modifier = Modifier.padding(start = AppSpacing.small)) { action() }
+        }
+    }
 }
 
 /**
