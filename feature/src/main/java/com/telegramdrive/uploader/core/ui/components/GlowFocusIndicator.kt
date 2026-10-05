@@ -26,7 +26,7 @@ fun Modifier.glowFocusIndicator(
 ): Modifier {
     val motionEnabled = rememberSystemMotionEnabled()
     val focusColor by animateColorAsState(
-        targetValue = if (focused) DesignTokens.AppColors.onSurface.copy(alpha = 0.4f) else Color.Transparent,
+        targetValue = if (focused) DesignTokens.AppColors.glassBorder else Color.Transparent,
         animationSpec = AppMotion.shortTween(motionEnabled),
         label = "glowFocusIndicatorColor"
     )

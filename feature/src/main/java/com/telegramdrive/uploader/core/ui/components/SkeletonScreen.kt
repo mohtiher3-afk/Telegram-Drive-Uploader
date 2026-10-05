@@ -76,7 +76,7 @@ fun SkeletonScreen(
                     .height(92.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = DesignTokens.AppColors.secondaryContainer
+                    containerColor = DesignTokens.AppColors.surfaceCard
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
@@ -90,7 +90,7 @@ fun SkeletonScreen(
                         shimmerProgress = shimmerProgress,
                         shimmerWidth = shimmerWidth,
                         startX = startX,
-                        baseColor = DesignTokens.AppColors.secondaryContainer,
+                        baseColor = DesignTokens.AppColors.surfaceCard,
                         highlightColor = DesignTokens.AppColors.surface,
                         motionEnabled = motionEnabled
                     )
@@ -111,7 +111,7 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = DesignTokens.AppColors.secondaryContainer,
+                            baseColor = DesignTokens.AppColors.surfaceCard,
                             highlightColor = DesignTokens.AppColors.surface,
                             motionEnabled = motionEnabled
                         )
@@ -125,7 +125,7 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = DesignTokens.AppColors.secondaryContainer,
+                            baseColor = DesignTokens.AppColors.surfaceCard,
                             highlightColor = DesignTokens.AppColors.surface,
                             motionEnabled = motionEnabled
                         )
@@ -139,7 +139,7 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = DesignTokens.AppColors.secondaryContainer,
+                            baseColor = DesignTokens.AppColors.surfaceCard,
                             highlightColor = DesignTokens.AppColors.surface,
                             motionEnabled = motionEnabled
                         )
@@ -155,7 +155,7 @@ fun SkeletonScreen(
                     .height(92.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = DesignTokens.AppColors.secondaryContainer
+                    containerColor = DesignTokens.AppColors.surfaceCard
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
@@ -169,7 +169,7 @@ fun SkeletonScreen(
                         shimmerProgress = shimmerProgress,
                         shimmerWidth = shimmerWidth,
                         startX = startX,
-                        baseColor = DesignTokens.AppColors.secondaryContainer,
+                        baseColor = DesignTokens.AppColors.surfaceCard,
                         highlightColor = DesignTokens.AppColors.surface,
                         motionEnabled = motionEnabled
                     )
@@ -189,7 +189,7 @@ fun SkeletonScreen(
                             shimmerProgress = shimmerProgress,
                             shimmerWidth = shimmerWidth,
                             startX = startX,
-                            baseColor = DesignTokens.AppColors.secondaryContainer,
+                            baseColor = DesignTokens.AppColors.surfaceCard,
                             highlightColor = DesignTokens.AppColors.surface,
                             motionEnabled = motionEnabled
                         )
@@ -206,7 +206,7 @@ fun SkeletonScreen(
                                 shimmerProgress = shimmerProgress,
                                 shimmerWidth = shimmerWidth,
                                 startX = startX,
-                                baseColor = DesignTokens.AppColors.secondaryContainer,
+                                baseColor = DesignTokens.AppColors.surfaceCard,
                                 highlightColor = DesignTokens.AppColors.surface,
                                 motionEnabled = motionEnabled
                             )
@@ -219,7 +219,7 @@ fun SkeletonScreen(
                                 shimmerProgress = shimmerProgress,
                                 shimmerWidth = shimmerWidth,
                                 startX = startX,
-                                baseColor = DesignTokens.AppColors.secondaryContainer,
+                                baseColor = DesignTokens.AppColors.surfaceCard,
                                 highlightColor = DesignTokens.AppColors.surface,
                                 motionEnabled = motionEnabled
                             )
@@ -243,7 +243,7 @@ fun SkeletonScreen(
                     shimmerProgress = shimmerProgress,
                     shimmerWidth = shimmerWidth,
                     startX = startX,
-                    baseColor = DesignTokens.AppColors.secondaryContainer,
+                    baseColor = DesignTokens.AppColors.surfaceCard,
                     highlightColor = DesignTokens.AppColors.surface,
                     motionEnabled = motionEnabled
                 )
@@ -255,7 +255,7 @@ fun SkeletonScreen(
                     shimmerProgress = shimmerProgress,
                     shimmerWidth = shimmerWidth,
                     startX = startX,
-                    baseColor = DesignTokens.AppColors.secondaryContainer,
+                    baseColor = DesignTokens.AppColors.surfaceCard,
                     highlightColor = DesignTokens.AppColors.surface,
                     motionEnabled = motionEnabled
                 )
@@ -274,7 +274,7 @@ fun SkeletonPlaceholder(
     shimmerProgress: Float,
     shimmerWidth: Float,
     startX: Float,
-    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.secondaryContainer,
+    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surfaceCard,
     highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
     motionEnabled: Boolean = true
 ) {

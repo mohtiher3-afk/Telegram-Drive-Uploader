@@ -188,6 +188,16 @@ object AppColors {
      */
     val purple = Color(0xFF7C3AED)
 
+    /**
+     * Dark ink for use on a light fill.
+     *
+     * The navigation bar keeps Material's convention of a light pill behind the selected
+     * destination, so the selected glyph and label need dark ink rather than the light ink
+     * used everywhere else. Pairing this with [onPrimary] as the fill is the whole point of
+     * the role: without it the pair collapses to white-on-white.
+     */
+    val contentPrimaryInverse = Color(0xFF0D0D0F)
+
     /** Text and icons drawn on a solid [purple] fill. */
     val onPurple = Color(0xFFFFFFFF)
 
@@ -200,6 +210,32 @@ object AppColors {
 
     /** Failure and destructive-action accent drawn on [background]. */
     
+    /**
+     * Filled surfaces that must sit on the dark canvas.
+     *
+     * The roles above deliberately delegate to [LightColorScheme] so the palette cannot
+     * drift away from the theme. That delegation is exactly why they are unusable for a
+     * dark UI: they resolve to light values on every screen that has not been converted
+     * role by role. These four give converted screens somewhere dark to reach for, with
+     * the text role paired in the same place so a label can never end up painted on its
+     * own fill.
+     *
+     * `dangerFill` / `dangerOnFill` exist because the logout button paired `error` as both
+     * its container and its content colour, which renders the label invisible. The pair
+     * makes that mistake impossible to write.
+     */
+    /** Outline / low-emphasis danger surface, e.g. a "clear cache" button. */
+    val dangerFill = Color(0xFF2A1518)
+
+    /** Label colour that clears 4.5:1 on [dangerFill]. */
+    val dangerOnFill = Color(0xFFFF8A8A)
+
+    /** Solid danger fill for a destructive action that owns its row. */
+    val dangerSolid = Color(0xFFDC2626)
+
+    /** Label colour that clears 4.5:1 on [dangerSolid]. */
+    val onDangerSolid = Color(0xFFFFFFFF)
+
     /**
      * Muted violet for icons and accents that must stay readable on a dark card without
      * competing with [purpleHot]. Carries the design's `#b49ad5`.

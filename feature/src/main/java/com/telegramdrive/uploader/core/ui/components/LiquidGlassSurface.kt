@@ -150,7 +150,7 @@ fun Modifier.liquidGlassOverlay(
     )
     
     // Dark theme detection for adaptive colors
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = DesignTokens.AppColors.surfaceCard.luminance() < 0.5f
     
     this.then(
         Modifier
@@ -243,7 +243,7 @@ fun Modifier.glowSignalRim(
         label = "glowPulseAlpha"
     )
     
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = DesignTokens.AppColors.surfaceCard.luminance() < 0.5f
     
     if (!enabled) return@composed this
     
@@ -375,7 +375,7 @@ fun GlassCard(
     emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDark = DesignTokens.AppColors.primaryContainer.luminance() < 0.5f
+    val isDark = DesignTokens.AppColors.surfaceCard.luminance() < 0.5f
     
     Surface(
         modifier = modifier
@@ -384,7 +384,7 @@ fun GlassCard(
             .shadow(emphasis.elevation.dp, shape = shape),
         shape = shape,
         color = Color.Transparent,
-        contentColor = DesignTokens.AppColors.onSurface
+        contentColor = DesignTokens.AppColors.contentPrimary
     ) {
         Box(
             modifier = Modifier
@@ -403,7 +403,7 @@ fun GlassCard(
 fun ShimmerPlaceholder(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(12.dp),
-    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.secondaryContainer,
+    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surfaceCard,
     highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
     animationDuration: Int = 1500
 ) {

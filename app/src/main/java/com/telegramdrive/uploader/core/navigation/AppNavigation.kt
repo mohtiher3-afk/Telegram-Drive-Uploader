@@ -187,11 +187,16 @@ fun AppNavigation(
                                         },
                                         label = { Text(stringResource(screen.titleRes)) },
                                         colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = DesignTokens.AppColors.onPrimary,
-                                            selectedTextColor = DesignTokens.AppColors.onPrimary,
+                                            // The indicator is a light pill, so the selected
+                                            // glyph and label have to be dark ink. Both used to
+                                            // be `onPrimary` (white), which painted a white
+                                            // icon on a white pill and made the active tab
+                                            // look empty.
+                                            selectedIconColor = DesignTokens.AppColors.contentPrimaryInverse,
+                                            selectedTextColor = DesignTokens.AppColors.contentPrimaryInverse,
                                             indicatorColor = DesignTokens.AppColors.onPrimary,
-                                            unselectedIconColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
-                                            unselectedTextColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                            unselectedIconColor = DesignTokens.AppColors.contentMuted,
+                                            unselectedTextColor = DesignTokens.AppColors.contentMuted
                                         ),
                                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                                     )

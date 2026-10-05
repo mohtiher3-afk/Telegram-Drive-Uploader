@@ -44,15 +44,15 @@ fun VideoItem(
             .testTag("video_item_${video.id}"),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                DesignTokens.AppColors.onPrimaryContainer.copy(alpha = 0.35f)
+                DesignTokens.AppColors.surfaceCard.copy(alpha = 0.35f)
             } else {
-                DesignTokens.AppColors.secondaryContainer
+                DesignTokens.AppColors.surfaceCard
             }
         ),
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(
             if (isSelected) 2.dp else 1.dp,
-            if (isSelected) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+            if (isSelected) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.contentMuted
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -77,7 +77,7 @@ fun VideoItem(
                 modifier = Modifier
                     .size(68.dp)
                     .clip(MaterialTheme.shapes.small)
-                    .background(DesignTokens.AppColors.secondaryContainer),
+                    .background(DesignTokens.AppColors.surfaceCard),
                 contentAlignment = Alignment.Center
             ) {
                 val thumbnailFile = video.thumbnailPath?.let(::File)?.takeIf(File::exists)
@@ -92,7 +92,7 @@ fun VideoItem(
                     Icon(
                         imageVector = Icons.Default.VideoFile,
                         contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.video_icon),
-                        tint = DesignTokens.AppColors.onSurface,
+                        tint = DesignTokens.AppColors.contentPrimary,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -109,7 +109,7 @@ fun VideoItem(
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = DesignTokens.AppColors.onSurface
+                    color = DesignTokens.AppColors.contentPrimary
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -135,7 +135,7 @@ fun VideoItem(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.remove_video),
-                        tint = DesignTokens.AppColors.error
+                        tint = DesignTokens.AppColors.danger
                     )
                 }
             }
@@ -146,8 +146,8 @@ fun VideoItem(
 @Composable
 private fun MetadataPill(text: String) {
     Surface(
-        color = DesignTokens.AppColors.secondaryContainer,
-        contentColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+        color = DesignTokens.AppColors.surfaceCard,
+        contentColor = DesignTokens.AppColors.contentMuted,
         shape = MaterialTheme.shapes.small
     ) {
         Text(
