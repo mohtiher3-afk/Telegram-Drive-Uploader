@@ -87,19 +87,19 @@ fun OnboardingScreen(
                 title = stringResource(R.string.onboarding_page_upload_title),
                 description = stringResource(R.string.onboarding_page_upload_description),
                 icon = Icons.Default.CloudUpload,
-                accent = DesignTokens.AppColors.onPrimaryContainer
+                accent = DesignTokens.AppColors.surfaceCard
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_schedule_title),
                 description = stringResource(R.string.onboarding_page_schedule_description),
                 icon = Icons.Default.Schedule,
-                accent = DesignTokens.AppColors.secondaryContainer
+                accent = DesignTokens.AppColors.surfaceCard
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_private_title),
                 description = stringResource(R.string.onboarding_page_private_description),
                 icon = Icons.Default.Security,
-                accent = DesignTokens.AppColors.secondaryContainer
+                accent = DesignTokens.AppColors.surfaceCard
             )
         )
 
@@ -130,7 +130,7 @@ fun OnboardingScreen(
         }
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = DesignTokens.AppColors.primaryContainer) {
+    Surface(modifier = Modifier.fillMaxSize(), color = DesignTokens.AppColors.surfaceCard) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -211,7 +211,7 @@ fun OnboardingScreen(
                         text = pages[targetPage].description,
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                        color = DesignTokens.AppColors.contentMuted
                     )
                 }
             }
@@ -227,7 +227,7 @@ fun OnboardingScreen(
                         label = "onboarding_dot_width_$index"
                     )
                     val dotColor by animateColorAsState(
-                        targetValue = if (active) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSurface.copy(alpha = 0.4f),
+                        targetValue = if (active) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.contentMuted.copy(alpha = 0.7f),
                         animationSpec = AppMotion.shortTween(motionEnabled),
                         label = "onboarding_dot_color_$index"
                     )

@@ -28,6 +28,7 @@ import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramDestinationType
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import androidx.compose.material3.TopAppBarDefaults
 
 @Composable
 fun TelegramDestinationScreen(
@@ -44,8 +45,14 @@ fun TelegramDestinationScreen(
     val selectedDestination by viewModel.selectedDestination.collectAsStateWithLifecycle()
 
     Scaffold(
+        containerColor = DesignTokens.AppColors.background,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DesignTokens.AppColors.background,
+                    titleContentColor = DesignTokens.AppColors.contentPrimary,
+                    navigationIconContentColor = DesignTokens.AppColors.contentMuted,
+                ),
                 title = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.select_destination)) },
                 navigationIcon = {
                     IconButton(
@@ -83,7 +90,7 @@ fun TelegramDestinationScreen(
                         imageVector = Icons.Default.CloudOff,
                         contentDescription = null,
                         modifier = Modifier.size(72.dp),
-                        tint = DesignTokens.AppColors.onSurface.copy(alpha = 0.4f)
+                        tint = DesignTokens.AppColors.contentMuted.copy(alpha = 0.7f)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
@@ -95,7 +102,7 @@ fun TelegramDestinationScreen(
                     Text(
                         text = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_disconnected_message),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                        color = DesignTokens.AppColors.contentMuted,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -154,7 +161,7 @@ fun TelegramDestinationScreen(
                         Text(
                             text = stringResource(com.telegramdrive.uploader.feature.R.string.direct_upload_info),
                             style = MaterialTheme.typography.bodySmall,
-                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                            color = DesignTokens.AppColors.contentMuted
                         )
                     }
                 }
@@ -163,7 +170,8 @@ fun TelegramDestinationScreen(
                 selectedDestination?.let { dest ->
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = DesignTokens.AppColors.onPrimaryContainer
+                            containerColor = DesignTokens.AppColors.surfaceCard,
+                            contentColor = DesignTokens.AppColors.contentPrimary,
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -239,7 +247,7 @@ fun TelegramDestinationScreen(
                                 }
                             ),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                            color = DesignTokens.AppColors.contentMuted
                         )
                     }
                 } else {
@@ -303,9 +311,9 @@ fun DestinationRow(
     Card(
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                DesignTokens.AppColors.onSecondaryContainer
+                DesignTokens.AppColors.purple.copy(alpha = 0.16f)
             } else {
-                DesignTokens.AppColors.secondaryContainer.copy(alpha = 0.5f)
+                DesignTokens.AppColors.surfaceCard
             }
         ),
         modifier = Modifier
@@ -360,13 +368,13 @@ fun DestinationRow(
                     Text(
                         text = destination.title,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = DesignTokens.AppColors.onSurface
+                        color = DesignTokens.AppColors.contentPrimary
                     )
                     destination.username?.let {
                         Text(
                             text = "@$it",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                            color = DesignTokens.AppColors.contentMuted
                         )
                     }
                 }
@@ -387,7 +395,7 @@ fun DestinationRow(
                     tint = if (isPinned) {
                         DesignTokens.AppColors.onPrimary
                     } else {
-                        DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                        DesignTokens.AppColors.contentMuted
                     }
                 )
             }

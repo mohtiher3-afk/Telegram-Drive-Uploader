@@ -79,7 +79,7 @@ private fun UploadChatBubble(
             bottomEnd = 18.dp,
             bottomStart = 18.dp
         ),
-        color = DesignTokens.AppColors.secondaryContainer.copy(alpha = 0.65f),
+        color = DesignTokens.AppColors.surfaceCard.copy(alpha = 0.65f),
         contentColor = DesignTokens.AppColors.onSecondary
     ) {
         Column(
@@ -115,7 +115,7 @@ private fun UploadChatBubble(
                     Text(
                         text = err,
                         style = MaterialTheme.typography.labelSmall,
-                        color = DesignTokens.AppColors.error,
+                        color = DesignTokens.AppColors.danger,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

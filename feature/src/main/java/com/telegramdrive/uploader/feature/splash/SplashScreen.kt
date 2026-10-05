@@ -42,7 +42,7 @@ fun SplashScreen(onFinished: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DesignTokens.AppColors.primaryContainer)
+            .background(DesignTokens.AppColors.surfaceCard)
             .semantics { liveRegion = LiveRegionMode.Polite },
         contentAlignment = Alignment.Center
     ) {

@@ -62,6 +62,7 @@ fun UploadScreen(
     val isSelectionMode = selectedVideoIds.isNotEmpty()
 
     Scaffold(
+        containerColor = DesignTokens.AppColors.background,
         topBar = {
             if (isSelectionMode && uiState is UploadUiState.Success) {
                 val successState = uiState as UploadUiState.Success
@@ -111,10 +112,10 @@ fun UploadScreen(
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = DesignTokens.AppColors.secondaryContainer,
-                        titleContentColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
-                        navigationIconContentColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
-                        actionIconContentColor = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                        containerColor = DesignTokens.AppColors.background,
+                        titleContentColor = DesignTokens.AppColors.contentPrimary,
+                        navigationIconContentColor = DesignTokens.AppColors.contentMuted,
+                        actionIconContentColor = DesignTokens.AppColors.contentMuted
                     )
                 )
             } else {
@@ -164,7 +165,7 @@ fun UploadScreen(
                         Text(
                             text = stringResource(com.telegramdrive.uploader.feature.R.string.extracting_video_metadata),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                            color = DesignTokens.AppColors.contentMuted
                         )
                     }
                 }
@@ -209,14 +210,14 @@ fun UploadScreen(
                                     .padding(bottom = 12.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = if (selectedDestination != null)
-                                        DesignTokens.AppColors.onSecondaryContainer
+                                        DesignTokens.AppColors.purple.copy(alpha = 0.16f)
                                     else
-                                        DesignTokens.AppColors.secondaryContainer
+                                        DesignTokens.AppColors.surfaceCard
                                 ),
                                 shape = MaterialTheme.shapes.large,
                                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                                 border = if (selectedDestination == null) {
-                                    BorderStroke(1.dp, DesignTokens.AppColors.onSurface.copy(alpha = 0.4f))
+                                    BorderStroke(1.dp, DesignTokens.AppColors.glassBorder)
                                 } else null
                             ) {
                                 Row(
@@ -261,7 +262,7 @@ fun UploadScreen(
                                                 DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(it)
                                             } ?: stringResource(com.telegramdrive.uploader.feature.R.string.start_immediately),
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                            color = DesignTokens.AppColors.contentMuted
                                         )
                                     }
                                     TextButton(
@@ -306,7 +307,8 @@ fun UploadScreen(
                                     .fillMaxWidth()
                                     .padding(bottom = 12.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = DesignTokens.AppColors.secondaryContainer
+                                    containerColor = DesignTokens.AppColors.surfaceCard,
+                                    contentColor = DesignTokens.AppColors.contentPrimary,
                                 ),
                                 shape = MaterialTheme.shapes.large
                             ) {
@@ -322,12 +324,12 @@ fun UploadScreen(
                                             text = stringResource(com.telegramdrive.uploader.feature.R.string.smart_file_assistant_title),
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
-                                            color = DesignTokens.AppColors.onSurface
+                                            color = DesignTokens.AppColors.contentPrimary
                                         )
                                         Text(
                                             text = stringResource(com.telegramdrive.uploader.feature.R.string.smart_file_assistant_description),
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = DesignTokens.AppColors.onSurface
+                                            color = DesignTokens.AppColors.contentPrimary
                                         )
                                     }
                                     FilledTonalButton(
@@ -348,7 +350,8 @@ fun UploadScreen(
                                         .padding(bottom = 12.dp)
                                         .testTag("invalid_files_warning_card"),
                                     colors = CardDefaults.cardColors(
-                                        containerColor = DesignTokens.AppColors.errorContainer
+                                        containerColor = DesignTokens.AppColors.dangerFill,
+                                        contentColor = DesignTokens.AppColors.contentPrimary,
                                     ),
                                     shape = MaterialTheme.shapes.medium
                                 ) {
@@ -390,7 +393,7 @@ fun UploadScreen(
                                             Text(
                                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.compression_subtitle),
                                                 style = MaterialTheme.typography.bodySmall,
-                                                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                                                color = DesignTokens.AppColors.contentMuted
                                             )
                                         }
                                         if (state.isCompressing) {
@@ -434,7 +437,8 @@ fun UploadScreen(
                                     .fillMaxWidth()
                                     .padding(bottom = 16.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = DesignTokens.AppColors.onPrimaryContainer
+                                    containerColor = DesignTokens.AppColors.surfaceCard,
+                                    contentColor = DesignTokens.AppColors.contentPrimary,
                                 ),
                                 shape = MaterialTheme.shapes.extraLarge,
                                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
