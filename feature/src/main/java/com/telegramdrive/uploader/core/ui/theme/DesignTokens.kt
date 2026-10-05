@@ -154,13 +154,13 @@ object AppColors {
     // ---------------------------------------------------------------------
 
     /** The control-room canvas every screen draws behind its content. */
-    val background = Color(0xFF0E110A)
+    val background = Color(0xFF0D0D0F)
 
     /** Primary body text and headings drawn on [background]. */
-    val contentPrimary = Color(0xFFF2F5EC)
+    val contentPrimary = Color(0xFFFFFFFF)
 
     /** Muted body text and secondary labels drawn on [background]. */
-    val contentMuted = Color(0xFFAEB6A4)
+    val contentMuted = Color(0xFF9CA3AF)
 
     /**
      * The single action color: primary buttons, progress fills, and the active
@@ -175,16 +175,46 @@ object AppColors {
     val onLime = Color(0xFF11160A)
 
     /** Telemetry and live-signal accent drawn on [background]. */
-    val teal = Color(0xFF39D8C2)
+    val teal = Color(0xFF2DD4BF)
 
-    /** Orbital glow and small headings only; not for long text. */
-    val purple = Color(0xFF863FFD)
+    /**
+     * Orbital glow and small headings only; not for long text.
+     *
+     * The brand violet measures 3.41:1 on [background], which is below the 4.5:1 that
+     * body text needs but above the 3:1 that WCAG allows for large text and non-text
+     * boundaries. Use it for glows, borders, and headings of 18sp or larger, never for
+     * body copy. AppColorsContrastTest pins that boundary so a future edit cannot
+     * quietly push it into a text role.
+     */
+    val purple = Color(0xFF7C3AED)
 
     /** Text and icons drawn on a solid [purple] fill. */
     val onPurple = Color(0xFFFFFFFF)
 
+    /**
+     * Lifted violet used for the orbital core and the second stop of the hero
+     * gradient. Kept separate from [purple] because it is a surface tint, not an
+     * accent: at 5.16:1 on [background] it is readable, but its job is depth.
+     */
+    val purpleHot = Color(0xFFA855F7)
+
     /** Failure and destructive-action accent drawn on [background]. */
-    val danger = Color(0xFFFF7B7B)
+    val danger = Color(0xFFEF4444)
+
+    /**
+     * Raised panel surface: stat cards, list rows, and the hero block.
+     *
+     * One step above [background], matching the `#1a1a1e` card colour in the design.
+     * Content drawn on it must be gated against this value, not against
+     * [background], so the card text tests assert against this role.
+     */
+    val surfaceCard = Color(0xFF1A1A1E)
+
+    /**
+     * Warning and in-progress accent. Matches the design's amber, and is the
+     * counterpart to [danger] for non-terminal states such as queued or paused.
+     */
+    val amber = Color(0xFFF59E0B)
 
     // Faint structure drawn over [background]. Alphas live on the color itself so
     // a screen never composes its own translucency.

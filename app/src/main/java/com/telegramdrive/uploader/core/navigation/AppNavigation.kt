@@ -104,7 +104,7 @@ fun AppNavigation(
         modifier = Modifier
             .fillMaxWidth()
             .padding(DesignTokens.spacingM)
-            .background(DesignTokens.primaryContainer)
+            .background(DesignTokens.AppColors.background)
     ) {
         if (isExpanded && showBottomBar) {
             NavigationRail {
@@ -137,6 +137,7 @@ fun AppNavigation(
         }
 
         Scaffold(
+            containerColor = DesignTokens.AppColors.background,
             contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 if (!isExpanded && showBottomBar) {
@@ -153,7 +154,7 @@ fun AppNavigation(
                                     accent = DesignTokens.AppColors.onPrimary
                                 ),
                             shape = MaterialTheme.shapes.extraLarge,
-                            color = DesignTokens.AppColors.secondaryContainer,
+                            color = DesignTokens.AppColors.surfaceCard,
                             tonalElevation = 6.dp,
                             shadowElevation = 8.dp
                         ) {

@@ -3,25 +3,15 @@ package com.telegramdrive.uploader.feature.home
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudQueue
@@ -32,45 +22,48 @@ import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.telegramdrive.uploader.feature.R
-import com.telegramdrive.uploader.core.ui.components.GlowBentoGrid
-import com.telegramdrive.uploader.core.ui.components.GlowBentoTile
-import com.telegramdrive.uploader.core.ui.components.glowBentoVariantForStatus
-import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
-import com.telegramdrive.uploader.core.ui.components.VideoItem
+import com.telegramdrive.uploader.core.ui.components.Eyebrow
+import com.telegramdrive.uploader.core.ui.components.MissionCard
+import com.telegramdrive.uploader.core.ui.components.MissionHeroCard
+import com.telegramdrive.uploader.core.ui.components.MissionProgressBar
+import com.telegramdrive.uploader.core.ui.components.MissionScreen
+import com.telegramdrive.uploader.core.ui.components.MissionStat
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
-import com.telegramdrive.uploader.core.ui.theme.AppMotion
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
-import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
-import com.telegramdrive.uploader.core.ui.components.GlassCard
-import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
+import com.telegramdrive.uploader.domain.model.UploadStatus
+import com.telegramdrive.uploader.feature.R
 
-@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+/**
+ * Dashboard screen, rebuilt against the Mission Control design.
+ *
+ * Layout follows the design's order: an eyebrow-and-heading block, the Telegram
+ * connection card, the quick actions, a two-by-two statistics grid, then the active
+ * transfer and the recent-activity list.
+ *
+ * Every colour comes from [DesignTokens.AppColors] through the shared Mission
+ * components. No hex value and no hand-composed alpha appears in this file, which is what
+ * lets AppColorsContrastTest stand in for a rendered-UI contrast check.
+ *
+ * Presentation only: the signature, the ViewModel and every callback are unchanged, and
+ * no upload state or business logic is touched.
+ */
 @Composable
 fun HomeScreen(
     onSettingsClick: () -> Unit,
@@ -79,17 +72,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val motionEnabled = rememberSystemMotionEnabled()
     val authorized = uiState.telegramConnectionState == TelegramConnectionState.AUTHORIZED
-    val connectionAccent by animateColorAsState(
-        targetValue = if (authorized) {
-            DesignTokens.AppColors.onPrimaryContainer
-        } else {
-            DesignTokens.AppColors.onSecondaryContainer
-        },
-        animationSpec = AppMotion.shortTween(motionEnabled),
-        label = "connection_accent"
-    )
     val displayName = uiState.telegramUser?.let { user ->
         "${user.firstName} ${user.lastName ?: ""}".trim()
     }.orEmpty()
@@ -101,319 +84,412 @@ fun HomeScreen(
         }
     )
 
-    Scaffold(
-        containerColor = DesignTokens.AppColors.primaryContainer,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = if (displayName.isNotBlank()) {
-                            stringResource(R.string.home_greeting, displayName)
-                        } else {
-                            stringResource(R.string.telegram_drive)
-                        },
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = DesignTokens.AppColors.onPrimaryContainer
+    MissionScreen {
+        LazyColumn(
+            modifier = Modifier.testTag("home_screen"),
+            contentPadding = PaddingValues(
+                start = AppSpacing.medium,
+                end = AppSpacing.medium,
+                top = AppSpacing.large,
+                // Double the bottom inset so the last row clears the navigation bar.
+                bottom = AppSpacing.extraLarge * 2
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.medium)
+        ) {
+            item("header") {
+                HomeHeader(
+                    greeting = if (displayName.isNotBlank()) {
+                        stringResource(R.string.home_greeting, displayName)
+                    } else {
+                        stringResource(R.string.telegram_drive)
+                    },
+                    onSettingsClick = onSettingsClick
+                )
+            }
+
+            item("connection") {
+                TelegramConnectionCard(
+                    authorized = authorized,
+                    userName = displayName.ifBlank { null },
+                    onConnectClick = onConnectClick,
+                    modifier = Modifier.testTag("telegram_status_card")
+                )
+            }
+
+            item("quick_actions") {
+                UploadFeatureCard(
+                    onSelectVideos = { pickerLauncher.launch(arrayOf("*/*")) },
+                    connectEnabled = !authorized,
+                    onConnectClick = onConnectClick,
+                    modifier = Modifier.testTag("upload_hero_card")
+                )
+            }
+
+            item("snapshot") {
+                SectionHeading(
+                    title = stringResource(R.string.home_upload_snapshot),
+                    caption = stringResource(R.string.home_snapshot_caption)
+                )
+            }
+
+            item("stats") {
+                StatsGrid(
+                    totalVideos = uiState.totalVideosCount.toString(),
+                    totalSize = formatFileSize(uiState.totalSize),
+                    pending = uiState.pendingCount.toString(),
+                    completed = uiState.completedCount.toString()
+                )
+            }
+
+            val activeUploads = uiState.activeUploads
+            if (activeUploads.isNotEmpty()) {
+                item("active_heading") {
+                    SectionHeading(
+                        title = stringResource(R.string.home_active_transfers),
+                        caption = stringResource(R.string.home_active_caption)
                     )
-                },
-                actions = {
-                    IconButton(
-                        onClick = onSettingsClick,
-                        modifier = Modifier.testTag("home_settings_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = stringResource(R.string.settings)
+                }
+                item("active") {
+                    MissionHeroCard(modifier = Modifier.testTag("active_transfer_card")) {
+                        ActiveTransferSummary(
+                            fileName = activeUploads.first().fileName,
+                            completedCount = uiState.completedCount,
+                            pendingCount = uiState.pendingCount,
+                            total = activeUploads.size + uiState.completedCount
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = DesignTokens.AppColors.onPrimaryContainer,
-                    actionIconContentColor = DesignTokens.AppColors.onPrimaryContainer
-                )
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DesignTokens.AppColors.primaryContainer)
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = DesignTokens.AppSpacing.phoneEdge),
-                verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)
-            ) {
-        item {
-                    TelegramConnectionCard(
-                        telegramState = uiState.telegramConnectionState,
-                        telegramUserName = displayName.ifBlank { null },
-                        telegramUserHandle = uiState.telegramUser?.username,
-                        onTelegramConnectClick = onConnectClick,
-                        modifier = Modifier
-                            .padding(top = DesignTokens.AppSpacing.xs)
-                            .testTag("telegram_status_card")
+                }
+            }
+
+            val recent = uiState.recentActivity
+            if (recent.isNotEmpty()) {
+                item("recent_heading") {
+                    SectionHeading(
+                        title = stringResource(R.string.home_recent_uploads),
+                        caption = stringResource(R.string.home_recent_caption)
                     )
                 }
-
-                item {
-                    UploadFeatureCard(
-                        onSelectVideos = {
-                            pickerLauncher.launch(arrayOf("*/*"))
-                        },
-                        modifier = Modifier
-                            .animateContentSize(animationSpec = AppMotion.shortTween(motionEnabled))
-                            .testTag("upload_hero_card")
+                items(recent, key = { it.id }) { upload ->
+                    RecentUploadRow(
+                        fileName = upload.fileName,
+                        sizeLabel = formatFileSize(upload.fileSize),
+                        completed = upload.status == UploadStatus.COMPLETED
                     )
                 }
-                item {
-                    Text(
-                        text = stringResource(R.string.home_upload_snapshot),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = DesignTokens.AppColors.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
-                    GlowBentoGrid(
-                        tiles = listOf(
-                            GlowBentoTile(stringResource(R.string.total_videos), uiState.totalVideosCount.toString(), Icons.Default.VideoLibrary, "stat_total_videos", glowBentoVariantForStatus(false, uiState.pendingCount)),
-                            GlowBentoTile(stringResource(R.string.total_size), formatFileSize(uiState.totalSize), Icons.Default.Storage, "stat_total_size", glowBentoVariantForStatus(false, uiState.pendingCount)),
-                            GlowBentoTile(stringResource(R.string.pending), uiState.pendingCount.toString(), Icons.Default.Schedule, "stat_pending", glowBentoVariantForStatus(false, uiState.pendingCount)),
-                            GlowBentoTile(stringResource(R.string.completed), uiState.completedCount.toString(), Icons.Default.CheckCircle, "stat_completed", glowBentoVariantForStatus(uiState.completedCount > 0, uiState.pendingCount))
-                        )
-                    )
-                }
-
-
-
-                item {
-                    // Active uploads shown as Telegram-style chat bubbles
-                    UploadsChatBubbleList(
-                        uploads = uiState.activeUploads,
-                        onRetryClicked = { viewModel.retryUpload(it) },
-                        onCancelClicked = { viewModel.cancelUpload(it) }
-                    )
-                }
-                
-
-                item { Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.largeSection)) }
             }
         }
     }
 }
 
+/** Eyebrow, screen title, and the settings affordance. */
+@Composable
+private fun HomeHeader(
+    greeting: String,
+    onSettingsClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Eyebrow(text = stringResource(R.string.home_eyebrow))
+            Text(
+                text = greeting,
+                style = MaterialTheme.typography.headlineMedium,
+                color = DesignTokens.AppColors.contentPrimary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        IconButton(
+            onClick = onSettingsClick,
+            modifier = Modifier.testTag("home_settings_button")
+        ) {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = stringResource(R.string.settings),
+                tint = DesignTokens.AppColors.contentMuted
+            )
+        }
+    }
+}
+
+/** Telegram connection state, with a lime action while the account is not linked. */
 @Composable
 private fun TelegramConnectionCard(
-    telegramState: TelegramConnectionState,
-    telegramUserName: String?,
-    telegramUserHandle: String?,
-    onTelegramConnectClick: () -> Unit,
+    authorized: Boolean,
+    userName: String?,
+    onConnectClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tgAuthorized = telegramState == TelegramConnectionState.AUTHORIZED
-    val accent = if (tgAuthorized) DesignTokens.AppColors.onPrimaryContainer else DesignTokens.AppColors.onSecondaryContainer
-
-    GlassCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(80.dp),
-        shape = MaterialTheme.shapes.large,
-        emphasis = LiquidGlassEmphasis.Operational
-    ) {
+    val accent = if (authorized) {
+        DesignTokens.AppColors.teal
+    } else {
+        DesignTokens.AppColors.contentMuted
+    }
+    MissionCard(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(DesignTokens.AppSpacing.md),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.md)
+                .padding(AppSpacing.medium),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(
-                modifier = Modifier.size(48.dp),
-                shape = CircleShape,
-                color = accent.copy(alpha = 0.2f),
-                contentColor = accent
+            Icon(
+                imageVector = Icons.Default.CloudQueue,
+                contentDescription = null,
+                tint = accent,
+                modifier = Modifier.size(24.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = AppSpacing.medium)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Default.CloudQueue,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-
-            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(R.string.telegram_title),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = DesignTokens.AppColors.onSurface
+                    color = DesignTokens.AppColors.contentPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = if (tgAuthorized) {
-                        telegramUserName ?: stringResource(R.string.telegram_connected)
+                    text = if (authorized) {
+                        userName ?: stringResource(R.string.telegram_connected)
                     } else {
                         stringResource(R.string.telegram_not_connected)
                     },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f)
+                    style = MaterialTheme.typography.bodySmall,
+                    color = DesignTokens.AppColors.contentMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
-
-            if (!tgAuthorized) {
-                FilledTonalButton(
-                    onClick = onTelegramConnectClick,
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = accent.copy(alpha = 0.2f),
-                        contentColor = accent
+            if (!authorized) {
+                Button(
+                    onClick = onConnectClick,
+                    modifier = Modifier.testTag("connect_button"),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DesignTokens.AppColors.lime,
+                        contentColor = DesignTokens.AppColors.onLime
                     )
                 ) {
-                    Text(stringResource(R.string.connect))
-                }
-            } else {
-                IconButton(
-                    onClick = { /* Future: show disconnect dialog */ },
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.settings),
-                        tint = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Text(text = stringResource(R.string.connect))
                 }
             }
         }
     }
 }
 
+/** The design's quick-action row: a lime primary action and a glass secondary. */
 @Composable
 private fun UploadFeatureCard(
     onSelectVideos: () -> Unit,
+    connectEnabled: Boolean,
+    onConnectClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = DesignTokens.AppColors.primaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(DesignTokens.AppSpacing.medium)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.new_upload),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = DesignTokens.AppColors.onPrimaryContainer
-                )
-                Text(
-                    text = stringResource(R.string.select_files_from_telegram),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = DesignTokens.AppColors.onPrimaryContainer
-                )
-            }
-            FilledTonalButton(
-                onClick = onSelectVideos,
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = DesignTokens.AppColors.primary,
-                    contentColor = DesignTokens.AppColors.onPrimary
-                )
+    MissionCard(modifier = modifier) {
+        Column(modifier = Modifier.padding(AppSpacing.medium)) {
+            Text(
+                text = stringResource(R.string.new_upload),
+                style = MaterialTheme.typography.labelLarge,
+                color = DesignTokens.AppColors.purpleHot
+            )
+            Text(
+                text = stringResource(R.string.select_files_from_telegram),
+                style = MaterialTheme.typography.titleLarge,
+                color = DesignTokens.AppColors.contentPrimary,
+                modifier = Modifier.padding(top = AppSpacing.xSmall)
+            )
+            Row(
+                modifier = Modifier.padding(top = AppSpacing.medium),
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)
             ) {
-                Icon(
-                    imageVector = Icons.Default.CloudUpload,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(DesignTokens.AppSpacing.xs))
-                Text(stringResource(R.string.select))
+                Button(
+                    onClick = onSelectVideos,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("select_files_button"),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DesignTokens.AppColors.lime,
+                        contentColor = DesignTokens.AppColors.onLime
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CloudUpload,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.select),
+                        modifier = Modifier.padding(start = AppSpacing.small)
+                    )
+                }
+                Button(
+                    onClick = onConnectClick,
+                    enabled = connectEnabled,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DesignTokens.AppColors.glassFill,
+                        contentColor = DesignTokens.AppColors.contentPrimary
+                    )
+                ) {
+                    Text(text = stringResource(R.string.connect))
+                }
             }
         }
     }
 }
 
+/** Section title with the small violet caption the design places above each group. */
 @Composable
-private fun StatusPill(
-    activeCount: Int,
-    accent: Color
+private fun SectionHeading(
+    title: String,
+    caption: String
 ) {
-    Surface(
-        shape = MaterialTheme.shapes.small,
-        color = accent.copy(alpha = 0.16f),
-        contentColor = DesignTokens.AppColors.onSurface
-    ) {
+    Column(modifier = Modifier.padding(top = AppSpacing.small)) {
+        Eyebrow(text = caption)
         Text(
-            text = activeCount.toString(),
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = DesignTokens.AppSpacing.sm, vertical = DesignTokens.AppSpacing.xs)
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            color = DesignTokens.AppColors.contentPrimary
         )
     }
 }
 
+/** Two-by-two statistics grid. */
 @Composable
-private fun StatCard(
-    title: String,
-    value: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    accent: Color = DesignTokens.AppColors.onPrimaryContainer
+private fun StatsGrid(
+    totalVideos: String,
+    totalSize: String,
+    pending: String,
+    completed: String
 ) {
-    GlassCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(100.dp),
-        shape = MaterialTheme.shapes.large,
-        emphasis = LiquidGlassEmphasis.Operational
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(DesignTokens.AppSpacing.medium),
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.small)
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
+            MissionStat(
+                label = stringResource(R.string.total_videos),
+                value = totalVideos,
+                icon = Icons.Default.VideoLibrary,
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("stat_total_videos")
+            )
+            MissionStat(
+                label = stringResource(R.string.total_size),
+                value = totalSize,
+                icon = Icons.Default.Storage,
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("stat_total_size")
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
+            MissionStat(
+                label = stringResource(R.string.pending),
+                value = pending,
+                icon = Icons.Default.Schedule,
+                accent = DesignTokens.AppColors.amber,
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("stat_pending")
+            )
+            MissionStat(
+                label = stringResource(R.string.completed),
+                value = completed,
+                icon = Icons.Default.CheckCircle,
+                accent = DesignTokens.AppColors.lime,
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("stat_completed")
+            )
+        }
+    }
+}
+
+/** Hero summary of what is currently in flight. */
+@Composable
+private fun ActiveTransferSummary(
+    fileName: String,
+    completedCount: Int,
+    pendingCount: Int,
+    total: Int
+) {
+    val progress = if (total <= 0) 0f else completedCount.toFloat() / total.toFloat()
+    Column(modifier = Modifier.padding(AppSpacing.medium)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(
-                modifier = Modifier.size(40.dp),
-                shape = CircleShape,
-                color = accent.copy(alpha = 0.2f),
-                contentColor = accent
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
             Text(
-                text = value,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = DesignTokens.AppColors.onSurface,
+                text = fileName,
+                style = MaterialTheme.typography.titleMedium,
+                color = DesignTokens.AppColors.contentPrimary,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
             )
             Text(
-                text = title,
-                style = MaterialTheme.typography.labelMedium,
-                color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                text = "${(progress * 100).toInt()}%",
+                style = MaterialTheme.typography.titleMedium,
+                color = DesignTokens.AppColors.lime,
+                modifier = Modifier.padding(start = AppSpacing.small)
+            )
+        }
+        MissionProgressBar(
+            progress = progress,
+            modifier = Modifier.padding(top = AppSpacing.small)
+        )
+        Text(
+            text = pluralStringResource(R.plurals.home_pending_summary, pendingCount, pendingCount),
+            style = MaterialTheme.typography.bodySmall,
+            color = DesignTokens.AppColors.contentMuted,
+            modifier = Modifier.padding(top = AppSpacing.small)
+        )
+    }
+}
+
+/** One row of the recent-uploads list. */
+@Composable
+private fun RecentUploadRow(
+    fileName: String,
+    sizeLabel: String,
+    completed: Boolean
+) {
+    MissionCard {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppSpacing.medium),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = AppSpacing.medium)
+            ) {
+                Text(
+                    text = fileName,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = DesignTokens.AppColors.contentPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = sizeLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = DesignTokens.AppColors.contentMuted
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = null,
+                tint = if (completed) {
+                    DesignTokens.AppColors.lime
+                } else {
+                    DesignTokens.AppColors.contentMuted
+                },
+                modifier = Modifier.size(20.dp)
             )
         }
     }

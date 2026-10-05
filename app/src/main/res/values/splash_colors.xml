@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash_background">#200A1D</color>
+    <!--
+      Matches AppColors.background (#0D0D0F). This value doubles as the
+      android:navigationBarColor in themes.xml, so if it drifts from the app canvas the
+      gesture bar renders as a light band under a dark UI. Keep the two in step.
+    -->
+    <color name="splash_background">#0D0D0F</color>
     <color name="splash_violet">#B965FF</color>
     <color name="splash_lime">#D6F85A</color>
     <color name="splash_mint">#88F2C8</color>

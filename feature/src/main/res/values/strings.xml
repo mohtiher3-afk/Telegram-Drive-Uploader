@@ -254,6 +254,16 @@
     <string name="new_upload">New Upload</string>
     <string name="select_files_from_telegram">Select files from Telegram</string>
     <string name="select">Select</string>
+    <string name="home_eyebrow">MISSION CONTROL</string>
+    <string name="home_snapshot_caption">OVERVIEW</string>
+    <string name="home_active_transfers">Active transfers</string>
+    <string name="home_active_caption">IN FLIGHT</string>
+    <string name="home_recent_uploads">Recent uploads</string>
+    <string name="home_recent_caption">DELIVERY</string>
+    <plurals name="home_pending_summary">
+        <item quantity="one">%1$d pending</item>
+        <item quantity="other">%1$d pending</item>
+    </plurals>
     <string name="upload_speed_desc">Upload Speed</string>
     <string name="time_remaining_desc">Time Remaining</string>
     <string name="select_all">Select All</string>
