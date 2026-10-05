@@ -181,7 +181,7 @@ fun HistoryScreen(
                                                 formatElapsedUploadTime(video.uploadDurationMs)
                                             ),
                                             style = MaterialTheme.typography.labelMedium,
-                                            color = DesignTokens.AppColors.onSurface.copy(alpha = 0.6f),
+                                            color = DesignTokens.AppColors.contentMuted,
                                             modifier = Modifier.padding(top = 4.dp)
                                         )
                                     }
