@@ -50,6 +50,7 @@ import com.telegramdrive.uploader.core.ui.components.GlassCard
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
 import com.telegramdrive.uploader.core.ui.components.MissionSearchField
 import com.telegramdrive.uploader.core.ui.components.MissionSegmentedTabs
+import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -230,27 +231,34 @@ fun QueueScreen(
                         // The queue is backed by a Room Flow, so once a frame is emitted the
                         // list is authoritative; there is no separate "loading" phase to show.
                         items(uiState.queueItems, key = { it.id }) { video ->
-                            GlassCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                                    .height(92.dp),
-                                shape = MaterialTheme.shapes.medium,
-                                emphasis = LiquidGlassEmphasis.Operational
+                            AnimatedRecentUploadItem(
+                                fileName = video.fileName,
+                                sizeLabel = "",
+                                completed = false,
+                                index = uiState.queueItems.indexOf(video)
                             ) {
-                                VideoItem(
-                                    video = video,
-                                    onRemoveClick = { viewModel.removeUpload(video.id) },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                UploadStatusIndicator(
-                                    video = video,
-                                    modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
-                                    onPauseClick = { viewModel.pauseUpload(video.id) },
-                                    onResumeClick = { viewModel.resumeUpload(video.id) },
-                                    onRetryClick = { viewModel.retryUpload(video.id) },
-                                    onCancelClick = { viewModel.cancelUpload(video.id) }
-                                )
+                                GlassCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                        .height(92.dp),
+                                    shape = MaterialTheme.shapes.medium,
+                                    emphasis = LiquidGlassEmphasis.Operational
+                                ) {
+                                    VideoItem(
+                                        video = video,
+                                        onRemoveClick = { viewModel.removeUpload(video.id) },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    UploadStatusIndicator(
+                                        video = video,
+                                        modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
+                                        onPauseClick = { viewModel.pauseUpload(video.id) },
+                                        onResumeClick = { viewModel.resumeUpload(video.id) },
+                                        onRetryClick = { viewModel.retryUpload(video.id) },
+                                        onCancelClick = { viewModel.cancelUpload(video.id) }
+                                    )
+                                }
                             }
                         }
                     }

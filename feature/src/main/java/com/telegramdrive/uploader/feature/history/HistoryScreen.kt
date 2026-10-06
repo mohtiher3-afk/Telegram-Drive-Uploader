@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import com.telegramdrive.uploader.core.ui.components.MissionBanner
 import com.telegramdrive.uploader.core.ui.components.MissionSearchField
 import com.telegramdrive.uploader.core.ui.components.MissionSegmentedTabs
+import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Alignment
@@ -169,7 +170,13 @@ fun HistoryScreen(
                         }
                     } else {
                         items(uiState.historyItems, key = { it.id }) { video ->
-                            Column(modifier = Modifier.fillMaxWidth()) {
+                            AnimatedRecentUploadItem(
+                                fileName = video.fileName,
+                                sizeLabel = "",
+                                completed = video.status == com.telegramdrive.uploader.domain.model.UploadStatus.COMPLETED,
+                                index = uiState.historyItems.indexOf(video)
+                            ) {
+                                Column(modifier = Modifier.fillMaxWidth()) {
                                     VideoItem(
                                         video = video,
                                         onRemoveClick = { viewModel.deleteUpload(video.id) }
@@ -189,6 +196,7 @@ fun HistoryScreen(
                                         video = video,
                                         modifier = Modifier.padding(top = 4.dp)
                                     )
+                                }
                             }
                         }
                     }

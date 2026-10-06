@@ -63,6 +63,8 @@ import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.components.GlassCard
 import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
+import com.telegramdrive.uploader.core.ui.animation.AnimatedFadeIn
+import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import androidx.compose.material3.TopAppBarDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
