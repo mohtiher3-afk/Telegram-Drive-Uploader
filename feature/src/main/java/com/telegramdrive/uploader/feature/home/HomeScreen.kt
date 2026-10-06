@@ -37,6 +37,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.telegramdrive.uploader.core.ui.animation.AnimatedFadeIn
+import com.telegramdrive.uploader.core.ui.animation.AnimatedGlassCard
+import com.telegramdrive.uploader.core.ui.animation.AnimatedProgressIndicator
+import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
+import com.telegramdrive.uploader.core.ui.animation.AnimatedStatsGrid
+import com.telegramdrive.uploader.core.ui.animation.AnimatedStatCard
 import com.telegramdrive.uploader.core.ui.components.Eyebrow
 import com.telegramdrive.uploader.core.ui.components.MissionCard
 import com.telegramdrive.uploader.core.ui.components.MissionHeroCard
@@ -97,14 +103,16 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(AppSpacing.medium)
         ) {
             item("header") {
-                HomeHeader(
-                    greeting = if (displayName.isNotBlank()) {
-                        stringResource(R.string.home_greeting, displayName)
-                    } else {
-                        stringResource(R.string.telegram_drive)
-                    },
-                    onSettingsClick = onSettingsClick
-                )
+                AnimatedFadeIn(visible = true) {
+                    HomeHeader(
+                        greeting = if (displayName.isNotBlank()) {
+                            stringResource(R.string.home_greeting, displayName)
+                        } else {
+                            stringResource(R.string.telegram_drive)
+                        },
+                        onSettingsClick = onSettingsClick
+                    )
+                }
             }
 
             item("connection") {
@@ -133,12 +141,19 @@ fun HomeScreen(
             }
 
             item("stats") {
-                StatsGrid(
+                AnimatedStatsGrid(
                     totalVideos = uiState.totalVideosCount.toString(),
                     totalSize = formatFileSize(uiState.totalSize),
                     pending = uiState.pendingCount.toString(),
                     completed = uiState.completedCount.toString()
-                )
+                ) {
+                    StatsGrid(
+                        totalVideos = uiState.totalVideosCount.toString(),
+                        totalSize = formatFileSize(uiState.totalSize),
+                        pending = uiState.pendingCount.toString(),
+                        completed = uiState.completedCount.toString()
+                    )
+                }
             }
 
             val activeUploads = uiState.activeUploads
@@ -170,11 +185,18 @@ fun HomeScreen(
                     )
                 }
                 items(recent, key = { it.id }) { upload ->
-                    RecentUploadRow(
+                    AnimatedRecentUploadItem(
                         fileName = upload.fileName,
                         sizeLabel = formatFileSize(upload.fileSize),
-                        completed = upload.status == UploadStatus.COMPLETED
-                    )
+                        completed = upload.status == UploadStatus.COMPLETED,
+                        index = recent.indexOf(upload)
+                    ) {
+                        RecentUploadRow(
+                            fileName = upload.fileName,
+                            sizeLabel = formatFileSize(upload.fileSize),
+                            completed = upload.status == UploadStatus.COMPLETED
+                        )
+                    }
                 }
             }
         }
@@ -357,7 +379,7 @@ private fun SectionHeading(
     }
 }
 
-/** Two-by-two statistics grid. */
+/** Two-by-two statistics grid with animated stat cards. */
 @Composable
 private fun StatsGrid(
     totalVideos: String,
@@ -367,47 +389,38 @@ private fun StatsGrid(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
         Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
-            MissionStat(
-                label = stringResource(R.string.total_videos),
+            AnimatedStatCard(
                 value = totalVideos,
-                icon = Icons.Default.VideoLibrary,
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("stat_total_videos")
+                label = stringResource(R.string.total_videos),
+                index = 0,
+                modifier = Modifier.weight(1f)
             )
-            MissionStat(
-                label = stringResource(R.string.total_size),
+            AnimatedStatCard(
                 value = totalSize,
-                icon = Icons.Default.Storage,
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("stat_total_size")
+                label = stringResource(R.string.total_size),
+                index = 1,
+                modifier = Modifier.weight(1f)
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
-            MissionStat(
-                label = stringResource(R.string.pending),
+            AnimatedStatCard(
                 value = pending,
-                icon = Icons.Default.Schedule,
-                accent = DesignTokens.AppColors.amber,
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("stat_pending")
+                label = stringResource(R.string.pending),
+                index = 2,
+                modifier = Modifier.weight(1f)
             )
-            MissionStat(
-                label = stringResource(R.string.completed),
+            AnimatedStatCard(
                 value = completed,
-                icon = Icons.Default.CheckCircle,
-                accent = DesignTokens.AppColors.lime,
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("stat_completed")
+                label = stringResource(R.string.completed),
+                index = 3,
+                modifier = Modifier.weight(1f),
+                accentColor = DesignTokens.AppColors.lime
             )
         }
     }
 }
 
-/** Hero summary of what is currently in flight. */
+/** Hero summary of what is currently in flight, with animated progress. */
 @Composable
 private fun ActiveTransferSummary(
     fileName: String,
@@ -436,9 +449,10 @@ private fun ActiveTransferSummary(
                 modifier = Modifier.padding(start = AppSpacing.small)
             )
         }
-        MissionProgressBar(
+        AnimatedProgressIndicator(
             progress = progress,
-            modifier = Modifier.padding(top = AppSpacing.small)
+            modifier = Modifier.padding(top = AppSpacing.small),
+            color = DesignTokens.AppColors.lime
         )
         Text(
             text = pluralStringResource(R.plurals.home_pending_summary, pendingCount, pendingCount),
@@ -449,12 +463,13 @@ private fun ActiveTransferSummary(
     }
 }
 
-/** One row of the recent-uploads list. */
+/** One row of the recent-uploads list with animated entry. */
 @Composable
 private fun RecentUploadRow(
     fileName: String,
     sizeLabel: String,
-    completed: Boolean
+    completed: Boolean,
+    index: Int = 0
 ) {
     MissionCard {
         Row(
