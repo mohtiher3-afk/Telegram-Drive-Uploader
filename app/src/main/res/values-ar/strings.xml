@@ -9,4 +9,8 @@
       :feature owns the real translated plural of the same name and renders it.
     -->
     <string name="upload_progress_accessibility">تقدم الرفع: %1$d بالمئة</string>
+    <string name="shortcut_new_upload_short">رفع جديد</string>
+    <string name="shortcut_new_upload_long">رفع ملفات جديدة</string>
+    <string name="shortcut_queue_short">قائمة الانتظار</string>
+    <string name="shortcut_queue_long">عرض قائمة الانتظار</string>
 </resources>

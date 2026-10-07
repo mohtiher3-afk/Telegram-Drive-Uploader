@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="new_upload"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_upload"
+        android:shortcutShortLabel="@string/shortcut_new_upload_short"
+        android:shortcutLongLabel="@string/shortcut_new_upload_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.aistudio.telegramdrive.prmuq"
+            android:targetClass="com.telegramdrive.uploader.MainActivity">
+            <extra
+                android:name="action"
+                android:value="new_upload" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="queue"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_queue"
+        android:shortcutShortLabel="@string/shortcut_queue_short"
+        android:shortcutLongLabel="@string/shortcut_queue_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.aistudio.telegramdrive.prmuq"
+            android:targetClass="com.telegramdrive.uploader.MainActivity">
+            <extra
+                android:name="action"
+                android:value="queue" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

@@ -45,6 +45,7 @@ dependencies {
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.hilt.android)
+  implementation(libs.mlkit.genai)
 
   testImplementation(libs.junit)
   testImplementation(libs.kotlinx.coroutines.test)

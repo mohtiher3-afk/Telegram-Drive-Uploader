@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Layers
@@ -107,7 +109,26 @@ fun AppNavigation(
             .background(DesignTokens.AppColors.background)
     ) {
         if (isExpanded && showBottomBar) {
-            NavigationRail {
+            NavigationRail(
+                containerColor = DesignTokens.AppColors.surfaceCard,
+                contentColor = DesignTokens.AppColors.contentPrimary,
+                header = {
+                    // App logo/brand in the rail header
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = DesignTokens.spacingM),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CloudUpload,
+                            contentDescription = null,
+                            tint = DesignTokens.AppColors.lime,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
+            ) {
                 bottomNavItems.forEach { screen ->
                     val isSelected = currentRoute == screen.route
                     NavigationRailItem(
@@ -130,6 +151,14 @@ fun AppNavigation(
                             )
                         },
                         label = { Text(stringResource(screen.titleRes)) },
+                        alwaysShowLabel = true,
+                        colors = NavigationRailItemDefaults.colors(
+                            selectedIconColor = DesignTokens.AppColors.lime,
+                            selectedTextColor = DesignTokens.AppColors.lime,
+                            indicatorColor = DesignTokens.AppColors.lime.copy(alpha = 0.15f),
+                            unselectedIconColor = DesignTokens.AppColors.contentMuted,
+                            unselectedTextColor = DesignTokens.AppColors.contentMuted
+                        ),
                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                     )
                 }
@@ -242,7 +271,8 @@ fun AppNavigation(
                             onVideosSelected = { uris ->
                                 uploadViewModel.setPrepareUris(uris)
                                 navController.navigate(AppRoutes.UPLOAD_PREPARATION)
-                            }
+                            },
+
                         )
                     }
                 }

@@ -10,4 +10,8 @@
       :feature owns the real translated plural of the same name and renders it.
     -->
     <string name="upload_progress_accessibility" tools:ignore="PluralsCandidate">Upload progress: %1$d percent</string>
+    <string name="shortcut_new_upload_short">New Upload</string>
+    <string name="shortcut_new_upload_long">Upload new files</string>
+    <string name="shortcut_queue_short">Queue</string>
+    <string name="shortcut_queue_long">View upload queue</string>
 </resources>

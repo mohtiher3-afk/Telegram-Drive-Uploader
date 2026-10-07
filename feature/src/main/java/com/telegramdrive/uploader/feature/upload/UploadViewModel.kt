@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.telegramdrive.uploader.core.ai.SmartFileAssistant
+import com.telegramdrive.uploader.core.ai.GeminiSmartFileAssistant
 import com.telegramdrive.uploader.core.ai.SmartFileSuggestion
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
@@ -63,6 +63,8 @@ class UploadViewModel @Inject constructor(
     private val ownedStagedFileStore: OwnedStagedFileStore,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
+
+    private val smartFileAssistant = GeminiSmartFileAssistant(context)
 
     private val _uiState = MutableStateFlow<UploadUiState>(UploadUiState.Idle)
     val uiState: StateFlow<UploadUiState> = _uiState.asStateFlow()
@@ -384,7 +386,7 @@ class UploadViewModel @Inject constructor(
                     }
                 }
 
-                _smartSuggestions.value = _preparedList.associate { it.id to SmartFileAssistant.suggest(it) }
+                _smartSuggestions.value = _preparedList.associate { it.id to smartFileAssistant.suggest(it) }
                 val warning = if (skippedCount > 0) {
                     "Skipped $skippedCount unreadable or zero-byte file(s)"
                 } else null
