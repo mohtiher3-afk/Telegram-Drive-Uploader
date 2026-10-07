@@ -69,6 +69,18 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
+
+        <receiver
+            android:name="com.telegramdrive.uploader.widget.UploadWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.telegramdrive.uploader.widget.ACTION_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/upload_widget_info" />
+        </receiver>
     </application>
 
 </manifest>
