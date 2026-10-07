@@ -209,7 +209,8 @@ object AppColors {
     val purpleHot = Color(0xFFA855F7)
 
     /** Failure and destructive-action accent drawn on [background]. */
-    
+    val danger = Color(0xFFEF4444)
+
     /**
      * Filled surfaces that must sit on the dark canvas.
      *
@@ -254,7 +255,6 @@ object AppColors {
 
     /** The banner's `#a775d624` border, i.e. the brand violet at 14% over the canvas. */
     val bannerBorder = Color(0x1FA775D6)
-val danger = Color(0xFFEF4444)
 
     /**
      * Raised panel surface: stat cards, list rows, and the hero block.
