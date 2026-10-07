@@ -242,6 +242,49 @@ fun SettingsScreen(
                 }
             }
 
+            // 1b. Dynamic Color Section
+            SettingsSection(
+                icon = Icons.Default.Palette,
+                title = "Dynamic Color"
+            ) {
+                val dynamicStrategies = listOf(
+                    "Full" to "Full (System)",
+                    "BrandAccented" to "Brand Accented",
+                    "StaticBrand" to "Static Brand"
+                )
+                dynamicStrategies.forEach { (strategyKey, strategyLabel) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = uiState.dynamicColorStrategy == strategyKey,
+                                onClick = { viewModel.setDynamicColorStrategy(strategyKey) },
+                                role = Role.RadioButton
+                            )
+                            .padding(vertical = 12.dp)
+                            .testTag("settings_dynamic_color_${strategyKey.lowercase()}"),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = strategyLabel,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = DesignTokens.AppColors.contentPrimary
+                        )
+                        RadioButton(
+                            selected = uiState.dynamicColorStrategy == strategyKey,
+                            onClick = null
+                        )
+                    }
+                }
+                Text(
+                    text = "Full uses system wallpaper colors. Brand Accented keeps your glow color. Static Brand uses only app colors.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = DesignTokens.AppColors.contentMuted,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
             // 2. Storage Section
             SettingsSection(
                 icon = Icons.Default.Storage,

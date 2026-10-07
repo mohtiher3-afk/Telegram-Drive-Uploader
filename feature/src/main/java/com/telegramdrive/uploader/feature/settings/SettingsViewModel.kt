@@ -8,6 +8,7 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
+import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
 import com.telegramdrive.uploader.core.ui.theme.GlowColorCodec
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
@@ -32,7 +33,8 @@ data class SettingsUiState(
     val customGlowHex: String = GlowColorCodec.DEFAULT_HEX,
     val cacheSize: String = "0 B",
     val telegramConnectionState: TelegramConnectionState = TelegramConnectionState.DISCONNECTED,
-    val telegramUser: TelegramUser? = null
+    val telegramUser: TelegramUser? = null,
+    val dynamicColorStrategy: String = "StaticBrand"
 )
 
 @HiltViewModel
@@ -58,15 +60,18 @@ class SettingsViewModel @Inject constructor(
         glowSettings,
         _cacheSizeFlow,
         telegramRepository.connectionState,
-        telegramRepository.currentUser
-    ) { theme, glowSettings, cacheSize, connState, tgUser ->
+        telegramRepository.currentUser,
+        settingsDataStore.dynamicColorStrategy
+    ) { array ->
+        val glowPair = array[1] as Pair<String, String>
         SettingsUiState(
-            theme = theme,
-            glowColor = glowSettings.first,
-            customGlowHex = glowSettings.second,
-            cacheSize = cacheSize,
-            telegramConnectionState = connState,
-            telegramUser = tgUser
+            theme = array[0] as String,
+            glowColor = glowPair.first,
+            customGlowHex = glowPair.second,
+            cacheSize = array[2] as String,
+            telegramConnectionState = array[3] as TelegramConnectionState,
+            telegramUser = array[4] as TelegramUser?,
+            dynamicColorStrategy = array[5] as String
         )
     }
     .stateIn(
@@ -93,6 +98,17 @@ class SettingsViewModel @Inject constructor(
                 category = DiagnosticCategory.SETTINGS_CHANGED,
                 severity = DiagnosticSeverity.INFO,
                 message = "Glow primary color changed to: ${glowColor.storageValue}"
+            )
+        }
+    }
+
+    fun setDynamicColorStrategy(strategy: String) {
+        viewModelScope.launch {
+            settingsDataStore.setDynamicColorStrategy(strategy)
+            DiagnosticsManager.log(
+                category = DiagnosticCategory.SETTINGS_CHANGED,
+                severity = DiagnosticSeverity.INFO,
+                message = "Dynamic color strategy changed to: $strategy"
             )
         }
     }

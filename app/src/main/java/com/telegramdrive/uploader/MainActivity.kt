@@ -36,20 +36,20 @@ class MainActivity : ComponentActivity() {
             val themePreference by settingsDataStore.themePreference.collectAsStateWithLifecycle(initialValue = "System")
             val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Seafoam")
             val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "69D6B5")
+            val dynamicColorStrategy by settingsDataStore.dynamicColorStrategy.collectAsStateWithLifecycle(initialValue = "StaticBrand")
             val darkTheme = when (themePreference) {
                 "Dark" -> true
                 "Light" -> false
                 else -> isSystemInDarkTheme()
             }
-
+            val strategy = when (dynamicColorStrategy) {
+                "Full" -> DynamicColorStrategy.Full
+                "BrandAccented" -> DynamicColorStrategy.BrandAccented
+                else -> DynamicColorStrategy.StaticBrand
+            }
             TelegramDriveTheme(
                 darkTheme = darkTheme,
-                // StaticBrand is what makes the Glow Color setting meaningful: it is the
-                // only strategy where applyTo() assigns the user's chosen colour to
-                // primary. BrandAccented deliberately leaves primary to the wallpaper
-                // scheme, so the seven presets and the custom hex picker would have no
-                // visible effect. This also matches the original dynamicColor = false.
-                dynamicColorStrategy = DynamicColorStrategy.StaticBrand,
+                dynamicColorStrategy = strategy,
                 glowColorPreset = GlowColorPreset.fromStorage(glowColorPreference),
                 customGlowHex = customGlowHex
             ) {

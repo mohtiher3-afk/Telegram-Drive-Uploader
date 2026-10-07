@@ -36,6 +36,7 @@ class SettingsDataStore @Inject constructor(
     private val SELECTED_DESTINATION_TITLE_KEY = stringPreferencesKey("selected_destination_title")
     private val ACCOUNTS_KEY = stringPreferencesKey("telegram_accounts")
     private val ACTIVE_ACCOUNT_KEY = stringPreferencesKey("active_telegram_account")
+    private val DYNAMIC_COLOR_STRATEGY_KEY = stringPreferencesKey("dynamic_color_strategy")
 
     val onboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[ONBOARDING_COMPLETED_KEY] == "true"
@@ -55,6 +56,10 @@ class SettingsDataStore @Inject constructor(
 
     val customGlowHex: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[CUSTOM_GLOW_HEX_KEY] ?: "B8C4FF"
+    }
+
+    val dynamicColorStrategy: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[DYNAMIC_COLOR_STRATEGY_KEY] ?: "StaticBrand"
     }
 
     val telegramConnectionState: Flow<String> = context.dataStore.data.map { preferences ->
@@ -184,6 +189,12 @@ class SettingsDataStore @Inject constructor(
     suspend fun setCustomGlowHex(hex: String) {
         context.dataStore.edit { preferences ->
             preferences[CUSTOM_GLOW_HEX_KEY] = hex
+        }
+    }
+
+    suspend fun setDynamicColorStrategy(strategy: String) {
+        context.dataStore.edit { preferences ->
+            preferences[DYNAMIC_COLOR_STRATEGY_KEY] = strategy
         }
     }
 
