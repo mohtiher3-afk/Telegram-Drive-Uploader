@@ -228,7 +228,14 @@ echo ""
 echo "3. Checking TDLib Java/JNI Source Bindings..."
 check_file "$JAVA_BINDING_DIR/Client.java" 1000 "TDLib Java Client Binding"
 check_file "$JAVA_BINDING_DIR/TdApi.java" 1500000 "TDLib v${TDLIB_VERSION} TdApi Bindings"
-check_file "$JAVA_BINDING_DIR/Log.java" 1000 "TDLib Java Log Binding"
+if [ -f "$JAVA_BINDING_DIR/Log.kt" ]; then
+    check_file "$JAVA_BINDING_DIR/Log.kt" 1000 "TDLib Kotlin Log Binding"
+elif [ -f "$JAVA_BINDING_DIR/Log.java" ]; then
+    check_file "$JAVA_BINDING_DIR/Log.java" 1000 "TDLib Java Log Binding"
+else
+    echo "❌ [MISSING] TDLib Log binding (Log.java or Log.kt)"
+    MISSING_COUNT=$((MISSING_COUNT + 1))
+fi
 
 echo ""
 if [ "$MISSING_COUNT" -gt 0 ]; then
