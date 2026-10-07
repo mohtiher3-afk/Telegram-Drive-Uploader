@@ -14,4 +14,11 @@
     <string name="shortcut_new_upload_long">Upload new files</string>
     <string name="shortcut_queue_short">Queue</string>
     <string name="shortcut_queue_long">View upload queue</string>
+    <!-- Home screen widget -->
+    <string name="widget_refresh">Refresh</string>
+    <string name="widget_no_active_uploads">No active uploads</string>
+    <string name="widget_pending_label">Pending</string>
+    <string name="widget_completed_label">Completed</string>
+    <string name="widget_count_zero">0</string>
+    <string name="widget_error_tap_refresh">Tap to refresh</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:minWidth="180dp"
     android:minHeight="110dp"
     android:updatePeriodMillis="1800000"
@@ -9,4 +10,5 @@
     android:widgetCategory="home_screen"
     android:configure=""
     android:targetCellWidth="3"
-    android:targetCellHeight="2" />
+    android:targetCellHeight="2"
+    tools:targetApi="31" />

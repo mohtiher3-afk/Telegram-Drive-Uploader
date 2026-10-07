@@ -13,4 +13,11 @@
     <string name="shortcut_new_upload_long">رفع ملفات جديدة</string>
     <string name="shortcut_queue_short">قائمة الانتظار</string>
     <string name="shortcut_queue_long">عرض قائمة الانتظار</string>
+    <!-- Home screen widget -->
+    <string name="widget_refresh">تحديث</string>
+    <string name="widget_no_active_uploads">لا توجد عمليات رفع نشطة</string>
+    <string name="widget_pending_label">قيد الانتظار</string>
+    <string name="widget_completed_label">مكتمل</string>
+    <string name="widget_count_zero">0</string>
+    <string name="widget_error_tap_refresh">اضغط للتحديث</string>
 </resources>

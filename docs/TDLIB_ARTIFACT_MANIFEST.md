@@ -29,7 +29,7 @@ The Android project is packaged as separate ABI APKs for **arm64-v8a**, **armeab
 | ARMv7 JNI | `data/src/main/jniLibs/armeabi-v7a/libtdjni.so` | 14,407,696 bytes | PASS; documented by SHA-256 |
 | x86_64 JNI | `data/src/main/jniLibs/x86_64/libtdjni.so` | 22,573,928 bytes | PASS; documented by SHA-256 |
 | Client binding | `data/src/main/java/org/drinkless/tdlib/Client.java` | 11,015 bytes | PASS; documented by SHA-256 |
-| Log binding | `data/src/main/java/org/drinkless/tdlib/Log.java` | 3,401 bytes | PASS; documented by SHA-256 |
+| Log binding | `data/src/main/java/org/drinkless/tdlib/Log.kt` | 3,299 bytes | PASS; documented by SHA-256 |
 | TdApi binding | `data/src/main/java/org/drinkless/tdlib/TdApi.java` | 5,096,314 bytes | PASS; documented by SHA-256 |
 
 The mandatory checker reports `TDLIB_ARTIFACTS_PRESENT=true`, verifies the ELF header, and rejects a non-matching ARM64 artifact when the selected ABI is `arm64-v8a`. Missing native libraries remain a hard failure at build/runtime integration boundaries.

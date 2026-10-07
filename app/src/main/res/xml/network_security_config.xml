@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Prevent cleartext traffic -->
+    <!--
+      Cleartext is blocked app-wide. This is the part of the config that has a real
+      effect: any Android-stack HTTPS client in this app refuses plain http://.
+
+      Certificate pinning is deliberately NOT configured here.
+      TDLib performs its own TLS through the bundled OpenSSL (libssl/libcrypto) and
+      never routes through the Android network stack, so a <pin-set> in this file
+      cannot apply to Telegram traffic. The previous revision carried placeholder
+      pins ("AAAA...", "BBBB...") with an already-expired expiration date, which
+      would have hard-failed every Android-stack request to those domains while
+      providing no protection for the traffic it appeared to guard.
+    -->
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
     </base-config>
-    
-    <!-- Certificate pinning for Telegram servers -->
-    <domain-config>
-        <domain includeSubdomains="true">telegram.org</domain>
-        <domain includeSubdomains="true">t.me</domain>
-        <pin-set expiration="2026-01-01">
-            <!-- Telegram root CA pins (example - replace with actual pins) -->
-            <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
-            <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin>
-        </pin-set>
-    </domain-config>
 </network-security-config>

@@ -145,7 +145,7 @@ JAVA_DEST="$PROJECT_ROOT/data/src/main/java/org/drinkless/tdlib"
 mkdir -p "$JAVA_DEST"
 cp -f "$JAVA_OUT/org/drinkless/tdlib/TdApi.java" "$JAVA_DEST/TdApi.java"
 cp -f "$JAVA_OUT/org/drinkless/tdlib/Client.java" "$JAVA_DEST/Client.java"
-# Log.java is hand-written and stays untouched.
+# Log.kt is hand-written and stays untouched.
 echo "TdApi.java:   $(wc -l < "$JAVA_DEST/TdApi.java") lines"
 echo "Client.java:  $(wc -l < "$JAVA_DEST/Client.java") lines"
 
@@ -174,7 +174,7 @@ CHECKSUM_FILE="$PROJECT_ROOT/docs/TDLIB_SHA256SUMS.txt"
       xargs -0 -r sha256sum
     sha256sum \
       data/src/main/java/org/drinkless/tdlib/Client.java \
-      data/src/main/java/org/drinkless/tdlib/Log.java \
+      data/src/main/java/org/drinkless/tdlib/Log.kt \
       data/src/main/java/org/drinkless/tdlib/TdApi.java
   )
 } > "$CHECKSUM_FILE"

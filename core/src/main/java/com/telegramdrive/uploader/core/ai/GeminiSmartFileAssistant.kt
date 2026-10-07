@@ -151,60 +151,10 @@ class GeminiSmartFileAssistant(private val context: Context) {
 
     /**
      * Parse the AI response into a SmartFileSuggestion.
+     * Delegates to [SmartFileResponseParser] so tests exercise the production logic.
      */
-    fun parseAIResponseForTest(taskId: String, response: String, originalFileName: String): SmartFileSuggestion {
-        return parseAIResponse(taskId, response, originalFileName)
-    }
-
     private fun parseAIResponse(taskId: String, response: String, originalFileName: String): SmartFileSuggestion {
-        val lines = response.lines().map { it.trim() }.filter { it.isNotEmpty() }
-
-        var suggestedName = ""
-        val keywords = mutableListOf<String>()
-
-        for (line in lines) {
-            when {
-                line.startsWith("FILENAME:", ignoreCase = true) -> {
-                    suggestedName = line.substringAfter("FILENAME:").trim()
-                }
-                line.startsWith("KEYWORDS:", ignoreCase = true) -> {
-                    val kwText = line.substringAfter("KEYWORDS:").trim()
-                    keywords.addAll(kwText.split(",").map { it.trim() }.filter { it.isNotEmpty() })
-                }
-            }
-        }
-
-        // If AI didn't provide a filename, fall back to original
-        if (suggestedName.isBlank()) {
-            val extension = originalFileName.substringAfterLast('.', "mp4")
-                .lowercase(Locale.ROOT)
-                .replace(Regex("[^a-z0-9]"), "")
-                .ifBlank { "mp4" }
-            suggestedName = "image.$extension"
-        }
-
-        // Sanitize filename
-        suggestedName = sanitizeFilename(suggestedName)
-
-        // Limit keywords to 4
-        val limitedKeywords = keywords.take(4)
-
-        return SmartFileSuggestion(taskId, suggestedName, limitedKeywords)
-    }
-
-    /**
-     * Sanitize filename to be safe for all filesystems.
-     */
-    private fun sanitizeFilename(name: String): String {
-        val forbiddenChars = Regex("[\\\\/:*?\"<>|]")
-        val cleaned = name
-            .replace(forbiddenChars, "_")
-            .replace(Regex("\\s+"), "_")
-            .replace(Regex("[^a-zA-Z0-9_\\-\\u0600-\\u06ff.]"), "")
-            .take(120)
-            .trim('_', '.')
-
-        return if (cleaned.isBlank()) "image" else cleaned
+        return SmartFileResponseParser.parse(taskId, response, originalFileName)
     }
 
     /**

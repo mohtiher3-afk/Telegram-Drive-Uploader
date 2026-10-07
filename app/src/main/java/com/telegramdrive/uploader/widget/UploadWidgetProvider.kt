@@ -145,7 +145,7 @@ class UploadWidgetProvider : AppWidgetProvider() {
                 // Show error state
                 val views = RemoteViews(context.packageName, R.layout.widget_upload)
                 views.setTextViewText(R.id.widget_title, context.getString(R.string.app_name))
-                views.setTextViewText(R.id.widget_error_text, "Tap to refresh")
+                views.setTextViewText(R.id.widget_error_text, context.getString(R.string.widget_error_tap_refresh))
                 views.setViewVisibility(R.id.widget_error_text, android.view.View.VISIBLE)
                 appWidgetManager.updateAppWidget(appWidgetId, views)
             }

@@ -37,7 +37,7 @@
             android:layout_height="32dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_popup_sync"
-            android:contentDescription="Refresh" />
+            android:contentDescription="@string/widget_refresh" />
     </LinearLayout>
 
     <!-- Active Upload Section -->
@@ -81,7 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="No active uploads"
+        android:text="@string/widget_no_active_uploads"
         android:textColor="#B3FFFFFF"
         android:textSize="13sp"
         android:gravity="center" />
@@ -102,6 +102,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:baselineAligned="false"
         android:layout_marginTop="12dp">
 
         <LinearLayout
@@ -115,7 +116,7 @@
                 android:id="@+id/widget_pending_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
+                android:text="@string/widget_count_zero"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -123,7 +124,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pending"
+                android:text="@string/widget_pending_label"
                 android:textColor="#B3FFFFFF"
                 android:textSize="11sp" />
         </LinearLayout>
@@ -139,7 +140,7 @@
                 android:id="@+id/widget_completed_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
+                android:text="@string/widget_count_zero"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -147,7 +148,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completed"
+                android:text="@string/widget_completed_label"
                 android:textColor="#B3FFFFFF"
                 android:textSize="11sp" />
         </LinearLayout>
