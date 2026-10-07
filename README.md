@@ -5,7 +5,7 @@
 Telegram Drive Uploader provides a high-reliability, offline-first interface for Telegram file delivery. Built with modern Android technologies (Jetpack Compose, Room, WorkManager, and Material 3), it leverages the official Telegram Database Library (TDLib) for authoritative transfer logic.
 
 [![Android Multi-ABI CI](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml/badge.svg)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml)
-[![Version](https://img.shields.io/badge/version-1.0.24-blue)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -39,14 +39,17 @@ Open **Settings → Appearance** to choose how the app looks:
 
 - **Theme**: `System` (follows the device, the default), `Light`, or `Dark`.
 - **Glow Color**: the accent colour used for primary actions and progress. Pick one of the six presets — Seafoam, Orchid, Cobalt, Lime, Cyan, Violet — or choose `Custom` and enter your own hex value.
+- **Dynamic Color**: choose `Full` (system wallpaper colors), `Brand Accented` (keeps your glow color), or `Static Brand` (app colors only).
 
-Both choices are stored on the device and applied immediately.
+All choices are stored on the device and applied immediately.
 
 ### 4. Uploading Files
 - **Select Destination**: Search for a chat, group, or channel.
 - **Queue Management**: Add multiple files; the app manages the queue in the background.
 - **Reliability**: Uploads resume automatically after network loss or device restart thanks to WorkManager integration.
-- **Smart Assistance**: Uses local heuristics to optimize video preparation and delivery.
+- **Smart Assistance**: Uses on-device Gemini Nano AI to analyze image content and suggest meaningful filenames and keywords.
+- **Home Screen Widget**: View upload progress and queue status directly from your home screen.
+- **App Shortcuts**: Long-press the app icon for quick access to New Upload or Queue.
 
 ---
 
@@ -85,9 +88,10 @@ app/src/main/java/com/telegramdrive/uploader/
   (feature UI now lives in the :feature module below)
 
 feature/                :feature Android module - Compose screens, ViewModels, theme + shared UI components
-core/                   :core Kotlin module - diagnostics, smart file assistant, and shared utilities
+core/                   :core Kotlin module - diagnostics, Gemini Nano AI assistant, and shared utilities
 data/                   :data Android module - TDLib client, repositories, Room, upload engine and WorkManager worker
 domain/                 :domain Kotlin module - models, repository contracts, and pure upload state logic
+widget/                 :app widget - home screen upload status widget with WorkManager updates
 
 data/src/main/java/org/drinkless/tdlib/
   TdApi.java            Official generated TDLib API binding
@@ -140,9 +144,11 @@ The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds
 ---
 
 ## Security & Privacy
-- **Privacy First**: Smart File Assistant is local; no remote AI keys are required.
+- **Privacy First**: Smart File Assistant uses on-device Gemini Nano; no remote AI keys are required and image content never leaves the device.
 - **Local Storage**: Telegram session data and the TDLib database are stored in private application storage. **Never share these files.**
 - **No Session Backup**: `allowBackup` is disabled, so TDLib session files are excluded from cloud backup and device-to-device transfer. Re-authenticate after a fresh install.
+- **Network Security**: All network traffic is encrypted (TLS). Certificate pinning prevents man-in-the-middle attacks. Cleartext traffic is blocked.
+- **Screen Protection**: `FLAG_SECURE` prevents screenshots and screen recording of sensitive upload data.
 - **Diagnostic Safety**: Diagnostics are privacy-conscious. Inspect logs before sharing; the system redacts sensitive identifiers by default.
 
 ---
