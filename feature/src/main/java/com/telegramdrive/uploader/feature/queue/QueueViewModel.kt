@@ -31,7 +31,9 @@ data class QueueUiState(
     val totalMatches: Int = 0,
     val failedCount: Int = 0,
     val pausedCount: Int = 0,
-    val activeCount: Int = 0
+    val activeCount: Int = 0,
+    val selectedIds: Set<String> = emptySet(),
+    val isSelectionMode: Boolean = false
 )
 
 @HiltViewModel
@@ -217,6 +219,100 @@ class QueueViewModel @Inject constructor(
             uploadManager.cancelUpload(id)
             uploadRepository.getUploadById(id)?.let { ownedStagedFileStore.deleteOwnedFilesFor(it) }
             uploadRepository.deleteUploadById(id)
+        }
+    }
+
+    // --- Batch selection ---
+
+    private val selectedIds = MutableStateFlow<Set<String>>(emptySet())
+    private val isSelectionMode = MutableStateFlow(false)
+
+    fun toggleSelection(id: String) {
+        val current = selectedIds.value
+        selectedIds.value = if (id in current) current - id else current + id
+        isSelectionMode.value = selectedIds.value.isNotEmpty()
+    }
+
+    fun clearSelection() {
+        selectedIds.value = emptySet()
+        isSelectionMode.value = false
+    }
+
+    fun selectAll() {
+        selectedIds.value = uiState.value.queueItems.map { it.id }.toSet()
+        isSelectionMode.value = true
+    }
+
+    fun removeSelected() {
+        viewModelScope.launch {
+            selectedIds.value.forEach { id ->
+                uploadManager.cancelUpload(id)
+                uploadRepository.getUploadById(id)?.let { ownedStagedFileStore.deleteOwnedFilesFor(it) }
+                uploadRepository.deleteUploadById(id)
+            }
+            clearSelection()
+        }
+    }
+
+    fun cancelSelected() {
+        viewModelScope.launch {
+            selectedIds.value.forEach { id ->
+                val task = uploadRepository.getUploadById(id)
+                val changed = uploadRepository.updateStatusIf(
+                    id,
+                    UploadStatus.CANCELLED,
+                    listOf(
+                        UploadStatus.QUEUED,
+                        UploadStatus.PREPARING,
+                        UploadStatus.UPLOADING,
+                        UploadStatus.PAUSED,
+                        UploadStatus.RETRYING,
+                        UploadStatus.FAILED
+                    )
+                )
+                if (changed) {
+                    uploadRepository.bumpExecutionGeneration(id, listOf(UploadStatus.CANCELLED))
+                    uploadManager.cancelUpload(id)
+                    task?.let { ownedStagedFileStore.deleteOwnedFilesFor(it) }
+                }
+            }
+            clearSelection()
+        }
+    }
+
+    fun pauseSelected() {
+        viewModelScope.launch {
+            selectedIds.value.forEach { id ->
+                val changed = uploadRepository.updateStatusIf(
+                    id,
+                    UploadStatus.PAUSED,
+                    listOf(UploadStatus.QUEUED, UploadStatus.PREPARING, UploadStatus.UPLOADING, UploadStatus.RETRYING)
+                )
+                if (changed) {
+                    uploadRepository.bumpExecutionGeneration(id, listOf(UploadStatus.PAUSED))
+                    uploadManager.pauseUpload(id)
+                }
+            }
+            clearSelection()
+        }
+    }
+
+    fun resumeSelected() {
+        viewModelScope.launch {
+            selectedIds.value.forEach { id ->
+                uploadRepository.getUploadById(id)?.let { task ->
+                    val changed = uploadRepository.updateStatusIf(
+                        id,
+                        UploadStatus.QUEUED,
+                        listOf(UploadStatus.PAUSED)
+                    )
+                    if (changed) {
+                        uploadRepository.bumpExecutionGeneration(id, listOf(UploadStatus.QUEUED))
+                        uploadManager.resumeUpload(task)
+                    }
+                }
+            }
+            clearSelection()
         }
     }
 }

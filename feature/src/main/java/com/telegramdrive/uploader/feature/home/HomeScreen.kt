@@ -84,7 +84,14 @@ fun HomeScreen(
         "${user.firstName} ${user.lastName ?: ""}".trim()
     }.orEmpty()
 
-    val pickerLauncher = rememberLauncherForActivityResult(
+    // Use Photo Picker on Android 13+ (no storage permission needed), fallback to OpenMultipleDocuments
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10),
+        onResult = { uris ->
+            if (uris.isNotEmpty()) onVideosSelected(uris)
+        }
+    )
+    val legacyPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments(),
         onResult = { uris ->
             if (uris.isNotEmpty()) onVideosSelected(uris)
@@ -127,7 +134,17 @@ fun HomeScreen(
 
             item("quick_actions") {
                 UploadFeatureCard(
-                    onSelectVideos = { pickerLauncher.launch(arrayOf("*/*")) },
+                    onSelectVideos = {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                            photoPickerLauncher.launch(
+                                androidx.activity.result.PickVisualMediaRequest(
+                                    mediaType = androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                                )
+                            )
+                        } else {
+                            legacyPickerLauncher.launch(arrayOf("*/*"))
+                        }
+                    },
                     connectEnabled = !authorized,
                     onConnectClick = onConnectClick,
                     modifier = Modifier.testTag("upload_hero_card")
