@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:width="108dp"
-        android:height="108dp"
-        android:drawable="@drawable/mission_control_logo"
-        android:gravity="fill" />
-</layer-list>
+<!--
+  Telegram Drive Uploader launcher foreground.
+  Obsidian backdrop comes from ic_launcher_background; this layer carries the mark:
+  an upload arrow rising out of a drive/document plate, with a status dot.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Soft cyan halo (static, theme-safe) -->
+    <path
+        android:fillColor="#1A22D3EE"
+        android:pathData="M54,17A37,37 0 0,1 91,54A37,37 0 0,1 54,91A37,37 0 0,1 17,54A37,37 0 0,1 54,17z" />
+
+    <!-- Drive / document plate -->
+    <path
+        android:fillColor="#1E293B"
+        android:pathData="M43,38h22a7,7 0 0 1 7,7v21a7,7 0 0 1 -7,7h-22a7,7 0 0 1 -7,-7v-21a7,7 0 0 1 7,-7z" />
+    <path
+        android:strokeColor="#475569"
+        android:strokeWidth="2"
+        android:pathData="M43,38h22a7,7 0 0 1 7,7v21a7,7 0 0 1 -7,7h-22a7,7 0 0 1 -7,-7v-21a7,7 0 0 1 7,-7z" />
+
+    <!-- Upload arrow (stem) -->
+    <path
+        android:fillColor="#22D3EE"
+        android:pathData="M51,52h6v14h-6z" />
+    <!-- Upload arrow (head) -->
+    <path
+        android:fillColor="#22D3EE"
+        android:pathData="M44,59 L54,47 64,59 L54,55 L44,59z" />
+
+    <!-- Connected status dot -->
+    <path
+        android:fillColor="#22C55E"
+        android:pathData="M64,44a4,4 0 1,1 -8,0 4,4 0 1,1 8,0z" />
+</vector>
