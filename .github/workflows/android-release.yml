@@ -27,6 +27,7 @@ jobs:
     outputs:
       tag: ${{ steps.release-tag.outputs.tag }}
       source_ref: ${{ steps.release-tag.outputs.source_ref }}
+      publish: ${{ steps.release-tag.outputs.publish }}
     steps:
       - name: Check out release source
         uses: actions/checkout@v7
@@ -65,8 +66,12 @@ jobs:
           fi
 
           if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/$TAG" > /dev/null 2>&1; then
-            echo "A GitHub Release already exists for $TAG; refuse to overwrite published assets."
-            exit 1
+            # Not a defect: a release for this tag already exists. Re-running the lane must be a
+            # no-op, not a red build — published assets are immutable and must never be overwritten.
+            echo "::notice title=Release already published::A GitHub Release already exists for $TAG; skipping publish."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
 
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
@@ -75,6 +80,8 @@ jobs:
   release:
     name: Build signed ${{ matrix.abi }} APK
     needs: validate-release
+    # Nothing to publish when the tag's release already exists; don't burn 60 runner-minutes.
+    if: needs.validate-release.outputs.publish == 'true'
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -209,6 +216,8 @@ jobs:
   bundle:
     name: Build signed release App Bundle
     needs: validate-release
+    # See the `release` job: skip when the tag already has a published release.
+    if: needs.validate-release.outputs.publish == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
 
@@ -316,6 +325,9 @@ jobs:
   publish:
     name: Publish verified multi-ABI GitHub Release
     needs: [validate-release, release, bundle]
+    # Skip publishing (but still build and gate) when a release already exists for the tag:
+    # published assets are immutable, so re-running the lane is a no-op rather than a red build.
+    if: needs.validate-release.outputs.publish == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
