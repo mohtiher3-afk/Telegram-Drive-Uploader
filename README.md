@@ -5,7 +5,7 @@
 Telegram Drive Uploader provides a high-reliability, offline-first interface for Telegram file delivery. Built with modern Android technologies (Jetpack Compose, Room, WorkManager, and Material 3), it leverages the official Telegram Database Library (TDLib) for authoritative transfer logic.
 
 [![Android Multi-ABI CI](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml/badge.svg)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/actions/workflows/android-ci.yml)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases)
+[![Version](https://img.shields.io/badge/version-1.1.1-blue)](https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---

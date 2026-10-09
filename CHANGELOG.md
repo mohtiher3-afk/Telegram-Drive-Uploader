@@ -16,6 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of `x86_64` only. The checksum-gate fix in `7eeebef` matched no trigger
   path, so the lane stayed red on its pre-fix run `36028821677` (`3536441`) even
   though the gate passes; the lane now re-verifies itself on the fix.
+
+## [1.1.1] - 2026-10-09
+
+### Changed
+- **Bump to `1.1.1` / versionCode 26.** The `v1.1.0` release name was permanently
+  burned by GitHub's immutable-releases protection (the tag was published and later
+  deleted; GitHub forbids reusing a tag name that was tied to an immutable release).
+  The name is reserved forever, so the release is shipped under the next available
+  version. The binary payload of this release is identical to `main`, plus the
+  release-automation fix from PR #82.
+
 - **Phase 07 regression harness now compiles.** The three instrumented regression tests
   (`UploadChainRegressionTest`, `Phase07RegressionTest`,
   `ChannelSearchSeparatorRegressionTest`) were written against non-existent APIs
@@ -69,4 +80,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 For earlier per-version release notes, see the GitHub Releases page and the
 archived records under `docs/archive/reports/operations/`.
+
+[1.1.1]: https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases/tag/v1.1.1
 
