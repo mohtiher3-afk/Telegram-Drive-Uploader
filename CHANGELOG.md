@@ -7,15 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- **TDLib smoke lane no longer freezes on a stale failure.** The `Android TDLib Device`
-  `Smoke Test` workflow now re-runs when the artifact gate it depends on changes
-  (`scripts/check-tdlib-artifacts.sh`, `scripts/check-elf-alignment.py`,
-  `scripts/build-tdlib-android.sh`, `docs/TDLIB_SHA256SUMS.txt`,
-  `docs/TDLIB_ARTIFACT_MANIFEST.md`), and its JNI-library filter covers every ABI
-  instead of `x86_64` only. The checksum-gate fix in `7eeebef` matched no trigger
-  path, so the lane stayed red on its pre-fix run `36028821677` (`3536441`) even
-  though the gate passes; the lane now re-verifies itself on the fix.
+### Changed
+- **Bump to `1.1.2` / versionCode 27.** The `v1.1.1` release name was burned by
+  GitHub's immutable-releases protection when the repository was deleted and
+  re-created (the tag name stayed reserved even on the fresh remote). The release
+  therefore ships under the next available version. Binary payload is identical
+  to `main`, plus the repository-restore automation.
 
 ## [1.1.1] - 2026-10-09
 
@@ -82,4 +79,5 @@ For earlier per-version release notes, see the GitHub Releases page and the
 archived records under `docs/archive/reports/operations/`.
 
 [1.1.1]: https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases/tag/v1.1.1
+[1.1.2]: https://github.com/mohtiher3-afk/Telegram-Drive-Uploader/releases/tag/v1.1.2
 

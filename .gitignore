@@ -56,3 +56,7 @@ __pycache__/
 
 # Git worktrees
 .worktrees/
+
+# Local-only artifacts (never commit)
+extracted-telemetry.txt
+Telegram-Drive-Uploader/
