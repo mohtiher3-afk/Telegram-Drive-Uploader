@@ -57,6 +57,21 @@ __pycache__/
 # Git worktrees
 .worktrees/
 
-# Local-only artifacts (never commit)
-extracted-telemetry.txt
-Telegram-Drive-Uploader/
+# Root-level directories that are repository entry points (not nested modules,
+# also matching the interface organization):
+# .github/  — workflows, dependabot, issue/PR templates
+# .clinerules/ — Cline coding-agent workspace rules
+# design/   — visual direction system & previews
+# docs/     — living documentation; docs/README.md is the index
+# gradle/   — version catalogs + plugin management
+# scripts/  — verification gates and release helpers
+# src/      — unused bucket; do not create content there
+.github/
+.clinerules/
+build/
+design/
+docs/
+gradle/
+scripts/
+src/
+
