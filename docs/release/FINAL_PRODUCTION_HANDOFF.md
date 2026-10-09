@@ -30,7 +30,7 @@ TDLib artifacts are official and ABI-validated by the release workflow. Future u
 
 ## Build Artifacts
 
-See [RELEASE_ARTIFACTS.md](RELEASE_ARTIFACTS.md) for published APK names, sizes, and SHA-256 checksums. The current workflow publishes per-ABI APKs, not an AAB.
+See [RELEASE_ARTIFACTS.md](RELEASE_ARTIFACTS.md) for published APK names, sizes, and SHA-256 checksums. The current workflow publishes per-ABI APKs plus a signed AAB (8 assets per release); `v1.0.15`, referenced below, predates AAB publishing.
 
 ## Known Limitations
 
