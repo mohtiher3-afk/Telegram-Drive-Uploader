@@ -11,7 +11,7 @@
 | TDLib artifacts | PASS | Release workflow artifact gate passed for all supported ABIs |
 | R8/resource shrinking | PASS | Release configuration reviewed and build completed |
 | Release build | PASS | Signed multi-ABI workflow `32630539974` |
-| AAB | NOT APPLICABLE | Current release workflow publishes APKs only |
+| AAB | NOT APPLICABLE at `v1.0.15` | `v1.0.15` predates AAB publishing; signed AAB is published from `v1.0.24` onward |
 | APK | PASS | Three signed ABI APKs published |
 | Signing | PASS | CI signature verification passed; values remain secret |
 | Authentication smoke test | NOT VERIFIED | No real-device session evidence in this handoff |

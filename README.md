@@ -139,7 +139,7 @@ Measure cold and warm startup:
 ### Release & CI
 The `Android Multi-ABI CI` workflow runs on Pull Requests and pushes to `main`. It executes repository security and artifact gates, JVM unit tests, release lint, and a Debug APK build for `arm64-v8a`, `armeabi-v7a`, and `x86_64`, then stores each APK as a temporary artifact.
 
-The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs, verifies signatures and SHA-256 checksums, and creates a GitHub Release. The complete setup, required secrets, tag flow, and troubleshooting steps are documented in [`docs/ci/CI_GUIDE.md`](docs/ci/CI_GUIDE.md) and [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
+The `Android Signed Multi-ABI Release` workflow triggers on `v*` tags. It builds signed Release APKs for all supported ABIs plus a signed release AAB, verifies signatures and SHA-256 checksums, and creates a GitHub Release with 8 assets. The complete setup, required secrets, tag flow, and troubleshooting steps are documented in [`docs/ci/CI_GUIDE.md`](docs/ci/CI_GUIDE.md) and [`docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md`](docs/maintenance/GITHUB_SIGNED_RELEASE_AUTOMATION.md).
 
 ---
 

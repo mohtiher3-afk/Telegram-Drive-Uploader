@@ -5,5 +5,5 @@
 - The instrumented JNI smoke test and the Phase-07 regression suite run in CI emulator lanes. Background process-death recovery, notifications, runtime RTL/dark-mode/accessibility, and backup/restore still require controlled execution on a device or emulator with a real account.
 - Startup, memory, battery, and real upload-throughput measurements are **NOT MEASURED**; no performance improvement is claimed.
 - Large-file support is bounded by Android/TDLib/runtime limits; unlimited file-size support is not claimed.
-- The current release workflow publishes signed per-ABI APKs and checksum files; it does not publish an AAB.
+- The current release workflow publishes signed per-ABI APKs, a signed AAB, and their SHA-256 checksum files (8 assets per release; AAB publishing was added in `8de4e17` and shipped from `v1.0.24` onward, confirmed on `v1.0.25` and `v1.1.2`).
 - Release certification remains **NOT CERTIFIED** until the outstanding device/runtime evidence is collected.
