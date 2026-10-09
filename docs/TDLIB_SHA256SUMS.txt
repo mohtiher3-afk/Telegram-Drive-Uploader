@@ -1,7 +1,10 @@
-# TDLib v1.8.66 prebuilt Android artifacts — Git blob SHA-256, regenerated 2026-10-07
-f26e1dcb1a44d8d2c7eecca0f600b11bdacff660c9cc0b121f6171e31b598aab  data/src/main/jniLibs/arm64-v8a/libtdjni.so
-aada91bdf245906185291637e3f288dd8e02c4c0fe6937ab9809ef28709c10e5  data/src/main/jniLibs/armeabi-v7a/libtdjni.so
-d0aea943947c1050210801a15cb0b45fceb8e40a7f5c3e7340d0f6ec0db6bede  data/src/main/jniLibs/x86_64/libtdjni.so
-ea37f5c3f2cb894ad14381a22e1c6ca22affbaa25346669ff117e0b489e6eabe  data/src/main/java/org/drinkless/tdlib/Client.java
-b8dbf3c2b1971447d576266946f4b411698de39b2c6c9abe3a203f618604bc83  data/src/main/java/org/drinkless/tdlib/Log.kt
-7e814d8085f847a3d95ba2655065fc3ba973a350f9f653dff2a3f35db7c52d41  data/src/main/java/org/drinkless/tdlib/TdApi.java
+# TDLib v1.8.67 Android native artifacts — generated 2026-09-11T18:15:08Z
+ee2707c09446620abe18580e2c91946d0d1186eef1f8fb1b5357814ccd1f533b  app/src/main/jniLibs/arm64-v8a/libcrypto.so
+46c6084a75ded7bfe2ecb7cce248e3039bb4c44908c15d61970fb49a85334554  app/src/main/jniLibs/arm64-v8a/libssl.so
+2f58d26c68ba36b63e7ec088db4feab72b9bb24fe93114ec66a450fdfcf7b0de  app/src/main/jniLibs/arm64-v8a/libtdjni.so
+0558dcffb3bdf12b45be7989d8b2c0077a761e17b0b46e9225ee71ab8e129cf9  app/src/main/jniLibs/armeabi-v7a/libcrypto.so
+182cf159b823b2872590ed2bc6da430aad9e847124a852cf43a7e424594d9d3a  app/src/main/jniLibs/armeabi-v7a/libssl.so
+2d162cfe83b09ef6745b5947b412ca64a26fe2de33c6e92b622fc9be1eb8c2db  app/src/main/jniLibs/armeabi-v7a/libtdjni.so
+8e624635fcc6267d141b7e085a91f11d21ff2330e9ac8516f938bffce5117529  app/src/main/jniLibs/x86_64/libcrypto.so
+3552a1a890d1bfa9f81f399fb75d42a1e4db1e4ad94cb9d10bb0554eec1c4454  app/src/main/jniLibs/x86_64/libssl.so
+f271d269af316af05cd3eb6d093ac5c11bcbe689427f9d843c17e818019879f2  app/src/main/jniLibs/x86_64/libtdjni.so
