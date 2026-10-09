@@ -4,11 +4,13 @@ This index lists the **living documentation** — the documents that describe ho
 project works today and that must be updated when behavior changes.
 
 Point-in-time records (inventories, final reports, audits, dated maintenance records, and
-per-version release records) are kept alongside the living documentation in the area
-directories listed below, under the same area names.
+per-version release records) are **not retained as a live folder** in this repository. They
+were removed during the documentation cleanup and remain available in Git history; see
+[HISTORICAL_AUDITS.md](HISTORICAL_AUDITS.md) for what was removed, when, and how to retrieve
+it.
 
-Earlier superseded audits and one-off documents were removed during the documentation
-cleanup; they remain in the git history under commit `9d44e10`.
+Signed release artifacts and their SHA-256 checksums never left the repository — they live on
+the GitHub Releases page.
 
 All relative links in this documentation tree are verified by
 [`scripts/check-doc-links.py`](../scripts/check-doc-links.py), which runs in CI.
@@ -19,6 +21,9 @@ All relative links in this documentation tree are verified by
 |---|---|
 | [DEVELOPER_ONBOARDING.md](DEVELOPER_ONBOARDING.md) | Set up the project and run a first successful build |
 | [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) | Engineering rules applied to every change |
+| [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) | Phased delivery plan for the Mission Control rebuild (phases 0–5 landed; kept for its workflow and troubleshooting rules) |
+| [CLINE_TASKS.md](CLINE_TASKS.md) | Per-screen task scripts used to drive the rebuild (completed; colour values are superseded by `DesignTokens.kt`) |
+| [HISTORICAL_AUDITS.md](HISTORICAL_AUDITS.md) | What was removed from the documentation tree, when, and how to recover it from Git history |
 
 ## Architecture and design
 
@@ -75,6 +80,11 @@ that define each workflow:
 
 ## History
 
+| Location | Content |
+|---|---|
+| [HISTORICAL_AUDITS.md](HISTORICAL_AUDITS.md) | What was removed from the documentation tree, when, and how to recover it from Git history |
+| GitHub Releases | Signed release artifacts and SHA-256 checksums; never affected by repository cleanups |
+
 Earlier superseded audits, SPRINT/MANUS reports, and dated one-off documents were removed
 during the documentation cleanup. They remain in the git history, and were last present
 before commit `9d44e10` (`docs: reorganize point-in-time records into archive, add doc-link
@@ -83,7 +93,8 @@ gate and CI quality gates`).
 ## Adding documentation
 
 1. Put living documents in the area folder that owns the behavior.
-2. Put point-in-time records under `archive/reports/<area>/`.
+2. Point-in-time records are not kept in the tree — record the outcome in the living
+   document that owns the behavior, and let Git history hold the superseded copy.
 3. Add an entry to this index so the document is discoverable.
 4. Run `python3 scripts/check-doc-links.py` before committing.
 
