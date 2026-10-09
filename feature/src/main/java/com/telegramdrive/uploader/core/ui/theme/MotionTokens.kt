@@ -125,21 +125,3 @@ fun rememberSystemMotionEnabled(): Boolean = remember {
     }
 }
 
-/**
- * Staggered animation spec for list items
- */
-object StaggeredAnimation {
-    fun <T> staggeredTween(
-        motionEnabled: Boolean = true,
-        baseDelayMillis: Int = 50,
-        itemIndex: Int = 0
-    ): FiniteAnimationSpec<T> = if (motionEnabled) {
-        tween(
-            durationMillis = 300,
-            delayMillis = baseDelayMillis * itemIndex,
-            easing = CubicBezierEasing(0.2f, 0f, 0f, 1f)
-        )
-    } else {
-        snap()
-    }
-}

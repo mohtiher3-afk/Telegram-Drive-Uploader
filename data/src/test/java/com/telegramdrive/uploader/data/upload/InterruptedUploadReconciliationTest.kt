@@ -1,7 +1,6 @@
 package com.telegramdrive.uploader.data.upload
 
 import com.telegramdrive.uploader.domain.model.UploadStatus
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test

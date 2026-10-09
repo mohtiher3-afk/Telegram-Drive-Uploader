@@ -1,7 +1,6 @@
 package com.telegramdrive.uploader.core.util.media
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -14,7 +13,6 @@ import com.telegramdrive.uploader.domain.model.UploadStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 import java.util.UUID
 
 object VideoMetadataExtractor {

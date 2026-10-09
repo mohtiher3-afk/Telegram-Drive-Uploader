@@ -3,14 +3,12 @@ package com.telegramdrive.uploader.feature.settings
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 
 /**
  * Composable modifier and helpers for optimizing frame rate on high-refresh-rate displays.

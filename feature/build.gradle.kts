@@ -91,7 +91,6 @@ dependencies {
   implementation(libs.hilt.android)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
-  implementation(libs.lottie.compose)
   ksp(libs.hilt.android.compiler)
 
   testImplementation(libs.androidx.compose.ui.test.junit4)

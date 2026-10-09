@@ -137,29 +137,6 @@ fun Eyebrow(
     )
 }
 
-/** Pill badge for a status or a counter. */
-@Composable
-fun MissionBadge(
-    text: String,
-    modifier: Modifier = Modifier,
-    containerColor: Color = DesignTokens.AppColors.glassFill,
-    contentColor: Color = DesignTokens.AppColors.contentMuted,
-) {
-    Box(
-        modifier = modifier
-            .clip(CircleShape)
-            .background(containerColor)
-            .border(1.dp, DesignTokens.AppColors.glassBorder, CircleShape)
-            .padding(horizontal = AppSpacing.small + AppSpacing.xSmall, vertical = 6.dp),
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall,
-            color = contentColor,
-            maxLines = 1,
-        )
-    }
-}
 
 /**
  * The hero block from the design: a violet-glow gradient panel with a hairline violet
@@ -297,11 +274,6 @@ fun MissionProgressBar(
     }
 }
 
-/** Vertical spacing helper so screens do not each invent their own section gap. */
-@Composable
-fun MissionSectionGap(height: Dp = AppSpacing.extraLarge) {
-    Box(modifier = Modifier.height(height))
-}
 
 /**
  * The design's `.queue-banner`: a violet-tinted gradient card that heads the queue and

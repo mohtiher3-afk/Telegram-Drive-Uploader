@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import com.telegramdrive.uploader.feature.BuildConfig
 import java.io.File
-import java.io.FileOutputStream
 
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.*
@@ -51,20 +50,13 @@ import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Date
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
-import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
-import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
-import com.telegramdrive.uploader.core.ui.components.GlassCard
-import com.telegramdrive.uploader.core.ui.components.LiquidGlassEmphasis
-import com.telegramdrive.uploader.core.ui.animation.AnimatedFadeIn
-import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import androidx.compose.material3.TopAppBarDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)

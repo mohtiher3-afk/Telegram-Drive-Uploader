@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
@@ -35,7 +33,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.animateFloat
-import com.telegramdrive.uploader.core.ui.theme.LiquidGlassTokens
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
@@ -276,94 +273,6 @@ fun Modifier.glowSignalRim(
     )
 }
 
-/**
- * Real animated progress glow for upload indicators
- */
-@Composable
-fun RealUploadProgressGlow(
-    progressFraction: Float,
-    statusColor: androidx.compose.ui.graphics.Color,
-    pulseAlpha: Float,
-    modifier: Modifier = Modifier
-) {
-    val infiniteTransition = rememberInfiniteTransition(label = "progressGlow")
-    val rotateAngle by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
-            animation = androidx.compose.animation.core.tween(
-                durationMillis = 2000,
-                easing = androidx.compose.animation.core.LinearEasing
-            ),
-            repeatMode = androidx.compose.animation.core.RepeatMode.Restart
-        ),
-        label = "progressRotation"
-    )
-    
-    val animatedProgress by animateFloatAsState(
-        targetValue = progressFraction.coerceIn(0f, 1f),
-        animationSpec = AppMotion.springTween(),
-        label = "progressFraction"
-    )
-    
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .clip(RoundedCornerShape(12.dp))
-    ) {
-        // Background track
-        androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeWidth = (4f * density).toFloat()
-            val radius = min(size.width, size.height) / 2 - strokeWidth / 2
-            val center = Offset(size.width / 2f, size.height / 2f)
-            
-            // Track
-            drawCircle(
-                color = statusColor.copy(alpha = 0.15f),
-                center = center,
-                radius = radius,
-                style = Stroke(width = strokeWidth)
-            )
-            
-            // Progress arc with glow
-            val sweepAngle = 360f * animatedProgress
-            val arcTopLeft = Offset(center.x - radius, center.y - radius)
-            val arcSize = Size(radius * 2f, radius * 2f)
-            drawArc(
-                brush = Brush.sweepGradient(
-                    center = center,
-                    colors = listOf(
-                        statusColor.copy(alpha = 0.3f),
-                        statusColor.copy(alpha = 0.8f),
-                        statusColor.copy(alpha = 1f),
-                        statusColor.copy(alpha = 0.8f),
-                        statusColor.copy(alpha = 0.3f)
-                    )
-                ),
-                startAngle = -90f,
-                sweepAngle = sweepAngle,
-                useCenter = false,
-                topLeft = arcTopLeft,
-                size = arcSize,
-                style = Stroke(width = strokeWidth, cap = androidx.compose.ui.graphics.StrokeCap.Round)
-            )
-            
-            // Glow effect behind progress
-            if (animatedProgress > 0f) {
-                val glowRadius = radius + strokeWidth
-                drawArc(
-                    color = statusColor.copy(alpha = pulseAlpha * 0.3f),
-                    startAngle = -90f,
-                    sweepAngle = sweepAngle,
-                    useCenter = false,
-                    topLeft = Offset(center.x - glowRadius, center.y - glowRadius),
-                    size = Size(glowRadius * 2f, glowRadius * 2f),
-                    style = Stroke(width = strokeWidth * 2f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
-                )
-            }
-        }
-    }
-}
 
 /**
  * Premium glass card with multiple visual layers

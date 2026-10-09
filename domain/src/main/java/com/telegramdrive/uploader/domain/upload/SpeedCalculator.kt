@@ -1,6 +1,5 @@
 package com.telegramdrive.uploader.domain.upload
 
-import java.util.concurrent.TimeUnit
 
 class SpeedCalculator {
     private var lastBytes: Long = 0

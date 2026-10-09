@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,26 +68,3 @@ fun AppSurface(
     }
 }
 
-/**
- * Column convenience overload for card bodies that stack children.
- * Keeps call sites from re-declaring padding and arrangement every time.
- */
-@Composable
-fun AppCard(
-    modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(AppRadius.card),
-    accent: Color? = null,
-    accentAlpha: Float = 0.14f,
-    container: Color = DesignTokens.AppColors.surfaceCard,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    AppSurface(
-        modifier = modifier,
-        shape = shape,
-        accent = accent,
-        accentAlpha = accentAlpha,
-        container = container
-    ) {
-        Column(modifier = Modifier.fillMaxWidth(), content = content)
-    }
-}

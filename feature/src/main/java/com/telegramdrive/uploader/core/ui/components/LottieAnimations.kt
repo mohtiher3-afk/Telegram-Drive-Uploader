@@ -17,36 +17,37 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
-import androidx.compose.runtime.remember
 
 /**
- * Lottie animation types for empty/error states
+ * Animated state kinds for the shared empty/error surfaces.
+ *
+ * Each kind selects a built-in Compose animation; the companion object below
+ * holds the presets the shared components use.
  */
 sealed interface LottieAnimation {
-    data class EmptyState(val resource: String, val speed: Float = 1f) : LottieAnimation
-    data class ErrorState(val resource: String, val speed: Float = 1f) : LottieAnimation
-    data class LoadingState(val resource: String, val speed: Float = 1f) : LottieAnimation
-    data class SuccessState(val resource: String, val speed: Float = 1f) : LottieAnimation
-    data class NoConnection(val resource: String, val speed: Float = 1f) : LottieAnimation
+    data class EmptyState(val speed: Float = 1f) : LottieAnimation
+    data class ErrorState(val speed: Float = 1f) : LottieAnimation
+    data class LoadingState(val speed: Float = 1f) : LottieAnimation
+    data class SuccessState(val speed: Float = 1f) : LottieAnimation
+    data class NoConnection(val speed: Float = 1f) : LottieAnimation
     object None : LottieAnimation
 }
-/** Fallback animation result used while real Lottie assets are unavailable. */
+
+/** Fallback animation result driving the built-in animated state icon. */
 data class LottieAnimationResult(
     val progress: Float,
     val isPlaying: Boolean
 )
 
 /**
- * Placeholder for Lottie animations - replace with actual LottieComposition when assets are available
- * For now, provides a built-in animated fallback using Compose animations
+ * Drives the built-in animated fallback for a state kind. The loop is skipped
+ * when the system motion setting is off.
  */
 @Composable
 fun rememberLottieAnimation(
@@ -177,14 +178,14 @@ fun AnimatedEmptyStateIcon(
 }
 
 /**
- * Predefined animation types for common states
+ * Predefined animation kinds for the shared empty/error states.
  */
 object LottieAnimations {
-    val emptyQueue = LottieAnimation.EmptyState("empty_queue.json")
-    val emptyUpload = LottieAnimation.EmptyState("empty_upload.json")
-    val noConnection = LottieAnimation.NoConnection("no_connection.json")
-    val uploadError = LottieAnimation.ErrorState("upload_error.json")
-    val uploadSuccess = LottieAnimation.SuccessState("upload_success.json")
-    val uploading = LottieAnimation.LoadingState("uploading.json")
-    val preparing = LottieAnimation.LoadingState("preparing.json")
+    val emptyQueue = LottieAnimation.EmptyState()
+    val emptyUpload = LottieAnimation.EmptyState()
+    val noConnection = LottieAnimation.NoConnection()
+    val uploadError = LottieAnimation.ErrorState()
+    val uploadSuccess = LottieAnimation.SuccessState()
+    val uploading = LottieAnimation.LoadingState()
+    val preparing = LottieAnimation.LoadingState()
 }

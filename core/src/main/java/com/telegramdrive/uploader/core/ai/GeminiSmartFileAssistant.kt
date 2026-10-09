@@ -15,7 +15,6 @@ import com.telegramdrive.uploader.domain.model.UploadTask
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.Locale
 
 /**
  * AI-powered Smart File Assistant using ML Kit GenAI Prompt API (Gemini Nano).

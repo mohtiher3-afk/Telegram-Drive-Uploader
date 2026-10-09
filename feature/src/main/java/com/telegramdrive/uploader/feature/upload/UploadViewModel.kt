@@ -18,7 +18,6 @@ import com.telegramdrive.uploader.core.util.OwnedStagedFileStore
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.domain.model.TelegramDestinationType
 import com.telegramdrive.uploader.domain.model.UploadTask
-import com.telegramdrive.uploader.domain.model.UploadStatus
 import com.telegramdrive.uploader.domain.model.TelegramDestination
 import com.telegramdrive.uploader.domain.model.TelegramDestinationPolicy
 import com.telegramdrive.uploader.domain.repository.UploadRepository

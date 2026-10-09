@@ -13,20 +13,11 @@
     <string name="home_upload_snapshot">Upload overview</string>
     <string name="telegram_connected">Telegram Connected</string>
     <string name="telegram_not_connected">Telegram not connected</string>
-    <string name="connect_account">Connect your Telegram account to upload videos to Telegram.</string>
-    <string name="user">User</string>
     <string name="connect">Connect</string>
-    <string name="upload_videos">Upload Videos</string>
-    <string name="select_videos">Select Videos</string>
-    <string name="select_videos_description">Select one or more videos and add them to your local queue for background preparation.</string>
-    <string name="upload_cloud_icon">Upload Cloud Icon</string>
-    <string name="local_statistics">Local Statistics</string>
     <string name="total_videos">Total Videos</string>
     <string name="total_size">Total Size</string>
     <string name="pending">Pending</string>
     <string name="completed">Completed</string>
-    <string name="active_uploads">Active Uploads</string>
-    <string name="no_active_uploads">No active uploads.\nYour selected videos will appear here.</string>
     <string name="prepare_videos">Prepare Videos</string>
     <string name="schedule_upload">Schedule upload</string>
     <string name="clear">Clear</string>
@@ -45,7 +36,6 @@
     <string name="unpin_destination">Unpin destination</string>
     <string name="no_destinations_found">No destinations found.</string>
     <string name="no_destinations_found_for_query">No matching channels or groups.</string>
-    <string name="selected_destination_summary">Selected destination: %1$s</string>
     <string name="connect_telegram">Connect Telegram</string>
     <string name="phone_number">Phone Number</string>
     <string name="continue_action">Continue</string>
@@ -83,9 +73,7 @@
     <string name="upload_eta">Remaining: %1$s</string>
     <string name="upload_eta_calculating">Calculating…</string>
     <string name="upload_eta_stalled">Waiting for transfer data…</string>
-    <string name="search_file_names">Search file names</string>
     <string name="filter_completed_uploads">Type to filter completed uploads</string>
-    <string name="search_queue_files">Search queue files</string>
     <string name="filter_active_queue">Type to filter the active queue</string>
     <string name="newest">Newest</string>
     <string name="largest">Largest</string>
@@ -106,7 +94,6 @@
     <string name="queue_filter_active">Active</string>
     <string name="queue_filter_paused">Paused</string>
     <string name="queue_filter_failed">Failed</string>
-    <string name="connected_status_description">Connected</string>
     <string name="onboarding_page_upload_title">Your files, in your Telegram</string>
     <string name="onboarding_page_upload_description">Prepare videos, choose a Telegram destination, and keep your uploads organized in one private workspace.</string>
     <string name="onboarding_page_schedule_title">Upload on your schedule</string>
@@ -222,7 +209,6 @@
     <string name="history_period_7_days">7 days</string>
     <string name="history_period_30_days">30 days</string>
     <string name="error_occurred">An Error Occurred</string>
-    <string name="error_icon">Error</string>
     <string name="upload_status">Status: %1$s</string>
     <string name="upload_progress_accessibility" tools:ignore="PluralsCandidate">Upload progress: %1$d percent</string>
     <string name="status_queued">Queued</string>

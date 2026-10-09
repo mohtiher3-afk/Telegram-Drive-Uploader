@@ -16,10 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -38,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.animation.AnimatedFadeIn
-import com.telegramdrive.uploader.core.ui.animation.AnimatedGlassCard
 import com.telegramdrive.uploader.core.ui.animation.AnimatedProgressIndicator
 import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatsGrid
@@ -46,9 +42,7 @@ import com.telegramdrive.uploader.core.ui.animation.AnimatedStatCard
 import com.telegramdrive.uploader.core.ui.components.Eyebrow
 import com.telegramdrive.uploader.core.ui.components.MissionCard
 import com.telegramdrive.uploader.core.ui.components.MissionHeroCard
-import com.telegramdrive.uploader.core.ui.components.MissionProgressBar
 import com.telegramdrive.uploader.core.ui.components.MissionScreen
-import com.telegramdrive.uploader.core.ui.components.MissionStat
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
