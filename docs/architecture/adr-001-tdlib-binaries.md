@@ -144,15 +144,15 @@ be reported as a measured 0% or as "not applicable" - it is unmeasured.
 ```
 
 Measured `:feature` coverage, computed from a `--rerun-tasks` execution with no
-cache reuse (2067 of 5349 lines):
+cache reuse (2219 of 5536 lines):
 
 | Counter | Covered / Total | Ratio |
 |---|---|---|
-| **Line** | 2067 / 5349 | **38.6%** |
-| Branch | 381 / 1475 | 25.8% |
-| Instruction | 17335 / 48668 | 35.6% |
+| **Line** | 2219 / 5536 | **40.1%** |
+| Branch | 437 / 1620 | 27.0% |
+| Instruction | 18565 / 50800 | 36.6% |
 
-Branch coverage of 25.8% against 38.6% line coverage indicates the tested paths
+Branch coverage of 27.0% against 40.1% line coverage indicates the tested paths
 are shallow: mostly happy-path assertions rather than error and edge branches. Any
 figure quoted from this repository must come from an artifact written by the same
 run, and `--rerun-tasks` is required to produce a newly computed one. Without it
