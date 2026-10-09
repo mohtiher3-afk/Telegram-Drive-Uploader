@@ -23,7 +23,7 @@
 | CI/CD | PASS | Successful release workflow | Action deprecation warnings remain maintenance debt |
 | Signing | PASS | CI signature verification | Secret values not exposed |
 | APK | PASS | Published signed per-ABI APKs and checksums | v1.0.15 |
-| AAB | NOT APPLICABLE | Current workflow publishes APKs | No AAB asset in this release |
+| AAB | NOT APPLICABLE at `v1.0.15` | `v1.0.15` predates AAB publishing (added in `8de4e17`) | The current release workflow publishes a signed AAB on every tag from `v1.0.24` onward; `app-release.aab` plus checksum confirmed on `v1.0.25` and `v1.1.2` |
 | Documentation | PASS | Release, security, testing, operations docs | Indexes added in this phase |
 | Operations | PASS | Incident, rollback, hotfix, monitoring, support guides | Device evidence remains an operational follow-up |
 

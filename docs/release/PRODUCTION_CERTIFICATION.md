@@ -46,7 +46,9 @@ Signed APKs for `arm64-v8a`, `armeabi-v7a`, and `x86_64` are published in GitHub
 
 ## AAB
 
-`NOT APPLICABLE` for the current release workflow, which publishes per-ABI APKs only.
+`NOT APPLICABLE` for `v1.0.15`, which predates AAB publishing. The current
+release workflow publishes a signed `app-release.aab` (with SHA-256 checksum)
+alongside the signed per-ABI APKs; confirmed on `v1.0.25` and `v1.1.2`.
 
 ## Known Limitations
 

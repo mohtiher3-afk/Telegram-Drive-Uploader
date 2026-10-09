@@ -15,7 +15,7 @@
 | ABI | PASS | APKs for arm64-v8a, armeabi-v7a, and x86_64; matching native entries | No | ABI packaging is statically verified. |
 | Signing | NOT VERIFIED locally; PASS in published CI record | Local outputs are unsigned; GitHub release record documents signed APKs | Yes locally | No signing secret or keystore data is exposed. |
 | APK | PASS | Three local release APKs package correctly; signed copies documented in release | No | Local APKs are unsigned; published signed APK evidence is retained. |
-| AAB | NOT VERIFIED for signing | Local `app-release.aab` built; release workflow publishes ABI APKs only | Yes | AAB package build passed, but signing is not verified locally. |
+| AAB | PASS (published signed) | Workflow builds, signs, and checksum-verifies `app-release.aab`; signed AAB published from `v1.0.24` onward (`v1.0.25`, `v1.1.2` confirmed) | Yes | Local `app-release.aab` remains unsigned because release secrets are absent locally. |
 | Startup | NOT VERIFIED | No device/emulator execution | Yes | Fresh, cold, warm, and restart behavior not observed. |
 | Authentication | NOT VERIFIED | No real Telegram session test | Yes | Authorization, restoration, logout, and re-authentication are unverified. |
 | Upload | NOT VERIFIED | No real Telegram upload test | Yes | Genuine TDLib delivery, progress, retry, cancel, and completion are unverified. |
