@@ -35,9 +35,15 @@ object VideoFormatSupport {
     }
 
     fun isSupportedVideo(mimeType: String, fileName: String): Boolean {
-        val normalized = normalizeMimeType(mimeType, fileName)
-        if (normalized.startsWith("video/")) return true
-        val extension = fileName.substringAfterLast('.', "").lowercase(Locale.US)
-        return extension in videoMimeByExtension
+        // A concrete non-generic MIME type that is not video is authoritative:
+        // do not let the file extension override it (e.g. a real PDF named .mp4).
+        val reported = mimeType?.trim()?.lowercase(Locale.US).orEmpty()
+        if (reported.isNotEmpty() &&
+            reported != "application/octet-stream" &&
+            !reported.startsWith("video/")
+        ) {
+            return false
+        }
+        return normalizeMimeType(mimeType, fileName).startsWith("video/")
     }
 }
