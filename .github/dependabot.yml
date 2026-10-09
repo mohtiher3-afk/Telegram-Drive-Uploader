@@ -3,14 +3,34 @@ updates:
   - package-ecosystem: gradle
     directory: "/"
     schedule:
-      interval: monthly
-    open-pull-requests-limit: 3
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
     labels:
       - dependencies
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      # Batch low-risk patch/minor bumps into a single weekly PR so the queue
+      # stays reviewable; majors still arrive individually.
+      gradle-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: monthly
-    open-pull-requests-limit: 3
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
     labels:
       - dependencies
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      actions-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
