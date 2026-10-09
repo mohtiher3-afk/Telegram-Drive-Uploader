@@ -248,9 +248,11 @@ See [`docs/ci/CI_GUIDE.md`](docs/ci/CI_GUIDE.md) and
 | Arabic layout issues | Set system language to Arabic and restart. Verify RTL support. |
 | Release signing fails | Check local keystore configuration. Never commit signing keys. |
 
+> **Next release** · [v1.1.3 / versionCode 28](../CHANGELOG.md#unreleased) — incremental dependency pass (setup-java v5→v6, roborazzi 1.75→1.76, KSP 2.3.11→2.3.12, Sentry 8.58→8.59). CI green on all 4 bumps; binary payload unchanged.
+
 ---
 
-## Documentation Index
+## 📖 Documentation Index
 
 See [`docs/README.md`](docs/README.md) for the full, maintained index of
 living documentation (architecture, design system, upload pipeline, Telegram

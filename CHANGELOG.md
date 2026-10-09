@@ -8,11 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- **Bump to `1.1.2` / versionCode 27.** The `v1.1.1` release name was burned by
-  GitHub's immutable-releases protection when the repository was deleted and
-  re-created (the tag name stayed reserved even on the fresh remote). The release
-  therefore ships under the next available version. Binary payload is identical
-  to `main`, plus the repository-restore automation.
+- **Bump to `1.1.3` / versionCode 28.** Incremental dependency update: setup-java
+  v5 → v6, roborazzi 1.75 → 1.76, KSP 2.3.11 → 2.3.12, Sentry 8.58 → 8.59.
+  Binary payload unchanged; CI green on all 4 dependabot bumps.
 
 ## [1.1.1] - 2026-10-09
 
