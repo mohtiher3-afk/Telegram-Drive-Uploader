@@ -10,10 +10,35 @@ JNI_DIR="$PROJECT_ROOT/data/src/main/jniLibs"
 JAVA_BINDING_DIR="$PROJECT_ROOT/data/src/main/java/org/drinkless/tdlib"
 MANIFEST_FILE="$PROJECT_ROOT/docs/TDLIB_ARTIFACT_MANIFEST.md"
 CHECKSUM_FILE="$PROJECT_ROOT/docs/TDLIB_SHA256SUMS.txt"
-ELF_ALIGNMENT_HELPER="$PROJECT_ROOT/scripts/check-elf-alignment.py"
+ELF_ALIGNMENT_HELPER="scripts/check-elf-alignment.py"
 
 MISSING_COUNT=0
 CHECK_ABI="${TDLIB_CHECK_ABI:-armeabi-v7a}"
+
+# Pick a Python interpreter once. `python` is tried before `python3` because on
+# Windows `python3` is often the Microsoft Store stub, which prints an install
+# banner and exits non-zero.
+python_cmd() {
+    if command -v python >/dev/null 2>&1; then
+        echo python
+    elif command -v python3 >/dev/null 2>&1; then
+        echo python3
+    else
+        return 1
+    fi
+}
+
+# Print the ELF e_machine as a readelf-compatible name. The helper is invoked with
+# a REPOSITORY-RELATIVE path on purpose: PROJECT_ROOT is an MSYS path such as
+# /c/Users/..., and a native Windows python cannot open that (it becomes
+# C:\c\Users\...). A relative path works in both environments. The old code passed
+# the absolute MSYS path, so the helper silently failed and the 16 KB gate reported
+# "no LOAD segments readable" on every ABI.
+python_elf_machine() {
+    local file_path="$1"
+    local relative="${file_path#"$PROJECT_ROOT"/}"
+    ( cd "$PROJECT_ROOT" && "$(python_cmd)" "$ELF_ALIGNMENT_HELPER" --machine "$relative" 2>/dev/null )
+}
 case "$CHECK_ABI" in
     all|arm64-v8a|armeabi-v7a|x86_64) ;;
     *)
@@ -67,27 +92,34 @@ check_elf_arch() {
     local abi="$1"
     local expected="$2"
     local file_path="$JNI_DIR/$abi/libtdjni.so"
-    if ! command -v readelf >/dev/null 2>&1; then
-        if command -v file >/dev/null 2>&1; then
-            local file_info
-            file_info=$(file "$file_path")
-            if [[ "$file_info" == *"ARM"* || "$file_info" == *"ELF"* ]]; then
-                echo "[ARCHITECTURE via file] $abi: $file_info"
-                return 0
-            fi
-        fi
-        echo "[ERROR] readelf or valid file utility is required for exact ELF architecture validation"
-        MISSING_COUNT=$((MISSING_COUNT + 1))
-        return
+
+    # An ELF reader is mandatory: without one we cannot tell an AArch64 library from
+    # an x86-64 one, and a wrong-architecture binary is a hard runtime failure. The
+    # previous `file`-based fallback accepted ANY shared object (its output always
+    # contains "ELF"), which is exactly how three cross-placed libraries went
+    # undetected. Fail loudly instead of guessing.
+    local machine=""
+    if command -v readelf >/dev/null 2>&1; then
+        machine=$(readelf -h "$file_path" 2>/dev/null | awk -F: '/Machine:/ {gsub(/^ +/, "", $2); print $2; exit}')
+    elif command -v llvm-readelf >/dev/null 2>&1; then
+        machine=$(llvm-readelf -h "$file_path" 2>/dev/null | awk -F: '/Machine:/ {gsub(/^ +/, "", $2); print $2; exit}')
+    elif [ -f "$PROJECT_ROOT/$ELF_ALIGNMENT_HELPER" ] && python_cmd >/dev/null 2>&1; then
+        machine=$(python_elf_machine "$file_path")
     fi
-    local machine
-    machine=$(readelf -h "$file_path" | awk -F: '/Machine:/ {gsub(/^ +/, "", $2); print $2; exit}')
-    if [[ "$machine" != "$expected" ]]; then
+
+    if [ -z "$machine" ]; then
+        echo "[ERROR] $abi: no ELF reader available (need readelf or llvm-readelf); cannot verify architecture, refusing to pass"
+        MISSING_COUNT=$((MISSING_COUNT + 1))
+        return 1
+    fi
+
+    if [ "$machine" != "$expected" ]; then
         echo "[WRONG ARCHITECTURE] $abi expected '$expected', found '$machine'"
         MISSING_COUNT=$((MISSING_COUNT + 1))
-    else
-        echo "[ARCHITECTURE] $abi is $machine"
+        return 1
     fi
+    echo "[ARCHITECTURE] $abi is $machine"
+    return 0
 }
 
 # Verify 16 KB ELF page-size alignment of LOAD segments (Google Play
@@ -98,26 +130,26 @@ check_elf_arch() {
 check_16kb_alignment() {
     local abi="$1"
     local file_path="$JNI_DIR/$abi/libtdjni.so"
+    local relative="${file_path#"$PROJECT_ROOT"/}"
 
     local aligns=""
     if command -v readelf >/dev/null 2>&1; then
         aligns=$(readelf -lW "$file_path" 2>/dev/null | awk '/[[:space:]]LOAD[[:space:]]/{print $NF}')
     fi
-    if [ -z "$aligns" ] && command -v llvm-objdump >/dev/null 2>&1; then
-        aligns=$(llvm-objdump -p "$file_path" 2>/dev/null | awk '/align 2\*\*/{print $NF}')
+    if [ -z "$aligns" ] && command -v llvm-readelf >/dev/null 2>&1; then
+        aligns=$(llvm-readelf -lW "$file_path" 2>/dev/null | awk '/[[:space:]]LOAD[[:space:]]/{print $NF}')
     fi
-    if [ -z "$aligns" ] && command -v python >/dev/null 2>&1 && [ -f "$ELF_ALIGNMENT_HELPER" ]; then
-        aligns=$(python "$ELF_ALIGNMENT_HELPER" "$file_path" 2>/dev/null || true)
-    fi
-    if [ -z "$aligns" ] && command -v python3 >/dev/null 2>&1 && [ -f "$ELF_ALIGNMENT_HELPER" ]; then
-        aligns=$(python3 "$ELF_ALIGNMENT_HELPER" "$file_path" 2>/dev/null || true)
+    # The helper must be called with a repository-relative path from inside the
+    # project: an absolute MSYS path is not openable by a native Windows python.
+    if [ -z "$aligns" ] && [ -f "$PROJECT_ROOT/$ELF_ALIGNMENT_HELPER" ] && python_cmd >/dev/null 2>&1; then
+        aligns=$( cd "$PROJECT_ROOT" && "$(python_cmd)" "$ELF_ALIGNMENT_HELPER" "$relative" 2>/dev/null || true )
     fi
     aligns=${aligns//$'\r'/}
 
     if [ -z "$aligns" ]; then
-        echo "[16KB CHECK] $abi: no LOAD segments readable (readelf/llvm-objdump/Python failure)"
+        echo "[16KB CHECK] $abi: FAILED - no ELF reader available (need readelf or llvm-readelf); cannot verify 16 KB alignment"
         MISSING_COUNT=$((MISSING_COUNT + 1))
-        return
+        return 1
     fi
 
     local failed=""
@@ -181,18 +213,27 @@ else
         relative_path=${relative_path%$'\r'}
         [[ -z "$expected" || "$expected" == \# ]] && continue
         checksum_entries=$((checksum_entries + 1))
-        artifact="$PROJECT_ROOT/$relative_path"
+        # The checksum file was authored against app/src/main/jniLibs/**, but the
+        # libraries that ship live in data/src/main/jniLibs/** (app/ only ever held a
+        # single arm64-v8a set, which is why 6 of 9 entries reported MISSING TARGET).
+        # Rewrite the prefix so the documented hashes are compared against the files
+        # that are actually packaged.
+        checksum_path=$relative_path
+        case "$checksum_path" in
+            app/src/main/jniLibs/*) checksum_path="data/src/main/jniLibs/${checksum_path#app/src/main/jniLibs/}" ;;
+        esac
+        artifact="$PROJECT_ROOT/$checksum_path"
         if [ ! -f "$artifact" ]; then
-            echo "❌ [MISSING CHECKSUM TARGET] $relative_path"
+            echo "❌ [MISSING CHECKSUM TARGET] $relative_path (looked in $checksum_path)"
             MISSING_COUNT=$((MISSING_COUNT + 1))
             continue
         fi
         actual=$(sha256sum "$artifact" | awk '{print $1}')
         if [ "$actual" != "$expected" ]; then
-            echo "❌ [CHECKSUM MISMATCH] $relative_path"
+            echo "❌ [CHECKSUM MISMATCH] $checksum_path"
             MISSING_COUNT=$((MISSING_COUNT + 1))
         else
-            echo "✅ [CHECKSUM] $relative_path"
+            echo "✅ [CHECKSUM] $checksum_path"
         fi
     done < "$CHECKSUM_FILE"
     if [ "$checksum_entries" -eq 0 ]; then

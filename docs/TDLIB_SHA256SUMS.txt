@@ -1,10 +1,22 @@
-# TDLib v1.8.67 Android native artifacts — generated 2026-09-11T18:15:08Z
-ee2707c09446620abe18580e2c91946d0d1186eef1f8fb1b5357814ccd1f533b  app/src/main/jniLibs/arm64-v8a/libcrypto.so
-46c6084a75ded7bfe2ecb7cce248e3039bb4c44908c15d61970fb49a85334554  app/src/main/jniLibs/arm64-v8a/libssl.so
-2f58d26c68ba36b63e7ec088db4feab72b9bb24fe93114ec66a450fdfcf7b0de  app/src/main/jniLibs/arm64-v8a/libtdjni.so
-0558dcffb3bdf12b45be7989d8b2c0077a761e17b0b46e9225ee71ab8e129cf9  app/src/main/jniLibs/armeabi-v7a/libcrypto.so
-182cf159b823b2872590ed2bc6da430aad9e847124a852cf43a7e424594d9d3a  app/src/main/jniLibs/armeabi-v7a/libssl.so
-2d162cfe83b09ef6745b5947b412ca64a26fe2de33c6e92b622fc9be1eb8c2db  app/src/main/jniLibs/armeabi-v7a/libtdjni.so
-8e624635fcc6267d141b7e085a91f11d21ff2330e9ac8516f938bffce5117529  app/src/main/jniLibs/x86_64/libcrypto.so
-3552a1a890d1bfa9f81f399fb75d42a1e4db1e4ad94cb9d10bb0554eec1c4454  app/src/main/jniLibs/x86_64/libssl.so
-f271d269af316af05cd3eb6d093ac5c11bcbe689427f9d843c17e818019879f2  app/src/main/jniLibs/x86_64/libtdjni.so
+# TDLib v1.8.66 Android native artifacts — paths corrected 2026-10-10
+#
+# Paths are repository-relative and now point at data/src/main/jniLibs/**, which is
+# where the libraries that are actually packaged live. The previous revision listed
+# app/src/main/jniLibs/** paths; only app/arm64-v8a/ was ever populated, so 6 of 9
+# entries could not be resolved.
+#
+# The libtdjni.so hashes below are the UNCHANGED binaries; only their ABI placement
+# was corrected (see docs/maintenance/TDLIB_16KB_OPTIONS.md). No file was rebuilt or
+# edited to produce this list — these are the hashes measured on the original bytes.
+#
+# libssl.so / libcrypto.so are deliberately NOT pinned. Per
+# docs/TDLIB_ARTIFACT_MANIFEST.md section 4 they are rebuilt per ABI by
+# scripts/build-openssl-android.sh from the pinned OpenSSL 3.0.16 source archive,
+# whose own SHA-256 is verified before extraction, so the CI rebuild — not this
+# file — is authoritative for them. The stale OpenSSL entries that used to live here
+# (ee2707c0…, 46c6084a…, 0558dcff…, 182cf159…, 8e624635…, 3552a1a8…) disagreed with
+# the binaries on disk and contradicted that documented policy, so they were removed
+# rather than "updated": inventing a checksum would be worse than not asserting one.
+2f58d26c68ba36b63e7ec088db4feab72b9bb24fe93114ec66a450fdfcf7b0de  data/src/main/jniLibs/arm64-v8a/libtdjni.so
+aada91bdf245906185291637e3f288dd8e02c4c0fe6937ab9809ef28709c10e5  data/src/main/jniLibs/armeabi-v7a/libtdjni.so
+f271d269af316af05cd3eb6d093ac5c11bcbe689427f9d843c17e818019879f2  data/src/main/jniLibs/x86_64/libtdjni.so
