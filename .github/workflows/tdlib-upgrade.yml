@@ -7,15 +7,31 @@
 on:
   workflow_dispatch:
     inputs:
+      # Pinned to the exact upstream commit recorded as
+      # `Pinned source commit` in docs/TDLIB_ARTIFACT_MANIFEST.md. This is the
+      # commit `TdApi.java` was generated from and that `armeabi-v7a/libtdjni.so`
+      # was built from, so pinning it keeps all three ABIs and the Java bindings on
+      # one schema.
+      #
+      # The previous default was `master`. `build-tdlib-android.sh` defaults
+      # TDLIB_REF to master as well, so a run that did not pass a ref produced
+      # libraries from a moving branch while the bindings stayed on the pinned
+      # commit — which is exactly how arm64-v8a and x86_64 ended up on 1.8.67 while
+      # TdApi.java and armeabi-v7a stayed on 1.8.66 (see
+      # docs/maintenance/TDLIB_VERSION_DECISION.md).
+      #
+      # To move to a newer TDLib deliberately: change this default AND
+      # `expected_version` in the same commit, after the version-decision analysis
+      # has been redone for the new commit. Never point this at a branch.
       ref:
-        description: "TDLib upstream ref to build (branch/tag/sha). Current 1.8.xx line lives on master; TDLib has no per-patch tags."
+        description: "TDLib upstream commit to build (full 40-char SHA). Never a branch: a moving ref desynchronises the native libraries from TdApi.java."
         required: false
-        default: "master"
+        default: "022d60202e446ad1287b9fb68e687c8a0760788b"
         type: string
       expected_version:
-        description: "Optional exact version to assert (e.g. 1.8.67). The real version is always derived from the cloned CMakeLists.txt."
+        description: "Exact version to assert against the cloned source (build-tdlib-android.sh aborts if it disagrees)."
         required: false
-        default: ""
+        default: "1.8.66"
         type: string
 
 permissions:
@@ -72,6 +88,18 @@ jobs:
           FORCE_ALL_ABIS: "1"
         run: ./scripts/build-openssl-android.sh
 
+      - name: Assert the ref is a pinned commit, not a branch
+        run: |
+          set -euo pipefail
+          REF="${{ inputs.ref }}"
+          if ! [[ "$REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::TDLIB_REF must be a full 40-char commit SHA, got '$REF'." >&2
+            echo "A branch or tag is a moving target: it desynchronises the native" >&2
+            echo "libraries from TdApi.java, which is the defect this workflow caused." >&2
+            exit 1
+          fi
+          echo "Pinned TDLib commit: $REF"
+
       - name: Build TDLib ${{ inputs.ref }} (JNI + Java bindings)
         env:
           TDLIB_REF: ${{ inputs.ref }}
@@ -79,7 +107,61 @@ jobs:
           TDLIB_NATIVE_BUILD_DIR: ${{ github.workspace }}/.native-build
         run: ./scripts/build-tdlib-android.sh
 
-      - name: Verify artifacts
+      # Hard 16 KB gate. check-tdlib-artifacts.sh already fails when any PT_LOAD
+      # segment is below 0x4000 (TDLIB_CHECK_ABI=all covers all three ABIs), so this
+      # step restates it as a named, greppable failure and prints the evidence.
+      # The build keeps alignment via the linker flags in
+      # scripts/build-tdlib-android.sh
+      # (-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384, required because
+      # NDK r27 and older do not default to 16 KB ELF alignment) on NDK
+      # 26.3.11579264. Do not remove those flags; NDK r28+ defaults to 16 KB and the
+      # flags are harmless there, but nothing here runs r28.
+      - name: Verify 16 KB ELF alignment for every ABI
+        run: |
+          set -euo pipefail
+          failed=0
+          for abi in $TARGET_ABIS; do
+            f="data/src/main/jniLibs/$abi/libtdjni.so"
+            if [ ! -f "$f" ]; then
+              echo "::error file=$f::missing libtdjni.so for $abi" >&2
+              failed=1
+              continue
+            fi
+            aligns=""
+            if command -v readelf >/dev/null 2>&1; then
+              aligns=$(readelf -lW "$f" 2>/dev/null | awk '/[[:space:]]LOAD[[:space:]]/{print $NF}')
+            elif command -v llvm-readelf >/dev/null 2>&1; then
+              aligns=$(llvm-readelf -lW "$f" 2>/dev/null | awk '/[[:space:]]LOAD[[:space:]]/{print $NF}')
+            else
+              echo "::error::no ELF reader (readelf/llvm-readelf) available; cannot verify 16 KB alignment" >&2
+              exit 1
+            fi
+            if [ -z "$aligns" ]; then
+              echo "::error file=$f::no PT_LOAD segments readable; cannot verify 16 KB alignment" >&2
+              failed=1
+              continue
+            fi
+            bad=""
+            for v in $aligns; do
+              case "$v" in
+                0x*) if (( 16#${v#0x} < 16384 )); then bad="$bad $v"; fi ;;
+                *)   echo "::error file=$f::unparseable alignment token '$v'" >&2; failed=1 ;;
+              esac
+            done
+            if [ -n "$bad" ]; then
+              echo "::error file=$f::$abi is NOT 16 KB aligned (segments below 0x4000:$bad)" >&2
+              failed=1
+            else
+              echo "✅ $abi: LOAD segments 16 KB aligned ($(echo $aligns | tr '\n' ' '))"
+            fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "16 KB alignment gate FAILED — refusing to publish these artifacts." >&2
+            exit 1
+          fi
+          echo "16 KB alignment gate passed for: $TARGET_ABIS"
+
+      - name: Verify artifacts (checksums, architecture, alignment)
         run: ./scripts/check-tdlib-artifacts.sh
         env:
           TDLIB_CHECK_ABI: all

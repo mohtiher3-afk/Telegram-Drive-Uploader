@@ -15,3 +15,14 @@
 - STALE RESULTS ARE NOT EVIDENCE: a cached or UP-TO-DATE task proves nothing. Gradle reads previous test outcomes back through `SerializableTestResult` before it runs anything, and a corrupt cache there aborts the task with `Illegal ArgumentException: Illegal Capacity: <negative>` before a single assertion executes, which is indistinguishable from a real failure. `scripts/verify-project.ps1` therefore clears every module's `build/test-results` before running, so each run reports outcomes it actually produced. Do not quote a test or coverage number without a matching artifact written by that run.
 - HONEST LIMITATION REPORTING: if something cannot be fully verified (missing device, credentials, environment), say so explicitly. Never substitute documentation for real verification.
 - STOP-AND-ASK TRIGGERS: stop and ask the user before (a) starting a new architecture-wide refactor, (b) publishing a signed release, (c) any action that could overwrite another engineer's in-progress work, (d) reducing test coverage to unblock a build.
+
+## Agent working rules
+
+- One small task per commit. Work on a branch, never on main. Never push without my approval.
+- Before finishing any task, run `./scripts/verify-project.sh FULL` and report the real result. Never say "done" if it fails or was not run.
+- Do not edit or replace libtdjni.so files, TdApi.java, or the R8 keep rules for org.drinkless.tdlib.** unless I explicitly ask.
+- Never write api_id, api_hash, keystore files or passwords into any file. Use environment variables / Gradle properties only.
+- App theme is dark-only. All user-facing text must support Arabic (RTL): use start/end instead of left/right, and no hardcoded strings.
+- Before choosing or upgrading any library/plugin version, check the official source (developer.android.com). If the `android` CLI is installed, use `android docs search` / `android docs fetch` and `android studio version-lookup`; otherwise fetch the official release-notes page. Do not guess versions from memory.
+- Upgrade one component at a time (AGP, then Kotlin, then Compose BOM, then others), run verify after each, and revert that step if it fails.
+- If the same error repeats twice, stop, summarize what you tried, and ask me instead of looping.

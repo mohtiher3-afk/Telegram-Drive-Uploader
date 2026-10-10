@@ -102,7 +102,13 @@ if [[ "$MODE" == CLEAN ]]; then
 fi
 
 run_check repository 'Repository' repository_sanity || true
-run_check tdlib 'TDLib' "$ROOT_DIR/scripts/check-tdlib-artifacts.sh" || true
+# Cover every shipped ABI, not just the checker's armeabi-v7a default. CI already
+# does this per-matrix-job (android-ci.yml / android-release.yml pass
+# TDLIB_CHECK_ABI=${{ matrix.abi }}, tdlib-upgrade.yml passes `all`); the local gate
+# was silently checking one third of the shipped binaries, which is how a
+# wrong-architecture library sat in x86_64/ unnoticed. `all` matches the widest CI
+# scope and does not weaken any individual check.
+TDLIB_CHECK_ABI=all run_check tdlib 'TDLib' "$ROOT_DIR/scripts/check-tdlib-artifacts.sh" || true
 run_check gradle 'Gradle' gradle_help || true
 
 if [[ "$MODE" == QUICK ]]; then
