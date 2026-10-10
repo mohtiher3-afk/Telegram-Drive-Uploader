@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only override. A `src/debug/res/values/strings.xml` file is merged over
+  `src/main` for the debug variant only, so the release app label is untouched.
+  The debug build installs alongside the release app (applicationIdSuffix
+  ".debug"), so a distinct label keeps the two launcher icons distinguishable —
+  otherwise both read "Telegram Drive Uploader" and it is easy to open the wrong one.
+-->
+<resources>
+    <string name="app_name">Telegram Drive Uploader (Debug)</string>
+</resources>

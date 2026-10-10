@@ -9,6 +9,37 @@ from pathlib import Path
 
 PT_LOAD = 1
 
+# e_machine values, named the way readelf -h prints them, so the shell checker can
+# compare against the same expected strings it already uses.
+MACHINES = {
+    0x03: "Intel 80386",
+    0x28: "ARM",
+    0x3E: "Advanced Micro Devices X86-64",
+    0xB7: "AArch64",
+}
+
+
+def _header(path: Path) -> tuple[bytes, str, int]:
+    data = path.read_bytes()
+    if data[:4] != b"\x7fELF" or len(data) < 64:
+        raise ValueError(f"{path} is not a valid ELF file")
+    byte_order = data[5]
+    if byte_order == 1:
+        endian = "<"
+    elif byte_order == 2:
+        endian = ">"
+    else:
+        raise ValueError(f"{path} has an unsupported byte order {byte_order}")
+    machine = struct.unpack_from(endian + "H", data, 18)[0]
+    return data, endian, machine
+
+
+def machine_name(path: Path) -> str:
+    """Return the readelf-style machine name for an ELF file."""
+    _, _, machine = _header(path)
+    name = MACHINES.get(machine)
+    return name if name else f"unknown-machine-0x{machine:x}"
+
 
 def load_alignments(path: Path) -> list[int]:
     data = path.read_bytes()
@@ -54,8 +85,20 @@ def load_alignments(path: Path) -> list[int]:
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print(f"usage: {Path(sys.argv[0]).name} <elf-file>", file=sys.stderr)
+    args = sys.argv[1:]
+    if args and args[0] == "--machine":
+        if len(args) != 2:
+            print("usage: check-elf-alignment.py --machine <elf-file>", file=sys.stderr)
+            return 2
+        try:
+            print(machine_name(Path(args[1])))
+        except (OSError, ValueError, struct.error) as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
+        return 0
+
+    if len(args) != 1:
+        print(f"usage: {Path(sys.argv[0]).name} [--machine] <elf-file>", file=sys.stderr)
         return 2
 
     try:

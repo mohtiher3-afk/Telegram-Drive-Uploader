@@ -143,7 +143,21 @@ android {
       }
       matchingFallbacks += listOf("release")
     }
-    debug { signingConfig = signingConfigs.getByName("debugConfig") }
+    debug {
+      signingConfig = signingConfigs.getByName("debugConfig")
+      // Install the debug build side by side with the installed release app instead
+      // of colliding with it. The release app is signed with the release keystore and
+      // a debug APK is signed with the debug key; Android refuses to update across
+      // different signatures (INSTALL_FAILED_UPDATE_INCOMPATIBLE), so without this
+      // suffix a developer cannot install a debug build on a device that has the
+      // release app without uninstalling it (which destroys the logged-in session).
+      // The suffix only changes the applicationId; `namespace` stays
+      // com.telegramdrive.uploader, so generated R/BuildConfig classes and all source
+      // imports are unaffected. Provider authorities declared as ${applicationId}
+      // (FileProvider, androidx-startup) become <id>.debug-scoped automatically.
+      applicationIdSuffix = ".debug"
+      versionNameSuffix = "-debug"
+    }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17
