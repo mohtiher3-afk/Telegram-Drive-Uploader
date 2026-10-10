@@ -181,11 +181,34 @@ wrong directories, and `app/` vs `data/` are two different places to be wrong ab
    `check_16kb_alignment` against `data/src/main/jniLibs/<abi>/libtdjni.so`.
 3. `check_elf_arch` needs `readelf`; without it, the `file` fallback accepts any ELF.
 4. `check_16kb_alignment` tries `readelf -lW`, then `llvm-objdump`, then
-   `scripts/check-elf-alignment.py`. On this host all three are unavailable, so it
-   reports `no LOAD segments readable` for every ABI and increments the miss count.
+   `scripts/check-elf-alignment.py`. On this host the first two are absent, and the
+   Python fallback **silently fails too**, for a reason that is not a missing tool.
 
-The script's own logic is sound — it is the environment (no `readelf`) and the stale
-path prefix that make it useless here.
+The script's own logic is sound — it is the stale path prefix and one MSYS/Windows
+path-conversion defect that make it useless here.
+
+**Why the Python fallback fails (verified, not guessed).** The checker computes
+`ROOT_DIR` with `pwd`, which in git-bash yields an MSYS path:
+
+```
+ROOT_DIR=/c/Users/acer/Telegram-Drive-Uploader/Telegram-Drive-Uploader
+```
+
+`ELF_ALIGNMENT_HELPER` is then
+`$PROJECT_ROOT/scripts/check-elf-alignment.py` — an absolute MSYS path. `python` on
+this host is a **native Windows** executable, and MSYS path conversion is disabled in
+this shell, so it receives the literal string `/c/Users/...` and fails:
+
+```
+python.exe: can't open file 'C:\\c\\Users\\acer\\...\\check-elf-alignment.py': [Errno 2]
+```
+
+The `2>/dev/null || true` on that line swallows the error, `aligns` stays empty, and
+the function reports `no LOAD segments readable`. Verified by running the real
+`check_16kb_alignment` function in isolation: it reports failure even though
+`python scripts/check-elf-alignment.py <file>` — with a **relative** path — works
+perfectly and prints `0x4000` for all three ABIs. So the alignment data *is*
+obtainable in this exact environment; the script just cannot express the path.
 
 ---
 
@@ -299,9 +322,12 @@ Do these in order, each as its own commit, and **not** before you approve:
    `app/src/main/jniLibs/**`), regenerate `TDLIB_SHA256SUMS.txt` with correct ABI
    paths, and make `check_elf_arch` **fail** when `readelf` is unavailable instead of
    accepting any ELF via `file`. Also delegate the alignment read to
-   `scripts/check-elf-alignment.py` (which works here) when no readelf exists. A
-   simple "assert `e_machine` matches the directory name" check would have caught
-   this whole class of bug in seconds.
+   `scripts/check-elf-alignment.py` (which works here) when no readelf exists. Fix the
+   path bug too: invoke the helper with a repository-relative path (or convert
+   `ROOT_DIR` to a native Windows path) so native Python can open it — that alone
+   makes the 16 KB gate functional on this host with no `readelf`. A simple "assert
+   `e_machine` matches the directory name" check would have caught the cross-placement
+   in seconds.
 3. **Reconcile `v1.8.66` vs `v1.8.67`** in the manifest and checksum header.
 4. Only if step 1 is rejected, consider rebuilding (Option A) or dropping x86_64
    (Option C) — both are far more expensive than a correct placement.
