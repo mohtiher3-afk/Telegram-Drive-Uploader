@@ -187,11 +187,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
-          git add data/src/main/jniLibs data/src/main/java/org/drinkless/tdlib/TdApi.java \
+          # -f is REQUIRED, not cosmetic: this repository's .gitignore lists
+          # `src/` (any depth) and `docs/`, and data/src/... plus
+          # docs/TDLIB_ARTIFACT_MANIFEST.md and docs/TDLIB_SHA256SUMS.txt all match
+          # those patterns. Without -f, `git add` refuses the paths and prints
+          # "The following paths are ignored by one of your .gitignore files",
+          # leaving the index empty — `git diff --cached --quiet` then succeeds and
+          # the step exits 1 with the misleading message "No artifact changes".
+          # That is the failure mode of run 38064097170. Note the files ARE tracked,
+          # so -f only bypasses the ignore rules; it adds nothing untracked.
+          git add -f data/src/main/jniLibs data/src/main/java/org/drinkless/tdlib/TdApi.java \
                   data/src/main/java/org/drinkless/tdlib/Client.java \
                   docs/TDLIB_ARTIFACT_MANIFEST.md docs/TDLIB_SHA256SUMS.txt
           if git diff --cached --quiet; then
             echo "No artifact changes — aborting PR creation." >> "$GITHUB_STEP_SUMMARY"
+            echo "The index is empty. If the build did produce artifacts, this means" >&2
+            echo "git add was refused by .gitignore; check for 'paths are ignored' above." >&2
             exit 1
           fi
           git commit -m "chore: upgrade TDLib to v${TDLIB_VERSION} (native rebuild)"
