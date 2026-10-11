@@ -15,8 +15,6 @@ import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import dagger.hilt.android.AndroidEntryPoint
 import com.telegramdrive.uploader.core.navigation.AppNavigation
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
-import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
-import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import javax.inject.Inject
 
@@ -43,24 +41,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val themePreference by settingsDataStore.themePreference.collectAsStateWithLifecycle(initialValue = "System")
-            val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Seafoam")
-            val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "69D6B5")
-            val dynamicColorStrategy by settingsDataStore.dynamicColorStrategy.collectAsStateWithLifecycle(initialValue = "Full")
+            val dynamicColorEnabled by settingsDataStore.dynamicColorEnabled.collectAsStateWithLifecycle(initialValue = true)
             val darkTheme = when (themePreference) {
                 "Dark" -> true
                 "Light" -> false
                 else -> isSystemInDarkTheme()
             }
-            val strategy = when (dynamicColorStrategy) {
-                "Full" -> DynamicColorStrategy.Full
-                "BrandAccented" -> DynamicColorStrategy.BrandAccented
-                else -> DynamicColorStrategy.StaticBrand
-            }
             TelegramDriveTheme(
                 darkTheme = darkTheme,
-                dynamicColorStrategy = strategy,
-                glowColorPreset = GlowColorPreset.fromStorage(glowColorPreference),
-                customGlowHex = customGlowHex
+                dynamicColorEnabled = dynamicColorEnabled
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

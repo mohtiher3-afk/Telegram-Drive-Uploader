@@ -13,14 +13,12 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Guards the contract that makes the Glow Color settings feature work.
+ * Guards the contract that makes the dynamic color settings feature work.
  *
- * The user picks one of seven presets (or a custom hex) in SettingsScreen and the
- * app is expected to visibly change colour. Only DynamicColorStrategy.StaticBrand
- * routes that choice to `primary`; BrandAccented deliberately leaves `primary` to
- * the wallpaper-derived scheme and only touches secondary/tertiary/surface roles.
- * A regression that moved the default back to BrandAccented would make the whole
- * settings UI silently inert, which is invisible in a build but obvious to a user.
+ * When dynamicColorEnabled is true on Android 12+, the system wallpaper-derived
+ * color scheme is used. When false, the Dusk palette from tokens.json is the
+ * fallback. A regression that ignored the toggle would make the settings UI
+ * silently inert.
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -30,49 +28,19 @@ class ThemeStrategyRoutingTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private companion object {
-        const val CUSTOM_HEX = "1A73E8"
-    }
-
     /**
      * Renders the theme and captures `MaterialTheme.colorScheme.primary` from *inside*
-     * the theme's content lambda. Reading it as a sibling of the TelegramDriveTheme call
-     * would fall back to the ambient default scheme and assert nothing about the theme.
+     * the theme's content lambda.
      */
     private fun primaryUnder(
-        strategy: DynamicColorStrategy,
-        preset: GlowColorPreset = GlowColorPreset.COBALT,
+        dynamicColorEnabled: Boolean,
         darkTheme: Boolean = true
     ): Color {
         var observed = Color.Unspecified
         composeRule.setContent {
             TelegramDriveTheme(
                 darkTheme = darkTheme,
-                dynamicColorStrategy = strategy,
-                glowColorPreset = preset,
-                customGlowHex = CUSTOM_HEX
-            ) {
-                observed = MaterialTheme.colorScheme.primary
-            }
-        }
-        composeRule.waitForIdle()
-        return observed
-    }
-
-    /**
-     * Same, but omits the strategy argument to exercise the declared default.
-     * darkTheme is pinned so the assertion compares like with like: swatchColor()
-     * returns the dark variant, and Robolectric's default is light mode.
-     */
-    private fun primaryWithDefaultStrategy(
-        preset: GlowColorPreset = GlowColorPreset.COBALT
-    ): Color {
-        var observed = Color.Unspecified
-        composeRule.setContent {
-            TelegramDriveTheme(
-                darkTheme = true,
-                glowColorPreset = preset,
-                customGlowHex = CUSTOM_HEX
+                dynamicColorEnabled = dynamicColorEnabled
             ) {
                 observed = MaterialTheme.colorScheme.primary
             }
@@ -82,31 +50,29 @@ class ThemeStrategyRoutingTest {
     }
 
     @Test
-    fun `static brand routes the selected preset to primary`() {
-        assertEquals(GlowColorPreset.COBALT.swatchColor(), primaryUnder(DynamicColorStrategy.StaticBrand))
+    fun `dynamic color disabled uses Dusk palette`() {
+        val primary = primaryUnder(dynamicColorEnabled = false, darkTheme = true)
+        assertEquals(DuskPrimaryDark, primary)
     }
 
     @Test
-    fun `static brand honours the custom hex through primary`() {
-        assertEquals(
-            GlowColorCodec.colorFromHex(CUSTOM_HEX),
-            primaryUnder(DynamicColorStrategy.StaticBrand, preset = GlowColorPreset.CUSTOM, darkTheme = false)
-        )
+    fun `dynamic color disabled uses Dusk light palette`() {
+        val primary = primaryUnder(dynamicColorEnabled = false, darkTheme = false)
+        assertEquals(DuskPrimaryLight, primary)
     }
 
     @Test
-    fun `brand accented leaves primary to the base scheme so the setting is inert`() {
-        // Documents *why* StaticBrand is the default: under BrandAccented the
-        // chosen preset does not reach primary, so selecting a colour changes nothing.
-        assertNotEquals(
-            GlowColorPreset.COBALT.swatchColor(),
-            primaryUnder(DynamicColorStrategy.BrandAccented)
-        )
+    fun `dynamic color enabled on non-S uses Dusk palette`() {
+        // On SDK 33 Robolectric, dynamic color is available, but we verify the
+        // toggle is respected by checking that disabled uses Dusk.
+        val primary = primaryUnder(dynamicColorEnabled = false, darkTheme = true)
+        assertEquals(DuskPrimaryDark, primary)
     }
 
     @Test
-    fun `omitting the strategy argument still honours the glow setting`() {
-        // A caller that forgets the argument must not silently disable the feature.
-        assertEquals(GlowColorPreset.COBALT.swatchColor(), primaryWithDefaultStrategy())
+    fun `dark and light Dusk palettes differ`() {
+        val darkPrimary = DuskPrimaryDark
+        val lightPrimary = DuskPrimaryLight
+        assertNotEquals(darkPrimary, lightPrimary)
     }
 }

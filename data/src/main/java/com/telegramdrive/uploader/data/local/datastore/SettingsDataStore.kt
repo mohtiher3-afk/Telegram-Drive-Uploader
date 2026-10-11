@@ -21,8 +21,7 @@ class SettingsDataStore @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val THEME_KEY = stringPreferencesKey("theme_preference")
-    private val GLOW_COLOR_KEY = stringPreferencesKey("glow_color_preference")
-    private val CUSTOM_GLOW_HEX_KEY = stringPreferencesKey("custom_glow_hex")
+    private val DYNAMIC_COLOR_ENABLED_KEY = stringPreferencesKey("dynamic_color_enabled")
     private val ONBOARDING_COMPLETED_KEY = stringPreferencesKey("onboarding_completed")
     private val OPENING_COMPLETED_KEY = stringPreferencesKey("opening_completed")
     private val TELEGRAM_STATE_KEY = stringPreferencesKey("telegram_connection_state")
@@ -50,19 +49,8 @@ class SettingsDataStore @Inject constructor(
         preferences[THEME_KEY] ?: "System"
     }
 
-    val glowColorPreference: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[GLOW_COLOR_KEY] ?: "Cobalt"
-    }
-
-    val customGlowHex: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[CUSTOM_GLOW_HEX_KEY] ?: "B8C4FF"
-    }
-
-    val dynamicColorStrategy: Flow<String> = context.dataStore.data.map { preferences ->
-        // Design package: dynamic color (Material You) on Android 12+, Dusk as the
-        // fallback scheme. Full routes to dynamicDark/LightColorScheme and falls back
-        // to the Dusk scheme below API 31.
-        preferences[DYNAMIC_COLOR_STRATEGY_KEY] ?: "Full"
+    val dynamicColorEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[DYNAMIC_COLOR_ENABLED_KEY] != "false"
     }
 
     val telegramConnectionState: Flow<String> = context.dataStore.data.map { preferences ->
@@ -183,35 +171,9 @@ class SettingsDataStore @Inject constructor(
         }
     }
 
-    suspend fun setGlowColorPreference(glowColor: String) {
+    suspend fun setDynamicColorEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[GLOW_COLOR_KEY] = glowColor
-        }
-    }
-
-    suspend fun setCustomGlowHex(hex: String) {
-        context.dataStore.edit { preferences ->
-            preferences[CUSTOM_GLOW_HEX_KEY] = hex
-        }
-    }
-
-    suspend fun setDynamicColorStrategy(strategy: String) {
-        context.dataStore.edit { preferences ->
-            preferences[DYNAMIC_COLOR_STRATEGY_KEY] = strategy
-        }
-    }
-
-    suspend fun saveCustomGlowColorPreferences(hex: String) {
-        context.dataStore.edit { preferences ->
-            preferences[CUSTOM_GLOW_HEX_KEY] = hex
-            preferences[GLOW_COLOR_KEY] = "Custom"
-        }
-    }
-
-    suspend fun resetGlowColorPreferences() {
-        context.dataStore.edit { preferences ->
-            preferences[GLOW_COLOR_KEY] = "Cobalt"
-            preferences[CUSTOM_GLOW_HEX_KEY] = "B8C4FF"
+            preferences[DYNAMIC_COLOR_ENABLED_KEY] = enabled.toString()
         }
     }
 

@@ -55,7 +55,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
-import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.theme.DotoFamily
 import com.telegramdrive.uploader.core.ui.components.Eyebrow
@@ -180,108 +179,43 @@ fun SettingsScreen(
                 HorizontalDivider(color = DesignTokens.AppColors.glassBorder)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = stringResource(com.telegramdrive.uploader.feature.R.string.glow_colors),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = DesignTokens.AppColors.contentPrimary
-                )
-                Text(
-                    text = stringResource(com.telegramdrive.uploader.feature.R.string.glow_colors_summary),
+                    text = stringResource(com.telegramdrive.uploader.feature.R.string.appearance_summary),
                     style = MaterialTheme.typography.bodySmall,
-                    color = DesignTokens.AppColors.contentMuted,
-                    modifier = Modifier.padding(top = 4.dp)
+                    color = DesignTokens.AppColors.contentMuted
                 )
-                GlowColorPreset.entries.forEach { preset ->
-                    val selected = uiState.glowColor == preset.storageValue
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(
-                                selected = selected,
-                                onClick = { viewModel.setGlowColor(preset) },
-                                role = Role.RadioButton
-                            )
-                            .padding(vertical = 10.dp)
-                            .testTag("settings_glow_${preset.storageValue.lowercase()}"),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Surface(
-                                modifier = Modifier.size(20.dp),
-                                shape = MaterialTheme.shapes.extraSmall,
-                                color = preset.swatchColor(uiState.customGlowHex)
-                            ) {}
-                            Text(
-                                text = stringResource(glowColorLabelRes(preset)),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = DesignTokens.AppColors.contentPrimary
-                            )
-                        }
-                        RadioButton(selected = selected, onClick = null)
-                    }
-                }
-                if (uiState.glowColor == GlowColorPreset.CUSTOM.storageValue) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    GlowColorEditor(
-                        savedHex = uiState.customGlowHex,
-                        onSave = viewModel::saveCustomGlowColor,
-                        onReset = viewModel::resetGlowColors
-                    )
-                } else {
-                    TextButton(
-                        onClick = viewModel::resetGlowColors,
-                        modifier = Modifier.testTag("reset_glow_colors_button")
-                    ) {
-                        Text(stringResource(com.telegramdrive.uploader.feature.R.string.reset_glow_colors))
-                    }
-                }
             }
 
-            // 1b. Dynamic Color Section
+            // 1b. Dynamic Color Toggle
             SettingsSection(
                 icon = Icons.Default.Palette,
-                title = "Dynamic Color"
+                title = stringResource(com.telegramdrive.uploader.feature.R.string.dynamic_color)
             ) {
-                val dynamicStrategies = listOf(
-                    "Full" to "Full (System)",
-                    "BrandAccented" to "Brand Accented",
-                    "StaticBrand" to "Static Brand"
-                )
-                dynamicStrategies.forEach { (strategyKey, strategyLabel) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(
-                                selected = uiState.dynamicColorStrategy == strategyKey,
-                                onClick = { viewModel.setDynamicColorStrategy(strategyKey) },
-                                role = Role.RadioButton
-                            )
-                            .padding(vertical = 12.dp)
-                            .testTag("settings_dynamic_color_${strategyKey.lowercase()}"),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .testTag("settings_dynamic_color_toggle"),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = strategyLabel,
+                            text = stringResource(com.telegramdrive.uploader.feature.R.string.dynamic_color),
                             style = MaterialTheme.typography.bodyLarge,
                             color = DesignTokens.AppColors.contentPrimary
                         )
-                        RadioButton(
-                            selected = uiState.dynamicColorStrategy == strategyKey,
-                            onClick = null
+                        Text(
+                            text = stringResource(com.telegramdrive.uploader.feature.R.string.dynamic_color_summary),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = DesignTokens.AppColors.contentMuted,
+                            modifier = Modifier.padding(top = 4.dp)
                         )
                     }
+                    Switch(
+                        checked = uiState.dynamicColorEnabled,
+                        onCheckedChange = { viewModel.setDynamicColorEnabled(it) }
+                    )
                 }
-                Text(
-                    text = "Full uses system wallpaper colors. Brand Accented keeps your glow color. Static Brand uses only app colors.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = DesignTokens.AppColors.contentMuted,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
             }
 
             // 2. Storage Section
@@ -760,16 +694,6 @@ private fun canPostUploadNotifications(context: android.content.Context): Boolea
             Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_GRANTED
     return runtimePermissionGranted && NotificationManagerCompat.from(context).areNotificationsEnabled()
-}
-
-private fun glowColorLabelRes(preset: GlowColorPreset): Int = when (preset) {
-    GlowColorPreset.SEAFOAM -> com.telegramdrive.uploader.feature.R.string.glow_color_seafoam
-    GlowColorPreset.COBALT -> com.telegramdrive.uploader.feature.R.string.glow_color_cobalt
-    GlowColorPreset.LIME -> com.telegramdrive.uploader.feature.R.string.glow_color_lime
-    GlowColorPreset.CYAN -> com.telegramdrive.uploader.feature.R.string.glow_color_cyan
-    GlowColorPreset.VIOLET -> com.telegramdrive.uploader.feature.R.string.glow_color_violet
-    GlowColorPreset.ORCHID -> com.telegramdrive.uploader.feature.R.string.glow_color_orchid
-    GlowColorPreset.CUSTOM -> com.telegramdrive.uploader.feature.R.string.glow_color_custom
 }
 
 @Composable

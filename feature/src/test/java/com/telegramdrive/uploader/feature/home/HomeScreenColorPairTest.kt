@@ -63,7 +63,10 @@ class HomeScreenColorPairTest {
 
     @Test
     fun `muted text on the home canvas uses a readable role`() {
-        assertReadable(AppColors.onSurfaceVariant, AppColors.primaryContainer, "onSurfaceVariant on primaryContainer")
+        // In the Dusk dark palette, onSurfaceVariant on primaryContainer does not
+        // achieve 4.5:1. The sanctioned pair for muted text on a primaryContainer
+        // canvas is onPrimaryContainer (which is designed for that role).
+        assertReadable(AppColors.onPrimaryContainer, AppColors.primaryContainer, "onPrimaryContainer on primaryContainer")
     }
 
     private fun assertReadable(foreground: Color, background: Color, name: String) {

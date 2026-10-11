@@ -12,7 +12,6 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
-import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
 import org.junit.Rule
 import org.junit.Test
@@ -51,7 +50,7 @@ class GlassComponentsRoborazziTest {
         composeRule.setContent {
             TelegramDriveTheme(
                 darkTheme = false,
-                dynamicColorStrategy = DynamicColorStrategy.StaticBrand
+                dynamicColorEnabled = false
             ) {
                 GlassCardPreview()
             }
@@ -64,7 +63,7 @@ class GlassComponentsRoborazziTest {
         composeRule.setContent {
             TelegramDriveTheme(
                 darkTheme = true,
-                dynamicColorStrategy = DynamicColorStrategy.StaticBrand
+                dynamicColorEnabled = false
             ) {
                 GlassCardPreview()
             }
