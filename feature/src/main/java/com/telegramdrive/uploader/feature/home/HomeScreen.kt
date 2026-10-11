@@ -140,6 +140,7 @@ fun HomeScreen(
                         }
                     },
                     connectEnabled = !authorized,
+                    authorized = authorized,
                     onConnectClick = onConnectClick,
                     modifier = Modifier.testTag("upload_hero_card")
                 )
@@ -318,6 +319,7 @@ private fun TelegramConnectionCard(
 @Composable
 private fun UploadFeatureCard(
     onSelectVideos: () -> Unit,
+    authorized: Boolean,
     connectEnabled: Boolean,
     onConnectClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -335,37 +337,44 @@ private fun UploadFeatureCard(
                 color = DesignTokens.AppColors.contentPrimary,
                 modifier = Modifier.padding(top = AppSpacing.xSmall)
             )
-            Row(
-                modifier = Modifier.padding(top = AppSpacing.medium),
-                horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)
-            ) {
-                Button(
-                    onClick = onSelectVideos,
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag("select_files_button"),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = DesignTokens.AppColors.lime,
-                        contentColor = DesignTokens.AppColors.onLime
-                    )
+            if (authorized) {
+                Row(
+                    modifier = Modifier.padding(top = AppSpacing.medium),
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.CloudUpload,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.select),
-                        modifier = Modifier.padding(start = AppSpacing.small)
-                    )
+                    Button(
+                        onClick = onSelectVideos,
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("select_files_button"),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = DesignTokens.AppColors.lime,
+                            contentColor = DesignTokens.AppColors.onLime
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CloudUpload,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.select),
+                            modifier = Modifier.padding(start = AppSpacing.small)
+                        )
+                    }
                 }
+            } else {
+                // Not connected: the only reachable action is to connect. Offering
+                // "Select" here would start a flow with no Telegram session (BUG-2).
                 Button(
                     onClick = onConnectClick,
                     enabled = connectEnabled,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .padding(top = AppSpacing.medium)
+                        .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = DesignTokens.AppColors.glassFill,
-                        contentColor = DesignTokens.AppColors.contentPrimary
+                        containerColor = DesignTokens.AppColors.lime,
+                        contentColor = DesignTokens.AppColors.onLime
                     )
                 ) {
                     Text(text = stringResource(R.string.connect))
