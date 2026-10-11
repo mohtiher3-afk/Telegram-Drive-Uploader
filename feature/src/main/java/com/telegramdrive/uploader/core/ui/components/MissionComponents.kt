@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -479,5 +480,43 @@ fun MissionSearchField(
                 inner()
             },
         )
+    }
+}
+/**
+ * Screen header from the design spec (DESIGN_SPEC §5): a numbered section eyebrow
+ * (e.g. "(06) QUEUE") above a large Doto wordmark, with an optional muted subtitle
+ * line beneath (e.g. "0 active · 0 failed"). Shared by every screen so the numbered
+ * title system is consistent.
+ *
+ * @param number two-digit section label, e.g. "06"
+ * @param label upper-case caption, e.g. "QUEUE"
+ * @param title the large headline
+ * @param subtitle optional muted line under the title
+ */
+@Composable
+fun SectionHeader(
+    number: String,
+    label: String,
+    title: String,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Eyebrow(text = "($number) $label")
+        Text(
+            text = title,
+            style = MaterialTheme.typography.displaySmall.copy(
+                fontFamily = com.telegramdrive.uploader.core.ui.theme.DotoFamily,
+                fontWeight = FontWeight.Black
+            ),
+            color = DesignTokens.AppColors.contentPrimary
+        )
+        if (subtitle != null) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.labelMedium,
+                color = DesignTokens.AppColors.contentMuted
+            )
+        }
     }
 }
