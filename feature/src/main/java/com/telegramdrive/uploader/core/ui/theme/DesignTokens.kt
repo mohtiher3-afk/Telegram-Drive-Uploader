@@ -165,14 +165,15 @@ object AppColors {
     /**
      * The single action color: primary buttons, progress fills, and the active
      * navigation tab. Reserved for actions only, never for long body text.
+     * Value from docs/maintenance/DESIGN_SPEC.md (`--p`).
      */
-    val lime = Color(0xFFA3E635)
+    val lime = Color(0xFFFF6B61)
 
     /** Lifted highlight of [lime], used for glow and shimmer peaks. */
-    val limeLight = Color(0xFFD9F79A)
+    val limeLight = Color(0xFFFFB4AB)
 
-    /** Text and icons drawn on a solid [lime] fill. */
-    val onLime = Color(0xFF11160A)
+    /** Text and icons drawn on a solid [lime] fill. (`--op`) */
+    val onLime = Color(0xFF3A0A08)
 
     /** Telemetry and live-signal accent drawn on [background]. */
     val teal = Color(0xFF2DD4BF)
