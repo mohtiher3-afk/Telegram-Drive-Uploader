@@ -39,6 +39,8 @@ import com.telegramdrive.uploader.core.ui.animation.AnimatedProgressIndicator
 import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatsGrid
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatCard
+import com.telegramdrive.uploader.core.ui.components.DotProgressRing
+import com.telegramdrive.uploader.core.ui.components.PartsMap
 import com.telegramdrive.uploader.core.ui.components.Eyebrow
 import com.telegramdrive.uploader.core.ui.components.FanDeck
 import com.telegramdrive.uploader.core.ui.components.MissionCard
@@ -405,7 +407,7 @@ private fun SectionHeading(
 
 /** Hero summary of what is currently in flight, with animated progress. */
 @Composable
-private fun ActiveTransferSummary(
+internal fun ActiveTransferSummary(
     fileName: String,
     completedCount: Int,
     pendingCount: Int,
@@ -425,22 +427,28 @@ private fun ActiveTransferSummary(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
-            Text(
-                text = "${(progress * 100).toInt()}%",
-                style = MaterialTheme.typography.titleMedium,
-                color = DesignTokens.AppColors.lime,
-                modifier = Modifier.padding(start = AppSpacing.small)
-            )
         }
-        AnimatedProgressIndicator(
+        // Dot-matrix progress ring (DESIGN_SPEC §5 .rg) replaces the flat bar as
+        // the primary readout for the active transfer.
+        DotProgressRing(
             progress = progress,
-            modifier = Modifier.padding(top = AppSpacing.small),
-            color = DesignTokens.AppColors.lime
+            size = 180.dp,
+            contentDescriptionText = "${(progress * 100).toInt()}%",
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = AppSpacing.small)
         )
         Text(
             text = pluralStringResource(R.plurals.home_pending_summary, pendingCount, pendingCount),
             style = MaterialTheme.typography.bodySmall,
             color = DesignTokens.AppColors.contentMuted,
+            modifier = Modifier.padding(top = AppSpacing.small)
+        )
+        // 36-cell parts map (DESIGN_SPEC §5 .map) beneath the ring: each cell is
+        // one uploaded part, filled by the completed fraction.
+        PartsMap(
+            totalParts = 36,
+            sentParts = (progress * 36).toInt(),
             modifier = Modifier.padding(top = AppSpacing.small)
         )
     }
