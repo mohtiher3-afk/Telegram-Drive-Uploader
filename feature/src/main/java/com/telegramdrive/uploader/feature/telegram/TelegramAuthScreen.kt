@@ -4,7 +4,18 @@
 package com.telegramdrive.uploader.feature.telegram
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
@@ -34,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.telegramdrive.uploader.core.ui.components.Eyebrow
 import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.domain.model.TelegramAccountEntry
@@ -118,13 +130,19 @@ fun TelegramAuthScreen(
                     when (state) {
                         TelegramConnectionState.DISCONNECTED -> {
                             TelegramLogo()
+                            // Design spec: numbered section label + big Doto headline
+                            // + a blinking status dot (docs/maintenance/DESIGN_SPEC.md §5).
+                            Eyebrow(text = "(02) ACCOUNT")
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.connect_telegram),
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = DesignTokens.AppColors.onPrimary,
+                                style = MaterialTheme.typography.displaySmall.copy(
+                                    fontFamily = com.telegramdrive.uploader.core.ui.theme.DotoFamily,
+                                    fontWeight = FontWeight.Black
+                                ),
+                                color = DesignTokens.AppColors.contentPrimary,
                                 textAlign = TextAlign.Center
                             )
+                            BlinkingDot()
                             Text(
                                 text = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_auth_description),
                                 style = MaterialTheme.typography.bodyLarge,
@@ -550,6 +568,36 @@ fun TelegramLogo() {
             )
         }
     }
+}
+
+/**
+ * The blinking status dot from docs/maintenance/DESIGN_SPEC.md §5 (`.rdot`):
+ * a small accent dot that pulses to signal a live/ready state.
+ */
+@Composable
+fun BlinkingDot(
+    modifier: Modifier = Modifier,
+    color: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.lime,
+    size: Dp = 10.dp
+) {
+    val motionEnabled = rememberSystemMotionEnabled()
+    val transition = rememberInfiniteTransition(label = "blink")
+    val alpha by transition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.25f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "blinkAlpha"
+    )
+    Box(
+        modifier = modifier
+            .padding(start = 8.dp)
+            .size(size)
+            .clip(CircleShape)
+            .background(color.copy(alpha = if (motionEnabled) alpha else 1f))
+    )
 }
 
 @Composable
