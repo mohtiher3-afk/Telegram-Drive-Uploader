@@ -18,6 +18,9 @@
     <string name="total_size">الحجم الإجمالي</string>
     <string name="pending">قيد الانتظار</string>
     <string name="completed">مكتمل</string>
+    <string name="stat_files_sent">الملفات المُرسَلة</string>
+    <string name="stat_moved">المنقولة إلى تيليجرام</string>
+    <string name="stat_sending">يُرسل في الخلفية</string>
     <string name="prepare_videos">تجهيز الفيديوهات</string>
     <string name="schedule_upload">جدولة الرفع</string>
     <string name="clear">مسح</string>

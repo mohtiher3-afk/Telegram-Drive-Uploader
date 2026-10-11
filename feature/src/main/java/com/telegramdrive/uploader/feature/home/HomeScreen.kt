@@ -40,6 +40,7 @@ import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatsGrid
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatCard
 import com.telegramdrive.uploader.core.ui.components.Eyebrow
+import com.telegramdrive.uploader.core.ui.components.FanDeck
 import com.telegramdrive.uploader.core.ui.components.MissionCard
 import com.telegramdrive.uploader.core.ui.components.MissionHeroCard
 import com.telegramdrive.uploader.core.ui.components.MissionScreen
@@ -160,11 +161,13 @@ fun HomeScreen(
                     pending = uiState.pendingCount.toString(),
                     completed = uiState.completedCount.toString()
                 ) {
-                    StatsGrid(
-                        totalVideos = uiState.totalVideosCount.toString(),
-                        totalSize = formatFileSize(uiState.totalSize),
-                        pending = uiState.pendingCount.toString(),
-                        completed = uiState.completedCount.toString()
+                    FanDeck(
+                        headlineLabel = stringResource(R.string.stat_files_sent),
+                        headlineValue = uiState.totalVideosCount.toString(),
+                        secondaryLabel = stringResource(R.string.stat_moved),
+                        secondaryValue = formatFileSize(uiState.totalSize),
+                        tertiaryLabel = stringResource(R.string.stat_sending),
+                        tertiaryValue = uiState.pendingCount.toString().padStart(2, '0')
                     )
                 }
             }
@@ -397,46 +400,6 @@ private fun SectionHeading(
             style = MaterialTheme.typography.titleLarge,
             color = DesignTokens.AppColors.contentPrimary
         )
-    }
-}
-
-/** Two-by-two statistics grid with animated stat cards. */
-@Composable
-private fun StatsGrid(
-    totalVideos: String,
-    totalSize: String,
-    pending: String,
-    completed: String
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
-            AnimatedStatCard(
-                value = totalVideos,
-                label = stringResource(R.string.total_videos),
-                index = 0,
-                modifier = Modifier.weight(1f)
-            )
-            AnimatedStatCard(
-                value = totalSize,
-                label = stringResource(R.string.total_size),
-                index = 1,
-                modifier = Modifier.weight(1f)
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
-            AnimatedStatCard(
-                value = pending,
-                label = stringResource(R.string.pending),
-                index = 2,
-                modifier = Modifier.weight(1f)
-            )
-            AnimatedStatCard(
-                value = completed,
-                label = stringResource(R.string.completed),
-                index = 3,
-                modifier = Modifier.weight(1f)
-            )
-        }
     }
 }
 
