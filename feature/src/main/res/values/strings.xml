@@ -18,6 +18,9 @@
     <string name="total_size">Total Size</string>
     <string name="pending">Pending</string>
     <string name="completed">Completed</string>
+    <string name="stat_files_sent">Files sent</string>
+    <string name="stat_moved">Moved to Telegram</string>
+    <string name="stat_sending">Sending in background</string>
     <string name="prepare_videos">Prepare Videos</string>
     <string name="schedule_upload">Schedule upload</string>
     <string name="clear">Clear</string>
