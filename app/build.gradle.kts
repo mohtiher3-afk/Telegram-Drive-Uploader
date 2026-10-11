@@ -31,6 +31,13 @@ android {
     versionCode = 27
     versionName = rootProject.extra["appVersionName"] as String
 
+    // Whether the window may be screenshotted. TRUE for every build type by default;
+    // the debug build type flips it to false so a developer can capture the UI.
+    // Release (and nonMinifiedRelease) never override this, so shipped builds always
+    // keep FLAG_SECURE. Deliberately a buildConfigField and not an ad-hoc
+    // `if (BuildConfig.DEBUG)` so the release guarantee is stated once, here.
+    buildConfigField("boolean", "ALLOW_SCREENSHOTS", "true")
+
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     // Package the verified TDLib v1.8.66 native artifacts for the supported ABIs.
@@ -157,6 +164,11 @@ android {
       // (FileProvider, androidx-startup) become <id>.debug-scoped automatically.
       applicationIdSuffix = ".debug"
       versionNameSuffix = "-debug"
+      // Allow screenshots of the debug build ONLY, so the UI can be captured for
+      // review. The release build type does not override this, so
+      // BuildConfig.ALLOW_SCREENSHOTS stays true there and shipped builds keep
+      // FLAG_SECURE unconditionally.
+      buildConfigField("boolean", "ALLOW_SCREENSHOTS", "false")
     }
   }
   compileOptions {
