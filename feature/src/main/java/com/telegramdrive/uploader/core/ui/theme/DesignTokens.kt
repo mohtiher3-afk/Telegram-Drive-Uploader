@@ -154,13 +154,13 @@ object AppColors {
     // ---------------------------------------------------------------------
 
     /** The control-room canvas every screen draws behind its content. */
-    val background = Color(0xFF0D0D0F)
+    val background = Color(0xFF0C0A10)
 
     /** Primary body text and headings drawn on [background]. */
     val contentPrimary = Color(0xFFFFFFFF)
 
     /** Muted body text and secondary labels drawn on [background]. */
-    val contentMuted = Color(0xFF9CA3AF)
+    val contentMuted = Color(0xFFAFA6BA)
 
     /**
      * The single action color: primary buttons, progress fills, and the active
@@ -199,7 +199,7 @@ object AppColors {
      * used everywhere else. Pairing this with [onPrimary] as the fill is the whole point of
      * the role: without it the pair collapses to white-on-white.
      */
-    val contentPrimaryInverse = Color(0xFF0D0D0F)
+    val contentPrimaryInverse = Color(0xFF0C0A10)
 
     /** Text and icons drawn on a solid [purple] fill. */
     val onPurple = Color(0xFFFFFFFF)
@@ -209,7 +209,7 @@ object AppColors {
      * gradient. Kept separate from [purple] because it is a surface tint, not an
      * accent: at 5.16:1 on [background] it is readable, but its job is depth.
      */
-    val purpleHot = Color(0xFFA855F7)
+    val purpleHot = Color(0xFFD4A3FF)
 
     /** Failure and destructive-action accent drawn on [background]. */
     val danger = Color(0xFFEF4444)
@@ -266,7 +266,7 @@ object AppColors {
      * Content drawn on it must be gated against this value, not against
      * [background], so the card text tests assert against this role.
      */
-    val surfaceCard = Color(0xFF1A1A1E)
+    val surfaceCard = Color(0xFF18141E)
 
     /**
      * Warning and in-progress accent. Matches the design's amber, and is the
@@ -287,8 +287,8 @@ object AppColors {
 
     // Glow presets (used by liquidGlassOverlay, glowBento, etc.)
     val glowPrimary = Color(0xFFFFFFFF).copy(alpha = 0.15f)
-    val glowSecondary = Color(0xFF00E5FF).copy(alpha = 0.12f)
-    val glowAccent = Color(0xFF00C853).copy(alpha = 0.20f)
+    val glowSecondary = Color(0xFFD4A3FF).copy(alpha = 0.12f)
+    val glowAccent = Color(0xFFD4A3FF).copy(alpha = 0.20f)
 }
 
 /**
