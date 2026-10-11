@@ -57,6 +57,8 @@ import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import com.telegramdrive.uploader.core.ui.theme.DotoFamily
+import com.telegramdrive.uploader.core.ui.components.Eyebrow
 import androidx.compose.material3.TopAppBarDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,18 +114,23 @@ fun SettingsScreen(
     Scaffold(
         containerColor = DesignTokens.AppColors.background,
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DesignTokens.AppColors.background,
-                    titleContentColor = DesignTokens.AppColors.contentPrimary,
-                ),
-                title = {
-                    Text(
-                        text = stringResource(com.telegramdrive.uploader.feature.R.string.settings),
-                        color = DesignTokens.AppColors.contentPrimary
-                    )
-                }
-            )
+            // Design spec: numbered section eyebrow + big Doto headline (DESIGN_SPEC §5).
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(DesignTokens.AppColors.background)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Eyebrow(text = "(08) SETTINGS")
+                Text(
+                    text = stringResource(com.telegramdrive.uploader.feature.R.string.settings),
+                    style = MaterialTheme.typography.displaySmall.copy(
+                        fontFamily = DotoFamily,
+                        fontWeight = FontWeight.Black
+                    ),
+                    color = DesignTokens.AppColors.contentPrimary
+                )
+            }
         }
     ) { innerPadding ->
         Column(
