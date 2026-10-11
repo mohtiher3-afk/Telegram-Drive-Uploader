@@ -24,6 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
+import com.telegramdrive.uploader.core.ui.components.SectionHeader
 import com.telegramdrive.uploader.core.ui.components.ErrorState
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
@@ -117,20 +120,30 @@ fun UploadScreen(
                     )
                 )
             } else {
-                TopAppBar(
-                    title = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.prepare_videos)) },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = onBackClick,
-                            modifier = Modifier.testTag("upload_back_button")
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.back)
-                            )
-                        }
+                // Design spec §5: numbered section eyebrow + Doto wordmark, keeping back.
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(DesignTokens.AppColors.background)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.testTag("upload_back_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.back)
+                        )
                     }
-                )
+                    SectionHeader(
+                        number = "05",
+                        label = "NEW UPLOAD",
+                        title = stringResource(com.telegramdrive.uploader.feature.R.string.prepare_videos),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     ) { innerPadding ->
