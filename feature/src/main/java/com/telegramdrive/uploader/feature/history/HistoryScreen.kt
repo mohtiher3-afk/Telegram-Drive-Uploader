@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
+import com.telegramdrive.uploader.core.ui.components.SectionHeader
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
@@ -61,29 +62,29 @@ fun HistoryScreen(
     Scaffold(
         containerColor = DesignTokens.AppColors.background,
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DesignTokens.AppColors.background,
-                    titleContentColor = DesignTokens.AppColors.contentPrimary,
-                    actionIconContentColor = DesignTokens.AppColors.contentMuted,
-                ),
-                title = {
-                    Text(
-                        text = stringResource(com.telegramdrive.uploader.feature.R.string.upload_history),
-                        color = DesignTokens.AppColors.contentPrimary
-                    )
-                },
-                actions = {
-                    if (uiState.totalMatches > 0) {
-                        IconButton(
-                            onClick = { viewModel.clearHistory() },
-                            modifier = Modifier.testTag("clear_history_button")
-                        ) {
-                            Icon(Icons.Default.DeleteSweep, contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.clear_history))
-                        }
+            // Design spec §5: numbered section eyebrow + Doto wordmark, keeping the clear action.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(DesignTokens.AppColors.background)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                SectionHeader(
+                    number = "06",
+                    label = "HISTORY",
+                    title = stringResource(com.telegramdrive.uploader.feature.R.string.upload_history),
+                    modifier = Modifier.weight(1f)
+                )
+                if (uiState.totalMatches > 0) {
+                    IconButton(
+                        onClick = { viewModel.clearHistory() },
+                        modifier = Modifier.testTag("clear_history_button")
+                    ) {
+                        Icon(Icons.Default.DeleteSweep, contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.clear_history))
                     }
                 }
-            )
+            }
         }
     ) { innerPadding ->
         Box(

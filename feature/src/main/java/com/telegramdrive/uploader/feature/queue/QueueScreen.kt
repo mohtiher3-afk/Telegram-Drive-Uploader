@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
+import com.telegramdrive.uploader.core.ui.components.SectionHeader
 import com.telegramdrive.uploader.core.ui.components.DotProgressRing
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
@@ -63,29 +64,18 @@ fun QueueScreen(
     Scaffold(
         containerColor = DesignTokens.AppColors.background,
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DesignTokens.AppColors.background,
-                    titleContentColor = DesignTokens.AppColors.contentPrimary,
+            // Design spec §5: numbered section eyebrow + Doto wordmark (shared SectionHeader).
+            SectionHeader(
+                number = "06",
+                label = "QUEUE",
+                title = stringResource(com.telegramdrive.uploader.feature.R.string.upload_queue),
+                subtitle = pluralStringResource(
+                    com.telegramdrive.uploader.feature.R.plurals.queue_count_summary,
+                    uiState.activeCount,
+                    uiState.activeCount,
+                    uiState.failedCount
                 ),
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(com.telegramdrive.uploader.feature.R.string.upload_queue),
-                            color = DesignTokens.AppColors.contentPrimary
-                        )
-                        Text(
-                            text = pluralStringResource(
-                                com.telegramdrive.uploader.feature.R.plurals.queue_count_summary,
-                                uiState.activeCount,
-                                uiState.activeCount,
-                                uiState.failedCount
-                            ),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = DesignTokens.AppColors.contentMuted
-                        )
-                    }
-                }
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
             )
         }
     ) { innerPadding ->
