@@ -87,15 +87,11 @@ fun TransferMetrics(
                     )
                 }
 
-                // Speed gauge visualizer
-                LinearProgressIndicator(
-                    progress = { animatedSpeedProgress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .clip(MaterialTheme.shapes.extraSmall),
-                    color = DesignTokens.AppColors.onPrimary,
-                    trackColor = DesignTokens.AppColors.surfaceCard.copy(alpha = 0.4f)
+                // Speed gauge visualizer (dot-matrix per DESIGN_SPEC §5 .db)
+                DotProgressBar(
+                    progress = animatedSpeedProgress,
+                    dotCount = 12,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 

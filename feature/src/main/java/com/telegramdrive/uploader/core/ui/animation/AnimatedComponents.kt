@@ -192,34 +192,6 @@ fun AnimatedGlassCard(
 }
 
 /**
- * Animated progress indicator with smooth color transition.
- */
-@Composable
-fun AnimatedProgressIndicator(
-    progress: Float,
-    modifier: Modifier = Modifier,
-    color: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.lime
-) {
-    val motionEnabled = rememberSystemMotionEnabled()
-
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress.coerceIn(0f, 1f),
-        animationSpec = tween(
-            durationMillis = if (motionEnabled) 600 else 0,
-            easing = FastOutSlowInEasing
-        ),
-        label = "progressIndicator"
-    )
-
-    LinearProgressIndicator(
-        progress = { animatedProgress },
-        modifier = modifier.fillMaxWidth(),
-        color = color,
-        trackColor = DesignTokens.AppColors.surfaceCard.copy(alpha = 0.4f),
-    )
-}
-
-/**
  * Animated visibility wrapper for conditional content.
  * Fades in with expand when visible, fades out when hidden.
  */

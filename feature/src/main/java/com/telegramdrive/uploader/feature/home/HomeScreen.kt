@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.animation.AnimatedFadeIn
-import com.telegramdrive.uploader.core.ui.animation.AnimatedProgressIndicator
 import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatsGrid
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatCard
