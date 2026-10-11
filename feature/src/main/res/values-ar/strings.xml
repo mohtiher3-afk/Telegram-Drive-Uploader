@@ -10,6 +10,11 @@
     <string name="telegram_drive">تيليجرام درايف</string>
     <string name="telegram_title">تيليجرام</string>
     <string name="home_greeting">مرحبًا، %1$s</string>
+    <string name="home_relay_online">المرحل متصل · الخلفية مفعّلة</string>
+    <string name="home_now_sending">يُرسل الآن</string>
+    <string name="home_trust_background">يستمر إذا أُغلقت التطبيق</string>
+    <string name="home_trust_resume">استئناف تلقائي</string>
+    <string name="home_trust_private">مخزَّن على الجهاز</string>
     <string name="home_upload_snapshot">نظرة عامة على الرفع</string>
     <string name="telegram_connected">تم ربط تيليجرام</string>
     <string name="telegram_not_connected">تيليجرام غير متصل</string>
@@ -255,6 +260,14 @@
         <item quantity="few">%1$d عناصر قيد الانتظار</item>
         <item quantity="many">%1$d عنصراً قيد الانتظار</item>
         <item quantity="other">%1$d عنصر قيد الانتظار</item>
+    </plurals>
+    <plurals name="home_parts_sent">
+        <item quantity="zero">لم يُرسل أي جزء</item>
+        <item quantity="one">تم إرسال جزء واحد من 36</item>
+        <item quantity="two">تم إرسال جزءان من 36</item>
+        <item quantity="few">تم إرسال %1$d أجزاء من 36</item>
+        <item quantity="many">تم إرسال %1$d جزءاً من 36</item>
+        <item quantity="other">تم إرسال %1$d جزء من 36</item>
     </plurals>
     <string name="upload_speed_desc">سرعة الرفع</string>
     <string name="time_remaining_desc">الوقت المتبقي</string>

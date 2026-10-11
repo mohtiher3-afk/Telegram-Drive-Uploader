@@ -57,7 +57,7 @@ import org.robolectric.annotation.GraphicsMode
  *                                      (`R.string.queue_empty_title`) and is covered
  *                                      by `QueueScreenComposeTest`.
  *  - "displays uploads"              -> `shows an active transfer for an uploading task`
- *  - "stats display"                 -> `stats grid reports the upload counts`
+ *  - "stats display"                 -> `fanned deck reports the upload counts`
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -110,7 +110,7 @@ class HomeScreenComposeTest {
     }
 
     @Test
-    fun `greets the signed-in user by name`() {
+    fun `title becomes the signed-in user name`() {
         setContent(
             uploads = emptyList(),
             telegramUser = TelegramUser(
@@ -124,18 +124,27 @@ class HomeScreenComposeTest {
             connectionState = TelegramConnectionState.AUTHORIZED
         )
 
-        composeRule.onNodeWithText("Hi, Sara Nasser").assertIsDisplayed()
+        // The design's title row carries the account name, not a "Hi," greeting.
+        composeRule.onNodeWithText("Sara Nasser").assertIsDisplayed()
     }
 
     @Test
-    fun `settings action is reachable from the home header`() {
-        var settingsClicked = false
-        setContent(uploads = emptyList(), onSettingsClick = { settingsClicked = true })
+    fun `add action routes an unlinked account to connect`() {
+        // Authorized: the plus button launches the photo picker, whose result only
+        // arrives from the system picker and so cannot be asserted in a JVM test.
+        // Unlinked: the same button routes to the connect flow instead, and that is
+        // a direct callback the test can observe.
+        var connectClicked = false
+        setContent(
+            uploads = emptyList(),
+            connectionState = TelegramConnectionState.DISCONNECTED,
+            onConnectClick = { connectClicked = true }
+        )
 
-        composeRule.onNodeWithTag("home_settings_button").performClick()
+        composeRule.onNodeWithTag("home_add_button").performClick()
         composeRule.waitForIdle()
 
-        assertTrue("settings click was not forwarded", settingsClicked)
+        assertTrue("add click did not route to connect", connectClicked)
     }
 
     private fun setContent(

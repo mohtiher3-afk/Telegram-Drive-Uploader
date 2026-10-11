@@ -40,7 +40,9 @@ class ActiveTransferSummaryTest {
         }
         // Ring centre shows 50%.
         composeRule.onNodeWithText("50%").assertIsDisplayed()
-        // Parts map summary for 50% of 36 = 18.
-        composeRule.onNodeWithText("18 of 36 parts sent").assertExists()
+        // Parts summary: 2 of the 36 parts that the ring tracks.
+        composeRule.onNodeWithText("2 of 36 parts sent").assertExists()
+        // And the pending count beneath it.
+        composeRule.onNodeWithText("2 pending").assertExists()
     }
 }

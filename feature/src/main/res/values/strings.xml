@@ -10,6 +10,11 @@
     <string name="telegram_drive">Telegram Drive</string>
     <string name="telegram_title">Telegram</string>
     <string name="home_greeting">Hi, %1$s</string>
+    <string name="home_relay_online">Relay online · background on</string>
+    <string name="home_now_sending">Now sending</string>
+    <string name="home_trust_background">Keeps going if app closes</string>
+    <string name="home_trust_resume">Auto-resume</string>
+    <string name="home_trust_private">Stored on device</string>
     <string name="home_upload_snapshot">Upload overview</string>
     <string name="telegram_connected">Telegram Connected</string>
     <string name="telegram_not_connected">Telegram not connected</string>
@@ -235,6 +240,10 @@
     <plurals name="home_pending_summary">
         <item quantity="one">%1$d pending</item>
         <item quantity="other">%1$d pending</item>
+    </plurals>
+    <plurals name="home_parts_sent">
+        <item quantity="one">%1$d of 36 parts sent</item>
+        <item quantity="other">%1$d of 36 parts sent</item>
     </plurals>
     <string name="upload_speed_desc">Upload Speed</string>
     <string name="time_remaining_desc">Time Remaining</string>
