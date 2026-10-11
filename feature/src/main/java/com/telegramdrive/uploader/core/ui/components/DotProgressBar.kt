@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 /**
- * The 26-dot progress bar from docs/maintenance/DESIGN_SPEC.md §5 (`.db`).
+ * The 26-dot progress bar from the design spec (`.db`).
  *
  * A compact dot-matrix bar used in list rows (Queue, History) and the
  * notification where the full 72-dot ring is too large. Dots fill left→right:
@@ -46,11 +46,10 @@ fun DotProgressBar(
         animationSpec = spring(dampingRatio = 0.9f),
         label = "dotBarProgress"
     )
-    val motionEnabled = rememberSystemMotionEnabled()
 
-    val litColor = MaterialTheme.colorScheme.onSurface
-    val headColor = MaterialTheme.colorScheme.primary
-    val idleColor = MaterialTheme.colorScheme.surfaceContainerHighest
+    val litColor: Color = MaterialTheme.colorScheme.onSurface
+    val headColor: Color = MaterialTheme.colorScheme.primary
+    val idleColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest
 
     val semanticsModifier = if (contentDescriptionText != null) {
         Modifier.semantics {

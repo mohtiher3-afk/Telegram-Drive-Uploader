@@ -3,7 +3,6 @@ package com.telegramdrive.uploader.core.ui.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -15,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -25,13 +23,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.telegramdrive.uploader.core.ui.theme.AppDisplayTextStyle
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * Dot-matrix progress ring — the transfer readout from
- * docs/maintenance/DESIGN_SPEC.md §5 (`.rg`, 72 dots on a circle, r=104).
+ * Dot-matrix progress ring — the transfer readout from the design spec
+ * (`.rg`, 72 dots on a circle).
  *
  * Dots fill clockwise: completed dots render in the "on" colour, the single
  * head dot glows in the accent, remaining dots sit dim. The centre carries a
@@ -56,9 +53,9 @@ fun DotProgressRing(
         label = "ringProgress"
     )
 
-    val onColor = MaterialTheme.colorScheme.onSurface
-    val headColor = MaterialTheme.colorScheme.primary
-    val trackColor = DesignTokens.AppColors.surfaceCard
+    val onColor: Color = MaterialTheme.colorScheme.onSurface
+    val headColor: Color = MaterialTheme.colorScheme.primary
+    val trackColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest
 
     val semanticsModifier = if (contentDescriptionText != null) {
         Modifier.semantics {
@@ -80,7 +77,6 @@ fun DotProgressRing(
             val filled = (animated * dotCount).toInt()
 
             for (i in 0 until dotCount) {
-                // Start at 12 o'clock (-90deg), go clockwise.
                 val angle = (i.toFloat() / dotCount) * 2f * Math.PI - Math.PI / 2f
                 val cx = center.x + radius * cos(angle).toFloat()
                 val cy = center.y + radius * sin(angle).toFloat()

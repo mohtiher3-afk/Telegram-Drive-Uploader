@@ -1,17 +1,13 @@
 package com.telegramdrive.uploader.core.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,40 +18,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
-import com.telegramdrive.uploader.core.ui.components.LottieAnimations
-import com.telegramdrive.uploader.core.ui.components.AnimatedEmptyStateIcon
-import com.telegramdrive.uploader.core.ui.components.LottieAnimation
 
 @Composable
 fun ErrorState(
     message: String,
     modifier: Modifier = Modifier,
     onRetryClick: (() -> Unit)? = null,
-    animation: LottieAnimation = LottieAnimations.uploadError
+    animation: com.telegramdrive.uploader.core.ui.components.LottieAnimation = com.telegramdrive.uploader.core.ui.components.LottieAnimations.uploadError
 ) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.medium,
-                accent = DesignTokens.AppColors.danger
-            ),
-        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.surfaceCard),
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, DesignTokens.AppColors.danger.copy(alpha = 0.48f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
+    AppCard(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(DesignTokens.AppSpacing.large),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             AnimatedEmptyStateIcon(
                 animationType = animation,
                 size = 48.dp,
-                tint = DesignTokens.AppColors.danger
+                tint = MaterialTheme.colorScheme.error
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
@@ -78,12 +60,10 @@ fun ErrorState(
 
             if (onRetryClick != null) {
                 Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
-                Button(
+                AppButton(
+                    text = stringResource(com.telegramdrive.uploader.feature.R.string.retry),
                     onClick = onRetryClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = DesignTokens.AppColors.danger)
-                ) {
-                    Text(text = stringResource(com.telegramdrive.uploader.feature.R.string.retry))
-                }
+                )
             }
         }
     }
