@@ -21,12 +21,32 @@ val DotoFamily = FontFamily(
 )
 
 /**
- * UI/body face: Space Mono. All non-display text (labels, body, buttons, metadata).
- * Monospace reinforces the "mission control" terminal aesthetic.
+ * UI/body face: Space Mono for Latin, IBM Plex Sans Arabic for Arabic glyphs.
+ *
+ * Space Mono is Latin-only, so pure-Arabic strings rendered with SpaceMonoFamily
+ * alone silently fall back to the system font. Listing the Arabic family after
+ * Space Mono makes Compose fall back per-glyph: Latin keeps the terminal
+ * monospace look, Arabic gets a deliberate designed face instead of a fallback.
  */
 val SpaceMonoFamily = FontFamily(
     Font(R.font.space_mono_regular, FontWeight.Normal),
-    Font(R.font.space_mono_bold, FontWeight.Bold)
+    Font(R.font.space_mono_bold, FontWeight.Bold),
+    Font(R.font.plex_arabic_regular, FontWeight.Normal),
+    Font(R.font.plex_arabic_bold, FontWeight.Bold)
+)
+
+/**
+ * Arabic display face: IBM Plex Sans Arabic (the design package's recommendation).
+ *
+ * Doto is Latin-only (no Arabic glyphs), so an Arabic title rendered with DotoFamily
+ * silently falls back to the system font and looks inconsistent next to the dotted
+ * Latin readouts. This family is used for Arabic headings/wordmark so Arabic titles
+ * get a deliberate, designed typeface instead of a fallback.
+ */
+val ArabicDisplayFamily = FontFamily(
+    Font(R.font.plex_arabic_regular, FontWeight.Normal),
+    Font(R.font.plex_arabic_semibold, FontWeight.SemiBold),
+    Font(R.font.plex_arabic_bold, FontWeight.Bold)
 )
 
 /**
