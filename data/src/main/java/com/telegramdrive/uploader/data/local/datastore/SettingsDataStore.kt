@@ -59,7 +59,10 @@ class SettingsDataStore @Inject constructor(
     }
 
     val dynamicColorStrategy: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[DYNAMIC_COLOR_STRATEGY_KEY] ?: "StaticBrand"
+        // Design package: dynamic color (Material You) on Android 12+, Dusk as the
+        // fallback scheme. Full routes to dynamicDark/LightColorScheme and falls back
+        // to the Dusk scheme below API 31.
+        preferences[DYNAMIC_COLOR_STRATEGY_KEY] ?: "Full"
     }
 
     val telegramConnectionState: Flow<String> = context.dataStore.data.map { preferences ->
