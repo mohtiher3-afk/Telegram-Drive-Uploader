@@ -102,12 +102,11 @@ class HomeScreenComposeTest {
         )
 
         // 2 total, 1 pending (UPLOADING counts as pending), 1 completed flow into
-        // the fanned deck. The front card renders its label uppercased; the two
-        // back cards render theirs verbatim. Asserted so the test fails if the
-        // deck stops receiving uiState.
+        // the fanned deck. All three card labels render uppercased. Asserted so the
+        // test fails if the deck stops receiving uiState.
         composeRule.onNodeWithText("FILES SENT").assertExists()
-        composeRule.onNodeWithText("Moved to Telegram").assertExists()
-        composeRule.onNodeWithText("Sending in background").assertExists()
+        composeRule.onNodeWithText("MOVED TO TELEGRAM").assertExists()
+        composeRule.onNodeWithText("SENDING IN BACKGROUND").assertExists()
     }
 
     @Test
