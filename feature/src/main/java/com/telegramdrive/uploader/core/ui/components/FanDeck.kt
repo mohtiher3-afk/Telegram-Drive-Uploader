@@ -60,7 +60,7 @@ fun FanDeck(
     tertiaryLabel: String,
     tertiaryValue: String,
     modifier: Modifier = Modifier,
-    accent: Color = DesignTokens.AppColors.lime
+    accent: Color = MaterialTheme.colorScheme.primary
 ) {
     // One entry animation drives the whole stack (choreographed, not per-card).
     val entry by animateFloatAsState(
@@ -199,7 +199,7 @@ private fun FanDeckFrontCard(
                     letterSpacing = 1.5.sp,
                     fontWeight = FontWeight.Bold
                 ),
-                color = DesignTokens.AppColors.onLime
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(Modifier.height(AppSpacing.small))
             Text(
@@ -208,7 +208,7 @@ private fun FanDeckFrontCard(
                 style = MaterialTheme.typography.displayMedium.copy(
                     fontWeight = FontWeight.Black
                 ),
-                color = DesignTokens.AppColors.onLime
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

@@ -57,7 +57,7 @@ fun DotProgressRing(
     )
 
     val onColor = MaterialTheme.colorScheme.onSurface
-    val headColor = DesignTokens.AppColors.lime
+    val headColor = MaterialTheme.colorScheme.primary
     val trackColor = DesignTokens.AppColors.surfaceCard
 
     val semanticsModifier = if (contentDescriptionText != null) {
