@@ -42,8 +42,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
-import com.telegramdrive.uploader.core.ui.components.SectionHeader
+import com.telegramdrive.uploader.core.ui.components.Eyebrow
 import com.telegramdrive.uploader.core.ui.components.DotProgressRing
+import com.telegramdrive.uploader.core.ui.theme.DotoFamily
+import androidx.compose.ui.text.font.FontWeight
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
@@ -64,18 +66,36 @@ fun QueueScreen(
     Scaffold(
         containerColor = DesignTokens.AppColors.background,
         topBar = {
-            // Design spec §5: numbered section eyebrow + Doto wordmark (shared SectionHeader).
-            SectionHeader(
-                number = "06",
-                label = "QUEUE",
-                title = stringResource(com.telegramdrive.uploader.feature.R.string.upload_queue),
-                subtitle = pluralStringResource(
-                    com.telegramdrive.uploader.feature.R.plurals.queue_count_summary,
-                    uiState.activeCount,
-                    uiState.activeCount,
-                    uiState.failedCount
+            // Design spec §5 header, kept inside a TopAppBar so the Scaffold content
+            // padding and the queue action rows stay where the tests expect them.
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DesignTokens.AppColors.background,
+                    titleContentColor = DesignTokens.AppColors.contentPrimary,
                 ),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                title = {
+                    Column {
+                        Eyebrow(text = "(06) QUEUE")
+                        Text(
+                            text = stringResource(com.telegramdrive.uploader.feature.R.string.upload_queue),
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontFamily = DotoFamily,
+                                fontWeight = FontWeight.Black
+                            ),
+                            color = DesignTokens.AppColors.contentPrimary
+                        )
+                        Text(
+                            text = pluralStringResource(
+                                com.telegramdrive.uploader.feature.R.plurals.queue_count_summary,
+                                uiState.activeCount,
+                                uiState.activeCount,
+                                uiState.failedCount
+                            ),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = DesignTokens.AppColors.contentMuted
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
