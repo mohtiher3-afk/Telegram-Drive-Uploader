@@ -20,6 +20,7 @@
 
 - One small task per commit. Work on a branch, never on main. Never push without my approval.
 - Before finishing any task, run `./scripts/verify-project.sh FULL` and report the real result. Never say "done" if it fails or was not run.
+- Run verify gates one at a time (sequential, never parallel). Concurrent `verify-project.sh FULL` runs contend on the same Gradle cache/build dir and produce false `Lint=FAIL` / `Tests=FAIL`. If a gate fails, confirm it is real by re-running a single clean gate (`ps` shows no other `java`) and checking the independent report (e.g. `lint-results-release.txt`) before diagnosing. A cached or UP-TO-DATE task proves nothing on its own.
 - Do not edit or replace libtdjni.so files, TdApi.java, or the R8 keep rules for org.drinkless.tdlib.** unless I explicitly ask.
 - Never write api_id, api_hash, keystore files or passwords into any file. Use environment variables / Gradle properties only.
 - App theme is dark-only. All user-facing text must support Arabic (RTL): use start/end instead of left/right, and no hardcoded strings.
