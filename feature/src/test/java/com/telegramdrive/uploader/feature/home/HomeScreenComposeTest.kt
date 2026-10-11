@@ -93,7 +93,7 @@ class HomeScreenComposeTest {
     }
 
     @Test
-    fun `stats grid reports the upload counts`() {
+    fun `fanned deck reports the upload counts`() {
         setContent(
             uploads = listOf(
                 task("1", UploadStatus.COMPLETED, name = "done.mp4"),
@@ -101,12 +101,13 @@ class HomeScreenComposeTest {
             )
         )
 
-        // 2 total, 2 pending (UPLOADING counts as pending), 0 completed in the
-        // stats grid inputs. Asserted through the labels HomeScreen renders so the
-        // test fails if the grid stops receiving uiState.
-        composeRule.onNodeWithText("Total Videos").assertExists()
-        composeRule.onNodeWithText("Pending").assertExists()
-        composeRule.onNodeWithText("Completed").assertExists()
+        // 2 total, 1 pending (UPLOADING counts as pending), 1 completed flow into
+        // the fanned deck. The front card renders its label uppercased; the two
+        // back cards render theirs verbatim. Asserted so the test fails if the
+        // deck stops receiving uiState.
+        composeRule.onNodeWithText("FILES SENT").assertExists()
+        composeRule.onNodeWithText("Moved to Telegram").assertExists()
+        composeRule.onNodeWithText("Sending in background").assertExists()
     }
 
     @Test
