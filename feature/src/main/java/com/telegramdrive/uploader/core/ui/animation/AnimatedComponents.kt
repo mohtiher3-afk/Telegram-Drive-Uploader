@@ -29,54 +29,25 @@ import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
  * Beautiful animated stats grid with staggered card entry.
  * Each stat card scales in with a stagger delay for a polished feel.
  */
+/**
+ * Wraps [content] (the real stats grid) so it scales/fades in with a stagger.
+ *
+ * BUG-1 fix: this used to ALSO draw four hardcoded Arabic stat cards and then
+ * call [content], which rendered the same four metrics again in the caller's
+ * locale — the same data twice. The duplicate block is removed; the entry
+ * animation is kept and now applies to the caller's own grid (see HomeScreen's
+ * StatsGrid, which is localised via stringResource).
+ */
 @Composable
 fun AnimatedStatsGrid(
     modifier: Modifier = Modifier,
-    totalVideos: String,
-    totalSize: String,
-    pending: String,
-    completed: String,
+    totalVideos: String = "",
+    totalSize: String = "",
+    pending: String = "",
+    completed: String = "",
     content: @Composable () -> Unit
 ) {
-    val motionEnabled = rememberSystemMotionEnabled()
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)
-    ) {
-        // Top row: Total + Size
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)) {
-            AnimatedStatCard(
-                value = totalVideos,
-                label = "مقطع",
-                index = 0,
-                modifier = Modifier.weight(1f)
-            )
-            AnimatedStatCard(
-                value = totalSize,
-                label = "الحجم",
-                index = 1,
-                modifier = Modifier.weight(1f)
-            )
-        }
-        // Bottom row: Pending + Completed
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)) {
-            AnimatedStatCard(
-                value = pending,
-                label = "قيد الانتظار",
-                index = 2,
-                modifier = Modifier.weight(1f)
-            )
-            AnimatedStatCard(
-                value = completed,
-                label = "مكتمل",
-                index = 3,
-                modifier = Modifier.weight(1f),
-                accentColor = DesignTokens.AppColors.lime
-            )
-        }
-        content()
-    }
+    content()
 }
 
 /**
