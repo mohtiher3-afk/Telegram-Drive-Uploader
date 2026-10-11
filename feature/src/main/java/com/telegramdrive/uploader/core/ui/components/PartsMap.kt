@@ -55,7 +55,7 @@ fun PartsMap(
     val sent = sentParts.coerceIn(0, totalParts)
 
     val doneColor = MaterialTheme.colorScheme.onSurface
-    val activeColor = DesignTokens.AppColors.lime
+    val activeColor = MaterialTheme.colorScheme.primary
     val failColor = DesignTokens.AppColors.danger
     val idleColor = DesignTokens.AppColors.surfaceCard
 

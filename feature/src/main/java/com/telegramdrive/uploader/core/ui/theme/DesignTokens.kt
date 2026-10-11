@@ -165,15 +165,17 @@ object AppColors {
     /**
      * The single action color: primary buttons, progress fills, and the active
      * navigation tab. Reserved for actions only, never for long body text.
-     * Value from docs/maintenance/DESIGN_SPEC.md (`--p`).
+     * Dusk palette from the design package tokens.json (`primary`, dark).
+     * New components read MaterialTheme.colorScheme.primary so they follow the
+     * light/dark scheme; this constant is the dark fallback for legacy call sites.
      */
-    val lime = Color(0xFFFF6B61)
+    val lime = Color(0xFFD4A3FF)
 
     /** Lifted highlight of [lime], used for glow and shimmer peaks. */
-    val limeLight = Color(0xFFFFB4AB)
+    val limeLight = Color(0xFFEBDEFD)
 
-    /** Text and icons drawn on a solid [lime] fill. (`--op`) */
-    val onLime = Color(0xFF3A0A08)
+    /** Text and icons drawn on a solid [lime] fill. (`onPrimary`, dark) */
+    val onLime = Color(0xFF351551)
 
     /** Telemetry and live-signal accent drawn on [background]. */
     val teal = Color(0xFF2DD4BF)
