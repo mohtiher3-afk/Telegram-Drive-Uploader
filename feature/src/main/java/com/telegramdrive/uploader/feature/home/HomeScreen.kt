@@ -434,8 +434,7 @@ private fun StatsGrid(
                 value = completed,
                 label = stringResource(R.string.completed),
                 index = 3,
-                modifier = Modifier.weight(1f),
-                accentColor = DesignTokens.AppColors.lime
+                modifier = Modifier.weight(1f)
             )
         }
     }
