@@ -2,36 +2,70 @@
 
 package com.telegramdrive.uploader.feature.telegram
 
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.telegramdrive.uploader.core.ui.components.glowSignalRim
-import com.telegramdrive.uploader.core.ui.components.SectionHeader
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import com.telegramdrive.uploader.core.ui.components.AppButton
+import com.telegramdrive.uploader.core.ui.components.AppCard
+import com.telegramdrive.uploader.core.ui.components.AppSearchField
+import com.telegramdrive.uploader.core.ui.components.Eyebrow
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.theme.DotoFamily
+import com.telegramdrive.uploader.core.ui.theme.SpaceMonoFamily
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
-import com.telegramdrive.uploader.domain.model.TelegramDestinationType
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
-import androidx.compose.material3.TopAppBarDefaults
+import com.telegramdrive.uploader.feature.R
 
+/**
+ * Destination picker — design screen (04) "Send to".
+ *
+ * Same screen, new look: numbered eyebrow, Doto title, search field,
+ * Dusk cards. All routes, callbacks and ViewModel contracts are unchanged.
+ */
 @Composable
 fun TelegramDestinationScreen(
     onBackClick: () -> Unit,
@@ -46,259 +80,294 @@ fun TelegramDestinationScreen(
     val pinnedDestinationIds by viewModel.pinnedDestinationIds.collectAsStateWithLifecycle()
     val selectedDestination by viewModel.selectedDestination.collectAsStateWithLifecycle()
 
-    Scaffold(
-        containerColor = DesignTokens.AppColors.background,
-        topBar = {
-            // Design spec §5: numbered section eyebrow + Doto wordmark, keeping back.
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(DesignTokens.AppColors.background)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.testTag("destination_back_button")
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.back)
-                    )
-                }
-                SectionHeader(
-                    number = "04",
-                    label = "DESTINATIONS",
-                    title = stringResource(com.telegramdrive.uploader.feature.R.string.select_destination),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        },
-        modifier = modifier.fillMaxSize()
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .imePadding()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (connectionState != TelegramConnectionState.AUTHORIZED) {
-                // Not authenticated fallback
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CloudOff,
-                        contentDescription = null,
-                        modifier = Modifier.size(72.dp),
-                        tint = DesignTokens.AppColors.contentMuted.copy(alpha = 0.7f)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_disconnected_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(com.telegramdrive.uploader.feature.R.string.telegram_disconnected_message),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = DesignTokens.AppColors.contentMuted,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = onConnectClick,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .glowSignalRim(MaterialTheme.shapes.extraLarge)
-                            .testTag("destination_connect_telegram_button")
-                    ) {
-                        Text(stringResource(com.telegramdrive.uploader.feature.R.string.connect_telegram))
-                    }
-                }
-            } else {
-                // Search Bar
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { viewModel.onSearchQueryChanged(it) },
-                    placeholder = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.search_destinations)) },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { viewModel.onSearchQueryChanged("") }) {
-                                Icon(Icons.Default.Clear, contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.clear_search))
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("destination_search_input"),
-                    singleLine = true
-                )
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .imePadding()
+    ) {
+        DestinationHeader(onBackClick = onBackClick)
 
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = DesignTokens.AppColors.surfaceContainerHighest
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .liquidGlassOverlay(
-                            shape = MaterialTheme.shapes.medium,
-                            accent = DesignTokens.AppColors.onSecondary
-                        ),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = DesignTokens.AppColors.onPrimary
-                        )
-                        Text(
-                            text = stringResource(com.telegramdrive.uploader.feature.R.string.direct_upload_info),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = DesignTokens.AppColors.contentMuted
-                        )
-                    }
-                }
-
-                // Selected Destination Banner
-                selectedDestination?.let { dest ->
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = DesignTokens.AppColors.surfaceCard,
-                            contentColor = DesignTokens.AppColors.contentPrimary,
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .liquidGlassOverlay(
-                                shape = MaterialTheme.shapes.large,
-                                accent = DesignTokens.AppColors.onPrimary
-                            )
-                            .glowSignalRim(MaterialTheme.shapes.large)
-                            .testTag("selected_destination_banner")
-                        ,
-                        shape = MaterialTheme.shapes.large
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = stringResource(com.telegramdrive.uploader.feature.R.string.target_destination),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = DesignTokens.AppColors.onPrimary
-                                )
-                                Text(
-                                    text = dest.title,
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = DesignTokens.AppColors.onPrimary
-                                )
-                                dest.username?.let {
-                                    Text(
-                                        text = "@$it",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = DesignTokens.AppColors.onPrimary
-                                    )
-                                }
-                            }
-                            IconButton(
-                                onClick = { viewModel.clearSelection() },
-                                modifier = Modifier.testTag("clear_destination_selection")
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.remove_selection),
-                                    tint = DesignTokens.AppColors.onPrimary
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Destination List
-                Text(
-                    text = stringResource(com.telegramdrive.uploader.feature.R.string.eligible_targets),
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = DesignTokens.AppColors.onPrimary
-                )
-
-                if (destinations.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(
-                                if (searchQuery.isBlank()) {
-                                    com.telegramdrive.uploader.feature.R.string.no_destinations_found
-                                } else {
-                                    com.telegramdrive.uploader.feature.R.string.no_destinations_found_for_query
-                                }
-                            ),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.AppColors.contentMuted
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .testTag("destination_list"),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(destinations, key = { it.id }) { dest ->
-                            DestinationRow(
-                                destination = dest,
-                                isSelected = selectedDestination?.id == dest.id,
-                                isPinned = dest.id in pinnedDestinationIds,
-                                onClick = { viewModel.selectDestination(dest) },
-                                onPinClick = { viewModel.setDestinationPinned(dest.id, dest.id !in pinnedDestinationIds) }
-                            )
-                        }
-                    }
-                }
-
-                // Action Confirm Button
-                Button(
-                    onClick = {
-                        selectedDestination?.let { onDestinationSelected(it) }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .glowSignalRim(
-                            shape = MaterialTheme.shapes.extraLarge,
-                            enabled = selectedDestination != null
-                        )
-                        .testTag("confirm_destination_button"),
-                    enabled = selectedDestination != null
-                ) {
-                    Text(stringResource(com.telegramdrive.uploader.feature.R.string.confirm_destination))
-                }
-            }
+        if (connectionState != TelegramConnectionState.AUTHORIZED) {
+            DisconnectedState(
+                onConnectClick = onConnectClick,
+                modifier = Modifier.weight(1f)
+            )
+        } else {
+            DestinationContent(
+                searchQuery = searchQuery,
+                onSearchQueryChange = viewModel::onSearchQueryChanged,
+                onClearSearch = { viewModel.onSearchQueryChanged("") },
+                destinations = destinations,
+                pinnedDestinationIds = pinnedDestinationIds,
+                selectedDestination = selectedDestination,
+                onSelect = viewModel::selectDestination,
+                onPinChange = { id, pinned -> viewModel.setDestinationPinned(id, pinned) },
+                onClearSelection = viewModel::clearSelection,
+                onConfirm = { selectedDestination?.let(onDestinationSelected) },
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
 
+/** Numbered eyebrow + Doto title, with the back affordance. */
+@Composable
+private fun DestinationHeader(onBackClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppSpacing.medium, vertical = AppSpacing.small)
+    ) {
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier.testTag("destination_back_button")
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back)
+            )
+        }
+        Eyebrow(text = "(04) DESTINATIONS")
+        Text(
+            text = stringResource(R.string.select_destination),
+            style = MaterialTheme.typography.displayLarge.copy(
+                fontFamily = DotoFamily,
+                fontWeight = FontWeight.Black,
+                fontSize = 50.sp
+            ),
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+/** Shown when Telegram is not authorized yet. */
+@Composable
+private fun DisconnectedState(
+    onConnectClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(AppSpacing.large),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.CloudOff,
+            contentDescription = null,
+            modifier = Modifier.size(72.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.telegram_disconnected_title),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.telegram_disconnected_message),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        AppButton(
+            text = stringResource(R.string.connect_telegram),
+            onClick = onConnectClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("destination_connect_telegram_button")
+        )
+    }
+}
+
+/** Authorized state: search, info, selected banner, destination list, confirm. */
+@Composable
+private fun DestinationContent(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onClearSearch: () -> Unit,
+    destinations: List<TelegramDestination>,
+    pinnedDestinationIds: Set<Long>,
+    selectedDestination: TelegramDestination?,
+    onSelect: (TelegramDestination) -> Unit,
+    onPinChange: (Long, Boolean) -> Unit,
+    onClearSelection: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppSpacing.medium)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.xSmall)
+        ) {
+            AppSearchField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
+                placeholder = stringResource(R.string.search_destinations),
+                modifier = Modifier.weight(1f),
+                textFieldModifier = Modifier.testTag("destination_search_input")
+            )
+            if (searchQuery.isNotEmpty()) {
+                IconButton(
+                    onClick = onClearSearch,
+                    modifier = Modifier.testTag("clear_destination_search")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(R.string.clear_search)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(AppSpacing.small))
+
+        // Direct-upload info card.
+        AppCard(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(AppSpacing.medium),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text = stringResource(R.string.direct_upload_info),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        // Selected destination banner.
+        selectedDestination?.let { dest ->
+            Spacer(modifier = Modifier.height(AppSpacing.small))
+            AppCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("selected_destination_banner"),
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(AppSpacing.medium),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.target_destination),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            text = dest.title,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        dest.username?.let {
+                            Text(
+                                text = "@$it",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontFamily = SpaceMonoFamily),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                            )
+                        }
+                    }
+                    IconButton(
+                        onClick = onClearSelection,
+                        modifier = Modifier.testTag("clear_destination_selection")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.remove_selection),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(AppSpacing.small))
+
+        Text(
+            text = stringResource(R.string.eligible_targets),
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        if (destinations.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(
+                        if (searchQuery.isBlank()) {
+                            R.string.no_destinations_found
+                        } else {
+                            R.string.no_destinations_found_for_query
+                        }
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .testTag("destination_list"),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.small),
+                contentPadding = PaddingValues(vertical = AppSpacing.small)
+            ) {
+                items(destinations, key = { it.id }) { dest ->
+                    DestinationRow(
+                        destination = dest,
+                        isSelected = selectedDestination?.id == dest.id,
+                        isPinned = dest.id in pinnedDestinationIds,
+                        onClick = { onSelect(dest) },
+                        onPinClick = { onPinChange(dest.id, dest.id !in pinnedDestinationIds) }
+                    )
+                }
+            }
+        }
+
+        // Action confirm button, pinned at the bottom.
+        Spacer(modifier = Modifier.height(AppSpacing.small))
+        AppButton(
+            text = stringResource(R.string.confirm_destination),
+            onClick = onConfirm,
+            enabled = selectedDestination != null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = AppSpacing.medium)
+                .testTag("confirm_destination_button")
+        )
+    }
+}
+
+/** A single destination row with avatar initials, meta and pin affordance. */
 @Composable
 fun DestinationRow(
     destination: TelegramDestination,
@@ -307,46 +376,26 @@ fun DestinationRow(
     onClick: () -> Unit,
     onPinClick: () -> Unit
 ) {
-    val icon = when (destination.type) {
-        TelegramDestinationType.USER -> Icons.Default.Person
-        TelegramDestinationType.CHANNEL -> Icons.Default.Campaign
-        TelegramDestinationType.GROUP -> Icons.Default.Group
-        TelegramDestinationType.SUPERGROUP -> Icons.Default.Groups
-        TelegramDestinationType.OTHER -> Icons.Default.Folder
-    }
-
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                DesignTokens.AppColors.purple.copy(alpha = 0.16f)
-            } else {
-                DesignTokens.AppColors.surfaceCard
-            }
-        ),
+    AppCard(
         modifier = Modifier
             .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.medium,
-                accent = if (isSelected) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSecondary
-            )
-            .glowSignalRim(
-                shape = MaterialTheme.shapes.medium,
-                enabled = isSelected
-            )
-            .testTag("destination_item_${destination.id}")
-        ,
-        shape = MaterialTheme.shapes.medium
+            .testTag("destination_item_${destination.id}"),
+        containerColor = if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainer
+        }
     ) {
         Row(
             modifier = Modifier
-                .padding(12.dp)
+                .padding(AppSpacing.small)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = 48.dp)
+                    .heightIn(min = AppSpacing.touchTarget)
                     .selectable(
                         selected = isSelected,
                         onClick = onClick,
@@ -355,33 +404,48 @@ fun DestinationRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = DesignTokens.AppColors.surface,
+                    shape = CircleShape,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceContainerHighest
+                    },
                     modifier = Modifier.size(40.dp)
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = DesignTokens.AppColors.onPrimary
+                        Text(
+                            text = destination.title.take(2).uppercase(),
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontFamily = SpaceMonoFamily,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = if (isSelected) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
                         )
                     }
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(AppSpacing.small + AppSpacing.xSmall))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = destination.title,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = DesignTokens.AppColors.contentPrimary
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     destination.username?.let {
                         Text(
                             text = "@$it",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.AppColors.contentMuted
+                            style = MaterialTheme.typography.bodyMedium.copy(fontFamily = SpaceMonoFamily),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -394,23 +458,23 @@ fun DestinationRow(
                     imageVector = Icons.Default.PushPin,
                     contentDescription = stringResource(
                         if (isPinned) {
-                            com.telegramdrive.uploader.feature.R.string.unpin_destination
+                            R.string.unpin_destination
                         } else {
-                            com.telegramdrive.uploader.feature.R.string.pin_destination
+                            R.string.pin_destination
                         }
                     ),
                     tint = if (isPinned) {
-                        DesignTokens.AppColors.onPrimary
+                        MaterialTheme.colorScheme.primary
                     } else {
-                        DesignTokens.AppColors.contentMuted
+                        MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
             }
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
-                    contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.selection_selected),
-                    tint = DesignTokens.AppColors.onPrimary,
+                    contentDescription = stringResource(R.string.selection_selected),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
             }
