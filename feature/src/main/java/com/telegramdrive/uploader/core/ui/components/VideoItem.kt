@@ -1,28 +1,49 @@
 package com.telegramdrive.uploader.core.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.VideoFile
-import androidx.compose.material3.*
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.telegramdrive.uploader.core.ui.theme.AppRadius
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.domain.model.UploadTask
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import com.telegramdrive.uploader.feature.R
 import java.io.File
 import java.util.Locale
 
+/**
+ * Prepared-video row used by the upload preparation screen (05).
+ * Rebuilt on Dusk: plain AppCard, no glass / glow / old tokens.
+ */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun VideoItem(
@@ -32,31 +53,19 @@ fun VideoItem(
     onSelectedChange: ((Boolean) -> Unit)? = null,
     onRemoveClick: (() -> Unit)? = null
 ) {
-    Card(
+    AppCard(
         modifier = modifier
             .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.medium,
-                accent = if (isSelected) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.onSecondary
-            )
             .testTag("video_item_${video.id}"),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                DesignTokens.AppColors.surfaceCard.copy(alpha = 0.35f)
-            } else {
-                DesignTokens.AppColors.surfaceCard
-            }
-        ),
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(
-            if (isSelected) 2.dp else 1.dp,
-            if (isSelected) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.contentMuted
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        containerColor = if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainer
+        }
     ) {
         Row(
             modifier = Modifier
-                .padding(12.dp)
+                .padding(AppSpacing.small)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -65,7 +74,7 @@ fun VideoItem(
                     checked = isSelected,
                     onCheckedChange = onSelectedChange,
                     modifier = Modifier
-                        .padding(end = 8.dp)
+                        .padding(end = AppSpacing.xSmall)
                         .testTag("video_item_checkbox_${video.id}")
                 )
             }
@@ -74,44 +83,52 @@ fun VideoItem(
             Box(
                 modifier = Modifier
                     .size(68.dp)
-                    .clip(MaterialTheme.shapes.small)
-                    .background(DesignTokens.AppColors.surfaceCard),
+                    .clip(RoundedCornerShape(AppRadius.control))
+                    .background(
+                        if (isSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerHighest
+                        }
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 val thumbnailFile = video.thumbnailPath?.let(::File)?.takeIf(File::exists)
                 if (thumbnailFile != null) {
                     AsyncImage(
                         model = thumbnailFile,
-                        contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.video_thumbnail),
+                        contentDescription = stringResource(R.string.video_thumbnail),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Default.VideoFile,
-                        contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.video_icon),
-                        tint = DesignTokens.AppColors.contentPrimary,
+                        contentDescription = stringResource(R.string.video_icon),
+                        tint = if (isSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                         modifier = Modifier.size(32.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(AppSpacing.small + AppSpacing.xSmall))
 
             // Details
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = video.fileName,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = DesignTokens.AppColors.contentPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -132,8 +149,8 @@ fun VideoItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.remove_video),
-                        tint = DesignTokens.AppColors.danger
+                        contentDescription = stringResource(R.string.remove_video),
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
             }
@@ -144,9 +161,9 @@ fun VideoItem(
 @Composable
 private fun MetadataPill(text: String) {
     Surface(
-        color = DesignTokens.AppColors.surfaceCard,
-        contentColor = DesignTokens.AppColors.contentMuted,
-        shape = MaterialTheme.shapes.small
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        shape = RoundedCornerShape(AppRadius.chip)
     ) {
         Text(
             text = text,
