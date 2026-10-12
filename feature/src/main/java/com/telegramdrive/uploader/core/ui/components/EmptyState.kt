@@ -1,17 +1,13 @@
 package com.telegramdrive.uploader.core.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
-import com.telegramdrive.uploader.core.ui.components.AnimatedEmptyStateIcon
-import com.telegramdrive.uploader.core.ui.components.LottieAnimation
 
 @Composable
 fun EmptyState(
@@ -33,31 +27,20 @@ fun EmptyState(
     modifier: Modifier = Modifier,
     actionText: String? = null,
     onActionClick: (() -> Unit)? = null,
-    animation: LottieAnimation = LottieAnimation.None
+    animation: com.telegramdrive.uploader.core.ui.components.LottieAnimation = com.telegramdrive.uploader.core.ui.components.LottieAnimation.None
 ) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .liquidGlassOverlay(
-                shape = MaterialTheme.shapes.medium,
-                accent = DesignTokens.AppColors.purpleHot
-            ),
-        colors = CardDefaults.cardColors(containerColor = DesignTokens.AppColors.surfaceCard),
-        shape = MaterialTheme.shapes.large,
-        border = BorderStroke(1.dp, DesignTokens.AppColors.glassBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
+    AppCard(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(DesignTokens.AppSpacing.large),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             AnimatedEmptyStateIcon(
                 animationType = animation,
                 size = 48.dp,
-                tint = DesignTokens.AppColors.purpleHot.copy(alpha = 0.85f)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
@@ -80,12 +63,10 @@ fun EmptyState(
 
             if (actionText != null && onActionClick != null) {
                 Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
-                Button(
+                AppButton(
+                    text = actionText,
                     onClick = onActionClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = DesignTokens.AppColors.onPrimary)
-                ) {
-                    Text(text = actionText)
-                }
+                )
             }
         }
     }

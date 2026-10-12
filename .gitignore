@@ -65,7 +65,11 @@ __pycache__/
 # docs/     — living documentation; docs/README.md is the index
 # gradle/   — version catalogs + plugin management
 # scripts/  — verification gates and release helpers
-# src/      — unused bucket; do not create content there
+# src/      — unused bucket at the repo ROOT only; do not create content there.
+# Anchored with a leading slash on purpose: the unanchored `src/` matched every
+# directory named src at any depth, which silently untracked real source files —
+# feature/src/test/... was invisible to git for its entire life, which is how a test
+# referencing a never-committed screen survived undetected.
 .github/
 .clinerules/
 build/
@@ -73,5 +77,5 @@ design/
 docs/
 gradle/
 scripts/
-src/
+/src/
 

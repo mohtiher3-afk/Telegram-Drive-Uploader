@@ -2,9 +2,52 @@ package com.telegramdrive.uploader.core.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.telegramdrive.uploader.feature.R
+
+/**
+ * Display face: Doto — a dotted/segmented readout font. Used for big numbers,
+ * percentages, counts and the app wordmark. Its segmented look is the design's
+ * signature; it makes metrics read like an instrument panel rather than body copy.
+ * (Per docs/maintenance/DESIGN_SPEC.md.)
+ */
+val DotoFamily = FontFamily(
+    Font(R.font.doto_regular, FontWeight.Normal),
+    Font(R.font.doto_bold, FontWeight.Bold),
+    Font(R.font.doto_black, FontWeight.Black)
+)
+
+/**
+ * UI/body face: Space Mono for Latin, IBM Plex Sans Arabic for Arabic glyphs.
+ *
+ * Space Mono is Latin-only, so pure-Arabic strings rendered with SpaceMonoFamily
+ * alone silently fall back to the system font. Listing the Arabic family after
+ * Space Mono makes Compose fall back per-glyph: Latin keeps the terminal
+ * monospace look, Arabic gets a deliberate designed face instead of a fallback.
+ */
+val SpaceMonoFamily = FontFamily(
+    Font(R.font.space_mono_regular, FontWeight.Normal),
+    Font(R.font.space_mono_bold, FontWeight.Bold),
+    Font(R.font.plex_arabic_regular, FontWeight.Normal),
+    Font(R.font.plex_arabic_bold, FontWeight.Bold)
+)
+
+/**
+ * Arabic display face: IBM Plex Sans Arabic (the design package's recommendation).
+ *
+ * Doto is Latin-only (no Arabic glyphs), so an Arabic title rendered with DotoFamily
+ * silently falls back to the system font and looks inconsistent next to the dotted
+ * Latin readouts. This family is used for Arabic headings/wordmark so Arabic titles
+ * get a deliberate, designed typeface instead of a fallback.
+ */
+val ArabicDisplayFamily = FontFamily(
+    Font(R.font.plex_arabic_regular, FontWeight.Normal),
+    Font(R.font.plex_arabic_semibold, FontWeight.SemiBold),
+    Font(R.font.plex_arabic_bold, FontWeight.Bold)
+)
 
 /**
  * Shared Material 3 type scale for a utility app: prominent headings support
@@ -13,108 +56,134 @@ import androidx.compose.ui.unit.sp
  */
 val Typography = Typography(
     displayLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = DotoFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 57.sp,
         lineHeight = 64.sp,
         letterSpacing = (-0.25).sp
     ),
     displayMedium = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = DotoFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 45.sp,
         lineHeight = 52.sp,
         letterSpacing = 0.sp
     ),
     displaySmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = DotoFamily,
         fontWeight = FontWeight.ExtraBold,
         fontSize = 36.sp,
         lineHeight = 42.sp,
         letterSpacing = (-0.5).sp
     ),
     headlineLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = DotoFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = 40.sp,
         letterSpacing = 0.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = DotoFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.sp
     ),
     headlineSmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = DotoFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         lineHeight = 34.sp,
         letterSpacing = (-0.25).sp
     ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
         lineHeight = 22.sp,
         letterSpacing = 0.15.sp
     ),
     titleSmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
     bodySmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),
     labelLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = SpaceMonoFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     )
+)
+
+/**
+ * The text style every Button/label in the app must use.
+ *
+ * Material 3's `Button` renders its label with its own internal default style,
+ * NOT `labelLarge`, so button text silently falls back to Roboto even when
+ * `Typography` is fully remapped. Centralising the style here and applying it
+ * explicitly to button text guarantees the Space Mono "mission control" font
+ * everywhere. (Per docs/maintenance/DESIGN_SPEC.md.)
+ */
+val AppButtonTextStyle = TextStyle(
+    fontFamily = SpaceMonoFamily,
+    fontWeight = FontWeight.Bold,
+    fontSize = 14.sp,
+    lineHeight = 20.sp,
+    letterSpacing = 0.6.sp
+)
+
+/** Display style for big readout numbers (Doto). */
+val AppDisplayTextStyle = TextStyle(
+    fontFamily = DotoFamily,
+    fontWeight = FontWeight.Black,
+    fontSize = 32.sp,
+    lineHeight = 34.sp,
+    letterSpacing = 0.sp
 )

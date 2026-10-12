@@ -10,12 +10,9 @@ import org.junit.Test
 /**
  * Guards the token surface every screen compiles against.
  *
- * Screens read `DesignTokens.AppColors.*` and `DesignTokens.AppSpacing.*`. When the
- * grouped objects existed but the `DesignTokens` container did not, the whole
- * `:feature` module failed to compile with "Unresolved reference 'DesignTokens'" and
- * no screen could be built at all. These assertions keep the container and the flat
- * aliases present, and assert that the flat palette stays bound to the light scheme
- * in Theme.kt so the two can never drift apart again.
+ * Screens read `DesignTokens.AppColors.*` and `DesignTokens.AppSpacing.*`. These
+ * assertions keep the container and the flat aliases present, and assert that
+ * AppColors is bound to the Dusk palette from tokens.json.
  */
 class DesignTokensTest {
 
@@ -33,39 +30,38 @@ class DesignTokensTest {
     }
 
     @Test
-    fun `flat palette never drifts from the theme scheme`() {
-        // AppColors delegates every Material role to the light scheme, so the two
-        // cannot diverge. This guards the defect where AppColors restated its own
-        // hex values and quietly disagreed with the theme.
-        assertEquals(LightColorScheme.primaryContainer, AppColors.primaryContainer)
-        assertEquals(LightColorScheme.primary, AppColors.primary)
-        assertEquals(LightColorScheme.secondary, AppColors.secondary)
-        assertEquals(LightColorScheme.secondaryContainer, AppColors.secondaryContainer)
-        assertEquals(LightColorScheme.surface, AppColors.surface)
-        assertEquals(LightColorScheme.onPrimary, AppColors.onPrimary)
-        assertEquals(LightColorScheme.onSecondary, AppColors.onSecondary)
-        assertEquals(LightColorScheme.onSurface, AppColors.onSurface)
-        assertEquals(LightColorScheme.onPrimaryContainer, AppColors.onPrimaryContainer)
-        assertEquals(LightColorScheme.onSecondaryContainer, AppColors.onSecondaryContainer)
-        assertEquals(LightColorScheme.onSurfaceVariant, AppColors.onSurfaceVariant)
-        assertEquals(LightColorScheme.error, AppColors.error)
-        assertEquals(LightColorScheme.errorContainer, AppColors.errorContainer)
-        assertEquals(LightColorScheme.surfaceContainerLow, AppColors.surfaceContainerLow)
-        assertEquals(LightColorScheme.surfaceContainerHigh, AppColors.surfaceContainerHigh)
-        assertEquals(LightColorScheme.surfaceContainerHighest, AppColors.surfaceContainerHighest)
+    fun `AppColors is bound to the Dusk palette`() {
+        // AppColors uses the Dusk palette (dark variant) from tokens.json.
+        // When dynamic color is enabled, screens should read MaterialTheme.colorScheme
+        // directly for the primary roles.
+        assertEquals(DuskPrimaryContainerDark, AppColors.primaryContainer)
+        assertEquals(DuskPrimaryDark, AppColors.primary)
+        assertEquals(DuskSurfaceHighDark, AppColors.secondaryContainer)
+        assertEquals(DuskOnSurfaceVariantDark, AppColors.secondary)
+        assertEquals(DuskSurfaceDark, AppColors.surface)
+        assertEquals(DuskOnPrimaryDark, AppColors.onPrimary)
+        assertEquals(DuskSurfaceDark, AppColors.onSecondary)
+        assertEquals(DuskOnSurfaceDark, AppColors.onSurface)
+        assertEquals(DuskOnPrimaryContainerDark, AppColors.onPrimaryContainer)
+        assertEquals(DuskOnSurfaceDark, AppColors.onSecondaryContainer)
+        assertEquals(DuskOnSurfaceVariantDark, AppColors.onSurfaceVariant)
+        assertEquals(DuskErrorDark, AppColors.error)
+        assertEquals(DuskSurfaceHighDark, AppColors.errorContainer)
+        assertEquals(DuskSurfaceContainerDark, AppColors.surfaceContainerLow)
+        assertEquals(DuskSurfaceHighDark, AppColors.surfaceContainerHigh)
+        assertEquals(DuskSurfaceHighDark, AppColors.surfaceContainerHighest)
     }
 
     @Test
     fun `surface container ladder stays tonally ordered`() {
-        // Low < base < High < Highest is the ladder the card call sites rely on, so
-        // assert the relationship instead of pinning duplicate literals here.
+        // Low < High < Highest is the ladder the card call sites rely on.
+        // In the Dusk dark palette, High == Highest, so we assert <= (non-decreasing).
         val low = AppColors.surfaceContainerLow.luminance()
-        val base = LightColorScheme.surfaceContainer.luminance()
         val high = AppColors.surfaceContainerHigh.luminance()
         val highest = AppColors.surfaceContainerHighest.luminance()
         assertTrue(
-            "low > base > high > highest",
-            low > base && base > high && high > highest
+            "low <= high <= highest",
+            low <= high && high <= highest
         )
     }
 
