@@ -62,6 +62,7 @@ import com.telegramdrive.uploader.feature.R
 import com.telegramdrive.uploader.core.ui.components.glowSignalRim
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
+import com.telegramdrive.uploader.core.ui.theme.DotoFamily
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 
@@ -199,10 +200,12 @@ fun OnboardingScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = pages[targetPage].title,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.ExtraBold,
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontFamily = DotoFamily,
+                            fontWeight = FontWeight.Black
+                        ),
                         textAlign = TextAlign.Center,
-                        color = DesignTokens.AppColors.onPrimary
+                        color = DesignTokens.AppColors.contentPrimary
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(

@@ -56,14 +56,19 @@ class MissionControlTokensTest {
      * Lime is the only action color in the system, so a second near-lime role would
      * mean two different "the primary button" colors. LimeLight is the one permitted
      * sibling and must stay a highlight of Lime rather than an independent accent.
+     *
+     * After the Dusk palette both roles are violet, so the hue guard is that
+     * limeLight keeps lime's channel ordering (blue still dominates, as for a
+     * violet), not the old green-dominant check.
      */
     @Test
     fun `lime light is a highlight of lime, not a second action color`() {
         assertTrue(AppColors.limeLight.luminance() > AppColors.lime.luminance())
-        // LimeLight is a tint, not a hue shift: green must still dominate.
+        // limeLight is a tint, not a hue shift: it keeps lime's violet channel order.
         assertTrue(
             "limeLight drifted away from lime's hue",
-            AppColors.limeLight.green > AppColors.limeLight.blue
+            AppColors.limeLight.blue > AppColors.limeLight.green &&
+                AppColors.lime.blue > AppColors.lime.green
         )
     }
 }

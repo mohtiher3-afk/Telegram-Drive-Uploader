@@ -12,6 +12,8 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
@@ -22,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.glowSignalRim
+import com.telegramdrive.uploader.core.ui.components.SectionHeader
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramDestination
@@ -46,25 +49,30 @@ fun TelegramDestinationScreen(
     Scaffold(
         containerColor = DesignTokens.AppColors.background,
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DesignTokens.AppColors.background,
-                    titleContentColor = DesignTokens.AppColors.contentPrimary,
-                    navigationIconContentColor = DesignTokens.AppColors.contentMuted,
-                ),
-                title = { Text(stringResource(com.telegramdrive.uploader.feature.R.string.select_destination)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier.testTag("destination_back_button")
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.back)
-                        )
-                    }
+            // Design spec §5: numbered section eyebrow + Doto wordmark, keeping back.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(DesignTokens.AppColors.background)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.testTag("destination_back_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(com.telegramdrive.uploader.feature.R.string.back)
+                    )
                 }
-            )
+                SectionHeader(
+                    number = "04",
+                    label = "DESTINATIONS",
+                    title = stringResource(com.telegramdrive.uploader.feature.R.string.select_destination),
+                    modifier = Modifier.weight(1f)
+                )
+            }
         },
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->

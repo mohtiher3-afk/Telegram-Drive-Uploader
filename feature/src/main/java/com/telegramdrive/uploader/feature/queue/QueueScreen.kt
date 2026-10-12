@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +42,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.EmptyState
+import com.telegramdrive.uploader.core.ui.components.Eyebrow
+import com.telegramdrive.uploader.core.ui.components.DotProgressRing
+import com.telegramdrive.uploader.core.ui.theme.DotoFamily
+import androidx.compose.ui.text.font.FontWeight
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
@@ -60,6 +66,8 @@ fun QueueScreen(
     Scaffold(
         containerColor = DesignTokens.AppColors.background,
         topBar = {
+            // Design spec §5 header, kept inside a TopAppBar so the Scaffold content
+            // padding and the queue action rows stay where the tests expect them.
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = DesignTokens.AppColors.background,
@@ -67,8 +75,13 @@ fun QueueScreen(
                 ),
                 title = {
                     Column {
+                        Eyebrow(text = "(06) QUEUE")
                         Text(
                             text = stringResource(com.telegramdrive.uploader.feature.R.string.upload_queue),
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontFamily = DotoFamily,
+                                fontWeight = FontWeight.Black
+                            ),
                             color = DesignTokens.AppColors.contentPrimary
                         )
                         Text(
@@ -120,6 +133,42 @@ fun QueueScreen(
                         .testTag("queue_list"),
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.sm)
                 ) {
+                    // Active-upload hero: the dot-matrix progress ring from the design
+                    // spec. Shown only while something is actively uploading.
+                    val activeUpload = uiState.queueItems.firstOrNull {
+                        it.status == com.telegramdrive.uploader.domain.model.UploadStatus.UPLOADING
+                    }
+                    if (activeUpload != null) {
+                        item(key = "active_ring") {
+                            GlassCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("active_upload_ring"),
+                                shape = MaterialTheme.shapes.large,
+                                emphasis = LiquidGlassEmphasis.FeatureLens
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(DesignTokens.AppSpacing.medium),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(DesignTokens.AppSpacing.small)
+                                ) {
+                                    Text(
+                                        text = activeUpload.fileName,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    DotProgressRing(
+                                        progress = activeUpload.progress / 100f,
+                                        size = 224.dp,
+                                        contentDescriptionText = "${activeUpload.progress.toInt()}%"
+                                    )
+                                }
+                            }
+                        }
+                    }
                     item {
                         SearchAndFilters(
                             query = uiState.query,

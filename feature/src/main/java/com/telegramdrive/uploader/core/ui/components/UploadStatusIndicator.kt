@@ -221,29 +221,13 @@ fun UploadStatusIndicator(
                 exit = if (motionEnabled) fadeOut(animationSpec = AppMotion.shortTween()) else ExitTransition.None
             ) {
                 Spacer(modifier = Modifier.height(4.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(10.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LinearProgressIndicator(
-                        progress = { animatedProgressFraction },
-                        color = animatedStatusColor,
-                        trackColor = DesignTokens.AppColors.surfaceCard,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(4.dp)
-                            .semantics {
-                                progressBarRangeInfo = ProgressBarRangeInfo(
-                                    current = progressFraction,
-                                    range = 0f..1f,
-                                    steps = 0
-                                )
-                                contentDescription = progressDescription
-                            }
-                    )
-                }
+                // Dot-matrix bar (DESIGN_SPEC §5 .db) replaces the flat Material bar
+                // in list rows; it carries its own a11y semantics.
+                DotProgressBar(
+                    progress = animatedProgressFraction,
+                    contentDescriptionText = progressDescription,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 if (video.status == UploadStatus.UPLOADING) {
                     Spacer(modifier = Modifier.height(8.dp))
                     TransferMetrics(

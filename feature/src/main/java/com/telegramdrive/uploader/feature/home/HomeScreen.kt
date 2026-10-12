@@ -35,11 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.animation.AnimatedFadeIn
-import com.telegramdrive.uploader.core.ui.animation.AnimatedProgressIndicator
 import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatsGrid
 import com.telegramdrive.uploader.core.ui.animation.AnimatedStatCard
+import com.telegramdrive.uploader.core.ui.components.DotProgressRing
+import com.telegramdrive.uploader.core.ui.components.PartsMap
 import com.telegramdrive.uploader.core.ui.components.Eyebrow
+import com.telegramdrive.uploader.core.ui.components.FanDeck
 import com.telegramdrive.uploader.core.ui.components.MissionCard
 import com.telegramdrive.uploader.core.ui.components.MissionHeroCard
 import com.telegramdrive.uploader.core.ui.components.MissionScreen
@@ -140,6 +142,7 @@ fun HomeScreen(
                         }
                     },
                     connectEnabled = !authorized,
+                    authorized = authorized,
                     onConnectClick = onConnectClick,
                     modifier = Modifier.testTag("upload_hero_card")
                 )
@@ -159,11 +162,13 @@ fun HomeScreen(
                     pending = uiState.pendingCount.toString(),
                     completed = uiState.completedCount.toString()
                 ) {
-                    StatsGrid(
-                        totalVideos = uiState.totalVideosCount.toString(),
-                        totalSize = formatFileSize(uiState.totalSize),
-                        pending = uiState.pendingCount.toString(),
-                        completed = uiState.completedCount.toString()
+                    FanDeck(
+                        headlineLabel = stringResource(R.string.stat_files_sent),
+                        headlineValue = uiState.totalVideosCount.toString(),
+                        secondaryLabel = stringResource(R.string.stat_moved),
+                        secondaryValue = formatFileSize(uiState.totalSize),
+                        tertiaryLabel = stringResource(R.string.stat_sending),
+                        tertiaryValue = uiState.pendingCount.toString().padStart(2, '0')
                     )
                 }
             }
@@ -318,6 +323,7 @@ private fun TelegramConnectionCard(
 @Composable
 private fun UploadFeatureCard(
     onSelectVideos: () -> Unit,
+    authorized: Boolean,
     connectEnabled: Boolean,
     onConnectClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -335,37 +341,44 @@ private fun UploadFeatureCard(
                 color = DesignTokens.AppColors.contentPrimary,
                 modifier = Modifier.padding(top = AppSpacing.xSmall)
             )
-            Row(
-                modifier = Modifier.padding(top = AppSpacing.medium),
-                horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)
-            ) {
-                Button(
-                    onClick = onSelectVideos,
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag("select_files_button"),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = DesignTokens.AppColors.lime,
-                        contentColor = DesignTokens.AppColors.onLime
-                    )
+            if (authorized) {
+                Row(
+                    modifier = Modifier.padding(top = AppSpacing.medium),
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.CloudUpload,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.select),
-                        modifier = Modifier.padding(start = AppSpacing.small)
-                    )
+                    Button(
+                        onClick = onSelectVideos,
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("select_files_button"),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = DesignTokens.AppColors.lime,
+                            contentColor = DesignTokens.AppColors.onLime
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CloudUpload,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.select),
+                            modifier = Modifier.padding(start = AppSpacing.small)
+                        )
+                    }
                 }
+            } else {
+                // Not connected: the only reachable action is to connect. Offering
+                // "Select" here would start a flow with no Telegram session (BUG-2).
                 Button(
                     onClick = onConnectClick,
                     enabled = connectEnabled,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .padding(top = AppSpacing.medium)
+                        .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = DesignTokens.AppColors.glassFill,
-                        contentColor = DesignTokens.AppColors.contentPrimary
+                        containerColor = DesignTokens.AppColors.lime,
+                        contentColor = DesignTokens.AppColors.onLime
                     )
                 ) {
                     Text(text = stringResource(R.string.connect))
@@ -391,50 +404,9 @@ private fun SectionHeading(
     }
 }
 
-/** Two-by-two statistics grid with animated stat cards. */
-@Composable
-private fun StatsGrid(
-    totalVideos: String,
-    totalSize: String,
-    pending: String,
-    completed: String
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
-            AnimatedStatCard(
-                value = totalVideos,
-                label = stringResource(R.string.total_videos),
-                index = 0,
-                modifier = Modifier.weight(1f)
-            )
-            AnimatedStatCard(
-                value = totalSize,
-                label = stringResource(R.string.total_size),
-                index = 1,
-                modifier = Modifier.weight(1f)
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)) {
-            AnimatedStatCard(
-                value = pending,
-                label = stringResource(R.string.pending),
-                index = 2,
-                modifier = Modifier.weight(1f)
-            )
-            AnimatedStatCard(
-                value = completed,
-                label = stringResource(R.string.completed),
-                index = 3,
-                modifier = Modifier.weight(1f),
-                accentColor = DesignTokens.AppColors.lime
-            )
-        }
-    }
-}
-
 /** Hero summary of what is currently in flight, with animated progress. */
 @Composable
-private fun ActiveTransferSummary(
+internal fun ActiveTransferSummary(
     fileName: String,
     completedCount: Int,
     pendingCount: Int,
@@ -454,22 +426,28 @@ private fun ActiveTransferSummary(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
-            Text(
-                text = "${(progress * 100).toInt()}%",
-                style = MaterialTheme.typography.titleMedium,
-                color = DesignTokens.AppColors.lime,
-                modifier = Modifier.padding(start = AppSpacing.small)
-            )
         }
-        AnimatedProgressIndicator(
+        // Dot-matrix progress ring (DESIGN_SPEC §5 .rg) replaces the flat bar as
+        // the primary readout for the active transfer.
+        DotProgressRing(
             progress = progress,
-            modifier = Modifier.padding(top = AppSpacing.small),
-            color = DesignTokens.AppColors.lime
+            size = 180.dp,
+            contentDescriptionText = "${(progress * 100).toInt()}%",
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = AppSpacing.small)
         )
         Text(
             text = pluralStringResource(R.plurals.home_pending_summary, pendingCount, pendingCount),
             style = MaterialTheme.typography.bodySmall,
             color = DesignTokens.AppColors.contentMuted,
+            modifier = Modifier.padding(top = AppSpacing.small)
+        )
+        // 36-cell parts map (DESIGN_SPEC §5 .map) beneath the ring: each cell is
+        // one uploaded part, filled by the completed fraction.
+        PartsMap(
+            totalParts = 36,
+            sentParts = (progress * 36).toInt(),
             modifier = Modifier.padding(top = AppSpacing.small)
         )
     }

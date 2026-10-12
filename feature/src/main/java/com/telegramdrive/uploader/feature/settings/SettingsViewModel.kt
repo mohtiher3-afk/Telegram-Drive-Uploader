@@ -8,8 +8,7 @@ import com.telegramdrive.uploader.core.diagnostics.DiagnosticsManager
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticCategory
 import com.telegramdrive.uploader.core.diagnostics.DiagnosticSeverity
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
-import com.telegramdrive.uploader.core.ui.theme.GlowColorCodec
-import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.domain.model.TelegramConnectionState
 import com.telegramdrive.uploader.domain.model.TelegramUser
 import com.telegramdrive.uploader.domain.repository.TelegramRepository
@@ -28,12 +27,10 @@ import javax.inject.Inject
 
 data class SettingsUiState(
     val theme: String = "System",
-    val glowColor: String = GlowColorPreset.SEAFOAM.storageValue,
-    val customGlowHex: String = GlowColorCodec.DEFAULT_HEX,
+    val dynamicColorEnabled: Boolean = true,
     val cacheSize: String = "0 B",
     val telegramConnectionState: TelegramConnectionState = TelegramConnectionState.DISCONNECTED,
-    val telegramUser: TelegramUser? = null,
-    val dynamicColorStrategy: String = "StaticBrand"
+    val telegramUser: TelegramUser? = null
 )
 
 @HiltViewModel
@@ -49,28 +46,19 @@ class SettingsViewModel @Inject constructor(
         updateCacheSize()
     }
 
-    private val glowSettings = combine(
-        settingsDataStore.glowColorPreference,
-        settingsDataStore.customGlowHex
-    ) { preset, hex -> preset to hex }
-
     val uiState: StateFlow<SettingsUiState> = combine(
         settingsDataStore.themePreference,
-        glowSettings,
+        settingsDataStore.dynamicColorEnabled,
         _cacheSizeFlow,
         telegramRepository.connectionState,
-        telegramRepository.currentUser,
-        settingsDataStore.dynamicColorStrategy
+        telegramRepository.currentUser
     ) { array ->
-        val glowPair = array[1] as Pair<String, String>
         SettingsUiState(
             theme = array[0] as String,
-            glowColor = glowPair.first,
-            customGlowHex = glowPair.second,
+            dynamicColorEnabled = array[1] as Boolean,
             cacheSize = array[2] as String,
             telegramConnectionState = array[3] as TelegramConnectionState,
-            telegramUser = array[4] as TelegramUser?,
-            dynamicColorStrategy = array[5] as String
+            telegramUser = array[4] as TelegramUser?
         )
     }
     .stateIn(
@@ -90,47 +78,13 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setGlowColor(glowColor: GlowColorPreset) {
+    fun setDynamicColorEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            settingsDataStore.setGlowColorPreference(glowColor.storageValue)
+            settingsDataStore.setDynamicColorEnabled(enabled)
             DiagnosticsManager.log(
                 category = DiagnosticCategory.SETTINGS_CHANGED,
                 severity = DiagnosticSeverity.INFO,
-                message = "Glow primary color changed to: ${glowColor.storageValue}"
-            )
-        }
-    }
-
-    fun setDynamicColorStrategy(strategy: String) {
-        viewModelScope.launch {
-            settingsDataStore.setDynamicColorStrategy(strategy)
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.SETTINGS_CHANGED,
-                severity = DiagnosticSeverity.INFO,
-                message = "Dynamic color strategy changed to: $strategy"
-            )
-        }
-    }
-
-    fun saveCustomGlowColor(hex: String) {
-        val normalized = GlowColorCodec.normalizeHex(hex)
-        viewModelScope.launch {
-            settingsDataStore.saveCustomGlowColorPreferences(normalized)
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.SETTINGS_CHANGED,
-                severity = DiagnosticSeverity.INFO,
-                message = "Custom Glow primary color saved."
-            )
-        }
-    }
-
-    fun resetGlowColors() {
-        viewModelScope.launch {
-            settingsDataStore.resetGlowColorPreferences()
-            DiagnosticsManager.log(
-                category = DiagnosticCategory.SETTINGS_CHANGED,
-                severity = DiagnosticSeverity.INFO,
-                message = "Glow colors reset to default Seafoam."
+                message = "Dynamic color changed to: $enabled"
             )
         }
     }
