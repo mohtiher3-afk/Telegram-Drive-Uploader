@@ -128,12 +128,11 @@ class GlassComponentsRoborazziTest {
     }
 
     @Test
-    fun glassProgressIndicator_light() {
+    fun uploadProgressBar_light() {
         composeRule.setContent {
             TelegramDriveTheme(darkTheme = false) {
-                GlassProgressIndicator(
+                UploadProgressBar(
                     progressFraction = 0.65f,
-                    statusColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(AppSpacing.md)
@@ -144,12 +143,11 @@ class GlassComponentsRoborazziTest {
     }
 
     @Test
-    fun glassProgressIndicator_dark() {
+    fun uploadProgressBar_dark() {
         composeRule.setContent {
             TelegramDriveTheme(darkTheme = true) {
-                GlassProgressIndicator(
+                UploadProgressBar(
                     progressFraction = 0.65f,
-                    statusColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(AppSpacing.md)
