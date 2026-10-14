@@ -59,12 +59,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.telegramdrive.uploader.feature.R
-import com.telegramdrive.uploader.core.ui.components.glowSignalRim
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+
+
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.DotoFamily
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+
 
 private data class OnboardingPage(
     val title: String,
@@ -86,19 +86,19 @@ fun OnboardingScreen(
                 title = stringResource(R.string.onboarding_page_upload_title),
                 description = stringResource(R.string.onboarding_page_upload_description),
                 icon = Icons.Default.CloudUpload,
-                accent = DesignTokens.AppColors.surfaceCard
+                accent = MaterialTheme.colorScheme.surfaceContainer
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_schedule_title),
                 description = stringResource(R.string.onboarding_page_schedule_description),
                 icon = Icons.Default.Schedule,
-                accent = DesignTokens.AppColors.surfaceCard
+                accent = MaterialTheme.colorScheme.surfaceContainer
             ),
             OnboardingPage(
                 title = stringResource(R.string.onboarding_page_private_title),
                 description = stringResource(R.string.onboarding_page_private_description),
                 icon = Icons.Default.Security,
-                accent = DesignTokens.AppColors.surfaceCard
+                accent = MaterialTheme.colorScheme.surfaceContainer
             )
         )
 
@@ -129,7 +129,7 @@ fun OnboardingScreen(
         }
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = DesignTokens.AppColors.surfaceCard) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -156,11 +156,7 @@ fun OnboardingScreen(
 
             Surface(
                 modifier = Modifier
-                    .size(176.dp)
-                    .liquidGlassOverlay(
-                        shape = MaterialTheme.shapes.extraLarge,
-                        accent = DesignTokens.AppColors.onPrimary
-                    ),
+                    .size(176.dp),
                 shape = MaterialTheme.shapes.extraLarge,
                 color = pages[page].accent,
                 tonalElevation = 4.dp
@@ -205,14 +201,14 @@ fun OnboardingScreen(
                             fontWeight = FontWeight.Black
                         ),
                         textAlign = TextAlign.Center,
-                        color = DesignTokens.AppColors.contentPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = pages[targetPage].description,
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        color = DesignTokens.AppColors.contentMuted
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -228,7 +224,7 @@ fun OnboardingScreen(
                         label = "onboarding_dot_width_$index"
                     )
                     val dotColor by animateColorAsState(
-                        targetValue = if (active) DesignTokens.AppColors.onPrimary else DesignTokens.AppColors.contentMuted.copy(alpha = 0.7f),
+                        targetValue = if (active) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         animationSpec = AppMotion.shortTween(motionEnabled),
                         label = "onboarding_dot_color_$index"
                     )
@@ -248,8 +244,7 @@ fun OnboardingScreen(
                     if (page < pages.lastIndex) page++ else finishOnboarding()
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .glowSignalRim(MaterialTheme.shapes.extraLarge),
+                    .fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding
             ) {
