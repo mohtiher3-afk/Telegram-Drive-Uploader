@@ -52,7 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.AppButton
 import com.telegramdrive.uploader.core.ui.components.AppCard
 import com.telegramdrive.uploader.core.ui.components.AppSearchField
-import com.telegramdrive.uploader.core.ui.components.Eyebrow
+import com.telegramdrive.uploader.core.ui.components.SectionHeader
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.DotoFamily
 import com.telegramdrive.uploader.core.ui.theme.SpaceMonoFamily
@@ -117,7 +117,8 @@ private fun DestinationHeader(onBackClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppSpacing.medium, vertical = AppSpacing.small)
+            .padding(horizontal = AppSpacing.medium, vertical = AppSpacing.small),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         IconButton(
             onClick = onBackClick,
@@ -128,15 +129,10 @@ private fun DestinationHeader(onBackClick: () -> Unit) {
                 contentDescription = stringResource(R.string.back)
             )
         }
-        Eyebrow(text = "(04) DESTINATIONS")
-        Text(
-            text = stringResource(R.string.select_destination),
-            style = MaterialTheme.typography.displayLarge.copy(
-                fontFamily = DotoFamily,
-                fontWeight = FontWeight.Black,
-                fontSize = 50.sp
-            ),
-            color = MaterialTheme.colorScheme.onSurface
+        SectionHeader(
+            number = "04",
+            label = "DESTINATIONS",
+            title = stringResource(R.string.select_destination)
         )
     }
 }
