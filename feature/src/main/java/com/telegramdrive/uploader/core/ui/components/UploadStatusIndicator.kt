@@ -9,13 +9,8 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -231,7 +226,7 @@ fun UploadStatusIndicator(
                         val isDone = idx < currentStepIdx || (video.status == UploadStatus.COMPLETED && idx == 5)
                         val isCurrent = idx == currentStepIdx && video.status != UploadStatus.COMPLETED
                         val dotColor = when {
-                            isDone -> MaterialTheme.colorScheme.primary
+                            isDone -> MaterialTheme.colorScheme.onSurface
                             isCurrent -> MaterialTheme.colorScheme.primary
                             else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         }
