@@ -42,7 +42,6 @@ import com.telegramdrive.uploader.core.ui.animation.AnimatedRecentUploadItem
 import com.telegramdrive.uploader.core.ui.components.AppCard
 import com.telegramdrive.uploader.core.ui.components.AppSearchField
 import com.telegramdrive.uploader.core.ui.components.AppSegmentedTabs
-import com.telegramdrive.uploader.core.ui.components.Eyebrow
 import com.telegramdrive.uploader.core.ui.components.SectionHeader
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
