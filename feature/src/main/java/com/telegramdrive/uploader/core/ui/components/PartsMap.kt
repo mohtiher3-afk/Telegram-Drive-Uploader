@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 /**
@@ -56,8 +55,8 @@ fun PartsMap(
 
     val doneColor = MaterialTheme.colorScheme.onSurface
     val activeColor = MaterialTheme.colorScheme.primary
-    val failColor = DesignTokens.AppColors.danger
-    val idleColor = DesignTokens.AppColors.surfaceCard
+    val failColor = MaterialTheme.colorScheme.error
+    val idleColor = MaterialTheme.colorScheme.surfaceContainer
 
     // One shared pulse for the in-flight + failed cells.
     val pulse = if (motionEnabled) {
