@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+
 
 @Composable
 fun ErrorState(
@@ -30,7 +30,7 @@ fun ErrorState(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(DesignTokens.AppSpacing.large),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -40,26 +40,26 @@ fun ErrorState(
                 tint = MaterialTheme.colorScheme.error
             )
 
-            Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.sm))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = stringResource(com.telegramdrive.uploader.feature.R.string.error_occurred),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                 textAlign = TextAlign.Center,
-                color = DesignTokens.AppColors.contentPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
 
-            Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.xs))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                color = DesignTokens.AppColors.contentMuted
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             if (onRetryClick != null) {
-                Spacer(modifier = Modifier.height(DesignTokens.AppSpacing.medium))
+                Spacer(modifier = Modifier.height(16.dp))
                 AppButton(
                     text = stringResource(com.telegramdrive.uploader.feature.R.string.retry),
                     onClick = onRetryClick,
