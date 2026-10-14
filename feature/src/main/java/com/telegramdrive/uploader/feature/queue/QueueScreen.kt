@@ -44,7 +44,7 @@ import com.telegramdrive.uploader.core.ui.components.AppSearchField
 import com.telegramdrive.uploader.core.ui.components.AppSegmentedTabs
 import com.telegramdrive.uploader.core.ui.components.DotProgressBar
 import com.telegramdrive.uploader.core.ui.components.DotProgressRing
-import com.telegramdrive.uploader.core.ui.components.Eyebrow
+import com.telegramdrive.uploader.core.ui.components.SectionHeader
 import com.telegramdrive.uploader.core.ui.components.UploadStatusIndicator
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
@@ -335,45 +335,41 @@ private fun QueueHeader(uiState: QueueUiState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = AppSpacing.medium, bottom = AppSpacing.small)
+            .padding(top = AppSpacing.medium, bottom = AppSpacing.small),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Eyebrow(text = "(06) QUEUE")
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = pluralStringResource(
-                    R.plurals.queue_count_summary,
-                    uiState.activeCount,
-                    uiState.activeCount,
-                    uiState.failedCount
-                ),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = stringResource(R.string.upload_queue),
-                style = MaterialTheme.typography.displayLarge.copy(
-                    fontFamily = DotoFamily,
-                    fontWeight = FontWeight.Black,
-                    fontSize = 50.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface
+            SectionHeader(
+                number = "06",
+                label = "QUEUE",
+                title = stringResource(R.string.upload_queue),
+                modifier = Modifier.weight(1f)
             )
-            Text(
-                text = uiState.activeCount.toString().padStart(2, '0'),
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontFamily = DotoFamily,
-                    fontWeight = FontWeight.Black,
-                    fontSize = 30.sp
-                ),
-                color = MaterialTheme.colorScheme.primary
-            )
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = uiState.activeCount.toString().padStart(2, '0'),
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontFamily = DotoFamily,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 30.sp
+                    ),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.queue_count_summary,
+                        uiState.activeCount,
+                        uiState.activeCount,
+                        uiState.failedCount
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
