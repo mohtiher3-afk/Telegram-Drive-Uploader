@@ -16,11 +16,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.ui.draw.alpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ExpandLess
@@ -52,46 +50,6 @@ internal fun uploadProgressFraction(percentage: Float): Float =
 
 internal fun uploadProgressPercent(percentage: Float): Int =
     percentage.coerceIn(0f, 100f).toInt()
-
-/**
- * Progress indicator for active uploads
- * Shows animated progress
- */
-@Composable
-fun UploadProgressBar(
-    progressFraction: Float,
-    modifier: Modifier = Modifier,
-    trackHeight: Dp = 6.dp
-) {
-    val animatedProgress by animateFloatAsState(
-        targetValue = progressFraction.coerceIn(0f, 1f),
-        animationSpec = AppMotion.springTween(),
-        label = "progressFill"
-    )
-    
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(trackHeight)
-            .clip(RoundedCornerShape(trackHeight / 2))
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.08f))
-        )
-        
-        if (animatedProgress > 0f) {
-            Box(
-                modifier = Modifier
-                    .height(trackHeight)
-                    .fillMaxWidth(animatedProgress.coerceIn(0f, 1f))
-                    .clip(RoundedCornerShape(trackHeight / 2))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
-            )
-        }
-    }
-}
 
 internal fun uploadStatusLabelRes(status: UploadStatus): Int = when (status) {
     UploadStatus.QUEUED -> com.telegramdrive.uploader.feature.R.string.status_queued
@@ -125,7 +83,7 @@ fun UploadStatusIndicator(
     val targetStatusColor = when (video.status) {
         UploadStatus.FAILED -> MaterialTheme.colorScheme.error
         UploadStatus.UPLOADING -> MaterialTheme.colorScheme.primary
-        UploadStatus.PREPARING -> MaterialTheme.colorScheme.secondary
+        UploadStatus.PREPARING -> MaterialTheme.colorScheme.primary
         UploadStatus.PAUSED -> MaterialTheme.colorScheme.onSurfaceVariant
         UploadStatus.COMPLETED -> MaterialTheme.colorScheme.tertiary
         else -> MaterialTheme.colorScheme.onSurfaceVariant
@@ -274,7 +232,7 @@ fun UploadStatusIndicator(
                         val isCurrent = idx == currentStepIdx && video.status != UploadStatus.COMPLETED
                         val dotColor = when {
                             isDone -> MaterialTheme.colorScheme.primary
-                            isCurrent -> MaterialTheme.colorScheme.secondary
+                            isCurrent -> MaterialTheme.colorScheme.primary
                             else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         }
                         Row(

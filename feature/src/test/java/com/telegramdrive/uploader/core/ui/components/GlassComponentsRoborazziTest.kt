@@ -131,8 +131,8 @@ class GlassComponentsRoborazziTest {
     fun uploadProgressBar_light() {
         composeRule.setContent {
             TelegramDriveTheme(darkTheme = false) {
-                UploadProgressBar(
-                    progressFraction = 0.65f,
+                DotProgressBar(
+                    progress = 0.65f,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(AppSpacing.md)
@@ -146,8 +146,8 @@ class GlassComponentsRoborazziTest {
     fun uploadProgressBar_dark() {
         composeRule.setContent {
             TelegramDriveTheme(darkTheme = true) {
-                UploadProgressBar(
-                    progressFraction = 0.65f,
+                DotProgressBar(
+                    progress = 0.65f,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(AppSpacing.md)
