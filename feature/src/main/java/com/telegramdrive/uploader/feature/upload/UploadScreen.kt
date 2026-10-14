@@ -55,7 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.core.ui.components.AppCard
 import com.telegramdrive.uploader.core.ui.components.AppEmptyState
 import com.telegramdrive.uploader.core.ui.components.AppErrorState
-import com.telegramdrive.uploader.core.ui.components.Eyebrow
+import com.telegramdrive.uploader.core.ui.components.SectionHeader
 import com.telegramdrive.uploader.core.ui.components.VideoItem
 import com.telegramdrive.uploader.core.ui.components.formatFileSize
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
@@ -252,7 +252,8 @@ private fun UploadHeader(onBackClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppSpacing.medium, vertical = AppSpacing.small)
+            .padding(horizontal = AppSpacing.medium, vertical = AppSpacing.small),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         IconButton(
             onClick = onBackClick,
@@ -263,15 +264,10 @@ private fun UploadHeader(onBackClick: () -> Unit) {
                 contentDescription = stringResource(R.string.back)
             )
         }
-        Eyebrow(text = "(05) NEW UPLOAD")
-        Text(
-            text = stringResource(R.string.prepare_videos),
-            style = MaterialTheme.typography.displayLarge.copy(
-                fontFamily = DotoFamily,
-                fontWeight = FontWeight.Black,
-                fontSize = 50.sp
-            ),
-            color = MaterialTheme.colorScheme.onSurface
+        SectionHeader(
+            number = "05",
+            label = "NEW UPLOAD",
+            title = stringResource(R.string.prepare_videos)
         )
     }
 }
