@@ -528,9 +528,36 @@ private fun HomeTrustPills() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)
     ) {
-        AppChip(text = stringResource(R.string.home_trust_background))
-        AppChip(text = stringResource(R.string.home_trust_resume))
-        AppChip(text = stringResource(R.string.home_trust_private))
+        HomeTrustPill(text = stringResource(R.string.home_trust_background))
+        HomeTrustPill(text = stringResource(R.string.home_trust_resume))
+        HomeTrustPill(text = stringResource(R.string.home_trust_private))
+    }
+}
+
+@Composable
+private fun HomeTrustPill(text: String) {
+    Surface(
+        modifier = Modifier.clip(RoundedCornerShape(AppRadius.chip)),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
