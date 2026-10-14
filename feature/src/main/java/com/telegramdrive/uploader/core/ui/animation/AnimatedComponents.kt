@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 /**
@@ -59,7 +59,7 @@ fun AnimatedStatCard(
     label: String,
     index: Int,
     modifier: Modifier = Modifier,
-    accentColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.purpleHot
+    accentColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
 ) {
     val motionEnabled = rememberSystemMotionEnabled()
     val delayMillis = index * 80
@@ -83,16 +83,16 @@ fun AnimatedStatCard(
         modifier = modifier
             .scale(scale)
             .graphicsLayer { this.alpha = alpha }
-            .clip(RoundedCornerShape(DesignTokens.AppRadius.card))
+            .clip(RoundedCornerShape(16.dp))
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        DesignTokens.AppColors.surfaceCard,
-                        DesignTokens.AppColors.surface.copy(alpha = 0.6f)
+                        MaterialTheme.colorScheme.surfaceContainer,
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
                     )
                 )
             )
-            .padding(DesignTokens.AppSpacing.medium),
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         androidx.compose.material3.Text(
@@ -104,7 +104,7 @@ fun AnimatedStatCard(
         androidx.compose.material3.Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = DesignTokens.AppColors.contentMuted
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -176,16 +176,16 @@ fun AnimatedGlassCard(
             .graphicsLayer {
                 this.shadowElevation = elevation.toFloat()
             }
-            .clip(RoundedCornerShape(DesignTokens.AppRadius.card))
+            .clip(RoundedCornerShape(16.dp))
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        DesignTokens.AppColors.surfaceCard,
-                        DesignTokens.AppColors.surface.copy(alpha = 0.5f)
+                        MaterialTheme.colorScheme.surfaceContainer,
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
                     )
                 )
             )
-            .padding(DesignTokens.AppSpacing.medium)
+            .padding(16.dp)
     ) {
         content()
     }
