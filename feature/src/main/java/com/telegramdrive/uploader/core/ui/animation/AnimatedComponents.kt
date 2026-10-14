@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
 
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
