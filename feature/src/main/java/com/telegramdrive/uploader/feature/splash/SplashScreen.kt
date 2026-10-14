@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.feature.R
 import com.telegramdrive.uploader.core.ui.components.DotProgressRing
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import com.telegramdrive.uploader.core.ui.theme.DotoFamily
 import kotlinx.coroutines.delay
 
@@ -66,7 +65,7 @@ fun SplashScreen(onFinished: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DesignTokens.AppColors.background)
+            .background(MaterialTheme.colorScheme.background)
             .semantics { liveRegion = LiveRegionMode.Polite },
         contentAlignment = Alignment.Center
     ) {
@@ -85,12 +84,12 @@ fun SplashScreen(onFinished: () -> Unit) {
                     fontFamily = DotoFamily,
                     fontWeight = FontWeight.Black
                 ),
-                color = DesignTokens.AppColors.contentPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = stringResource(R.string.splash_starting),
                 style = MaterialTheme.typography.labelLarge,
-                color = DesignTokens.AppColors.contentMuted,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.alpha(0.86f)
             )
         }
