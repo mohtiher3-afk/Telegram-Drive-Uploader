@@ -124,21 +124,6 @@ fun MissionCard(
     }
 }
 
-/** Small uppercase label above a heading. Violet, because it is a caption, not body text. */
-@Composable
-fun Eyebrow(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelSmall,
-        color = DesignTokens.AppColors.purpleHot,
-        modifier = modifier,
-    )
-}
-
-
 /**
  * The hero block from the design: a violet-glow gradient panel with a hairline violet
  * border, used for the active transfer on the dashboard.
@@ -480,43 +465,5 @@ fun MissionSearchField(
                 inner()
             },
         )
-    }
-}
-/**
- * Screen header from the design spec (DESIGN_SPEC §5): a numbered section eyebrow
- * (e.g. "(06) QUEUE") above a large Doto wordmark, with an optional muted subtitle
- * line beneath (e.g. "0 active · 0 failed"). Shared by every screen so the numbered
- * title system is consistent.
- *
- * @param number two-digit section label, e.g. "06"
- * @param label upper-case caption, e.g. "QUEUE"
- * @param title the large headline
- * @param subtitle optional muted line under the title
- */
-@Composable
-fun SectionHeader(
-    number: String,
-    label: String,
-    title: String,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Eyebrow(text = "($number) $label")
-        Text(
-            text = title,
-            style = MaterialTheme.typography.displaySmall.copy(
-                fontFamily = com.telegramdrive.uploader.core.ui.theme.DotoFamily,
-                fontWeight = FontWeight.Black
-            ),
-            color = DesignTokens.AppColors.contentPrimary
-        )
-        if (subtitle != null) {
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.labelMedium,
-                color = DesignTokens.AppColors.contentMuted
-            )
-        }
     }
 }
