@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.animateFloat
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
-import androidx.compose.material3.MaterialTheme
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -68,7 +68,7 @@ enum class LiquidGlassEmphasis(
 @Composable
 fun Modifier.liquidGlassReflection(
     shape: Shape = RoundedCornerShape(16.dp),
-    accent: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
     intensity: Float = 1.0f
 ): Modifier = composed {
     val density = androidx.compose.ui.platform.LocalDensity.current
@@ -121,7 +121,7 @@ fun Modifier.liquidGlassReflection(
 @Composable
 fun Modifier.liquidGlassOverlay(
     shape: Shape = RoundedCornerShape(16.dp),
-    accent: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
     emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational,
     animate: Boolean = true
 ): Modifier = composed {
@@ -147,7 +147,7 @@ fun Modifier.liquidGlassOverlay(
     )
     
     // Dark theme detection for adaptive colors
-    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDark = DesignTokens.AppColors.surfaceCard.luminance() < 0.5f
     
     this.then(
         Modifier
@@ -165,7 +165,7 @@ fun Modifier.liquidGlassOverlay(
                             Color.White.copy(alpha = animatedReflectionAlpha * 0.3f)
                             else Color.White.copy(alpha = animatedReflectionAlpha * 0.15f),
                         // Main surface - frosted glass
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.75f),
+                        DesignTokens.AppColors.surface.copy(alpha = 0.75f),
                         // Bottom shadow
                         if (isDark)
                             Color.Black.copy(alpha = animatedAmbientAlpha * 0.4f)
@@ -222,7 +222,7 @@ fun Modifier.liquidGlassOverlay(
 @Composable
 fun Modifier.glowSignalRim(
     shape: Shape = RoundedCornerShape(28.dp),
-    accent: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onPrimary,
+    accent: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary,
     enabled: Boolean = true,
     pulseSpeed: Float = 1.0f
 ): Modifier = composed {
@@ -240,7 +240,7 @@ fun Modifier.glowSignalRim(
         label = "glowPulseAlpha"
     )
     
-    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDark = DesignTokens.AppColors.surfaceCard.luminance() < 0.5f
     
     if (!enabled) return@composed this
     
@@ -254,8 +254,8 @@ fun Modifier.glowSignalRim(
                     colors = listOf(
                         accent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f)),
                         if (isDark)
-                            MaterialTheme.colorScheme.onSecondary.copy(alpha = (pulseAlpha * 0.4f).coerceIn(0.1f, 0.5f))
-                            else MaterialTheme.colorScheme.onSecondary.copy(alpha = (pulseAlpha * 0.3f).coerceIn(0.1f, 0.4f)),
+                            DesignTokens.AppColors.onSecondary.copy(alpha = (pulseAlpha * 0.4f).coerceIn(0.1f, 0.5f))
+                            else DesignTokens.AppColors.onSecondary.copy(alpha = (pulseAlpha * 0.3f).coerceIn(0.1f, 0.4f)),
                         accent.copy(alpha = (pulseAlpha * 0.6f).coerceIn(0.2f, 0.8f))
                     ),
                     start = Offset.Zero,
@@ -284,7 +284,7 @@ fun GlassCard(
     emphasis: LiquidGlassEmphasis = LiquidGlassEmphasis.Operational,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    val isDark = DesignTokens.AppColors.surfaceCard.luminance() < 0.5f
     
     Surface(
         modifier = modifier
@@ -293,7 +293,7 @@ fun GlassCard(
             .shadow(emphasis.elevation.dp, shape = shape),
         shape = shape,
         color = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onSurface
+        contentColor = DesignTokens.AppColors.contentPrimary
     ) {
         Box(
             modifier = Modifier
@@ -312,8 +312,8 @@ fun GlassCard(
 fun ShimmerPlaceholder(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(12.dp),
-    baseColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.surface,
-    highlightColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.surfaceVariant,
+    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surfaceCard,
+    highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
     animationDuration: Int = 1500
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
