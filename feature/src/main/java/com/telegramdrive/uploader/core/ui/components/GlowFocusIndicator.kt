@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
+import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 
 /**
  * Mission Control Glow focus treatment: a persistent 3dp outline with reserved outer space.
@@ -25,7 +26,7 @@ fun Modifier.glowFocusIndicator(
 ): Modifier {
     val motionEnabled = rememberSystemMotionEnabled()
     val focusColor by animateColorAsState(
-        targetValue = if (focused) MaterialTheme.colorScheme.outlineVariant else Color.Transparent,
+        targetValue = if (focused) DesignTokens.AppColors.glassBorder else Color.Transparent,
         animationSpec = AppMotion.shortTween(motionEnabled),
         label = "glowFocusIndicatorColor"
     )
