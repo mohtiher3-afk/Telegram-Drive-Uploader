@@ -32,16 +32,8 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
-import androidx.compose.ui.platform.testTag
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.feature.home.HomeScreen
 import com.telegramdrive.uploader.feature.splash.SplashScreen
 import com.telegramdrive.uploader.feature.queue.QueueScreen
@@ -54,9 +46,15 @@ import com.telegramdrive.uploader.feature.upload.UploadViewModel
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.feature.telegram.TelegramAuthScreen
 import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
-import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
-import com.telegramdrive.uploader.core.ui.components.MissionControlPage
-import com.telegramdrive.uploader.core.ui.components.liquidGlassOverlay
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.platform.testTag
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.telegramdrive.uploader.R
 import kotlinx.coroutines.launch
 
@@ -93,8 +91,6 @@ fun AppNavigation(
     val currentRoute = navBackStackEntry?.destination?.route
     val showBottomBar = bottomNavItems.any { it.route == currentRoute }
 
-    // Adaptive Navigation Pattern based on the real available window width.
-    // screenWidthDp is rounded and inset-dependent, so prefer the window container size.
     val windowInfo = LocalWindowInfo.current
     val density = LocalDensity.current
     val windowWidthDp = Dp(windowInfo.containerSize.width / density.density)
@@ -105,25 +101,24 @@ fun AppNavigation(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(DesignTokens.spacingM)
-            .background(DesignTokens.AppColors.background)
+            .padding(AppSpacing.medium)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         if (isExpanded && showBottomBar) {
             NavigationRail(
-                containerColor = DesignTokens.AppColors.surfaceCard,
-                contentColor = DesignTokens.AppColors.contentPrimary,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
                 header = {
-                    // App logo/brand in the rail header
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = DesignTokens.spacingM),
+                            .padding(vertical = AppSpacing.medium),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Filled.CloudUpload,
                             contentDescription = null,
-                            tint = DesignTokens.AppColors.lime,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(32.dp)
                         )
                     }
@@ -153,11 +148,11 @@ fun AppNavigation(
                         label = { Text(stringResource(screen.titleRes)) },
                         alwaysShowLabel = true,
                         colors = NavigationRailItemDefaults.colors(
-                            selectedIconColor = DesignTokens.AppColors.lime,
-                            selectedTextColor = DesignTokens.AppColors.lime,
-                            indicatorColor = DesignTokens.AppColors.lime.copy(alpha = 0.15f),
-                            unselectedIconColor = DesignTokens.AppColors.contentMuted,
-                            unselectedTextColor = DesignTokens.AppColors.contentMuted
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                     )
@@ -166,24 +161,21 @@ fun AppNavigation(
         }
 
         Scaffold(
-            containerColor = DesignTokens.AppColors.background,
+            containerColor = MaterialTheme.colorScheme.background,
             contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 if (!isExpanded && showBottomBar) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = DesignTokens.AppSpacing.phoneEdge, vertical = DesignTokens.AppSpacing.phoneNavInset)
+                            .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
                     ) {
                         Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .liquidGlassOverlay(
-                                    shape = MaterialTheme.shapes.extraLarge,
-                                    accent = DesignTokens.AppColors.onPrimary
-                                ),
+                                .padding(horizontal = 8.dp, vertical = 8.dp),
                             shape = MaterialTheme.shapes.extraLarge,
-                            color = DesignTokens.AppColors.surfaceCard,
+                            color = MaterialTheme.colorScheme.surface,
                             tonalElevation = 6.dp,
                             shadowElevation = 8.dp
                         ) {
@@ -211,23 +203,27 @@ fun AppNavigation(
                                         icon = {
                                             Icon(
                                                 imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
-                                                contentDescription = null
+                                                contentDescription = null,
+                                                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         },
-                                        label = { Text(stringResource(screen.titleRes)) },
+                                        label = {
+                                            if (isSelected) {
+                                                Text(
+                                                    stringResource(screen.titleRes),
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+                                        },
                                         colors = NavigationBarItemDefaults.colors(
-                                            // The indicator is a light pill, so the selected
-                                            // glyph and label have to be dark ink. Both used to
-                                            // be `onPrimary` (white), which painted a white
-                                            // icon on a white pill and made the active tab
-                                            // look empty.
-                                            selectedIconColor = DesignTokens.AppColors.contentPrimaryInverse,
-                                            selectedTextColor = DesignTokens.AppColors.contentPrimaryInverse,
-                                            indicatorColor = DesignTokens.AppColors.onPrimary,
-                                            unselectedIconColor = DesignTokens.AppColors.contentMuted,
-                                            unselectedTextColor = DesignTokens.AppColors.contentMuted
+                                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                                         ),
-                                        modifier = Modifier.testTag("nav_tab_${screen.route}")
+                                        modifier = Modifier
+                                            .testTag("nav_tab_${screen.route}")
+                                            .widthIn(min = 72.dp)
                                     )
                                 }
                             }
@@ -236,78 +232,78 @@ fun AppNavigation(
                 }
             }
         ) { innerPadding ->
-            MissionControlPage(pageKey = currentRoute, modifier = Modifier.fillMaxSize()) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.surface
+            ) {
                 NavHost(
                     navController = navController,
                     startDestination = if (openingCompleted) Screen.Home.route else AppRoutes.SPLASH,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .widthIn(max = AppContentWidth.max)
+                        
                         .padding(innerPadding)
-                        .align(Alignment.TopCenter)
                 ) {
-                composable(AppRoutes.SPLASH) {
-                    SplashScreen(
-                        onFinished = {
-                            scope.launch {
-                                settingsDataStore.setOpeningCompleted()
-                                navController.navigate(Screen.Home.route) {
-                                    popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                    composable(AppRoutes.SPLASH) {
+                        SplashScreen(
+                            onFinished = {
+                                scope.launch {
+                                    settingsDataStore.setOpeningCompleted()
+                                    navController.navigate(Screen.Home.route) {
+                                        popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                                    }
                                 }
                             }
-                        }
-                    )
-                }
-                composable(Screen.Home.route) {
-                    if (!onboardingCompleted) {
-                        OnboardingScreen(
-                            onFinished = { },
-                            viewModel = onboardingViewModel
-                        )
-                    } else {
-                        HomeScreen(
-                            onSettingsClick = { navController.navigate(Screen.Settings.route) },
-                            onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
-                            onVideosSelected = { uris ->
-                                uploadViewModel.setPrepareUris(uris)
-                                navController.navigate(AppRoutes.UPLOAD_PREPARATION)
-                            },
-
                         )
                     }
-                }
-                composable(AppRoutes.UPLOAD_PREPARATION) {
-                    UploadScreen(
-                        onBackClick = { navController.popBackStack() },
-                        onSelectDestination = { navController.navigate(AppRoutes.TELEGRAM_DESTINATION) },
-                        onQueueAdded = {
-                            navController.navigate(Screen.Queue.route) {
-                                popUpTo(Screen.Home.route)
-                            }
-                        },
-                        viewModel = uploadViewModel
-                    )
-                }
-                composable(AppRoutes.TELEGRAM_AUTH) {
-                    TelegramAuthScreen(
-                        onBackClick = { navController.popBackStack() },
-                        onAuthSuccess = { navController.popBackStack() }
-                    )
-                }
-                composable(AppRoutes.TELEGRAM_DESTINATION) {
-                    TelegramDestinationScreen(
-                        onBackClick = { navController.popBackStack() },
-                        onConnectClick = {
-                            navController.navigate(AppRoutes.TELEGRAM_AUTH)
-                        },
-                        onDestinationSelected = { dest ->
-                            uploadViewModel.onDestinationSelected(dest)
-                            navController.popBackStack()
+                    composable(Screen.Home.route) {
+                        if (!onboardingCompleted) {
+                            OnboardingScreen(
+                                onFinished = { },
+                                viewModel = onboardingViewModel
+                            )
+                        } else {
+                            HomeScreen(
+                                onSettingsClick = { navController.navigate(Screen.Settings.route) },
+                                onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
+                                onVideosSelected = { uris ->
+                                    uploadViewModel.setPrepareUris(uris)
+                                    navController.navigate(AppRoutes.UPLOAD_PREPARATION)
+                                },
+                            )
                         }
-                    )
-                }
-                composable(Screen.Queue.route) { QueueScreen() }
-                composable(Screen.History.route) { HistoryScreen() }
+                    }
+                    composable(AppRoutes.UPLOAD_PREPARATION) {
+                        UploadScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onSelectDestination = { navController.navigate(AppRoutes.TELEGRAM_DESTINATION) },
+                            onQueueAdded = {
+                                navController.navigate(Screen.Queue.route) {
+                                    popUpTo(Screen.Home.route)
+                                }
+                            },
+                            viewModel = uploadViewModel
+                        )
+                    }
+                    composable(AppRoutes.TELEGRAM_AUTH) {
+                        TelegramAuthScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onAuthSuccess = { navController.popBackStack() }
+                        )
+                    }
+                    composable(AppRoutes.TELEGRAM_DESTINATION) {
+                        TelegramDestinationScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onConnectClick = {
+                                navController.navigate(AppRoutes.TELEGRAM_AUTH)
+                            },
+                            onDestinationSelected = { dest ->
+                                uploadViewModel.onDestinationSelected(dest)
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                    composable(Screen.Queue.route) { QueueScreen() }
+                    composable(Screen.History.route) { HistoryScreen() }
                     composable(Screen.Settings.route) {
                         SettingsScreen(
                             onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
