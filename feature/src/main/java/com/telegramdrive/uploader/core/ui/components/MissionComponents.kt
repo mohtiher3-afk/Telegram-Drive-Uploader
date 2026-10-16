@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppRadius
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 
 /**
  * Mission Control primitives shared by every screen.
@@ -65,11 +64,11 @@ fun MissionBackground(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(DesignTokens.AppColors.background)
+            .background(MaterialTheme.colorScheme.background)
             .background(
                 Brush.radialGradient(
                     colors = listOf(
-                        DesignTokens.AppColors.purple.copy(alpha = 0.18f),
+                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.18f),
                         Color.Transparent,
                     ),
                     center = Offset(0.85f, 0f),
@@ -108,8 +107,8 @@ fun MissionScreen(
 fun MissionCard(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(AppRadius.card.value),
-    borderColor: Color = DesignTokens.AppColors.glassBorder,
-    containerColor: Color = DesignTokens.AppColors.surfaceCard,
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
     content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -133,7 +132,7 @@ fun MissionHeroCard(
     modifier: Modifier = Modifier,
     content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
 ) {
-    val violet = DesignTokens.AppColors.purpleHot
+    val violet = MaterialTheme.colorScheme.primary
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppRadius.feature.value),
@@ -146,16 +145,16 @@ fun MissionHeroCard(
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFF251633),
-                            Color(0xFF171220),
-                            Color(0xFF271638),
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.surfaceVariant,
                         ),
                     ),
                 )
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            DesignTokens.AppColors.purple.copy(alpha = 0.18f),
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.18f),
                             Color.Transparent,
                         ),
                         center = Offset(0.81f, 0.53f),
@@ -178,7 +177,7 @@ fun MissionStat(
     value: String,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    accent: Color = DesignTokens.AppColors.contentPrimary,
+    accent: Color = MaterialTheme.colorScheme.onSurface,
     supporting: String? = null,
 ) {
     MissionCard(modifier = modifier) {
@@ -198,7 +197,7 @@ fun MissionStat(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = DesignTokens.AppColors.contentMuted,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -217,7 +216,7 @@ fun MissionStat(
             Text(
                 text = supporting,
                 style = MaterialTheme.typography.bodySmall,
-                color = DesignTokens.AppColors.contentMuted,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(
@@ -239,8 +238,8 @@ fun MissionProgressBar(
     progress: Float,
     modifier: Modifier = Modifier,
     height: Dp = 6.dp,
-    trackColor: Color = DesignTokens.AppColors.glassFill,
-    fillColor: Color = DesignTokens.AppColors.lime,
+    trackColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    fillColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     val clamped = progress.coerceIn(0f, 1f)
     Box(
@@ -286,12 +285,12 @@ fun MissionBanner(
             .background(
                 Brush.linearGradient(
                     listOf(
-                        DesignTokens.AppColors.bannerStart,
-                        DesignTokens.AppColors.bannerEnd,
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.surfaceVariant,
                     )
                 )
             )
-            .border(1.dp, DesignTokens.AppColors.bannerBorder, RoundedCornerShape(AppRadius.card))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(AppRadius.card))
             .padding(AppSpacing.extraLarge),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -299,14 +298,14 @@ fun MissionBanner(
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(AppRadius.control))
-                .background(DesignTokens.AppColors.purple.copy(alpha = 0.08f))
-                .border(1.dp, DesignTokens.AppColors.purple.copy(alpha = 0.15f), RoundedCornerShape(AppRadius.control)),
+                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f))
+                .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f), RoundedCornerShape(AppRadius.control)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = DesignTokens.AppColors.purpleSoft,
+                tint = MaterialTheme.colorScheme.tertiaryContainer,
                 modifier = Modifier.size(24.dp),
             )
         }
@@ -318,12 +317,12 @@ fun MissionBanner(
             Text(
                 text = headline,
                 style = MaterialTheme.typography.titleSmall,
-                color = DesignTokens.AppColors.contentPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = supporting,
                 style = MaterialTheme.typography.bodySmall,
-                color = DesignTokens.AppColors.contentMuted,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         if (action != null) {
@@ -361,7 +360,7 @@ fun MissionSegmentedTabs(
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState())
             .clip(RoundedCornerShape(10.dp))
-            .background(DesignTokens.AppColors.surfaceCard)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
@@ -372,7 +371,7 @@ fun MissionSegmentedTabs(
                     .clip(RoundedCornerShape(8.dp))
                     .background(
                         if (selected) {
-                            DesignTokens.AppColors.purple.copy(alpha = 0.22f)
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.22f)
                         } else {
                             Color.Transparent
                         }
@@ -393,9 +392,9 @@ fun MissionSegmentedTabs(
                     text = label,
                     style = MaterialTheme.typography.labelMedium,
                     color = if (selected) {
-                        DesignTokens.AppColors.purpleHot
+                        MaterialTheme.colorScheme.primary
                     } else {
-                        DesignTokens.AppColors.contentMuted
+                        MaterialTheme.colorScheme.onSurfaceVariant
                     },
                     maxLines = 1,
                 )
@@ -432,15 +431,15 @@ fun MissionSearchField(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(DesignTokens.AppColors.surfaceCard)
-            .border(1.dp, DesignTokens.AppColors.glassBorder, RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(10.dp))
             .padding(horizontal = AppSpacing.small + AppSpacing.xSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = Icons.Default.Search,
             contentDescription = null,
-            tint = DesignTokens.AppColors.contentMuted,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(18.dp),
         )
         androidx.compose.foundation.text.BasicTextField(
@@ -448,9 +447,9 @@ fun MissionSearchField(
             onValueChange = onValueChange,
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyMedium.copy(
-                color = DesignTokens.AppColors.contentPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
             ),
-            cursorBrush = SolidColor(DesignTokens.AppColors.lime),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             modifier = textFieldModifier
                 .weight(1f)
                 .padding(horizontal = AppSpacing.small, vertical = 12.dp),
@@ -459,7 +458,7 @@ fun MissionSearchField(
                     Text(
                         text = placeholder,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = DesignTokens.AppColors.contentMuted,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 inner()
