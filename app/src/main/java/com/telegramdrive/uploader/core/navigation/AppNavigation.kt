@@ -32,9 +32,10 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.telegramdrive.uploader.core.ui.theme.AppRadius
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -105,25 +106,25 @@ fun AppNavigation(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(DesignTokens.spacingM)
-            .background(DesignTokens.AppColors.background)
+            .padding(AppSpacing.medium)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         if (isExpanded && showBottomBar) {
             NavigationRail(
-                containerColor = DesignTokens.AppColors.surfaceCard,
-                contentColor = DesignTokens.AppColors.contentPrimary,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
                 header = {
                     // App logo/brand in the rail header
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = DesignTokens.spacingM),
+                            .padding(vertical = AppSpacing.medium),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Filled.CloudUpload,
                             contentDescription = null,
-                            tint = DesignTokens.AppColors.lime,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(32.dp)
                         )
                     }
@@ -153,11 +154,11 @@ fun AppNavigation(
                         label = { Text(stringResource(screen.titleRes)) },
                         alwaysShowLabel = true,
                         colors = NavigationRailItemDefaults.colors(
-                            selectedIconColor = DesignTokens.AppColors.lime,
-                            selectedTextColor = DesignTokens.AppColors.lime,
-                            indicatorColor = DesignTokens.AppColors.lime.copy(alpha = 0.15f),
-                            unselectedIconColor = DesignTokens.AppColors.contentMuted,
-                            unselectedTextColor = DesignTokens.AppColors.contentMuted
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                     )
@@ -166,24 +167,24 @@ fun AppNavigation(
         }
 
         Scaffold(
-            containerColor = DesignTokens.AppColors.background,
+            containerColor = MaterialTheme.colorScheme.background,
             contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 if (!isExpanded && showBottomBar) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = DesignTokens.AppSpacing.phoneEdge, vertical = DesignTokens.AppSpacing.phoneNavInset)
+                            .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
                     ) {
                         Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .liquidGlassOverlay(
                                     shape = MaterialTheme.shapes.extraLarge,
-                                    accent = DesignTokens.AppColors.onPrimary
+                                    accent = MaterialTheme.colorScheme.onPrimary
                                 ),
                             shape = MaterialTheme.shapes.extraLarge,
-                            color = DesignTokens.AppColors.surfaceCard,
+                            color = MaterialTheme.colorScheme.surface,
                             tonalElevation = 6.dp,
                             shadowElevation = 8.dp
                         ) {
@@ -221,11 +222,11 @@ fun AppNavigation(
                                             // be `onPrimary` (white), which painted a white
                                             // icon on a white pill and made the active tab
                                             // look empty.
-                                            selectedIconColor = DesignTokens.AppColors.contentPrimaryInverse,
-                                            selectedTextColor = DesignTokens.AppColors.contentPrimaryInverse,
-                                            indicatorColor = DesignTokens.AppColors.onPrimary,
-                                            unselectedIconColor = DesignTokens.AppColors.contentMuted,
-                                            unselectedTextColor = DesignTokens.AppColors.contentMuted
+                                            selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                                            selectedTextColor = MaterialTheme.colorScheme.onBackground,
+                                            indicatorColor = MaterialTheme.colorScheme.onPrimary,
+                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                                         ),
                                         modifier = Modifier.testTag("nav_tab_${screen.route}")
                                     )

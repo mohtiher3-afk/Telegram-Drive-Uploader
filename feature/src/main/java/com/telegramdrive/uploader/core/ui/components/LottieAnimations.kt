@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import androidx.compose.material3.MaterialTheme
 
 /**
  * Animated state kinds for the shared empty/error surfaces.
@@ -90,7 +90,7 @@ fun AnimatedEmptyStateIcon(
     animationType: LottieAnimation,
     modifier: Modifier = Modifier,
     size: androidx.compose.ui.unit.Dp = 40.dp,
-    tint: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.onPrimary
+    tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onPrimary
 ) {
     val result = rememberLottieAnimation(animationType)
     val motionEnabled = rememberSystemMotionEnabled()

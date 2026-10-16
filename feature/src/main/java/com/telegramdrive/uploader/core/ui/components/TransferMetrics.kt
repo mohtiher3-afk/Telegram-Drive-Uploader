@@ -16,7 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.feature.R
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import com.telegramdrive.uploader.core.ui.theme.AppRadius
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 
 /**
  * A beautiful, Material 3 component designed to visualize upload speeds
@@ -48,7 +49,7 @@ fun TransferMetrics(
             .fillMaxWidth()
             .testTag("transfer_metrics_card"),
         colors = CardDefaults.cardColors(
-            containerColor = DesignTokens.AppColors.surfaceCard
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -73,7 +74,7 @@ fun TransferMetrics(
                     Icon(
                         imageVector = Icons.Default.Speed,
                         contentDescription = stringResource(R.string.upload_speed_desc),
-                        tint = DesignTokens.AppColors.onPrimary,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
@@ -83,7 +84,7 @@ fun TransferMetrics(
                         ),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = DesignTokens.AppColors.contentPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -109,7 +110,7 @@ fun TransferMetrics(
                     Icon(
                         imageVector = Icons.Default.Schedule,
                         contentDescription = stringResource(R.string.time_remaining_desc),
-                        tint = DesignTokens.AppColors.onSecondary,
+                        tint = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.size(16.dp)
                     )
 
@@ -124,7 +125,7 @@ fun TransferMetrics(
                         text = stringResource(R.string.upload_eta, etaLabel),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = DesignTokens.AppColors.contentPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -135,8 +136,8 @@ fun TransferMetrics(
                         .fillMaxWidth()
                         .height(4.dp)
                         .clip(MaterialTheme.shapes.extraSmall),
-                    color = DesignTokens.AppColors.onSecondary,
-                    trackColor = DesignTokens.AppColors.purple.copy(alpha = 0.16f).copy(alpha = 0.4f)
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
                 )
             }
         }

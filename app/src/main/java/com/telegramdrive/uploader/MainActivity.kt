@@ -8,6 +8,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -15,7 +16,6 @@ import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import dagger.hilt.android.AndroidEntryPoint
 import com.telegramdrive.uploader.core.navigation.AppNavigation
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = DesignTokens.AppColors.background
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavigation(settingsDataStore)
                 }

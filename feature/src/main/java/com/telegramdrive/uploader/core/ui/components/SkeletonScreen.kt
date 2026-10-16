@@ -33,7 +33,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.TileMode
 import com.telegramdrive.uploader.core.ui.theme.AppMotion
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import com.telegramdrive.uploader.core.ui.theme.AppRadius
+import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.theme.rememberSystemMotionEnabled
 
 
@@ -48,8 +49,8 @@ fun SkeletonPlaceholder(
     shimmerProgress: Float,
     shimmerWidth: Float,
     startX: Float,
-    baseColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surfaceCard,
-    highlightColor: androidx.compose.ui.graphics.Color = DesignTokens.AppColors.surface,
+    baseColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.surface,
+    highlightColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.background,
     motionEnabled: Boolean = true
 ) {
     Box(
