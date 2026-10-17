@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
+import com.telegramdrive.uploader.core.ui.components.AppNavPill
+import com.telegramdrive.uploader.core.ui.components.NavPillItem
 import com.telegramdrive.uploader.feature.home.HomeScreen
 import com.telegramdrive.uploader.feature.splash.SplashScreen
 import com.telegramdrive.uploader.feature.queue.QueueScreen
@@ -179,58 +181,53 @@ fun AppNavigation(
                             tonalElevation = 6.dp,
                             shadowElevation = 8.dp
                         ) {
-                            NavigationBar(
-                                modifier = Modifier.height(72.dp),
-                                containerColor = Color.Transparent,
-                                tonalElevation = 0.dp,
-                                windowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0)
-                            ) {
-                                bottomNavItems.forEach { screen ->
-                                    val isSelected = currentRoute == screen.route
-                                    NavigationBarItem(
-                                        selected = isSelected,
-                                        onClick = {
-                                            if (currentRoute != screen.route) {
-                                                navController.navigate(screen.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
-                                                }
+                        // Floating nav: circular indicators, active tab expands into a pill with label
+                            val bottomNavItems = listOf(
+                                NavPillItem(
+                                    icon = Icons.Filled.Home,
+                                    label = stringResource(R.string.nav_home),
+                                    testTag = "nav_tab_${Screen.Home.route}"
+                                ),
+                                NavPillItem(
+                                    icon = Icons.Filled.Layers,
+                                    label = stringResource(R.string.nav_queue),
+                                    testTag = "nav_tab_${Screen.Queue.route}"
+                                ),
+                                NavPillItem(
+                                    icon = Icons.Filled.History,
+                                    label = stringResource(R.string.nav_history),
+                                    testTag = "nav_tab_${Screen.History.route}"
+                                ),
+                                NavPillItem(
+                                    icon = Icons.Filled.Settings,
+                                    label = stringResource(R.string.nav_settings),
+                                    testTag = "nav_tab_${Screen.Settings.route}"
+                                )
+                            )
+
+                            AppNavPill(
+                                items = bottomNavItems,
+                                selectedIndex = bottomNavItems.indexOfFirst { it.testTag == "nav_tab_${currentRoute}" },
+                                onSelect = { index ->
+                                    val selectedScreen = bottomNavItems[index]
+                                    if (currentRoute != selectedScreen.testTag) {
+                                        navController.navigate(selectedScreen.testTag) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
                                             }
-                                        },
-                                        icon = {
-                                            Icon(
-                                                imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
-                                                contentDescription = null,
-                                                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        },
-                                        label = {
-                                            if (isSelected) {
-                                                Text(
-                                                    stringResource(screen.titleRes),
-                                                    color = MaterialTheme.colorScheme.primary
-                                                )
-                                            }
-                                        },
-                                        colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                        ),
-                                        modifier = Modifier
-                                            .testTag("nav_tab_${screen.route}")
-                                            .widthIn(min = 72.dp)
-                                    )
-                                }
-                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
+                            )
+                        }
                         }
                     }
                 }
-            }
         ) { innerPadding ->
             Surface(
                 modifier = Modifier.fillMaxSize(),
