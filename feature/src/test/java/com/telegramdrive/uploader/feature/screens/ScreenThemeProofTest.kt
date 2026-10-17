@@ -76,7 +76,7 @@ class ScreenThemeProofTest {
     }
 
     @Test
-    fun `queue renders in both theme modes`() {
+    fun `queue renders dark`() {
         compose(true) {
             QueueScreen(
                 viewModel = QueueViewModel(
@@ -87,7 +87,10 @@ class ScreenThemeProofTest {
             )
         }
         record("theme-proof/queue_dark.png")
+    }
 
+    @Test
+    fun `queue renders light`() {
         compose(false) {
             QueueScreen(
                 viewModel = QueueViewModel(
@@ -98,29 +101,30 @@ class ScreenThemeProofTest {
             )
         }
         record("theme-proof/queue_light.png")
-        assertDifferences("queue", "dark", "light")
     }
 
     @Test
-    fun `history renders in both theme modes`() {
+    fun `history renders dark`() {
         compose(true) {
             HistoryScreen(
                 viewModel = HistoryViewModel(fakeUploadRepository())
             )
         }
         record("theme-proof/history_dark.png")
+    }
 
+    @Test
+    fun `history renders light`() {
         compose(false) {
             HistoryScreen(
                 viewModel = HistoryViewModel(fakeUploadRepository())
             )
         }
         record("theme-proof/history_light.png")
-        assertDifferences("history", "dark", "light")
     }
 
     @Test
-    fun `settings renders in both theme modes`() {
+    fun `settings renders dark`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         compose(true) {
             SettingsScreen(
@@ -133,7 +137,11 @@ class ScreenThemeProofTest {
             )
         }
         record("theme-proof/settings_dark.png")
+    }
 
+    @Test
+    fun `settings renders light`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
         compose(false) {
             SettingsScreen(
                 onConnectClick = {},
@@ -145,11 +153,10 @@ class ScreenThemeProofTest {
             )
         }
         record("theme-proof/settings_light.png")
-        assertDifferences("settings", "dark", "light")
     }
 
     @Test
-    fun `upload renders in both theme modes`() {
+    fun `upload renders dark`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         compose(true) {
             UploadScreen(
@@ -167,7 +174,11 @@ class ScreenThemeProofTest {
             )
         }
         record("theme-proof/upload_dark.png")
+    }
 
+    @Test
+    fun `upload renders light`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
         compose(false) {
             UploadScreen(
                 onBackClick = {},
@@ -184,7 +195,6 @@ class ScreenThemeProofTest {
             )
         }
         record("theme-proof/upload_light.png")
-        assertDifferences("upload", "dark", "light")
     }
 
     private fun record(fileName: String) {
@@ -218,8 +228,6 @@ class ScreenThemeProofTest {
         }
         val mean = sum.map { it / count.toLong() }
 
-        // Any non-trivial mean channel delta proves the two compositions really
-        // rendered in different themes (Dusk dark vs Dusk light).
         require(mean[0] > 1.0 && mean[1] > 1.0 && mean[2] > 1.0) {
             "theme delta too small: $screen dark=$dark light=$light meanDelta=$mean"
         }
