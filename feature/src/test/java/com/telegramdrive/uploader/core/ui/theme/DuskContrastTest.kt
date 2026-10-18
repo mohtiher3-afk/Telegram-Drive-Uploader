@@ -62,6 +62,7 @@ class DuskContrastTest {
 
     private fun assertPair(foreground: Color, background: Color, name: String, threshold: Float) {
         val ratio = contrastRatio(foreground, background)
+        println("$name ratio: ${"%.2f".format(ratio)}:1")
         assertTrue(
             "$name contrast was ${"%.2f".format(ratio)}:1, expected at least $threshold:1",
             ratio >= threshold
