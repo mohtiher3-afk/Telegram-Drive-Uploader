@@ -47,7 +47,6 @@ import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 
 /**
  * App card: a raised surface with a hairline border, used for all content blocks.
- * Replaces the old MissionCard/GlassCard with a clean Nothing-inspired surface.
  */
 @Composable
 fun AppCard(
