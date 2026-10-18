@@ -9,7 +9,7 @@ import org.junit.Test
  * WCAG 2.1 contrast gate for the Dusk palette (fallback scheme).
  * Validates both Light and Dark schemes to ensure accessibility baseline.
  */
-class AppColorsContrastTest {
+class DuskContrastTest {
 
     @Test
     fun `dark scheme contrast is readable`() {
