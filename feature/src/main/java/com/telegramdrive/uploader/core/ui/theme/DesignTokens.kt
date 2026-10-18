@@ -51,59 +51,6 @@ object AppType {
     val HeroSize = 32.sp
 }
 
-object AppColors {
-    // Dusk palette from tokens.json — used as the fallback when dynamic color
-    // is disabled. When dynamic color is enabled, screens should read
-    // MaterialTheme.colorScheme directly for the primary roles.
-    val primaryContainer = DuskPrimaryContainerDark
-    val primary = DuskPrimaryDark
-    val secondaryContainer = DuskSurfaceHighDark
-    val secondary = DuskOnSurfaceVariantDark
-    val surface = DuskSurfaceDark
-    val onPrimary = DuskOnPrimaryDark
-    val onSecondary = DuskSurfaceDark
-    val onSurface = DuskOnSurfaceDark
-    val onPrimaryContainer = DuskOnPrimaryContainerDark
-    val onSecondaryContainer = DuskOnSurfaceDark
-    val onSurfaceVariant = DuskOnSurfaceVariantDark
-    val error = DuskErrorDark
-    val errorContainer = DuskSurfaceHighDark
-    val surfaceContainerLow = DuskSurfaceContainerDark
-    val surfaceContainerHigh = DuskSurfaceHighDark
-    val surfaceContainerHighest = DuskSurfaceHighDark
-    val warning = Color(0xFFFFA726)
-    val success = Color(0xFF4CAF50)
-    val info = Color(0xFF2196F3)
-    val background = Color(0xFF0C0A10)
-    val contentPrimary = Color(0xFFFFFFFF)
-    val contentMuted = Color(0xFFAFA6BA)
-    val lime = Color(0xFFD4A3FF)
-    val limeLight = Color(0xFFEBDEFD)
-    val onLime = Color(0xFF351551)
-    val teal = Color(0xFF2DD4BF)
-    val purple = Color(0xFF7C3AED)
-    val contentPrimaryInverse = Color(0xFF0C0A10)
-    val onPurple = Color(0xFFFFFFFF)
-    val purpleHot = Color(0xFFD4A3FF)
-    val danger = Color(0xFFEF4444)
-    val dangerFill = Color(0xFF2A1518)
-    val dangerOnFill = Color(0xFFFF8A8A)
-    val dangerSolid = Color(0xFFDC2626)
-    val onDangerSolid = Color(0xFFFFFFFF)
-    val purpleSoft = Color(0xFFB49AD5)
-    val bannerStart = Color(0xFF21192B)
-    val bannerEnd = Color(0xFF17151D)
-    val bannerBorder = Color(0x1FA775D6)
-    val surfaceCard = Color(0xFF18141E)
-    val amber = Color(0xFFF59E0B)
-    val gridLine = Color(0xFFFFFFFF).copy(alpha = 0.03f)
-    val glassFill = Color(0xFFFFFFFF).copy(alpha = 0.055f)
-    val glassBorder = Color(0xFFFFFFFF).copy(alpha = 0.10f)
-    val glowPrimary = Color(0xFFFFFFFF).copy(alpha = 0.15f)
-    val glowSecondary = Color(0xFFD4A3FF).copy(alpha = 0.12f)
-    val glowAccent = Color(0xFFD4A3FF).copy(alpha = 0.20f)
-}
-
 object AppTypography {
     val headline1 = FontSpec(AppType.HeroSize, FontWeight.Bold)
     val headline2 = FontSpec(AppType.ScreenTitleSize, FontWeight.SemiBold)
@@ -119,13 +66,11 @@ data class FontSpec(
 )
 
 object DesignTokens {
-    val AppColors = com.telegramdrive.uploader.core.ui.theme.AppColors
     val AppSpacing = com.telegramdrive.uploader.core.ui.theme.AppSpacing
     val AppRadius = com.telegramdrive.uploader.core.ui.theme.AppRadius
     val AppElevation = com.telegramdrive.uploader.core.ui.theme.AppElevation
     val AppType = com.telegramdrive.uploader.core.ui.theme.AppType
     val AppTypography = com.telegramdrive.uploader.core.ui.theme.AppTypography
     val AppContentWidth = com.telegramdrive.uploader.core.ui.theme.AppContentWidth
-    val primaryContainer = AppColors.primaryContainer
     val spacingM = AppSpacing.medium
 }
