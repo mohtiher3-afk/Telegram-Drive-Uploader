@@ -38,7 +38,6 @@
 
 ### Onboarding & First Run
 
-On first launch, follow the Mission Control onboarding flow. Grant only the media
 permissions requested by your Android version. The opening animation is designed
 for the first-run experience and respects reduced-motion settings.
 
@@ -57,7 +56,6 @@ Open **Settings → Appearance** to choose how the app looks:
   one of six presets — Seafoam, Orchid, Cobalt, Lime, Cyan, Violet — or choose
   `Custom` and enter your own hex value.
 - **Dynamic Color**: `Full` (system wallpaper), `Brand Accented` (keeps your
-  glow colour), or `Static Brand` (app colours only).
 
 All choices are stored on the device and applied immediately.
 

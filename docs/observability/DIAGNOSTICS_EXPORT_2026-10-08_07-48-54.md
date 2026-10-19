@@ -35,7 +35,6 @@
 | 07:47:50 | INFO | SETTINGS_CHANGED | Dynamic color strategy changed to: BrandAccented |
 | 07:47:51 | INFO | SETTINGS_CHANGED | Dynamic color strategy changed to: StaticBrand |
 
-> **Note:** The user cycled through dynamic color strategies and triggered a glow primary color change (Seafoam).
 
 ### ❌ 2026-10-08 07:47:54 – 07:48:04 (Repeated Telegram Auth Errors)
 

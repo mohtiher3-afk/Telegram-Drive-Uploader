@@ -9,7 +9,6 @@ This document provides a trace, analysis, and secure diagnostic guide for handli
 When a user attempts to connect or authenticate on the Telegram login screen, an `Authentication Error` can be surfaced in the UI.
 
 ### The UI Component (`TelegramAuthScreen.kt`)
-If the connection state enters `TelegramConnectionState.ERROR`, the screen renders a liquid-glass styled Error Card with the header `authentication_error`:
 - **Header Text**: `R.string.authentication_error` ("Authentication Error" / "خطأ في المصادقة").
 - **Detail Text**: Dynamically mapped via `error.messageResId()`.
 - If credentials are empty or invalid, it displays `R.string.telegram_error_invalid_credentials` ("Telegram API credentials are not configured correctly.").
