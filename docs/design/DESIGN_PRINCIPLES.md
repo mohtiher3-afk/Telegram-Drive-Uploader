@@ -1,5 +1,11 @@
 # Design Principles
 
-1. Clarity: Visual hierarchy is driven by the New design: Material 3 with Dusk palette (dark and light), dynamic color from the wallpaper on Android 12+, Doto for titles and numbers, Space Mono for text, dot progress bar and dot ring, floating nav pill, tokens in hermes-package\tokens.json.
-2. Performance: Lightweight Material 3 components.
-3. Native Feel: Integration with Android dynamic color.
+The Dusk identity is governed by the "Technical Instrument" philosophy.
+
+## Core Directives
+1. **Dot-Matrix Language**: Use the dot-matrix motif (bars, rings, maps) for all progress and status indicators to evoke hardware readouts.
+2. **Real Data Only**: Avoid placeholder animations. Every movement must correspond to a real state change or data stream.
+3. **Accessibility First**: 
+    - All interactive elements maintain a minimum 48dp touch target.
+    - Contrast ratios follow WCAG AA standards for all text and iconography.
+4. **Reduced Motion**: All non-essential animations are gated by `rememberSystemMotionEnabled()` to respect system-level accessibility settings.

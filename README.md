@@ -47,17 +47,15 @@ Log in securely using your Telegram phone number or a QR code. The app uses
 real TDLib authentication; your credentials and session data are stored only on
 your device.
 
-### Appearance
 
-Open **Settings → Appearance** to choose how the app looks:
+## Visual Identity
+The app uses the **Dusk** design system: a technical, instrument-inspired visual language based on Material 3. It features a high-contrast palette, Doto/Space Mono typography, and a dot-matrix motif for all transfer readouts.
 
-- **Theme**: `System` (follows the device, the default), `Light`, or `Dark`.
-- **Glow Color**: the accent colour used for primary actions and progress. Pick
-  one of six presets — Seafoam, Orchid, Cobalt, Lime, Cyan, Violet — or choose
-  `Custom` and enter your own hex value.
-- **Dynamic Color**: `Full` (system wallpaper), `Brand Accented` (keeps your
-
-All choices are stored on the device and applied immediately.
+**Main Screens:**
+- **Home**: Transfer overview and global stats.
+- **Queue**: Real-time upload management and PartsMap grids.
+- **History**: Archive of completed transfers with detailed logs.
+- **Settings**: Appearance, TDLib configuration, .
 
 ### Uploading Files
 

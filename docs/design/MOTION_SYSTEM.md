@@ -1,5 +1,18 @@
 # Motion System
 
-New design: Material 3 with Dusk palette (dark and light), dynamic color from the wallpaper on Android 12+, Doto for titles and numbers, Space Mono for text, dot progress bar and dot ring, floating nav pill, tokens in hermes-package\tokens.json
+Motion in Dusk is used exclusively to signal state transitions and progress.
 
-Includes dot-based progress animations and smooth Material 3 transitions.
+## Motion Tokens
+| Token | Value | Application |
+|---|---|---|
+| fast | 120ms | Micro-interactions, toggle switches |
+| short | 180ms | Color transitions, status changes |
+| medium | 250ms | Standard layout shifts |
+| pageEnter | 300ms | Screen transitions |
+| auroraBreath | 2800ms | Subtle background ambient pulses |
+| signalPulse | 1200ms | Active upload/failure alerts |
+
+## Easing & Behavior
+- **Standard**: Material You standard easing for most transitions.
+- **Overshoot**: Spring-based easing for "pop" effects on celebratory or error states.
+- **Linear Pulse**: Infinite repeatable pulses for active processes (e.g., `PartsMap` active cells).
