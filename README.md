@@ -130,7 +130,6 @@ core/                       :core — diagnostics, Gemini Nano AI, shared utilit
 data/                       :data — TDLib client, Room, upload engine, WorkManager
 domain/                     :domain — models, repository contracts, pure upload logic
 benchmark/                  :benchmark — startup / macrobenchmark suite
-design/                     Visual direction: Mission Control tokens, previews
 docs/                       Documentation index + maintainable content
 scripts/                    verify-project*, check-* gates, artifact helpers
 ```

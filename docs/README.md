@@ -21,8 +21,6 @@ All relative links in this documentation tree are verified by
 |---|---|
 | [DEVELOPER_ONBOARDING.md](DEVELOPER_ONBOARDING.md) | Set up the project and run a first successful build |
 | [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) | Engineering rules applied to every change |
-| [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) | Phased delivery plan for the Mission Control rebuild (phases 0–5 landed; kept for its workflow and troubleshooting rules) |
-| [CLINE_TASKS.md](CLINE_TASKS.md) | Per-screen task scripts used to drive the rebuild (completed; colour values are superseded by `DesignTokens.kt`) |
 | [HISTORICAL_AUDITS.md](HISTORICAL_AUDITS.md) | What was removed from the documentation tree, when, and how to recover it from Git history |
 
 ## Architecture and design
@@ -30,7 +28,6 @@ All relative links in this documentation tree are verified by
 | Area | Location | Entry points |
 |---|---|---|
 | Architecture | [`architecture/`](architecture/) | [TARGET_ARCHITECTURE.md](architecture/TARGET_ARCHITECTURE.md), [DATA_FLOW.md](architecture/DATA_FLOW.md), [DEPENDENCY_GRAPH.md](architecture/DEPENDENCY_GRAPH.md), [TELEGRAM_ARCHITECTURE.md](architecture/TELEGRAM_ARCHITECTURE.md), [UPLOAD_ARCHITECTURE.md](architecture/UPLOAD_ARCHITECTURE.md), [WORKMANAGER_ARCHITECTURE.md](architecture/WORKMANAGER_ARCHITECTURE.md), [NAVIGATION_ARCHITECTURE.md](architecture/NAVIGATION_ARCHITECTURE.md), [DI_GRAPH.md](architecture/DI_GRAPH.md) |
-| Design system | [`design/`](design/) | [DESIGN_SYSTEM.md](design/DESIGN_SYSTEM.md), [DESIGN_PRINCIPLES.md](design/DESIGN_PRINCIPLES.md), [M3_COMPONENT_MAP.md](design/M3_COMPONENT_MAP.md), [M3_SCREEN_DESIGNS.md](design/M3_SCREEN_DESIGNS.md), [MOTION_SYSTEM.md](design/MOTION_SYSTEM.md), [RTL_DESIGN_GUIDELINES.md](design/RTL_DESIGN_GUIDELINES.md), [SCREEN_STATE_MATRIX.md](design/SCREEN_STATE_MATRIX.md) |
 
 ## Runtime behavior
 
