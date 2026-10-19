@@ -42,7 +42,7 @@ import java.util.Locale
 
 /**
  * Prepared-video row used by the upload preparation screen (05).
- * Rebuilt on Dusk: plain AppCard, no glass / glow / old tokens.
+ * Rebuilt on Dusk: plain AppCard.
  */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable

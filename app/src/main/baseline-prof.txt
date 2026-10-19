@@ -17217,16 +17217,6 @@ PLcom/telegramdrive/uploader/core/ui/components/GlowBentoVariant;-><clinit>()V
 PLcom/telegramdrive/uploader/core/ui/components/GlowBentoVariant;-><init>(Ljava/lang/String;I)V
 PLcom/telegramdrive/uploader/core/ui/components/GlowBentoVariant;->values()[Lcom/telegramdrive/uploader/core/ui/components/GlowBentoVariant;
 PLcom/telegramdrive/uploader/core/ui/components/VideoItemKt;->formatFileSize(J)Ljava/lang/String;
-Lcom/telegramdrive/uploader/core/ui/theme/AppColors;
-SPLcom/telegramdrive/uploader/core/ui/theme/AppColors;-><clinit>()V
-SPLcom/telegramdrive/uploader/core/ui/theme/AppColors;-><init>()V
-SPLcom/telegramdrive/uploader/core/ui/theme/AppColors;->getOnPrimary-0d7_KjU()J
-PLcom/telegramdrive/uploader/core/ui/theme/AppColors;->getOnPrimaryContainer-0d7_KjU()J
-PLcom/telegramdrive/uploader/core/ui/theme/AppColors;->getOnSecondary-0d7_KjU()J
-SPLcom/telegramdrive/uploader/core/ui/theme/AppColors;->getOnSurface-0d7_KjU()J
-SPLcom/telegramdrive/uploader/core/ui/theme/AppColors;->getPrimaryContainer-0d7_KjU()J
-SPLcom/telegramdrive/uploader/core/ui/theme/AppColors;->getSecondaryContainer-0d7_KjU()J
-SPLcom/telegramdrive/uploader/core/ui/theme/AppColors;->getSurface-0d7_KjU()J
 Lcom/telegramdrive/uploader/core/ui/theme/AppContentWidth;
 SPLcom/telegramdrive/uploader/core/ui/theme/AppContentWidth;-><clinit>()V
 SPLcom/telegramdrive/uploader/core/ui/theme/AppContentWidth;-><init>()V
@@ -17271,7 +17261,6 @@ SPLcom/telegramdrive/uploader/core/ui/theme/ColorKt;->getTideSaltPaper()J
 Lcom/telegramdrive/uploader/core/ui/theme/DesignTokens;
 SPLcom/telegramdrive/uploader/core/ui/theme/DesignTokens;-><clinit>()V
 SPLcom/telegramdrive/uploader/core/ui/theme/DesignTokens;-><init>()V
-SPLcom/telegramdrive/uploader/core/ui/theme/DesignTokens;->getAppColors()Lcom/telegramdrive/uploader/core/ui/theme/AppColors;
 SPLcom/telegramdrive/uploader/core/ui/theme/DesignTokens;->getAppSpacing()Lcom/telegramdrive/uploader/core/ui/theme/AppSpacing;
 SPLcom/telegramdrive/uploader/core/ui/theme/DesignTokens;->getPrimaryContainer-0d7_KjU()J
 SPLcom/telegramdrive/uploader/core/ui/theme/DesignTokens;->getSpacingM-D9Ej5fM()F
@@ -17304,9 +17293,6 @@ SPLcom/telegramdrive/uploader/core/ui/theme/GlowPrimaryColors;->getOnPrimaryCont
 SPLcom/telegramdrive/uploader/core/ui/theme/GlowPrimaryColors;->getPrimary-0d7_KjU()J
 SPLcom/telegramdrive/uploader/core/ui/theme/GlowPrimaryColors;->getPrimaryContainer-0d7_KjU()J
 PLcom/telegramdrive/uploader/core/ui/theme/MotionTokensKt;->rememberSystemMotionEnabled(Landroidx/compose/runtime/Composer;I)Z
-Lcom/telegramdrive/uploader/core/ui/theme/SafeGlowTokens;
-SPLcom/telegramdrive/uploader/core/ui/theme/SafeGlowTokens;-><clinit>()V
-SPLcom/telegramdrive/uploader/core/ui/theme/SafeGlowTokens;-><init>()V
 Lcom/telegramdrive/uploader/core/ui/theme/ThemeKt;
 SPLcom/telegramdrive/uploader/core/ui/theme/ThemeKt;-><clinit>()V
 SPLcom/telegramdrive/uploader/core/ui/theme/ThemeKt;->TelegramDriveTheme(ZLcom/telegramdrive/uploader/core/ui/theme/DynamicColorStrategy;Lcom/telegramdrive/uploader/core/ui/theme/GlowColorPreset;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
