@@ -6,22 +6,22 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * WCAG 2.1 contrast gate for the Dusk palette (fallback scheme).
+ * WCAG 2.1 contrast gate for the Coral palette (fallback scheme).
  * Validates both Light and Dark schemes to ensure accessibility baseline.
  */
-class DuskContrastTest {
+class CoralContrastTest {
 
     @Test
     fun `dark scheme contrast is readable`() {
         checkScheme(
-            surface = DuskSurfaceDark,
-            onSurface = DuskOnSurfaceDark,
-            onSurfaceVariant = DuskOnSurfaceVariantDark,
-            primary = DuskPrimaryDark,
-            onPrimary = DuskOnPrimaryDark,
-            primaryContainer = DuskPrimaryContainerDark,
-            onPrimaryContainer = DuskOnPrimaryContainerDark,
-            error = DuskErrorDark,
+            surface = CoralSurfaceDark,
+            onSurface = CoralOnSurfaceDark,
+            onSurfaceVariant = CoralOnSurfaceVariantDark,
+            primary = CoralPrimaryDark,
+            onPrimary = CoralOnPrimaryDark,
+            primaryContainer = CoralPrimaryContainerDark,
+            onPrimaryContainer = CoralOnPrimaryContainerDark,
+            error = CoralErrorDark,
             schemeName = "Dark"
         )
     }
@@ -29,14 +29,14 @@ class DuskContrastTest {
     @Test
     fun `light scheme contrast is readable`() {
         checkScheme(
-            surface = DuskSurfaceLight,
-            onSurface = DuskOnSurfaceLight,
-            onSurfaceVariant = DuskOnSurfaceVariantLight,
-            primary = DuskPrimaryLight,
-            onPrimary = DuskOnPrimaryLight,
-            primaryContainer = DuskPrimaryContainerLight,
-            onPrimaryContainer = DuskOnPrimaryContainerLight,
-            error = DuskErrorLight,
+            surface = CoralSurfaceLight,
+            onSurface = CoralOnSurfaceLight,
+            onSurfaceVariant = CoralOnSurfaceVariantLight,
+            primary = CoralPrimaryLight,
+            onPrimary = CoralOnPrimaryLight,
+            primaryContainer = CoralPrimaryContainerLight,
+            onPrimaryContainer = CoralOnPrimaryContainerLight,
+            error = CoralErrorLight,
             schemeName = "Light"
         )
     }

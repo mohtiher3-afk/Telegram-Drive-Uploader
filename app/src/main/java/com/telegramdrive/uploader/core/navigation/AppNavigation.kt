@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.automirrored.outlined.Chat
+import androidx.compose.material.icons.automirrored.outlined.PlaylistAdd
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Settings
@@ -36,9 +38,13 @@ import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.components.AppNavPill
 import com.telegramdrive.uploader.core.ui.components.NavPillItem
+import com.telegramdrive.uploader.core.ui.components.UploadIsland
 import com.telegramdrive.uploader.feature.home.HomeScreen
+import com.telegramdrive.uploader.feature.home.HomeViewModel
+import com.telegramdrive.uploader.feature.home.HomeUiState
 import com.telegramdrive.uploader.feature.splash.SplashScreen
 import com.telegramdrive.uploader.feature.queue.QueueScreen
+import com.telegramdrive.uploader.feature.queue.QueueViewModel
 import com.telegramdrive.uploader.feature.history.HistoryScreen
 import com.telegramdrive.uploader.feature.onboarding.OnboardingScreen
 import com.telegramdrive.uploader.feature.onboarding.OnboardingViewModel
@@ -48,6 +54,7 @@ import com.telegramdrive.uploader.feature.upload.UploadViewModel
 import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import com.telegramdrive.uploader.feature.telegram.TelegramAuthScreen
 import com.telegramdrive.uploader.feature.telegram.TelegramDestinationScreen
+import com.telegramdrive.uploader.domain.model.UploadStatus
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -67,17 +74,11 @@ sealed class Screen(
     val unselectedIcon: ImageVector
 ) {
     object Home : Screen(AppRoutes.HOME, R.string.nav_home, Icons.Filled.Home, Icons.Outlined.Home)
+    object Send : Screen(AppRoutes.TELEGRAM_DESTINATION, R.string.nav_send, Icons.AutoMirrored.Filled.Chat, Icons.AutoMirrored.Outlined.Chat)
+    object Add : Screen(AppRoutes.UPLOAD_PREPARATION, R.string.nav_add, Icons.AutoMirrored.Filled.PlaylistAdd, Icons.AutoMirrored.Outlined.PlaylistAdd)
     object Queue : Screen(AppRoutes.QUEUE, R.string.nav_queue, Icons.Filled.Layers, Icons.Outlined.Layers)
-    object History : Screen(AppRoutes.HISTORY, R.string.nav_history, Icons.Filled.History, Icons.Outlined.History)
-    object Settings : Screen(AppRoutes.SETTINGS, R.string.nav_settings, Icons.Filled.Settings, Icons.Outlined.Settings)
+    object Setup : Screen(AppRoutes.SETTINGS, R.string.nav_setup, Icons.Filled.Settings, Icons.Outlined.Settings)
 }
-
-val bottomNavItems = listOf(
-    Screen.Home,
-    Screen.Queue,
-    Screen.History,
-    Screen.Settings
-)
 
 @Composable
 fun AppNavigation(
@@ -91,13 +92,24 @@ fun AppNavigation(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val showBottomBar = bottomNavItems.any { it.route == currentRoute }
+
+    // Unified navigation items with routes for both tablet rail and phone pill
+    val navItems = listOf(
+        NavPillItem(Icons.Filled.Home, stringResource(R.string.nav_home), "nav_tab_${Screen.Home.route}", Screen.Home.route),
+        NavPillItem(Icons.AutoMirrored.Filled.Chat, stringResource(R.string.nav_send), "nav_tab_${Screen.Send.route}", Screen.Send.route),
+        NavPillItem(Icons.AutoMirrored.Filled.PlaylistAdd, stringResource(R.string.nav_add), "nav_tab_${Screen.Add.route}", Screen.Add.route),
+        NavPillItem(Icons.Filled.Layers, stringResource(R.string.nav_queue), "nav_tab_${Screen.Queue.route}", Screen.Queue.route),
+        NavPillItem(Icons.Filled.Settings, stringResource(R.string.nav_setup), "nav_tab_${Screen.Setup.route}", Screen.Setup.route),
+    )
+    val showBottomBar = navItems.any { it.route == currentRoute }
 
     val windowInfo = LocalWindowInfo.current
     val density = LocalDensity.current
     val windowWidthDp = Dp(windowInfo.containerSize.width / density.density)
     val isExpanded = windowWidthDp >= 600.dp
 
+    val homeViewModel: HomeViewModel = hiltViewModel()
+    val queueViewModel: QueueViewModel = hiltViewModel()
     val uploadViewModel: UploadViewModel = hiltViewModel()
 
     Row(
@@ -126,13 +138,13 @@ fun AppNavigation(
                     }
                 }
             ) {
-                bottomNavItems.forEach { screen ->
-                    val isSelected = currentRoute == screen.route
+                navItems.forEach { item ->
+                    val isSelected = currentRoute == item.route
                     NavigationRailItem(
                         selected = isSelected,
                         onClick = {
-                            if (currentRoute != screen.route) {
-                                navController.navigate(screen.route) {
+                            if (currentRoute != item.route) {
+                                navController.navigate(item.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true
                                     }
@@ -143,11 +155,11 @@ fun AppNavigation(
                         },
                         icon = {
                             Icon(
-                                imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
+                                imageVector = item.icon,
                                 contentDescription = null
                             )
                         },
-                        label = { Text(stringResource(screen.titleRes)) },
+                        label = { Text(item.label) },
                         alwaysShowLabel = true,
                         colors = NavigationRailItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.primary,
@@ -156,88 +168,87 @@ fun AppNavigation(
                             unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
-                        modifier = Modifier.testTag("nav_tab_${screen.route}")
+                        modifier = Modifier.testTag(item.testTag)
                     )
                 }
             }
         }
+    }
 
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
-            contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
-            bottomBar = {
-                if (!isExpanded && showBottomBar) {
-                    Box(
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
+        bottomBar = {
+            if (!isExpanded && showBottomBar) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
+                ) {
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
+                        shape = MaterialTheme.shapes.extraLarge,
+                        color = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 6.dp,
+                        shadowElevation = 8.dp
                     ) {
-                        Surface(
+                    // Floating nav: circular indicators, active tab expands into a pill with label
+                        AppNavPill(
+                            items = navItems,
+                            selectedIndex = navItems.indexOfFirst { it.route == currentRoute },
+                            onSelect = { index ->
+                                val selectedItem = navItems[index]
+                                if (currentRoute != selectedItem.route) {
+                                    navController.navigate(selectedItem.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp, vertical = 8.dp),
-                            shape = MaterialTheme.shapes.extraLarge,
-                            color = MaterialTheme.colorScheme.surface,
-                            tonalElevation = 6.dp,
-                            shadowElevation = 8.dp
-                        ) {
-                        // Floating nav: circular indicators, active tab expands into a pill with label
-                            val bottomNavItems = listOf(
-                                NavPillItem(
-                                    icon = Icons.Filled.Home,
-                                    label = stringResource(R.string.nav_home),
-                                    testTag = "nav_tab_${Screen.Home.route}"
-                                ),
-                                NavPillItem(
-                                    icon = Icons.Filled.Layers,
-                                    label = stringResource(R.string.nav_queue),
-                                    testTag = "nav_tab_${Screen.Queue.route}"
-                                ),
-                                NavPillItem(
-                                    icon = Icons.Filled.History,
-                                    label = stringResource(R.string.nav_history),
-                                    testTag = "nav_tab_${Screen.History.route}"
-                                ),
-                                NavPillItem(
-                                    icon = Icons.Filled.Settings,
-                                    label = stringResource(R.string.nav_settings),
-                                    testTag = "nav_tab_${Screen.Settings.route}"
-                                )
-                            )
-
-                            AppNavPill(
-                                items = bottomNavItems,
-                                selectedIndex = bottomNavItems.indexOfFirst { it.testTag == "nav_tab_${currentRoute}" },
-                                onSelect = { index ->
-                                    val selectedScreen = bottomNavItems[index]
-                                    if (currentRoute != selectedScreen.testTag) {
-                                        navController.navigate(selectedScreen.testTag) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
-                            )
-                        }
-                        }
+                                .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
+                        )
+                    }
                     }
                 }
-        ) { innerPadding ->
+            }
+    ) { innerPadding ->
+        Box(modifier = Modifier.fillMaxSize()) {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface
             ) {
+                // Island notification overlay — shows active upload progress at top of screen
+                val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle(HomeUiState())
+                val activeUpload = homeUiState.activeUploads.firstOrNull()
+                val showIsland = activeUpload != null &&
+                    activeUpload.status != UploadStatus.COMPLETED &&
+                    activeUpload.status != UploadStatus.CANCELLED &&
+                    currentRoute != AppRoutes.SPLASH &&
+                    currentRoute != AppRoutes.TELEGRAM_AUTH
+                activeUpload?.let { upload ->
+                    UploadIsland(
+                        activeUpload = upload,
+                        isVisible = showIsland,
+                        onExpandClick = { /* Island handles its own expansion */ },
+                        onPauseClick = { queueViewModel.pauseUpload(upload.id) },
+                        onCancelClick = { queueViewModel.cancelUpload(upload.id) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = AppSpacing.medium, vertical = 16.dp)
+                    )
+                }
+
                 NavHost(
                     navController = navController,
                     startDestination = if (openingCompleted) Screen.Home.route else AppRoutes.SPLASH,
                     modifier = Modifier
-                        
                         .padding(innerPadding)
                 ) {
                     composable(AppRoutes.SPLASH) {
@@ -260,22 +271,42 @@ fun AppNavigation(
                             )
                         } else {
                             HomeScreen(
-                                onSettingsClick = { navController.navigate(Screen.Settings.route) },
+                                onSettingsClick = { navController.navigate(Screen.Setup.route) },
                                 onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
                                 onVideosSelected = { uris ->
                                     uploadViewModel.setPrepareUris(uris)
-                                    navController.navigate(AppRoutes.UPLOAD_PREPARATION)
+                                    navController.navigate(Screen.Add.route) {
+                                        popUpTo(Screen.Home.route)
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 },
                             )
                         }
                     }
-                    composable(AppRoutes.UPLOAD_PREPARATION) {
+                    composable(Screen.Send.route) {
+                        TelegramDestinationScreen(
+                            onBackClick = { navController.navigate(Screen.Home.route) },
+                            onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
+                            onDestinationSelected = { dest ->
+                                uploadViewModel.onDestinationSelected(dest)
+                                navController.navigate(Screen.Add.route) {
+                                    popUpTo(Screen.Home.route)
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
+                    composable(Screen.Add.route) {
                         UploadScreen(
-                            onBackClick = { navController.popBackStack() },
-                            onSelectDestination = { navController.navigate(AppRoutes.TELEGRAM_DESTINATION) },
+                            onBackClick = { navController.navigate(Screen.Home.route) },
+                            onSelectDestination = { navController.navigate(Screen.Send.route) },
                             onQueueAdded = {
                                 navController.navigate(Screen.Queue.route) {
                                     popUpTo(Screen.Home.route)
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             },
                             viewModel = uploadViewModel
@@ -287,21 +318,9 @@ fun AppNavigation(
                             onAuthSuccess = { navController.popBackStack() }
                         )
                     }
-                    composable(AppRoutes.TELEGRAM_DESTINATION) {
-                        TelegramDestinationScreen(
-                            onBackClick = { navController.popBackStack() },
-                            onConnectClick = {
-                                navController.navigate(AppRoutes.TELEGRAM_AUTH)
-                            },
-                            onDestinationSelected = { dest ->
-                                uploadViewModel.onDestinationSelected(dest)
-                                navController.popBackStack()
-                            }
-                        )
-                    }
                     composable(Screen.Queue.route) { QueueScreen() }
-                    composable(Screen.History.route) { HistoryScreen() }
-                    composable(Screen.Settings.route) {
+                    composable(AppRoutes.HISTORY) { HistoryScreen() }
+                    composable(Screen.Setup.route) {
                         SettingsScreen(
                             onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
                         )

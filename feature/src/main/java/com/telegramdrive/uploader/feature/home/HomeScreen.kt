@@ -235,7 +235,12 @@ private fun HomeTitleBlock(
     onConnectClick: () -> Unit,
     onSelectVideos: () -> Unit
 ) {
-    val title = if (displayName.isNotBlank()) displayName else stringResource(R.string.telegram_drive)
+    val title = stringResource(R.string.home_ready)
+    val initials = if (displayName.isNotBlank()) {
+        displayName.split(" ").joinToString("") { it.firstOrNull()?.uppercase() ?: "" }.take(2)
+    } else {
+        "TD"
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -265,7 +270,7 @@ private fun HomeTitleBlock(
         )
         Spacer(modifier = Modifier.width(AppSpacing.small))
         HomeAvatar(
-            initials = displayName.initials(),
+            initials = initials,
             modifier = Modifier.testTag("home_avatar")
         )
     }

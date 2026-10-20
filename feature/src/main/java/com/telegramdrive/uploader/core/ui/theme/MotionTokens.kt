@@ -101,6 +101,25 @@ object AppMotion {
         snap()
     }
 
+    /** Medium spring for card expansions and similar transitions. */
+    fun <T> mediumSpring(motionEnabled: Boolean = true): FiniteAnimationSpec<T> = if (motionEnabled) {
+        spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    } else {
+        snap()
+    }
+
+    /** Pulse animation for live indicators (e.g., island dot). */
+    fun pulse(): InfiniteRepeatableSpec<Float> = infiniteRepeatable(
+        animation = tween(
+            durationMillis = 1000,
+            easing = standardEasing
+        ),
+        repeatMode = RepeatMode.Reverse
+    )
+
     /**
      * Spatial motion for the onboarding page transition. A no-bounce spring keeps
      * the transition interruptible without adding celebration to a utility flow.

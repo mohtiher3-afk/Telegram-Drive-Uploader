@@ -13,71 +13,71 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 /**
- * Dusk palette from hermes-package/tokens.json.
+ * Coral palette matching the design spec (--p: #ff6b61).
  * Fallback scheme when dynamic color is disabled or below Android 12.
  */
-private val DuskDarkColorScheme = darkColorScheme(
-    primary = DuskPrimaryDark,
-    onPrimary = DuskOnPrimaryDark,
-    primaryContainer = DuskPrimaryContainerDark,
-    onPrimaryContainer = DuskOnPrimaryContainerDark,
-    secondary = DuskOnSurfaceVariantDark,
-    onSecondary = DuskSurfaceDark,
-    secondaryContainer = DuskSurfaceHighDark,
-    onSecondaryContainer = DuskOnSurfaceDark,
-    tertiary = DuskTertiaryDark,
-    onTertiary = DuskSurfaceDark,
-    tertiaryContainer = DuskSurfaceHighDark,
-    onTertiaryContainer = DuskOnSurfaceDark,
-    background = DuskSurfaceDark,
-    onBackground = DuskOnSurfaceDark,
-    surface = DuskSurfaceDark,
-    onSurface = DuskOnSurfaceDark,
-    surfaceVariant = DuskSurfaceContainerDark,
-    onSurfaceVariant = DuskOnSurfaceVariantDark,
-    surfaceContainerLowest = DuskSurfaceDark,
-    surfaceContainerLow = DuskSurfaceContainerDark,
-    surfaceContainer = DuskSurfaceContainerDark,
-    surfaceContainerHigh = DuskSurfaceHighDark,
-    surfaceContainerHighest = DuskSurfaceHighDark,
-    error = DuskErrorDark,
-    onError = DuskSurfaceDark,
-    errorContainer = DuskSurfaceHighDark,
-    onErrorContainer = DuskOnSurfaceDark,
-    outline = DuskOutlineDark,
-    outlineVariant = DuskOutlineDark
+private val CoralDarkColorScheme = darkColorScheme(
+    primary = CoralPrimaryDark,
+    onPrimary = CoralOnPrimaryDark,
+    primaryContainer = CoralPrimaryContainerDark,
+    onPrimaryContainer = CoralOnPrimaryContainerDark,
+    secondary = CoralOnSurfaceVariantDark,
+    onSecondary = CoralSurfaceDark,
+    secondaryContainer = CoralSurfaceHighDark,
+    onSecondaryContainer = CoralOnSurfaceDark,
+    tertiary = CoralTertiaryDark,
+    onTertiary = CoralSurfaceDark,
+    tertiaryContainer = CoralSurfaceHighDark,
+    onTertiaryContainer = CoralOnSurfaceDark,
+    background = CoralSurfaceDark,
+    onBackground = CoralOnSurfaceDark,
+    surface = CoralSurfaceDark,
+    onSurface = CoralOnSurfaceDark,
+    surfaceVariant = CoralSurfaceContainerDark,
+    onSurfaceVariant = CoralOnSurfaceVariantDark,
+    surfaceContainerLowest = CoralSurfaceDark,
+    surfaceContainerLow = CoralSurfaceContainerDark,
+    surfaceContainer = CoralSurfaceContainerDark,
+    surfaceContainerHigh = CoralSurfaceHighDark,
+    surfaceContainerHighest = CoralSurfaceHighDark,
+    error = CoralErrorDark,
+    onError = CoralSurfaceDark,
+    errorContainer = CoralSurfaceHighDark,
+    onErrorContainer = CoralOnSurfaceDark,
+    outline = CoralOutlineDark,
+    outlineVariant = CoralOutlineDark
 )
 
-private val DuskLightColorScheme = lightColorScheme(
-    primary = DuskPrimaryLight,
-    onPrimary = DuskOnPrimaryLight,
-    primaryContainer = DuskPrimaryContainerLight,
-    onPrimaryContainer = DuskOnPrimaryContainerLight,
-    secondary = DuskOnSurfaceVariantLight,
-    onSecondary = DuskSurfaceLight,
-    secondaryContainer = DuskSurfaceHighLight,
-    onSecondaryContainer = DuskOnSurfaceLight,
-    tertiary = DuskTertiaryLight,
-    onTertiary = DuskSurfaceLight,
-    tertiaryContainer = DuskSurfaceHighLight,
-    onTertiaryContainer = DuskOnSurfaceLight,
-    background = DuskSurfaceLight,
-    onBackground = DuskOnSurfaceLight,
-    surface = DuskSurfaceLight,
-    onSurface = DuskOnSurfaceLight,
-    surfaceVariant = DuskSurfaceContainerLight,
-    onSurfaceVariant = DuskOnSurfaceVariantLight,
-    surfaceContainerLowest = DuskSurfaceLight,
-    surfaceContainerLow = DuskSurfaceContainerLight,
-    surfaceContainer = DuskSurfaceContainerLight,
-    surfaceContainerHigh = DuskSurfaceHighLight,
-    surfaceContainerHighest = DuskSurfaceHighLight,
-    error = DuskErrorLight,
-    onError = DuskSurfaceLight,
-    errorContainer = DuskSurfaceHighLight,
-    onErrorContainer = DuskOnSurfaceLight,
-    outline = DuskOutlineLight,
-    outlineVariant = DuskOutlineLight
+private val CoralLightColorScheme = lightColorScheme(
+    primary = CoralPrimaryLight,
+    onPrimary = CoralOnPrimaryLight,
+    primaryContainer = CoralPrimaryContainerLight,
+    onPrimaryContainer = CoralOnPrimaryContainerLight,
+    secondary = CoralOnSurfaceVariantLight,
+    onSecondary = CoralSurfaceLight,
+    secondaryContainer = CoralSurfaceHighLight,
+    onSecondaryContainer = CoralOnSurfaceLight,
+    tertiary = CoralTertiaryLight,
+    onTertiary = CoralSurfaceLight,
+    tertiaryContainer = CoralSurfaceHighLight,
+    onTertiaryContainer = CoralOnSurfaceLight,
+    background = CoralSurfaceLight,
+    onBackground = CoralOnSurfaceLight,
+    surface = CoralSurfaceLight,
+    onSurface = CoralOnSurfaceLight,
+    surfaceVariant = CoralSurfaceContainerLight,
+    onSurfaceVariant = CoralOnSurfaceVariantLight,
+    surfaceContainerLowest = CoralSurfaceLight,
+    surfaceContainerLow = CoralSurfaceContainerLight,
+    surfaceContainer = CoralSurfaceContainerLight,
+    surfaceContainerHigh = CoralSurfaceHighLight,
+    surfaceContainerHighest = CoralSurfaceHighLight,
+    error = CoralErrorLight,
+    onError = CoralSurfaceLight,
+    errorContainer = CoralSurfaceHighLight,
+    onErrorContainer = CoralOnSurfaceLight,
+    outline = CoralOutlineLight,
+    outlineVariant = CoralOutlineLight
 )
 
 /**
@@ -101,8 +101,8 @@ fun TelegramDriveTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DuskDarkColorScheme
-        else -> DuskLightColorScheme
+        darkTheme -> CoralDarkColorScheme
+        else -> CoralLightColorScheme
     }
 
     MaterialTheme(

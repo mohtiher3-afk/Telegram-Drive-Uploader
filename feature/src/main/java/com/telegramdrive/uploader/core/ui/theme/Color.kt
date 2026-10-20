@@ -2,34 +2,33 @@ package com.telegramdrive.uploader.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Design tokens from hermes-package/tokens.json — Dusk palette.
-// On Android 12+ these serve as the fallback when dynamic color is disabled.
+// Design spec palette — Coral primary with Dynamic Color support
+// Based on the HTML prototype's --p: #ff6b61
 
-// Dark
-val DuskSurfaceDark = Color(0xFF0C0A10)
-val DuskSurfaceContainerDark = Color(0xFF18141E)
-val DuskSurfaceHighDark = Color(0xFF2F2837)
-val DuskOutlineDark = Color(0xFF312B38)
-val DuskOnSurfaceDark = Color(0xFFEDEAF1)
-val DuskOnSurfaceVariantDark = Color(0xFFAFA6BA)
-val DuskPrimaryDark = Color(0xFFD4A3FF)
-val DuskOnPrimaryDark = Color(0xFF351551)
-val DuskPrimaryContainerDark = Color(0xFF58317E)
-val DuskOnPrimaryContainerDark = Color(0xFFEBDEFD)
-val DuskTertiaryDark = Color(0xFFFCA9BB)
-val DuskErrorDark = Color(0xFFFF8A80)
+// Dark (fallback when dynamic color disabled)
+val CoralSurfaceDark = Color(0xFF0A0A0A)
+val CoralSurfaceContainerDark = Color(0xFF141414)
+val CoralSurfaceHighDark = Color(0xFF2A2A2A)
+val CoralOutlineDark = Color(0xFF2A2A2A)
+val CoralOnSurfaceDark = Color(0xFFF2F2F2)
+val CoralOnSurfaceVariantDark = Color(0xFF8E8E8E)
+val CoralPrimaryDark = Color(0xFFFF6B61)    // --p: #ff6b61
+val CoralOnPrimaryDark = Color(0xFF3A0A08)  // --op
+val CoralPrimaryContainerDark = Color(0xFF5A1A16) // --pc
+val CoralOnPrimaryContainerDark = Color(0xFFFFDAD6) // --opc
+val CoralTertiaryDark = Color(0xFFFF8A80)   // --e
+val CoralErrorDark = Color(0xFFFF8A80)
 
-// Light
-val DuskSurfaceLight = Color(0xFFF9F7FC)
-val DuskSurfaceContainerLight = Color(0xFFF0EDF5)
-val DuskSurfaceHighLight = Color(0xFFDAD4E2)
-val DuskOutlineLight = Color(0xFFD3CFD9)
-val DuskOnSurfaceLight = Color(0xFF17151A)
-val DuskOnSurfaceVariantLight = Color(0xFF585261)
-val DuskPrimaryLight = Color(0xFF7847A6)
-val DuskOnPrimaryLight = Color(0xFFFDFAFF)
-val DuskPrimaryContainerLight = Color(0xFFE6D6FB)
-val DuskOnPrimaryContainerLight = Color(0xFF351551)
-val DuskTertiaryLight = Color(0xFF92495B)
-val DuskErrorLight = Color(0xFFB3261E)
-
+// Light (fallback when dynamic color disabled)
+val CoralSurfaceLight = Color(0xFFF2F2F2)
+val CoralSurfaceContainerLight = Color(0xFFE8E8E8)
+val CoralSurfaceHighLight = Color(0xFFD0D0D0)
+val CoralOutlineLight = Color(0xFFCCCCCC)
+val CoralOnSurfaceLight = Color(0xFF0A0A0A)
+val CoralOnSurfaceVariantLight = Color(0xFF444444)
+val CoralPrimaryLight = Color(0xFFE85A4F)
+val CoralOnPrimaryLight = Color(0xFFFFFFFF)
+val CoralPrimaryContainerLight = Color(0xFFFFDAD6)
+val CoralOnPrimaryContainerLight = Color(0xFF3A0A08)
+val CoralTertiaryLight = Color(0xFFB3261E)
+val CoralErrorLight = Color(0xFFB3261E)

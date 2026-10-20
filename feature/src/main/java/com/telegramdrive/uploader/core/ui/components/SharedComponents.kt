@@ -398,6 +398,7 @@ data class NavPillItem(
     val icon: ImageVector,
     val label: String,
     val testTag: String,
+    val route: String = "",
 )
 
 /**
