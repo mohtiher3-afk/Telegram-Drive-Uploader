@@ -60,7 +60,6 @@ __pycache__/
 # Root-level directories that are repository entry points (not nested modules,
 # also matching the interface organization):
 # .github/  — workflows, dependabot, issue/PR templates
-# .clinerules/ — Cline coding-agent workspace rules
 # design/   — visual direction system & previews
 # docs/     — living documentation; docs/README.md is the index
 # gradle/   — version catalogs + plugin management
@@ -71,7 +70,6 @@ __pycache__/
 # feature/src/test/... was invisible to git for its entire life, which is how a test
 # referencing a never-committed screen survived undetected.
 .github/
-.clinerules/
 build/
 design/
 docs/

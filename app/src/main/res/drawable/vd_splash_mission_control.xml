@@ -17,7 +17,7 @@
 
     <path
         android:name="tray"
-        android:fillColor="@color/splash_lime"
+        android:fillColor="@color/splash_chartreuse"
         android:pathData="M27,62 L27,72 C27,78 32,82 38,82 L70,82 C76,82 81,78 81,72 L81,62 L75,62 L75,72 C75,75 73,76 70,76 L38,76 C35,76 33,75 33,72 L33,62 Z" />
 
     <path
