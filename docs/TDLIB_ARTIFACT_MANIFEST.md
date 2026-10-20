@@ -36,11 +36,13 @@ The mandatory checker reports `TDLIB_ARTIFACTS_PRESENT=true`, verifies the ELF h
 
 ## 4. SHA-256 Checksums
 
-The authoritative machine-readable checksums are in [`TDLIB_SHA256SUMS.txt`](TDLIB_SHA256SUMS.txt). That file covers the three prebuilt `libtdjni.so` files and the three generated Java bindings using repository-relative paths and the exact Git blob bytes used for checkout on Linux CI.
+The authoritative machine-readable checksums are in [`TDLIB_SHA256SUMS.txt`](TDLIB_SHA256SUMS.txt). That file covers the three prebuilt `libtdjni.so` files using repository-relative paths (`data/src/main/jniLibs/<abi>/libtdjni.so`) and the exact Git blob bytes used for checkout on Linux CI.
 
-The packaged OpenSSL `libssl.so`/`libcrypto.so` files are rebuilt per ABI by `scripts/build-openssl-android.sh` from the pinned official OpenSSL 3.0.16 source archive, whose SHA-256 is verified before extraction. They are intentionally not pinned by a repository checksum because the CI rebuild is the authoritative input to the APK.
+The three generated Java bindings (`Client.java`, `Log.kt`, `TdApi.java`) are **not** checksum-pinned in that file. They are verified by size and by the bindings section of `scripts/check-tdlib-artifacts.sh`, and they are tracked in Git, so any change to them shows up as a diff rather than as a silent binary swap.
 
-`scripts/check-tdlib-artifacts.sh` verifies every checksum entry against the checked-out files, so stale paths, changed prebuilt binaries, and stale binding documentation fail the CI artifact gate.
+The packaged OpenSSL `libssl.so`/`libcrypto.so` files are rebuilt per ABI by `scripts/build-openssl-android.sh` from the pinned official OpenSSL 3.0.16 source archive, whose SHA-256 is verified before extraction. They are intentionally not pinned by a repository checksum because the CI rebuild is the authoritative input to the APK. The 2026-09-11 revision of `TDLIB_SHA256SUMS.txt` nevertheless carried six OpenSSL entries against `app/src/main/jniLibs/**`; those paths were never populated for two of the three ABIs and the one resolvable entry (`arm64-v8a/libcrypto.so`) did not match the file on disk, so they were removed rather than rewritten.
+
+`scripts/check-tdlib-artifacts.sh` verifies every checksum entry against the checked-out files, so stale paths, changed prebuilt binaries, and stale binding documentation fail the CI artifact gate. It also asserts each ABI directory holds the matching `e_machine` and that every PT_LOAD segment is 16 KB-aligned, and it **fails loudly when no ELF reader (`readelf`/`llvm-readelf`) is available** instead of passing on an unverified binary.
 
 ## 5. Android Build Verification
 

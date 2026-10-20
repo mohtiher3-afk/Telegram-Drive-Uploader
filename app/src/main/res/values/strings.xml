@@ -2,9 +2,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Telegram Drive Uploader</string>
     <string name="nav_home">Home</string>
+    <string name="nav_send">Send</string>
+    <string name="nav_add">Add</string>
     <string name="nav_queue">Queue</string>
-    <string name="nav_history">History</string>
-    <string name="nav_settings">Settings</string>
+    <string name="nav_setup">Setup</string>
     <!--
       Declared so the accessibility string stays resolvable from the app namespace.
       :feature owns the real translated plural of the same name and renders it.

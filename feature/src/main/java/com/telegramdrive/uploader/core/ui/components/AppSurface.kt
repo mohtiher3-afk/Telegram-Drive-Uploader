@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppElevation
 import com.telegramdrive.uploader.core.ui.theme.AppRadius
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
+import androidx.compose.material3.MaterialTheme
 
 /**
  * The single surface every card in the app is built from.
@@ -39,10 +39,10 @@ fun AppSurface(
     shape: Shape = RoundedCornerShape(AppRadius.card),
     accent: Color? = null,
     accentAlpha: Float = 0.14f,
-    container: Color = DesignTokens.AppColors.surfaceCard,
+    container: Color = MaterialTheme.colorScheme.surfaceContainer,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val hairline = DesignTokens.AppColors.glassBorder
+    val hairline = MaterialTheme.colorScheme.outline
     Box(
         modifier = modifier
             .clip(shape)

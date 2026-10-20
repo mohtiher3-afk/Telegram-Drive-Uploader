@@ -32,7 +32,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [33])
+@Config(sdk = [33], qualifiers = "w411dp-h891dp")
 // ViewModels are constructed manually with fake dependencies specifically for testing.
 @SuppressLint("ViewModelConstructorInComposable")
 class QueueScreenComposeTest {

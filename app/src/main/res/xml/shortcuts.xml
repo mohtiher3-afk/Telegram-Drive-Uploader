@@ -8,7 +8,7 @@
         android:shortcutLongLabel="@string/shortcut_new_upload_long">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.aistudio.telegramdrive.prmuq"
+            android:targetPackage="${applicationId}"
             android:targetClass="com.telegramdrive.uploader.MainActivity">
             <extra
                 android:name="action"
@@ -24,7 +24,7 @@
         android:shortcutLongLabel="@string/shortcut_queue_long">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.aistudio.telegramdrive.prmuq"
+            android:targetPackage="${applicationId}"
             android:targetClass="com.telegramdrive.uploader.MainActivity">
             <extra
                 android:name="action"

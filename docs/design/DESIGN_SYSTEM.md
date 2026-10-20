@@ -1,25 +1,37 @@
-# Telegram Drive Design System
+# Design System
+
+The Dusk design system is a high-density, instrument-inspired visual language built on Material 3. It focuses on technical precision and high-contrast legibility for file management.
 
 ## Foundation
+- **Base**: Material 3 (M3) specification.
+- **Palette**: Dusk palette (detailed in `TOKENS.md`).
+- **Dynamic Color**: Full integration with Android 12+ dynamic theming. The Dusk palette serves as the fallback scheme when dynamic color is disabled.
+- **Typography**:
+    - **Doto**: Used for titles, numbers, and percentages to provide a technical, digital-readout feel.
+    - **Space Mono**: Used for all body text and metadata for consistent character width and readability.
+    - **Arabic Fallback**: System-native Arabic font for RTL support.
+- **Shapes & Spacing**: Defined by consistent radius and spacing tokens (see `TOKENS.md`).
 
-The Android UI uses Jetpack Compose Material 3 through `MaterialTheme`. The system of record is the theme's semantic color scheme, typography, shapes, and the shared layout tokens in `core/ui/theme/DesignTokens.kt`.
+## Component Catalog
 
-## Tokens
+### Transfer Instruments
+- **DotProgressBar**: `(progress: Float, dotCount: Int = 26)`
+  Compact dot-matrix bar used in list rows and notifications.
+- **DotProgressRing**: `(progress: Float, size: Dp = 224.dp, dotCount: Int = 72)`
+  Large circular readout with a central Doto percentage.
 
-Use semantic Material roles such as `primary`, `primaryContainer`, `secondaryContainer`, `surface`, `surfaceContainer`, `onSurface`, `onSurfaceVariant`, `error`, and their corresponding `on-*` roles. Use `AppSpacing` and `AppContentWidth` for shared layout decisions rather than introducing arbitrary screen-specific values.
+### Layout & Containers
+- **AppCard**: `(borderColor, containerColor, content)`
+  Raised surface with a hairline border for all content blocks.
+- **AppNavPill**: `(items: List<NavPillItem>, selectedIndex: Int, onSelect: (Int) -> Unit)`
+  Floating navigation element for primary screen switching.
+- **SectionHeader**: `(number: String, label: String, title: String, subtitle: String?)`
+  Numbered technical header with an accent dot.
 
-## Component Rules
-
-Use the established Material 3 component that matches the user intent. Buttons express action hierarchy, fields collect input, lists show files or destinations, progress indicators show actual upload state, and NavigationBar/NavigationRail switch between existing app destinations.
-
-## Themes and Contexts
-
-Light and dark themes use semantic roles. Dynamic color is available on Android 12 and above with custom fallback schemes. Arabic RTL and English LTR are supported through logical layout direction and localized resources. Runtime verification remains required for contrast, scaling, TalkBack, and large screens.
-
-## Protected Behavior
-
-Visual work must not change routes, authentication, Telegram destination IDs, file URIs, Room schemas, WorkManager identities, scheduler timestamps, TDLib calls, or upload completion semantics.
-
-## References
-
-See `M3_OFFICIAL_REVIEW.md`, `M3_COMPONENT_MAP.md`, `M3_SCREEN_DESIGN_MATRIX.md`, and `M3_ADAPTIVE_UI.md`.
+### Controls & Indicators
+- **AppSearchField**: `(query: String, onQueryChange: (String) -> Unit, placeholder: String)`
+  Clean, outlined search input with a clear-action button.
+- **UploadStatusIndicator**: `(video: UploadTask, onPauseClick, onResumeClick, onRetryClick, onCancelClick)`
+  Dynamic status block with automated color-coding and a detailed Action Log.
+- **PartsMap**: `(totalParts: Int, sentParts: Int, failedPartIndex: Int?, onFailedPartClick)`
+  36-cell grid representing the upload chunks of a file.

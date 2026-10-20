@@ -1,23 +1,18 @@
 # Motion System
 
-## Principles
+Motion in Dusk is used exclusively to signal state transitions and progress.
 
-Motion communicates a change in page, state, hierarchy, progress, or feedback. It must be fast enough that it never delays an action, predictable enough to preserve context, and restrained enough not to compete with upload status or diagnostic content.
-
-| Context | Pattern | Guidance |
+## Motion Tokens
+| Token | Value | Application |
 |---|---|---|
-| Onboarding page change | Short fade plus small horizontal movement | Keep the existing direction and avoid large travel distances |
-| Authentication state change | Short fade | Preserve the current state as the single source of truth |
-| Upload progress | Material progress rendering | Reflect actual bytes/state only; never animate fake progress |
-| Error/empty/content | Immediate state change unless a short transition improves comprehension | Errors must remain visible immediately |
-| Top-level navigation | Existing navigation behavior | Do not add graph-wide transitions in this phase |
-| Lists | Stable keys, no blanket entrance animation | Animate only real insertion/removal in a future focused slice |
-| Dialogs and sheets | Native Material 3 behavior | Do not replace built-in motion |
+| fast | 120ms | Micro-interactions, toggle switches |
+| short | 180ms | Color transitions, status changes |
+| medium | 250ms | Standard layout shifts |
+| pageEnter | 300ms | Screen transitions |
+| auroraBreath | 2800ms | Subtle background ambient pulses |
+| signalPulse | 1200ms | Active upload/failure alerts |
 
-## Accessibility and performance
-
-All animation is non-essential. Content, errors, and upload states must remain understandable when motion is reduced or unavailable. The current source does not expose a reduced-motion abstraction, so this phase does not invent one; future device validation should confirm Android animator-scale behavior before centralizing it. Motion must remain limited to transform/opacity-like effects and must not trigger expensive bitmap or list work.
-
-## Scope
-
-This system documents the existing state-driven transitions and the selective M3 Expressive motion boundary. It does not add animation to every composable, introduce a new framework, alter navigation destinations, or change business logic. Future motion changes must remain compatible with `AppMotion`, the shared design tokens, and reduced-motion expectations.
+## Easing & Behavior
+- **Standard**: Material You standard easing for most transitions.
+- **Overshoot**: Spring-based easing for "pop" effects on celebratory or error states.
+- **Linear Pulse**: Infinite repeatable pulses for active processes (e.g., `PartsMap` active cells).

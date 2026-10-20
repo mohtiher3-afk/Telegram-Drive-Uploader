@@ -21,8 +21,6 @@ All relative links in this documentation tree are verified by
 |---|---|
 | [DEVELOPER_ONBOARDING.md](DEVELOPER_ONBOARDING.md) | Set up the project and run a first successful build |
 | [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) | Engineering rules applied to every change |
-| [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) | Phased delivery plan for the Mission Control rebuild (phases 0–5 landed; kept for its workflow and troubleshooting rules) |
-| [CLINE_TASKS.md](CLINE_TASKS.md) | Per-screen task scripts used to drive the rebuild (completed; colour values are superseded by `DesignTokens.kt`) |
 | [HISTORICAL_AUDITS.md](HISTORICAL_AUDITS.md) | What was removed from the documentation tree, when, and how to recover it from Git history |
 
 ## Architecture and design
@@ -30,7 +28,6 @@ All relative links in this documentation tree are verified by
 | Area | Location | Entry points |
 |---|---|---|
 | Architecture | [`architecture/`](architecture/) | [TARGET_ARCHITECTURE.md](architecture/TARGET_ARCHITECTURE.md), [DATA_FLOW.md](architecture/DATA_FLOW.md), [DEPENDENCY_GRAPH.md](architecture/DEPENDENCY_GRAPH.md), [TELEGRAM_ARCHITECTURE.md](architecture/TELEGRAM_ARCHITECTURE.md), [UPLOAD_ARCHITECTURE.md](architecture/UPLOAD_ARCHITECTURE.md), [WORKMANAGER_ARCHITECTURE.md](architecture/WORKMANAGER_ARCHITECTURE.md), [NAVIGATION_ARCHITECTURE.md](architecture/NAVIGATION_ARCHITECTURE.md), [DI_GRAPH.md](architecture/DI_GRAPH.md) |
-| Design system | [`design/`](design/) | [DESIGN_SYSTEM.md](design/DESIGN_SYSTEM.md), [DESIGN_PRINCIPLES.md](design/DESIGN_PRINCIPLES.md), [M3_COMPONENT_MAP.md](design/M3_COMPONENT_MAP.md), [M3_SCREEN_DESIGNS.md](design/M3_SCREEN_DESIGNS.md), [MOTION_SYSTEM.md](design/MOTION_SYSTEM.md), [RTL_DESIGN_GUIDELINES.md](design/RTL_DESIGN_GUIDELINES.md), [SCREEN_STATE_MATRIX.md](design/SCREEN_STATE_MATRIX.md) |
 
 ## Runtime behavior
 
@@ -50,7 +47,7 @@ All relative links in this documentation tree are verified by
 | Testing | [`testing/`](testing/) | [QA_GUIDE.md](testing/QA_GUIDE.md), [TEST_COVERAGE_MAP.md](testing/TEST_COVERAGE_MAP.md), [SMOKE_TEST_SUITE.md](testing/SMOKE_TEST_SUITE.md), [REGRESSION_MATRIX.md](testing/REGRESSION_MATRIX.md), [CRITICAL_PATHS.md](testing/CRITICAL_PATHS.md), [FLAKY_TESTS.md](testing/FLAKY_TESTS.md) |
 | Security | [`security/`](security/) | [THREAT_MODEL.md](security/THREAT_MODEL.md), [SECURITY_ARCHITECTURE.md](security/SECURITY_ARCHITECTURE.md), [BACKUP_SECURITY.md](security/BACKUP_SECURITY.md), [ONGOING_SECURITY_POLICY.md](security/ONGOING_SECURITY_POLICY.md) |
 | Privacy and data governance | [`privacy/`](privacy/) | [README.md](privacy/README.md), [DATA_FLOW_MAP.md](privacy/DATA_FLOW_MAP.md), [DATA_RETENTION_POLICY.md](privacy/DATA_RETENTION_POLICY.md), [PRIVACY_GOVERNANCE.md](privacy/PRIVACY_GOVERNANCE.md) |
-| Observability and diagnostics | [`observability/`](observability/) | [OBSERVABILITY_ARCHITECTURE.md](observability/OBSERVABILITY_ARCHITECTURE.md), [EVENT_CATALOG.md](observability/EVENT_CATALOG.md), [PRIVACY_LOGGING_POLICY.md](observability/PRIVACY_LOGGING_POLICY.md), [DIAGNOSTICS_EXPORT_2026-10-08_07-48-54.md](observability/DIAGNOSTICS_EXPORT_2026-10-08_07-48-54.md) |
+| Observability and diagnostics |  |
 | Performance | [`performance/`](performance/) | [PERFORMANCE_GUIDE.md](performance/PERFORMANCE_GUIDE.md), [PERFORMANCE_BASELINE.md](performance/PERFORMANCE_BASELINE.md), [OPTIMIZATION_LOG.md](performance/OPTIMIZATION_LOG.md) |
 | Android compatibility | [`compatibility/`](compatibility/) | [README.md](compatibility/README.md), [SUPPORTED_ENVIRONMENT.md](compatibility/SUPPORTED_ENVIRONMENT.md), [ANDROID_VERSION_MATRIX.md](compatibility/ANDROID_VERSION_MATRIX.md), [DEVICE_AND_SCREEN_MATRIX.md](compatibility/DEVICE_AND_SCREEN_MATRIX.md), [PLATFORM_BEHAVIOR.md](compatibility/PLATFORM_BEHAVIOR.md) |
 | Accessibility and adaptive UI | [`accessibility/`](accessibility/) | [ACCESSIBILITY_GUIDE.md](accessibility/ACCESSIBILITY_GUIDE.md), [ADAPTIVE_UI_GUIDE.md](accessibility/ADAPTIVE_UI_GUIDE.md), [KNOWN_ACCESSIBILITY_LIMITATIONS.md](accessibility/KNOWN_ACCESSIBILITY_LIMITATIONS.md) |

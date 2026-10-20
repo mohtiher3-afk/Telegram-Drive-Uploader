@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -15,9 +16,6 @@ import com.telegramdrive.uploader.data.local.datastore.SettingsDataStore
 import dagger.hilt.android.AndroidEntryPoint
 import com.telegramdrive.uploader.core.navigation.AppNavigation
 import com.telegramdrive.uploader.core.ui.theme.TelegramDriveTheme
-import com.telegramdrive.uploader.core.ui.theme.GlowColorPreset
-import com.telegramdrive.uploader.core.ui.theme.DynamicColorStrategy
-import com.telegramdrive.uploader.core.ui.theme.DesignTokens
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,35 +29,31 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         // Prevent screenshots and screen recording of sensitive upload data.
-        window.setFlags(
-            android.view.WindowManager.LayoutParams.FLAG_SECURE,
-            android.view.WindowManager.LayoutParams.FLAG_SECURE
-        )
+        // Every shipped build sets BuildConfig.ALLOW_SCREENSHOTS=true, so the flag is
+        // always applied there. Only the debug build type sets it false, to let a
+        // developer capture the UI; that override lives in app/build.gradle.kts.
+        if (BuildConfig.ALLOW_SCREENSHOTS) {
+            window.setFlags(
+                android.view.WindowManager.LayoutParams.FLAG_SECURE,
+                android.view.WindowManager.LayoutParams.FLAG_SECURE
+            )
+        }
         enableEdgeToEdge()
         setContent {
             val themePreference by settingsDataStore.themePreference.collectAsStateWithLifecycle(initialValue = "System")
-            val glowColorPreference by settingsDataStore.glowColorPreference.collectAsStateWithLifecycle(initialValue = "Seafoam")
-            val customGlowHex by settingsDataStore.customGlowHex.collectAsStateWithLifecycle(initialValue = "69D6B5")
-            val dynamicColorStrategy by settingsDataStore.dynamicColorStrategy.collectAsStateWithLifecycle(initialValue = "StaticBrand")
+            val dynamicColorEnabled by settingsDataStore.dynamicColorEnabled.collectAsStateWithLifecycle(initialValue = true)
             val darkTheme = when (themePreference) {
                 "Dark" -> true
                 "Light" -> false
                 else -> isSystemInDarkTheme()
             }
-            val strategy = when (dynamicColorStrategy) {
-                "Full" -> DynamicColorStrategy.Full
-                "BrandAccented" -> DynamicColorStrategy.BrandAccented
-                else -> DynamicColorStrategy.StaticBrand
-            }
             TelegramDriveTheme(
                 darkTheme = darkTheme,
-                dynamicColorStrategy = strategy,
-                glowColorPreset = GlowColorPreset.fromStorage(glowColorPreference),
-                customGlowHex = customGlowHex
+                dynamicColorEnabled = dynamicColorEnabled
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = DesignTokens.AppColors.background
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavigation(settingsDataStore)
                 }
