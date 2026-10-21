@@ -342,29 +342,15 @@ private fun QueueHeader(uiState: QueueUiState) {
                 number = "06",
                 label = "QUEUE",
                 title = stringResource(R.string.upload_queue),
+                counter = uiState.activeCount.toString().padStart(2, '0'),
+                subtitle = pluralStringResource(
+                    R.plurals.queue_count_summary,
+                    uiState.activeCount,
+                    uiState.activeCount,
+                    uiState.failedCount
+                ),
                 modifier = Modifier.weight(1f)
             )
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = uiState.activeCount.toString().padStart(2, '0'),
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontFamily = DotoFamily,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 30.sp
-                    ),
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = pluralStringResource(
-                        R.plurals.queue_count_summary,
-                        uiState.activeCount,
-                        uiState.activeCount,
-                        uiState.failedCount
-                    ),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
         }
     }
 }
