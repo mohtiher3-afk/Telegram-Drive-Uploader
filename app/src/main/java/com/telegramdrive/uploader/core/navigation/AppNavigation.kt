@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -179,14 +181,19 @@ fun AppNavigation(
     }
 
     Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
-            contentWindowInsets = WindowInsets.systemBars,
-            bottomBar = {
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets.systemBars,
+        bottomBar = {
             if (!isExpanded && showBottomBar) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
+                        .padding(
+                            start = AppSpacing.phoneEdge,
+                            top = AppSpacing.phoneNavInset,
+                            end = AppSpacing.phoneEdge,
+                            bottom = AppSpacing.phoneNavInset + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                        )
                 ) {
                     Surface(
                         modifier = Modifier
