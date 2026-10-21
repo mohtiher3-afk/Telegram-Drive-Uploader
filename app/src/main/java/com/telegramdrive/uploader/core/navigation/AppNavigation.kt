@@ -50,6 +50,7 @@ import com.telegramdrive.uploader.feature.home.HomeUiState
 import com.telegramdrive.uploader.feature.splash.SplashScreen
 import com.telegramdrive.uploader.feature.queue.QueueScreen
 import com.telegramdrive.uploader.feature.queue.QueueViewModel
+import com.telegramdrive.uploader.feature.queue.QueueUiState
 import com.telegramdrive.uploader.feature.history.HistoryScreen
 import com.telegramdrive.uploader.feature.onboarding.OnboardingScreen
 import com.telegramdrive.uploader.feature.onboarding.OnboardingViewModel
@@ -230,31 +231,18 @@ fun AppNavigation(
             }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
+            // Island notification overlay — shows active upload progress at top of screen
+            // Rendered AFTER NavHost so it overlays on top of all screens
+            val queueUiState by queueViewModel.uiState.collectAsStateWithLifecycle(QueueUiState())
+            val activeUpload = queueUiState.queueItems.firstOrNull { it.status == UploadStatus.UPLOADING || it.status == UploadStatus.PREPARING }
+            val showIsland = activeUpload != null &&
+                currentRoute != AppRoutes.SPLASH &&
+                currentRoute != AppRoutes.TELEGRAM_AUTH
+
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface
             ) {
-                // Island notification overlay — shows active upload progress at top of screen
-                val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle(HomeUiState())
-                val activeUpload = homeUiState.activeUploads.firstOrNull()
-                val showIsland = activeUpload != null &&
-                    activeUpload.status != UploadStatus.COMPLETED &&
-                    activeUpload.status != UploadStatus.CANCELLED &&
-                    currentRoute != AppRoutes.SPLASH &&
-                    currentRoute != AppRoutes.TELEGRAM_AUTH
-                activeUpload?.let { upload ->
-                    UploadIsland(
-                        activeUpload = upload,
-                        isVisible = showIsland,
-                        onExpandClick = { /* Island handles its own expansion */ },
-                        onPauseClick = { queueViewModel.pauseUpload(upload.id) },
-                        onCancelClick = { queueViewModel.cancelUpload(upload.id) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppSpacing.medium, vertical = 16.dp)
-                    )
-                }
-
                 NavHost(
                     navController = navController,
                     startDestination = if (openingCompleted) Screen.Home.route else AppRoutes.SPLASH,
@@ -354,6 +342,20 @@ fun AppNavigation(
                         }
                     }
                 }
+            }
+
+            // Island notification overlay — rendered on top of NavHost
+            activeUpload?.let { upload ->
+                UploadIsland(
+                    activeUpload = upload,
+                    isVisible = showIsland,
+                    onExpandClick = { /* Island handles its own expansion */ },
+                    onPauseClick = { queueViewModel.pauseUpload(upload.id) },
+                    onCancelClick = { queueViewModel.cancelUpload(upload.id) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppSpacing.medium, vertical = 16.dp)
+                )
             }
         }
     }
