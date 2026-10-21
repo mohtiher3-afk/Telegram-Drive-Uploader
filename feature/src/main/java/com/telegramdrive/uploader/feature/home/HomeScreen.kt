@@ -151,8 +151,6 @@ internal fun HomeBody(
             .fillMaxSize()
             .testTag("home_screen"),
         contentPadding = PaddingValues(
-            start = AppSpacing.medium,
-            end = AppSpacing.medium,
             top = AppSpacing.large,
             // Double the bottom inset so the last row clears the navigation bar.
             bottom = AppSpacing.extraLarge * 2
