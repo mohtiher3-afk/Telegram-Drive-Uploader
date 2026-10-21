@@ -8,7 +8,7 @@ import org.junit.Test
 
 /**
  * Contract test for the colour pairs `HomeScreen.kt` is allowed to paint with.
- * Validates both Dusk Light and Dark schemes.
+ * Validates both Coral Light and Dark schemes.
  */
 class HomeScreenColorPairTest {
 
@@ -17,12 +17,12 @@ class HomeScreenColorPairTest {
     @Test
     fun `dark scheme pairs are compliant`() {
         checkScheme(
-            primary = DuskPrimaryDark,
-            onPrimary = DuskOnPrimaryDark,
-            primaryContainer = DuskPrimaryContainerDark,
-            onPrimaryContainer = DuskOnPrimaryContainerDark,
-            surface = DuskSurfaceDark,
-            onSurface = DuskOnSurfaceDark,
+            primary = CoralPrimaryDark,
+            onPrimary = CoralOnPrimaryDark,
+            primaryContainer = CoralPrimaryContainerDark,
+            onPrimaryContainer = CoralOnPrimaryContainerDark,
+            surface = CoralSurfaceDark,
+            onSurface = CoralOnSurfaceDark,
             schemeName = "Dark"
         )
     }
@@ -30,37 +30,30 @@ class HomeScreenColorPairTest {
     @Test
     fun `light scheme pairs are compliant`() {
         checkScheme(
-            primary = DuskPrimaryLight,
-            onPrimary = DuskOnPrimaryLight,
-            primaryContainer = DuskPrimaryContainerLight,
-            onPrimaryContainer = DuskOnPrimaryContainerLight,
-            surface = DuskSurfaceLight,
-            onSurface = DuskOnSurfaceLight,
+            primary = CoralPrimaryLight,
+            onPrimary = CoralOnPrimaryLight,
+            primaryContainer = CoralPrimaryContainerLight,
+            onPrimaryContainer = CoralOnPrimaryContainerLight,
+            surface = CoralSurfaceLight,
+            onSurface = CoralOnSurfaceLight,
             schemeName = "Light"
         )
     }
 
     private fun checkScheme(
-        primary: Color,
-        onPrimary: Color,
-        primaryContainer: Color,
-        onPrimaryContainer: Color,
-        surface: Color,
-        onSurface: Color,
-        schemeName: String
-    ) {
-        // Regression anchor: onPrimary on primaryContainer MUST stay illegible
-        val anchorRatio = contrastRatio(onPrimary, primaryContainer)
-        assertTrue(
-            "$schemeName onPrimary on primaryContainer measured $anchorRatio:1 and is no longer the documented defect",
-            anchorRatio < minimumRatio
-        )
-
-        assertReadable(onPrimaryContainer, primaryContainer, "$schemeName onPrimaryContainer on primaryContainer")
-        assertReadable(onPrimary, primary, "$schemeName onPrimary on primary")
-        assertReadable(onSurface, primaryContainer, "$schemeName onSurface on primaryContainer")
-        assertReadable(onPrimaryContainer, primaryContainer, "$schemeName onPrimaryContainer on primaryContainer")
-    }
+            primary: Color,
+            onPrimary: Color,
+            primaryContainer: Color,
+            onPrimaryContainer: Color,
+            surface: Color,
+            onSurface: Color,
+            schemeName: String
+        ) {
+            // All text-on-container pairs must be readable (>= 4.5:1)
+            assertReadable(onPrimaryContainer, primaryContainer, "$schemeName onPrimaryContainer on primaryContainer")
+            assertReadable(onPrimary, primary, "$schemeName onPrimary on primary")
+            assertReadable(onSurface, primaryContainer, "$schemeName onSurface on primaryContainer")
+        }
 
     private fun assertReadable(foreground: Color, background: Color, name: String) {
         val ratio = contrastRatio(foreground, background)
