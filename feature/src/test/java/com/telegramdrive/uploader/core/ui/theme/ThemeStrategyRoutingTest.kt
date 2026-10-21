@@ -16,7 +16,7 @@ import org.robolectric.annotation.GraphicsMode
  * Guards the contract that makes the dynamic color settings feature work.
  *
  * When dynamicColorEnabled is true on Android 12+, the system wallpaper-derived
- * color scheme is used. When false, the Dusk palette from tokens.json is the
+ * color scheme is used. When false, the Coral palette from tokens.json is the
  * fallback. A regression that ignored the toggle would make the settings UI
  * silently inert.
  */
@@ -50,29 +50,29 @@ class ThemeStrategyRoutingTest {
     }
 
     @Test
-    fun `dynamic color disabled uses Dusk palette`() {
+    fun `dynamic color disabled uses Coral palette`() {
         val primary = primaryUnder(dynamicColorEnabled = false, darkTheme = true)
-        assertEquals(DuskPrimaryDark, primary)
+        assertEquals(CoralPrimaryDark, primary)
     }
 
     @Test
-    fun `dynamic color disabled uses Dusk light palette`() {
+    fun `dynamic color disabled uses Coral light palette`() {
         val primary = primaryUnder(dynamicColorEnabled = false, darkTheme = false)
-        assertEquals(DuskPrimaryLight, primary)
+        assertEquals(CoralPrimaryLight, primary)
     }
 
     @Test
-    fun `dynamic color enabled on non-S uses Dusk palette`() {
+    fun `dynamic color enabled on non-S uses Coral palette`() {
         // On SDK 33 Robolectric, dynamic color is available, but we verify the
-        // toggle is respected by checking that disabled uses Dusk.
+        // toggle is respected by checking that disabled uses Coral.
         val primary = primaryUnder(dynamicColorEnabled = false, darkTheme = true)
-        assertEquals(DuskPrimaryDark, primary)
+        assertEquals(CoralPrimaryDark, primary)
     }
 
     @Test
-    fun `dark and light Dusk palettes differ`() {
-        val darkPrimary = DuskPrimaryDark
-        val lightPrimary = DuskPrimaryLight
+    fun `dark and light Coral palettes differ`() {
+        val darkPrimary = CoralPrimaryDark
+        val lightPrimary = CoralPrimaryLight
         assertNotEquals(darkPrimary, lightPrimary)
     }
 }

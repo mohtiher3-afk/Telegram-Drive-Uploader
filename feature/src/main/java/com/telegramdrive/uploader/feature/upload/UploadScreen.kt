@@ -292,11 +292,7 @@ private fun UploadContent(
 ) {
     val totalSize = state.preparedVideos.sumOf { it.fileSize }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = AppSpacing.medium)
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier
                 .weight(1f)

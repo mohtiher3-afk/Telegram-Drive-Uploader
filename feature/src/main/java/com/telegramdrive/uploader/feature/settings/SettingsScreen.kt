@@ -12,6 +12,9 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import com.telegramdrive.uploader.core.ui.theme.DynamicColorViewModel
+import com.telegramdrive.uploader.core.ui.theme.rememberDynamicColorViewModel
+import com.telegramdrive.uploader.core.ui.theme.toBitmap
 import com.telegramdrive.uploader.feature.BuildConfig
 import java.io.File
 
@@ -64,7 +67,8 @@ import androidx.compose.material3.TopAppBarDefaults
 @Composable
 fun SettingsScreen(
     onConnectClick: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    dynamicColorViewModel: DynamicColorViewModel = rememberDynamicColorViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
@@ -75,6 +79,16 @@ fun SettingsScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         notificationsEnabled = granted && NotificationManagerCompat.from(context).areNotificationsEnabled()
+    }
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            dynamicColorViewModel.extractFromBitmap(
+                uri.toBitmap(context),
+                uiState.theme != "Light"
+            )
+        }
     }
 
     // Trigger update of cache size when screen is opened
@@ -118,7 +132,7 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(vertical = 12.dp)
             ) {
                 SectionHeader(
                     number = "08",
@@ -132,8 +146,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(scrollState)
-                .padding(16.dp),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // 1. Appearance Section
@@ -186,6 +199,9 @@ fun SettingsScreen(
                 icon = Icons.Default.Palette,
                 title = stringResource(com.telegramdrive.uploader.feature.R.string.dynamic_color)
             ) {
+                val extractedScheme by dynamicColorViewModel.extractedScheme.collectAsStateWithLifecycle()
+                val isExtracting by dynamicColorViewModel.isExtracting.collectAsStateWithLifecycle()
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -211,6 +227,46 @@ fun SettingsScreen(
                         checked = uiState.dynamicColorEnabled,
                         onCheckedChange = { viewModel.setDynamicColorEnabled(it) }
                     )
+                }
+
+                // Image picker for custom dynamic color
+                if (uiState.dynamicColorEnabled) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { imagePickerLauncher.launch("image/*") },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        ) {
+                            Text(stringResource(com.telegramdrive.uploader.feature.R.string.pick_image))
+                        }
+                        if (extractedScheme != null) {
+                            Button(
+                                onClick = { dynamicColorViewModel.clear() },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            ) {
+                                Text(stringResource(com.telegramdrive.uploader.feature.R.string.reset))
+                            }
+                        }
+                    }
+                    if (isExtracting) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(com.telegramdrive.uploader.feature.R.string.extracting_colors),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
@@ -648,7 +704,7 @@ fun SettingsScreen(
                         Text(
                             text = BuildConfig.VERSION_NAME,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Text(
@@ -711,14 +767,14 @@ fun SettingsSection(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         

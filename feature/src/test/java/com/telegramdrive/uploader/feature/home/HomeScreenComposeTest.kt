@@ -73,7 +73,7 @@ class HomeScreenComposeTest {
         setContent(uploads = emptyList())
 
         composeRule.onNodeWithTag("home_screen").assertExists()
-        composeRule.onNodeWithText("Telegram Drive").assertIsDisplayed()
+        composeRule.onNodeWithText("Ready").assertIsDisplayed()
     }
 
     @Test
@@ -110,7 +110,7 @@ class HomeScreenComposeTest {
     }
 
     @Test
-    fun `title becomes the signed-in user name`() {
+    fun `avatar shows user initials when signed in`() {
         setContent(
             uploads = emptyList(),
             telegramUser = TelegramUser(
@@ -124,8 +124,9 @@ class HomeScreenComposeTest {
             connectionState = TelegramConnectionState.AUTHORIZED
         )
 
-        // The design's title row carries the account name, not a "Hi," greeting.
-        composeRule.onNodeWithText("Sara Nasser").assertIsDisplayed()
+        // The avatar shows initials from the user's name
+        composeRule.onNodeWithTag("home_avatar").assertIsDisplayed()
+        composeRule.onNodeWithText("SN").assertIsDisplayed()
     }
 
     @Test

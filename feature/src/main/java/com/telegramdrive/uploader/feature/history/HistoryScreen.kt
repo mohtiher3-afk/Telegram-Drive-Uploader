@@ -83,18 +83,14 @@ fun HistoryScreen(
                     query = uiState.query,
                     onQueryChange = viewModel::onQueryChanged,
                     period = uiState.period,
-                    onPeriodChange = viewModel::setPeriod,
-                    modifier = Modifier.padding(horizontal = AppSpacing.phoneEdge)
+                    onPeriodChange = viewModel::setPeriod
                 )
                 com.telegramdrive.uploader.core.ui.components.EmptyState(
                     icon = Icons.Default.History,
                     title = stringResource(R.string.history_no_uploads),
                     supportingText = stringResource(R.string.history_no_uploads_supporting),
                     modifier = Modifier
-                        .padding(
-                            horizontal = AppSpacing.phoneEdge,
-                            vertical = AppSpacing.phoneSection
-                        )
+                        .padding(vertical = AppSpacing.phoneSection)
                         .testTag("history_empty_state")
                 )
             }
@@ -102,7 +98,6 @@ fun HistoryScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = AppSpacing.phoneEdge)
                     .testTag("history_list"),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(
                     bottom = AppSpacing.extraLarge * 2

@@ -9,8 +9,13 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.telegramdrive.uploader.core.ui.theme.DynamicColorViewModel
+import com.telegramdrive.uploader.core.ui.theme.rememberDynamicColorViewModel
 
 /**
  * Coral palette matching the design spec (--p: #ff6b61).
@@ -83,9 +88,10 @@ private val CoralLightColorScheme = lightColorScheme(
 /**
  * App theme with Material You dynamic color support.
  *
- * On Android 12+, when [dynamicColorEnabled] is true, the system wallpaper-derived
- * color scheme is used. Otherwise (or on older Android), the Dusk palette from
- * tokens.json is the fallback.
+ * On Android 12+, when [dynamicColorEnabled] is true:
+ *   - If a custom image-derived scheme exists (from DynamicColorViewModel), use it
+ *   - Otherwise use system wallpaper-derived scheme
+ * Otherwise (or on older Android), the Coral palette is the fallback.
  *
  * Typography uses Doto for display/headlines and Space Mono for body/labels,
  * with IBM Plex Sans Arabic as the Arabic fallback (see Type.kt).
@@ -96,7 +102,16 @@ fun TelegramDriveTheme(
     dynamicColorEnabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val dynamicColorViewModel = rememberDynamicColorViewModel()
+    val customScheme by dynamicColorViewModel.extractedScheme.collectAsStateWithLifecycle()
+    val isExtracting by dynamicColorViewModel.isExtracting.collectAsStateWithLifecycle()
+
+    val scheme = customScheme
     val colorScheme = when {
+        scheme != null -> {
+            // Use the extracted image-based scheme
+            scheme.toMaterial3ColorScheme(darkTheme)
+        }
         dynamicColorEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -151,8 +152,6 @@ internal fun HomeBody(
             .fillMaxSize()
             .testTag("home_screen"),
         contentPadding = PaddingValues(
-            start = AppSpacing.medium,
-            end = AppSpacing.medium,
             top = AppSpacing.large,
             // Double the bottom inset so the last row clears the navigation bar.
             bottom = AppSpacing.extraLarge * 2
@@ -416,7 +415,8 @@ private fun HomeDeckCard(
             .clip(RoundedCornerShape(AppRadius.feature))
             .background(container)
             .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(AppRadius.feature))
-            .padding(AppSpacing.large),
+            .padding(AppSpacing.large)
+            .padding(bottom = 38.dp),  // Extra bottom padding so label stays visible above overlapping card (~26dp overlap)
         contentAlignment = Alignment.CenterStart
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -529,9 +529,11 @@ private fun HomeTransferCard(
 /** The trust pills: keeps going / auto-resume / stored on device. */
 @Composable
 private fun HomeTrustPills() {
-    Row(
+    FlowRow(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppSpacing.small)
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.small),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.small),
+        maxItemsInEachRow = 3
     ) {
         HomeTrustPill(text = stringResource(R.string.home_trust_background))
         HomeTrustPill(text = stringResource(R.string.home_trust_resume))

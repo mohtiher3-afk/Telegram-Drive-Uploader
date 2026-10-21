@@ -58,24 +58,26 @@ fun SplashScreen(onFinished: () -> Unit) {
     ) == 0f
 
     // Ring fills 0 -> 1 over the splash window (or jumps to full under reduced motion).
-    var started by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { started = true }
+    var ringTarget by remember { mutableStateOf(0f) }
+    LaunchedEffect(Unit) {
+        if (!reducedMotion) ringTarget = 1f
+    }
     val ringProgress by animateFloatAsState(
-        targetValue = if (started && !reducedMotion) 1f else 1f,
+        targetValue = ringTarget,
         animationSpec = tween(durationMillis = if (reducedMotion) 0 else 650),
         label = "splashRing"
     )
 
     // Dot loader bar for "Initializing relay" — 20 dots
-    var dotsStarted by remember { mutableStateOf(false) }
-    LaunchedEffect(started) {
-        if (started) {
-            delay(if (reducedMotion) 100L else 400L)
-            dotsStarted = true
+    var dotsTarget by remember { mutableStateOf(0f) }
+    LaunchedEffect(Unit) {
+        if (!reducedMotion) {
+            delay(400L)
+            dotsTarget = 1f
         }
     }
     val dotsProgress by animateFloatAsState(
-        targetValue = if (dotsStarted && !reducedMotion) 1f else 1f,
+        targetValue = dotsTarget,
         animationSpec = tween(durationMillis = if (reducedMotion) 0 else 1200),
         label = "splashDots"
     )

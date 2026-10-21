@@ -28,7 +28,7 @@ android {
     applicationId = "com.aistudio.telegramdrive.prmuq"
     minSdk = 30
     targetSdk = 36
-    versionCode = 27
+    versionCode = 28
     versionName = rootProject.extra["appVersionName"] as String
 
     // Whether the window may be screenshotted. TRUE for every build type by default;

@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
@@ -37,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.components.AppNavPill
+import com.telegramdrive.uploader.core.ui.components.AppScreenContainer
 import com.telegramdrive.uploader.core.ui.components.NavPillItem
 import com.telegramdrive.uploader.core.ui.components.UploadIsland
 import com.telegramdrive.uploader.feature.home.HomeScreen
@@ -45,6 +50,7 @@ import com.telegramdrive.uploader.feature.home.HomeUiState
 import com.telegramdrive.uploader.feature.splash.SplashScreen
 import com.telegramdrive.uploader.feature.queue.QueueScreen
 import com.telegramdrive.uploader.feature.queue.QueueViewModel
+import com.telegramdrive.uploader.feature.queue.QueueUiState
 import com.telegramdrive.uploader.feature.history.HistoryScreen
 import com.telegramdrive.uploader.feature.onboarding.OnboardingScreen
 import com.telegramdrive.uploader.feature.onboarding.OnboardingViewModel
@@ -177,13 +183,18 @@ fun AppNavigation(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
+        contentWindowInsets = WindowInsets.systemBars,
         bottomBar = {
             if (!isExpanded && showBottomBar) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = AppSpacing.phoneEdge, vertical = AppSpacing.phoneNavInset)
+                        .padding(
+                            start = AppSpacing.phoneEdge,
+                            top = AppSpacing.phoneNavInset,
+                            end = AppSpacing.phoneEdge,
+                            bottom = AppSpacing.phoneNavInset + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                        )
                 ) {
                     Surface(
                         modifier = Modifier
@@ -220,31 +231,18 @@ fun AppNavigation(
             }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
+            // Island notification overlay — shows active upload progress at top of screen
+            // Rendered AFTER NavHost so it overlays on top of all screens
+            val queueUiState by queueViewModel.uiState.collectAsStateWithLifecycle(QueueUiState())
+            val activeUpload = queueUiState.queueItems.firstOrNull { it.status == UploadStatus.UPLOADING || it.status == UploadStatus.PREPARING }
+            val showIsland = activeUpload != null &&
+                currentRoute != AppRoutes.SPLASH &&
+                currentRoute != AppRoutes.TELEGRAM_AUTH
+
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface
             ) {
-                // Island notification overlay — shows active upload progress at top of screen
-                val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle(HomeUiState())
-                val activeUpload = homeUiState.activeUploads.firstOrNull()
-                val showIsland = activeUpload != null &&
-                    activeUpload.status != UploadStatus.COMPLETED &&
-                    activeUpload.status != UploadStatus.CANCELLED &&
-                    currentRoute != AppRoutes.SPLASH &&
-                    currentRoute != AppRoutes.TELEGRAM_AUTH
-                activeUpload?.let { upload ->
-                    UploadIsland(
-                        activeUpload = upload,
-                        isVisible = showIsland,
-                        onExpandClick = { /* Island handles its own expansion */ },
-                        onPauseClick = { queueViewModel.pauseUpload(upload.id) },
-                        onCancelClick = { queueViewModel.cancelUpload(upload.id) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = AppSpacing.medium, vertical = 16.dp)
-                    )
-                }
-
                 NavHost(
                     navController = navController,
                     startDestination = if (openingCompleted) Screen.Home.route else AppRoutes.SPLASH,
@@ -252,16 +250,18 @@ fun AppNavigation(
                         .padding(innerPadding)
                 ) {
                     composable(AppRoutes.SPLASH) {
-                        SplashScreen(
-                            onFinished = {
-                                scope.launch {
-                                    settingsDataStore.setOpeningCompleted()
-                                    navController.navigate(Screen.Home.route) {
-                                        popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                        AppScreenContainer(hasFloatingNav = false) {
+                            SplashScreen(
+                                onFinished = {
+                                    scope.launch {
+                                        settingsDataStore.setOpeningCompleted()
+                                        navController.navigate(Screen.Home.route) {
+                                            popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                                        }
                                     }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                     composable(Screen.Home.route) {
                         if (!onboardingCompleted) {
@@ -270,47 +270,53 @@ fun AppNavigation(
                                 viewModel = onboardingViewModel
                             )
                         } else {
-                            HomeScreen(
-                                onSettingsClick = { navController.navigate(Screen.Setup.route) },
+                            AppScreenContainer(hasFloatingNav = true) {
+                                HomeScreen(
+                                    onSettingsClick = { navController.navigate(Screen.Setup.route) },
+                                    onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
+                                    onVideosSelected = { uris ->
+                                        uploadViewModel.setPrepareUris(uris)
+                                        navController.navigate(Screen.Add.route) {
+                                            popUpTo(Screen.Home.route)
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    },
+                                )
+                            }
+                        }
+                    }
+                    composable(Screen.Send.route) {
+                        AppScreenContainer(hasFloatingNav = true) {
+                            TelegramDestinationScreen(
+                                onBackClick = { navController.navigate(Screen.Home.route) },
                                 onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
-                                onVideosSelected = { uris ->
-                                    uploadViewModel.setPrepareUris(uris)
+                                onDestinationSelected = { dest ->
+                                    uploadViewModel.onDestinationSelected(dest)
                                     navController.navigate(Screen.Add.route) {
                                         popUpTo(Screen.Home.route)
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                },
+                                }
                             )
                         }
                     }
-                    composable(Screen.Send.route) {
-                        TelegramDestinationScreen(
-                            onBackClick = { navController.navigate(Screen.Home.route) },
-                            onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
-                            onDestinationSelected = { dest ->
-                                uploadViewModel.onDestinationSelected(dest)
-                                navController.navigate(Screen.Add.route) {
-                                    popUpTo(Screen.Home.route)
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        )
-                    }
                     composable(Screen.Add.route) {
-                        UploadScreen(
-                            onBackClick = { navController.navigate(Screen.Home.route) },
-                            onSelectDestination = { navController.navigate(Screen.Send.route) },
-                            onQueueAdded = {
-                                navController.navigate(Screen.Queue.route) {
-                                    popUpTo(Screen.Home.route)
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            viewModel = uploadViewModel
-                        )
+                        AppScreenContainer(hasFloatingNav = true) {
+                            UploadScreen(
+                                onBackClick = { navController.navigate(Screen.Home.route) },
+                                onSelectDestination = { navController.navigate(Screen.Send.route) },
+                                onQueueAdded = {
+                                    navController.navigate(Screen.Queue.route) {
+                                        popUpTo(Screen.Home.route)
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                viewModel = uploadViewModel
+                            )
+                        }
                     }
                     composable(AppRoutes.TELEGRAM_AUTH) {
                         TelegramAuthScreen(
@@ -318,14 +324,38 @@ fun AppNavigation(
                             onAuthSuccess = { navController.popBackStack() }
                         )
                     }
-                    composable(Screen.Queue.route) { QueueScreen() }
-                    composable(AppRoutes.HISTORY) { HistoryScreen() }
+                    composable(Screen.Queue.route) {
+                        AppScreenContainer(hasFloatingNav = true) {
+                            QueueScreen()
+                        }
+                    }
+                    composable(AppRoutes.HISTORY) {
+                        AppScreenContainer(hasFloatingNav = true) {
+                            HistoryScreen()
+                        }
+                    }
                     composable(Screen.Setup.route) {
-                        SettingsScreen(
-                            onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
-                        )
+                        AppScreenContainer(hasFloatingNav = true) {
+                            SettingsScreen(
+                                onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
+                            )
+                        }
                     }
                 }
+            }
+
+            // Island notification overlay — rendered on top of NavHost
+            activeUpload?.let { upload ->
+                UploadIsland(
+                    activeUpload = upload,
+                    isVisible = showIsland,
+                    onExpandClick = { /* Island handles its own expansion */ },
+                    onPauseClick = { queueViewModel.pauseUpload(upload.id) },
+                    onCancelClick = { queueViewModel.cancelUpload(upload.id) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = AppSpacing.medium, vertical = 16.dp)
+                )
             }
         }
     }
