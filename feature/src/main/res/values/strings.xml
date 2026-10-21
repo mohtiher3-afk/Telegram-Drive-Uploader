@@ -172,6 +172,9 @@
     <string name="appearance_summary">Choose dark or light, and use colors from your wallpaper on supported devices.</string>
     <string name="dynamic_color">Wallpaper colors</string>
     <string name="dynamic_color_summary">Use colors derived from your wallpaper on Android 12+.</string>
+    <string name="pick_image">Pick image</string>
+    <string name="extracting_colors">Extracting colors…</string>
+    <string name="reset">Reset</string>
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
