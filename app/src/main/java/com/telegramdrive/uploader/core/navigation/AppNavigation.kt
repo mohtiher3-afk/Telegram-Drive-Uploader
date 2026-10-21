@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.telegramdrive.uploader.core.ui.theme.AppContentWidth
 import com.telegramdrive.uploader.core.ui.theme.AppSpacing
 import com.telegramdrive.uploader.core.ui.components.AppNavPill
+import com.telegramdrive.uploader.core.ui.components.AppScreenContainer
 import com.telegramdrive.uploader.core.ui.components.NavPillItem
 import com.telegramdrive.uploader.core.ui.components.UploadIsland
 import com.telegramdrive.uploader.feature.home.HomeScreen
@@ -252,16 +253,18 @@ fun AppNavigation(
                         .padding(innerPadding)
                 ) {
                     composable(AppRoutes.SPLASH) {
-                        SplashScreen(
-                            onFinished = {
-                                scope.launch {
-                                    settingsDataStore.setOpeningCompleted()
-                                    navController.navigate(Screen.Home.route) {
-                                        popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                        AppScreenContainer(hasFloatingNav = false) {
+                            SplashScreen(
+                                onFinished = {
+                                    scope.launch {
+                                        settingsDataStore.setOpeningCompleted()
+                                        navController.navigate(Screen.Home.route) {
+                                            popUpTo(AppRoutes.SPLASH) { inclusive = true }
+                                        }
                                     }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                     composable(Screen.Home.route) {
                         if (!onboardingCompleted) {
@@ -270,47 +273,53 @@ fun AppNavigation(
                                 viewModel = onboardingViewModel
                             )
                         } else {
-                            HomeScreen(
-                                onSettingsClick = { navController.navigate(Screen.Setup.route) },
+                            AppScreenContainer(hasFloatingNav = true) {
+                                HomeScreen(
+                                    onSettingsClick = { navController.navigate(Screen.Setup.route) },
+                                    onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
+                                    onVideosSelected = { uris ->
+                                        uploadViewModel.setPrepareUris(uris)
+                                        navController.navigate(Screen.Add.route) {
+                                            popUpTo(Screen.Home.route)
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    },
+                                )
+                            }
+                        }
+                    }
+                    composable(Screen.Send.route) {
+                        AppScreenContainer(hasFloatingNav = true) {
+                            TelegramDestinationScreen(
+                                onBackClick = { navController.navigate(Screen.Home.route) },
                                 onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
-                                onVideosSelected = { uris ->
-                                    uploadViewModel.setPrepareUris(uris)
+                                onDestinationSelected = { dest ->
+                                    uploadViewModel.onDestinationSelected(dest)
                                     navController.navigate(Screen.Add.route) {
                                         popUpTo(Screen.Home.route)
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                },
+                                }
                             )
                         }
                     }
-                    composable(Screen.Send.route) {
-                        TelegramDestinationScreen(
-                            onBackClick = { navController.navigate(Screen.Home.route) },
-                            onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) },
-                            onDestinationSelected = { dest ->
-                                uploadViewModel.onDestinationSelected(dest)
-                                navController.navigate(Screen.Add.route) {
-                                    popUpTo(Screen.Home.route)
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        )
-                    }
                     composable(Screen.Add.route) {
-                        UploadScreen(
-                            onBackClick = { navController.navigate(Screen.Home.route) },
-                            onSelectDestination = { navController.navigate(Screen.Send.route) },
-                            onQueueAdded = {
-                                navController.navigate(Screen.Queue.route) {
-                                    popUpTo(Screen.Home.route)
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            viewModel = uploadViewModel
-                        )
+                        AppScreenContainer(hasFloatingNav = true) {
+                            UploadScreen(
+                                onBackClick = { navController.navigate(Screen.Home.route) },
+                                onSelectDestination = { navController.navigate(Screen.Send.route) },
+                                onQueueAdded = {
+                                    navController.navigate(Screen.Queue.route) {
+                                        popUpTo(Screen.Home.route)
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                viewModel = uploadViewModel
+                            )
+                        }
                     }
                     composable(AppRoutes.TELEGRAM_AUTH) {
                         TelegramAuthScreen(
@@ -318,12 +327,22 @@ fun AppNavigation(
                             onAuthSuccess = { navController.popBackStack() }
                         )
                     }
-                    composable(Screen.Queue.route) { QueueScreen() }
-                    composable(AppRoutes.HISTORY) { HistoryScreen() }
+                    composable(Screen.Queue.route) {
+                        AppScreenContainer(hasFloatingNav = true) {
+                            QueueScreen()
+                        }
+                    }
+                    composable(AppRoutes.HISTORY) {
+                        AppScreenContainer(hasFloatingNav = true) {
+                            HistoryScreen()
+                        }
+                    }
                     composable(Screen.Setup.route) {
-                        SettingsScreen(
-                            onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
-                        )
+                        AppScreenContainer(hasFloatingNav = true) {
+                            SettingsScreen(
+                                onConnectClick = { navController.navigate(AppRoutes.TELEGRAM_AUTH) }
+                            )
+                        }
                     }
                 }
             }
