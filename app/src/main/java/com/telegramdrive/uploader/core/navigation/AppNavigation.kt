@@ -177,9 +177,9 @@ fun AppNavigation(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
-        bottomBar = {
+            containerColor = MaterialTheme.colorScheme.background,
+            contentWindowInsets = WindowInsets.systemBars,
+            bottomBar = {
             if (!isExpanded && showBottomBar) {
                 Box(
                     modifier = Modifier
