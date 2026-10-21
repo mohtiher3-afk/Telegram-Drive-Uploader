@@ -8,14 +8,27 @@ import org.junit.Test
 class NavigationLabelsTest {
     @Test
     fun navigationItemsKeepStableRoutesAndLocalizedLabels() {
+        val screens = listOf(Screen.Home, Screen.Send, Screen.Add, Screen.Queue, Screen.Setup)
         assertEquals(
-            listOf(AppRoutes.HOME, AppRoutes.QUEUE, AppRoutes.HISTORY, AppRoutes.SETTINGS),
-            bottomNavItems.map { it.route }
+            listOf(
+                AppRoutes.HOME,
+                AppRoutes.TELEGRAM_DESTINATION,
+                AppRoutes.UPLOAD_PREPARATION,
+                AppRoutes.QUEUE,
+                AppRoutes.SETTINGS
+            ),
+            screens.map { it.route }
         )
         assertEquals(
-            listOf(R.string.nav_home, R.string.nav_queue, R.string.nav_history, R.string.nav_settings),
-            bottomNavItems.map { it.titleRes }
+            listOf(
+                R.string.nav_home,
+                R.string.nav_send,
+                R.string.nav_add,
+                R.string.nav_queue,
+                R.string.nav_setup
+            ),
+            screens.map { it.titleRes }
         )
-        assertTrue(bottomNavItems.all { it.titleRes != 0 })
+        assertTrue(screens.all { it.titleRes != 0 })
     }
 }
