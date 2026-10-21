@@ -90,8 +90,7 @@ fun QueueScreen(
                     query = uiState.query,
                     onQueryChange = viewModel::onQueryChanged,
                     selectedFilter = uiState.selectedFilter,
-                    onSelectFilter = viewModel::selectFilter,
-                    modifier = Modifier.padding(horizontal = AppSpacing.phoneEdge)
+                    onSelectFilter = viewModel::selectFilter
                 )
                 com.telegramdrive.uploader.core.ui.components.EmptyState(
                     icon = Icons.Default.HourglassEmpty,
@@ -99,10 +98,7 @@ fun QueueScreen(
                     supportingText = stringResource(R.string.queue_empty_supporting),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            horizontal = AppSpacing.phoneEdge,
-                            vertical = AppSpacing.phoneSection
-                        )
+                        .padding(vertical = AppSpacing.phoneSection)
                         .testTag("queue_empty_state")
                 )
             }
@@ -110,7 +106,6 @@ fun QueueScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = AppSpacing.phoneEdge)
                     .testTag("queue_list"),
                 contentPadding = PaddingValues(bottom = AppSpacing.extraLarge * 2),
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
