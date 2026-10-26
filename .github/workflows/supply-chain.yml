@@ -1,4 +1,4 @@
-﻿name: Supply Chain Security
+name: Supply Chain Security
 
 # Why this exists: dependabot.yml already *detects* outdated dependencies and opens
 # pull requests. It does not *block* anything. These two gates are the defensive half
@@ -68,7 +68,7 @@ jobs:
       # `actions/checkout` the other jobs use: the action performs its own shallow
       # clone internally.
       - name: Run scorecard
-        uses: ossf/scorecard-action@v2.4.4
+        uses: ossf/scorecard-action@v2.5.0
         with:
           results_file: results.sarif
           results_format: sarif
